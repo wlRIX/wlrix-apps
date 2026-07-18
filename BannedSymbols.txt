@@ -1,0 +1,1 @@
+T:Microsoft.Extensions.Logging.LoggerExtensions;Use ZLogger methods instead.
