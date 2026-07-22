@@ -3,6 +3,9 @@
 ##
 ## Get latest from `dotnet new gitignore`
 
+# Local nuget feed for wlRIX packages and Avalonia.Wayland
+localfeed/
+
 # dotenv files
 .env
 

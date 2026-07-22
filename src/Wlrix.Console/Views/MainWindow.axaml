@@ -1,0 +1,30 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Wlrix.Console.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="500"
+        Width="800" Height="500"
+        x:Class="Wlrix.Console.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Title="wlRIX Console">
+
+    <Design.DataContext>
+        <!-- This only sets the DataContext for the previewer in an IDE,
+             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+        <vm:MainWindowViewModel />
+    </Design.DataContext>
+
+    <!-- Read-only, selectable view of the compositor log. The themed TextBox supplies the sunken
+         SGI frame and a vertical scroll bar; IsReadOnly keeps it view-only while still allowing
+         selection and Ctrl+C / context-menu copy. -->
+    <TextBox Margin="8"
+             Text="{Binding LogText}"
+             IsReadOnly="True"
+             AcceptsReturn="True"
+             TextWrapping="Wrap"
+             VerticalContentAlignment="Top"
+             FontFamily="Cascadia Mono,DejaVu Sans Mono,Liberation Mono,Consolas,monospace"
+             PlaceholderText="No log output yet." />
+
+</Window>

@@ -6,4 +6,15 @@
     <ItemGroup>
         <PackageVersion Include="Microsoft.CodeAnalysis.BannedApiAnalyzers" Version="5.6.0" />
     </ItemGroup>
+    <ItemGroup Label="Avalonia">
+        <PackageVersion Include="Avalonia" Version="12.1.0" />
+        <PackageVersion Include="Avalonia.Desktop" Version="12.1.0"/>
+        <PackageVersion Include="Avalonia.Wayland" Version="12.1.1" />
+        <PackageVersion Include="AvaloniaUI.DiagnosticsSupport" Version="2.2.3" />
+        <PackageVersion Include="ReactiveUI.Avalonia" Version="11.3.8"/>
+    </ItemGroup>
+    <ItemGroup Label="wlRIX theme">
+        <PackageVersion Include="Wlrix.Avalonia" Version="0.0.0" />
+        <PackageVersion Include="Wlrix.Avalonia.Dialogs" Version="1.0.0" />
+    </ItemGroup>
 </Project>

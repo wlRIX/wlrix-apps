@@ -13,7 +13,7 @@ indent_size = 4
 csharp_style_namespace_declarations = file_scoped:suggestion
 dotnet_sort_system_directives_first = true
 
-[*.{csproj,slnx,props,targets,xml,axaml,xaml}]
+[*.{csproj,slnx,props,targets,xml,axaml,xaml,config}]
 indent_size = 4
 
 [*.{yml,yaml,json}]
