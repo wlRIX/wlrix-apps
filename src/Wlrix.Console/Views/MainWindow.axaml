@@ -15,16 +15,30 @@
         <vm:MainWindowViewModel />
     </Design.DataContext>
 
-    <!-- Read-only, selectable view of the compositor log. The themed TextBox supplies the sunken
-         SGI frame and a vertical scroll bar; IsReadOnly keeps it view-only while still allowing
+    <!-- One tab per tailed log, along the bottom in the IRIX style. Each tab's body is a
+         read-only, selectable view of that log: the themed TextBox supplies the sunken SGI
+         frame and a vertical scroll bar; IsReadOnly keeps it view-only while still allowing
          selection and Ctrl+C / context-menu copy. -->
-    <TextBox Margin="8"
-             Text="{Binding LogText}"
-             IsReadOnly="True"
-             AcceptsReturn="True"
-             TextWrapping="Wrap"
-             VerticalContentAlignment="Top"
-             FontFamily="Cascadia Mono,DejaVu Sans Mono,Liberation Mono,Consolas,monospace"
-             PlaceholderText="No log output yet." />
+    <TabControl Margin="8"
+                TabStripPlacement="Bottom"
+                ItemsSource="{Binding Logs}"
+                SelectedItem="{Binding SelectedLog}">
+        <TabControl.ItemTemplate>
+            <DataTemplate x:DataType="vm:LogViewModel">
+                <TextBlock Text="{Binding Title}" />
+            </DataTemplate>
+        </TabControl.ItemTemplate>
+        <TabControl.ContentTemplate>
+            <DataTemplate x:DataType="vm:LogViewModel">
+                <TextBox Text="{Binding LogText}"
+                         IsReadOnly="True"
+                         AcceptsReturn="True"
+                         TextWrapping="Wrap"
+                         VerticalContentAlignment="Top"
+                         FontFamily="Cascadia Mono,DejaVu Sans Mono,Liberation Mono,Consolas,monospace"
+                         PlaceholderText="No log output yet." />
+            </DataTemplate>
+        </TabControl.ContentTemplate>
+    </TabControl>
 
 </Window>

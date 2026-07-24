@@ -2,10 +2,10 @@ namespace Wlrix.Console.Services;
 
 /// <summary>
 /// Tails a log file: reads its existing contents and then watches for appended data, raising
-/// <see cref="Appended"/> with each new chunk in file order. If the file is absent when
-/// <see cref="Start"/> is called, <see cref="FileMissing"/> is raised instead and no watching
-/// begins. Events may be raised on background threads, so subscribers are responsible for
-/// marshaling to their own thread.
+/// <see cref="Appended"/> with each new chunk in file order. The file need not exist when
+/// <see cref="Start"/> is called — the directory is watched, so a log that appears later (or is
+/// truncated and rewritten each time its process restarts) is picked up. Events may be raised on
+/// background threads, so subscribers are responsible for marshaling to their own thread.
 /// </summary>
 public sealed class LogTailer : IDisposable
 {
@@ -23,28 +23,20 @@ public sealed class LogTailer : IDisposable
     public event Action<string>? Appended;
 
     /// <summary>
-    /// Raised once from <see cref="Start"/> when the file does not exist.
+    /// Begins tailing. Watches the file's directory (so a not-yet-written log is caught when it
+    /// appears) and reads whatever already exists on a background thread. A no-op when the
+    /// directory itself is absent.
     /// </summary>
-    public event Action? FileMissing;
-
-    /// <summary>
-    /// Begins tailing. Returns <c>false</c> (after raising <see cref="FileMissing"/>) when the
-    /// file is absent; otherwise starts watching and reads the current contents on a background
-    /// thread, returning <c>true</c>.
-    /// </summary>
-    public bool Start()
+    public void Start()
     {
-        if (!File.Exists(_path))
-        {
-            FileMissing?.Invoke();
-            return false;
-        }
-
         var directory = Path.GetDirectoryName(_path);
         var name = Path.GetFileName(_path);
-        if (string.IsNullOrEmpty(directory) || string.IsNullOrEmpty(name))
-            return false;
+        if (string.IsNullOrEmpty(directory) || string.IsNullOrEmpty(name) || !Directory.Exists(directory))
+            return;
 
+        // Watching the directory (not requiring the file up front) means the log can show up
+        // after the console does — opening the console before the session has written anything,
+        // or a fresh run truncating the file, both recover through Changed/Created.
         _watcher = new FileSystemWatcher(directory, name)
         {
             NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.Size | NotifyFilters.FileName,
@@ -55,8 +47,8 @@ public sealed class LogTailer : IDisposable
 
         // Read the existing contents off the UI thread; the watcher is already live, so anything
         // written in the meantime is picked up by a later event (reads are idempotent by position).
+        // ReadNew tolerates the file not being there yet.
         Task.Run(ReadNew);
-        return true;
     }
 
     private void OnChanged(object sender, FileSystemEventArgs e) => ReadNew();

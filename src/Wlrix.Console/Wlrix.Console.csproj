@@ -21,6 +21,5 @@
         </PackageReference>
         <PackageReference Include="ReactiveUI.Avalonia" />
         <PackageReference Include="Wlrix.Avalonia" />
-        <PackageReference Include="Wlrix.Avalonia.Dialogs" />
     </ItemGroup>
 </Project>

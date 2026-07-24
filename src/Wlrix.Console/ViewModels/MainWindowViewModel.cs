@@ -1,51 +1,53 @@
-﻿using Avalonia.Threading;
 using ReactiveUI;
-using Wlrix.Console.Services;
 
 namespace Wlrix.Console.ViewModels;
 
 public sealed class MainWindowViewModel : ViewModelBase, IDisposable
 {
-    private readonly LogTailer _tailer;
-    private string _logText = string.Empty;
+    // The per-user runtime directory each wlRIX process truncates its log into. Matches the
+    // Rust side's log_dir(): $XDG_RUNTIME_DIR when it is an absolute path, else the temp dir.
+    private static readonly string LogDirectory = ResolveLogDirectory();
+
+    private LogViewModel _selectedLog;
 
     public MainWindowViewModel()
     {
-        var path = Path.Combine(Path.GetTempPath(), "wlrix.log");
-        _tailer = new LogTailer(path);
-        _tailer.Appended += OnAppended;
-        _tailer.FileMissing += OnFileMissing;
+        Logs =
+        [
+            new LogViewModel("Compositor", Path.Combine(LogDirectory, "wlrix-compositor.log")),
+            new LogViewModel("Session", Path.Combine(LogDirectory, "wlrix-session.log")),
+        ];
+        _selectedLog = Logs[0];
     }
 
-    /// <summary>
-    /// Raised on the UI thread when the log file is missing at startup.
-    /// </summary>
-    public event Action? LogFileMissing;
+    /// <summary>The tailed logs, one per bottom tab.</summary>
+    public IReadOnlyList<LogViewModel> Logs { get; }
 
-    /// <summary>
-    /// The accumulated log text shown in the read-only view.
-    /// </summary>
-    public string LogText
+    /// <summary>The tab currently shown.</summary>
+    public LogViewModel SelectedLog
     {
-        get => _logText;
-        private set => this.RaiseAndSetIfChanged(ref _logText, value);
+        get => _selectedLog;
+        set => this.RaiseAndSetIfChanged(ref _selectedLog, value);
     }
 
-    /// <summary>
-    /// Starts reading and watching the log file. Call once the window is shown.
-    /// </summary>
-    public void Start() => _tailer.Start();
+    /// <summary>Starts tailing every log. Call once the window is shown.</summary>
+    public void Start()
+    {
+        foreach (var log in Logs)
+            log.Start();
+    }
 
     public void Dispose()
     {
-        _tailer.Appended -= OnAppended;
-        _tailer.FileMissing -= OnFileMissing;
-        _tailer.Dispose();
+        foreach (var log in Logs)
+            log.Dispose();
     }
 
-    // Tailer events arrive on background threads, so hop back to the UI thread before touching
-    // bound state.
-    private void OnAppended(string text) => Dispatcher.UIThread.Post(() => LogText += text);
-
-    private void OnFileMissing() => Dispatcher.UIThread.Post(() => LogFileMissing?.Invoke());
+    private static string ResolveLogDirectory()
+    {
+        var runtime = Environment.GetEnvironmentVariable("XDG_RUNTIME_DIR");
+        if (!string.IsNullOrEmpty(runtime) && Path.IsPathRooted(runtime))
+            return runtime;
+        return Path.GetTempPath();
+    }
 }
