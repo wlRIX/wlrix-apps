@@ -1,7 +1,26 @@
-﻿// SPDX-License-Identifier: GPL-3.0-or-later
-// wlRIX Desks — the IRIX-style virtual-desktop (Rooms) overview and switcher.
-// Scaffold: prints a banner. Becomes an Avalonia app running as a Wayland client.
+using Avalonia;
+using ReactiveUI.Avalonia;
 
-using Wlrix.Common;
+namespace Wlrix.Desks;
 
-Console.WriteLine(Branding.Banner("Desks", "0.0.0"));
+sealed class Program
+{
+    // Initialization code. Don't use any Avalonia, third-party APIs or any
+    // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
+    // yet and stuff might break.
+    [STAThread]
+    public static void Main(string[] args) => BuildAvaloniaApp()
+        .StartWithClassicDesktopLifetime(args);
+
+    // Avalonia configuration, don't remove; also used by visual designer.
+    public static AppBuilder BuildAvaloniaApp()
+        => AppBuilder.Configure<App>()
+            .UsePlatformDetect()
+            .UseWayland()
+            .With(new WaylandPlatformOptions { AppId = "com.wlrix.desks" })
+#if DEBUG
+            .WithDeveloperTools()
+#endif
+            .LogToTrace()
+            .UseReactiveUI();
+}

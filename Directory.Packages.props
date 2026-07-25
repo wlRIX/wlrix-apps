@@ -13,6 +13,13 @@
         <PackageVersion Include="AvaloniaUI.DiagnosticsSupport" Version="2.2.3" />
         <PackageVersion Include="ReactiveUI.Avalonia" Version="11.3.8"/>
     </ItemGroup>
+    <ItemGroup Label="Wayland">
+        <!-- The runtime bindings. Pinned to the version Avalonia.Wayland binds to, so the app and
+             the toolkit load one NWayland. The protocol generator comes from the wlRIX fork
+             instead (see Wlrix.Desks.csproj); it carries fixes that are not in this package, but
+             is referenced as an analyzer only, so it contributes no assembly. -->
+        <PackageVersion Include="NWayland" Version="0.11.0" />
+    </ItemGroup>
     <ItemGroup Label="wlRIX theme">
         <PackageVersion Include="Wlrix.Avalonia" Version="0.0.0" />
         <PackageVersion Include="Wlrix.Avalonia.Dialogs" Version="1.0.0" />

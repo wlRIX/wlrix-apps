@@ -1,11 +1,52 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
+<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <OutputType>Exe</OutputType>
+        <OutputType>WinExe</OutputType>
+        <ApplicationManifest>app.manifest</ApplicationManifest>
+        <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+        <AssemblyName>wlrix-desks</AssemblyName>
+        <Version>0.0.0</Version>
+        <!-- NWayland's generated bindings and runtime interop are unsafe. -->
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Wlrix.Common\Wlrix.Common.csproj" />
+        <AvaloniaResource Include="Assets\**" />
     </ItemGroup>
 
+    <!-- The wlrix-desks C# bindings are generated at build time by NWayland's source generator
+         (wired below as an analyzer) from the protocol XML kept alongside the other Wayland
+         protocol sets in the wlRIX NWayland fork. That copy must stay in step with the
+         compositor's `wlrix-compositor/src/protocols/wlrix-desks.xml`, which is what the
+         compositor itself compiles. The generated code carries incomplete XML doc comments, so
+         those doc warnings are kept warnings rather than errors here. -->
+    <ItemGroup>
+        <AdditionalFiles Include="../../../NWayland/external/wlrix-protocols/wlrix-desks.xml"
+                         NWaylandNamespace="NWayland.Protocols" />
+    </ItemGroup>
+    <PropertyGroup>
+        <WarningsNotAsErrors>$(WarningsNotAsErrors);CS1591;CS1573;CS1572;CS1570;CS1571;CS1574;CS1580;CS1581;CS1584</WarningsNotAsErrors>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Avalonia" />
+        <PackageReference Include="Avalonia.Desktop" />
+        <PackageReference Include="Avalonia.Wayland" />
+        <PackageReference Include="AvaloniaUI.DiagnosticsSupport">
+            <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
+            <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
+        </PackageReference>
+        <PackageReference Include="ReactiveUI.Avalonia" />
+        <PackageReference Include="Wlrix.Avalonia" />
+        <PackageReference Include="Wlrix.Avalonia.Dialogs" />
+        <!-- NWayland runtime (WlDisplay/WlRegistry + core protocols), pinned in
+             Directory.Packages.props to the version Avalonia.Wayland binds to. -->
+        <PackageReference Include="NWayland" />
+    </ItemGroup>
+
+    <!-- Wires the wlRIX NWayland fork's source generator as an analyzer (the fork carries codegen
+         fixes the published package does not) and, crucially, makes the NWaylandNamespace
+         metadata on AdditionalFiles compiler-visible so the generator picks up wlrix-desks.xml.
+         The targets reference the generator with ReferenceOutputAssembly="false", so the fork
+         supplies codegen only: the NWayland assembly the app loads is the nuget one above. -->
+    <Import Project="../../../NWayland/src/NWayland.Generator/NWayland.Generator.Use.targets" />
 </Project>

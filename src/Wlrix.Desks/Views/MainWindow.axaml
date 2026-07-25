@@ -1,0 +1,114 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Wlrix.Desks.ViewModels"
+        xmlns:controls="using:Wlrix.Desks.Controls"
+        xmlns:wlrix="https://vic485.xyz/Wlrix.Avalonia"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="720" d:DesignHeight="250"
+        Width="720" Height="230"
+        x:Name="Root"
+        x:Class="Wlrix.Desks.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Title="wlRIX Desks">
+
+    <Design.DataContext>
+        <!-- This only sets the DataContext for the previewer in an IDE,
+             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+        <vm:MainWindowViewModel />
+    </Design.DataContext>
+
+    <Window.Resources>
+        <!-- A desk tile: an IRIX LED-button face (lamp lit when the desk is active) above an
+             opaque geometry preview of the desk's windows. Shared by the pinned Global tile
+             and the scrollable desk list. -->
+        <DataTemplate x:Key="DeskTile" x:DataType="vm:DeskViewModel">
+            <wlrix:BevelBorder Bevel="Raised" BevelThickness="2" OuterLineThickness="1" Margin="3"
+                             Background="{DynamicResource WlrixFace}"
+                             LightBrush="{DynamicResource WlrixTopShadow}"
+                             DarkBrush="{DynamicResource WlrixBottomShadow}"
+                             OuterLineBrush="{DynamicResource WlrixOuterLine}"
+                             Padding="6">
+                <StackPanel Spacing="6">
+                    <!-- Header: LED lamp + desk name -->
+                    <DockPanel>
+                        <wlrix:BevelBorder DockPanel.Dock="Left" Bevel="Sunken" BevelThickness="1"
+                                         OuterLineThickness="1" Width="14" Height="14"
+                                         Margin="0,0,8,0" VerticalAlignment="Center"
+                                         Background="{DynamicResource WlrixOuterLine}"
+                                         LightBrush="{DynamicResource WlrixTopShadow}"
+                                         DarkBrush="{DynamicResource WlrixBottomShadow}"
+                                         OuterLineBrush="{DynamicResource WlrixOuterLine}">
+                            <!-- Lit (accent) when active; hidden otherwise so the dark well shows. -->
+                            <Border Margin="1"
+                                    Background="{DynamicResource WlrixAccent}"
+                                    IsVisible="{Binding IsActive}" />
+                        </wlrix:BevelBorder>
+                        <TextBlock Text="{Binding Name}" FontWeight="Bold" VerticalAlignment="Center" />
+                    </DockPanel>
+
+                    <!-- Window geometry preview -->
+                    <wlrix:BevelBorder Bevel="Sunken" BevelThickness="2" OuterLineThickness="1"
+                                     Background="{DynamicResource WlrixViewBackground}"
+                                     LightBrush="{DynamicResource WlrixTopShadow}"
+                                     DarkBrush="{DynamicResource WlrixBottomShadow}"
+                                     OuterLineBrush="{DynamicResource WlrixOuterLine}"
+                                     IsVisible="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).ShowSnapshots}">
+                        <controls:DeskPreview Width="160" Height="100"
+                                              Windows="{Binding PreviewWindows}"
+                                              WindowBrush="{DynamicResource WlrixFace}"
+                                              WindowBorderBrush="{DynamicResource WlrixForeground}" />
+                    </wlrix:BevelBorder>
+                </StackPanel>
+            </wlrix:BevelBorder>
+        </DataTemplate>
+    </Window.Resources>
+
+    <DockPanel>
+        <!-- Menu bar -->
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="Overview">
+                <MenuItem Header="{Binding GlobalDeskMenuHeader}" Click="OnToggleGlobalDesk" />
+                <MenuItem Header="{Binding SnapshotsMenuHeader}" Click="OnToggleSnapshots" />
+                <Separator />
+                <MenuItem Header="Exit" Click="OnExit" />
+            </MenuItem>
+            <MenuItem Header="Desk">
+                <MenuItem Header="New Desk" Click="OnNewDesk" />
+                <MenuItem Header="Goto Selected" Click="OnGotoSelected"
+                          IsEnabled="{Binding CanOperateOnSelected}" />
+                <MenuItem Header="Delete Selected" Click="OnDeleteSelected"
+                          IsEnabled="{Binding CanOperateOnSelected}" />
+            </MenuItem>
+            <MenuItem Header="Window" IsEnabled="False" />
+        </Menu>
+
+        <!-- Desk strip: pinned Global tile + horizontally scrolling desk list -->
+        <DockPanel Margin="8">
+            <ContentControl DockPanel.Dock="Left"
+                            Content="{Binding GlobalDesk}"
+                            ContentTemplate="{StaticResource DeskTile}"
+                            IsVisible="{Binding ShowGlobalDesk}"
+                            VerticalAlignment="Top"
+                            Margin="0,0,8,0" />
+
+            <ListBox ItemsSource="{Binding Desks}"
+                     SelectedItem="{Binding SelectedDesk}"
+                     ItemTemplate="{StaticResource DeskTile}"
+                     PointerPressed="OnDeskListPointerPressed"
+                     DoubleTapped="OnDeskDoubleTapped"
+                     ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                     ScrollViewer.VerticalScrollBarVisibility="Disabled">
+                <!-- Fill a column top-to-bottom, then wrap to the next column; the viewport
+                     height (vertical scrolling is disabled) bounds each column, and columns
+                     overflow horizontally. -->
+                <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel Orientation="Vertical" VerticalAlignment="Top" />
+                    </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
+            </ListBox>
+        </DockPanel>
+    </DockPanel>
+
+</Window>
