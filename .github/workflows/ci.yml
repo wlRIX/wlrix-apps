@@ -8,13 +8,40 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      # Both repositories are checked out side by side under the workspace, mirroring the local
+      # layout (a wlRIX workspace root holding sibling repos). Wlrix.Desks reaches the fork by
+      # the relative path ../../../NWayland, which only resolves with this arrangement -- hence
+      # the explicit `path:` on this checkout rather than the default.
       - uses: actions/checkout@v4
+        with:
+          path: wlrix-apps
+
+      # The NWayland fork supplies the protocol source generator, which carries codegen fixes the
+      # published package does not. It is referenced as an analyzer with
+      # ReferenceOutputAssembly="false", so it contributes no assembly: the NWayland runtime the
+      # apps bind against is the pinned nuget package (see Directory.Packages.props).
+      #
+      # Submodules are deliberately not fetched. NWayland.Generator builds from Roslyn packages
+      # alone; the protocol XML under external/ is only needed by the fork's own protocol
+      # projects, which this build never touches.
+      #
+      # If wlRIX/NWayland is private, the default GITHUB_TOKEN cannot read it and a PAT with
+      # repo scope has to be supplied here as `token: ${{ secrets.NWAYLAND_TOKEN }}`.
+      - uses: actions/checkout@v4
+        with:
+          repository: wlRIX/NWayland
+          ref: master
+          path: NWayland
+
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.x'
       - name: Restore
+        working-directory: wlrix-apps
         run: dotnet restore
       - name: Build
+        working-directory: wlrix-apps
         run: dotnet build --no-restore --configuration Release
       - name: Test
+        working-directory: wlrix-apps
         run: dotnet test --no-build --configuration Release
