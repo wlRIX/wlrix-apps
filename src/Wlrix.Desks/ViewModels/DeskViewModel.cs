@@ -66,9 +66,9 @@ public sealed class DeskViewModel(int id) : ViewModelBase
         var result = new List<PreviewWindow>(windows.Count);
         foreach (var w in windows)
         {
-            if (w.Minimized)
-                continue;
-
+            // Minimized windows are drawn too: the compositor reports the rectangle of their
+            // icon in the minimized grid, so they land in the preview's corner exactly where
+            // the icons sit on screen.
             result.Add(new PreviewWindow(
                 (w.X - world.X) * scale + offsetX,
                 (w.Y - world.Y) * scale + offsetY,

@@ -4,9 +4,10 @@ namespace Wlrix.Desks.Models;
 public sealed record DeskInfo(int Id, bool Active, string Name);
 
 /// <summary>
-/// A top-level window. Geometry is the decorated frame in compositor-logical coordinates
-/// (minimized windows carry their remembered restore geometry). <see cref="DeskId"/> 0 means
-/// the window lives on the Global desk and is therefore visible on every desk.
+/// A top-level window. Geometry is where the window is shown, in compositor-logical
+/// coordinates: the decorated frame, or -- while <see cref="Minimized"/> -- the rectangle of
+/// its icon in the compositor's minimized-window grid. <see cref="DeskId"/> 0 means the window
+/// lives on the Global desk and is therefore visible on every desk.
 /// </summary>
 public sealed record WindowInfo(
     long Id, int DeskId, double X, double Y, double W, double H, bool Minimized, string AppId, string Title);
