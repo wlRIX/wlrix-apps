@@ -1,0 +1,31 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Wlrix.Toolchest.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="220" d:DesignHeight="220"
+        x:Class="Wlrix.Toolchest.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        SizeToContent="WidthAndHeight"
+        CanMinimize="False"
+        CanResize="False"
+        Title="{Binding Title}">
+
+    <Design.DataContext>
+        <!-- This only sets the DataContext for the previewer in an IDE,
+             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+        <vm:MainWindowViewModel />
+    </Design.DataContext>
+
+    <!-- Just the vertical Toolchest menu; the compositor's server-side titlebar provides the
+         IRIX "Toolchest" header. -->
+    <Menu ItemsSource="{Binding TopLevel}"
+          ItemContainerTheme="{StaticResource ToolchestTopMenuItem}">
+        <Menu.ItemsPanel>
+            <ItemsPanelTemplate>
+                <StackPanel Orientation="Vertical" />
+            </ItemsPanelTemplate>
+        </Menu.ItemsPanel>
+    </Menu>
+
+</Window>

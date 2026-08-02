@@ -1,0 +1,30 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    x:CompileBindings="False">
+
+    <!--
+        Data-binding shims that map a MenuNode tree onto the shared IRIX menu visuals. The look
+        (and its scheme colors) lives in the theme library: SgiToolchestMenuItem for the vertical
+        top-level entries, and the nested MenuItem theme for the fly-out items.
+    -->
+
+    <!-- Nested item: shared nested MenuItem visual + MenuNode bindings, recursively. -->
+    <ControlTheme x:Key="ToolchestSubMenuItem" TargetType="MenuItem"
+                  BasedOn="{StaticResource {x:Type MenuItem}}">
+        <Setter Property="Header" Value="{Binding Header}" />
+        <Setter Property="ItemsSource" Value="{Binding Children}" />
+        <Setter Property="Command" Value="{Binding Command}" />
+        <Setter Property="IsEnabled" Value="{Binding IsEnabled}" />
+        <Setter Property="ItemContainerTheme" Value="{DynamicResource ToolchestSubMenuItem}" />
+    </ControlTheme>
+
+    <!-- Top-level entry: shared SgiToolchestMenuItem visual + MenuNode bindings. -->
+    <ControlTheme x:Key="ToolchestTopMenuItem" TargetType="MenuItem"
+                  BasedOn="{StaticResource WlrixToolchestMenuItem}">
+        <Setter Property="Header" Value="{Binding Header}" />
+        <Setter Property="ItemsSource" Value="{Binding Children}" />
+        <Setter Property="Command" Value="{Binding Command}" />
+        <Setter Property="IsEnabled" Value="{Binding IsEnabled}" />
+        <Setter Property="ItemContainerTheme" Value="{StaticResource ToolchestSubMenuItem}" />
+    </ControlTheme>
+</ResourceDictionary>

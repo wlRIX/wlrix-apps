@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Toolchest" xml:space="preserve">
+    <value>Toolchest</value>
+  </data>
+  <data name="Desktop" xml:space="preserve">
+    <value>Desktop</value>
+  </data>
+  <data name="Applications" xml:space="preserve">
+    <value>Applications</value>
+  </data>
+  <data name="Help" xml:space="preserve">
+    <value>Help</value>
+  </data>
+  <data name="OpenUnixShell" xml:space="preserve">
+    <value>Open Unix Shell</value>
+  </data>
+  <data name="AboutToolchest" xml:space="preserve">
+    <value>About Toolchest</value>
+  </data>
+  <data name="Loading" xml:space="preserve">
+    <value>Loading…</value>
+  </data>
+  <data name="AboutMessage" xml:space="preserve">
+    <value>wlRIX Toolchest
+Version {0}</value>
+  </data>
+  <data name="Category_AudioVideo" xml:space="preserve">
+    <value>Sound &amp; Video</value>
+  </data>
+  <data name="Category_Development" xml:space="preserve">
+    <value>Development</value>
+  </data>
+  <data name="Category_Education" xml:space="preserve">
+    <value>Education</value>
+  </data>
+  <data name="Category_Game" xml:space="preserve">
+    <value>Games</value>
+  </data>
+  <data name="Category_Graphics" xml:space="preserve">
+    <value>Graphics</value>
+  </data>
+  <data name="Category_Network" xml:space="preserve">
+    <value>Internet</value>
+  </data>
+  <data name="Category_Office" xml:space="preserve">
+    <value>Office</value>
+  </data>
+  <data name="Category_Science" xml:space="preserve">
+    <value>Science</value>
+  </data>
+  <data name="Category_Settings" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="Category_System" xml:space="preserve">
+    <value>System</value>
+  </data>
+  <data name="Category_Utility" xml:space="preserve">
+    <value>Accessories</value>
+  </data>
+  <data name="Category_Other" xml:space="preserve">
+    <value>Other</value>
+  </data>
+</root>
