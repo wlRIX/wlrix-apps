@@ -1,9 +1,9 @@
 <Solution>
     <Folder Name="/src/">
-        <Project Path="src/Wlrix.Common/Wlrix.Common.csproj"/>
-        <Project Path="src/Wlrix.Desks/Wlrix.Desks.csproj"/>
-        <Project Path="src/Wlrix.Toolchest/Wlrix.Toolchest.csproj"/>
-        <Project Path="src/Wlrix.Console/Wlrix.Console.csproj"/>
-        <Project Path="src/Wlrix.Settings.Keyboard/Wlrix.Settings.Keyboard.csproj"/>
+        <Project Path="src/Wlrix.Common/Wlrix.Common.csproj" />
+        <Project Path="src/Wlrix.Desks/Wlrix.Desks.csproj" />
+        <Project Path="src/Wlrix.Toolchest/Wlrix.Toolchest.csproj" />
+        <Project Path="src/Wlrix.Console/Wlrix.Console.csproj" />
+        <Project Path="src/Wlrix.Settings.Keyboard/Wlrix.Settings.Keyboard.csproj" />
     </Folder>
 </Solution>

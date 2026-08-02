@@ -8,6 +8,7 @@
         Width="380" Height="440"
         x:Class="Wlrix.Settings.Keyboard.Views.MainWindow"
         x:DataType="vm:KeyboardSettingsViewModel"
+        CanResize="False"
         Title="Keyboard Settings">
 
     <Design.DataContext>
