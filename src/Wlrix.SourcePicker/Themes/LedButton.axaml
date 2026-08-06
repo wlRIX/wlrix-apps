@@ -1,0 +1,113 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:controls="using:Wlrix.SourcePicker.Controls"
+                    xmlns:wlrix="https://vic485.xyz/Wlrix.Avalonia">
+
+    <!-- `Wlrix.Avalonia` is a *standalone* theme: it includes no Avalonia base theme, so a
+         control it does not cover has no ControlTheme, gets no template, and renders nothing at
+         all — no error, no warning, just an empty space where the control should be. It has no
+         `ItemsControl` (only `ListBox`), so one is supplied here.
+
+         This is the plain default: an items presenter and nothing else. An `ItemsControl` is a
+         layout device rather than something with a look, which is exactly why it is wanted here
+         — a `ListBox` would bring its own selection on top of the tiles' lamps, and two
+         disagreeing notions of what is selected is worse than none. -->
+    <ControlTheme x:Key="{x:Type ItemsControl}" TargetType="ItemsControl">
+        <Setter Property="Template">
+            <ControlTemplate>
+                <ItemsPresenter ItemsPanel="{TemplateBinding ItemsPanel}" />
+            </ControlTemplate>
+        </Setter>
+    </ControlTheme>
+
+    <!-- The source tile. Structure follows the Desks app's desk tile deliberately: a raised
+         face, a sunken lamp and a title across the top, and a sunken well holding the picture.
+         The two apps show the same kind of thing and should look like they were drawn by the
+         same hand. -->
+    <ControlTheme x:Key="{x:Type controls:LedButton}" TargetType="controls:LedButton">
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <wlrix:BevelBorder Name="Face" Bevel="Raised" BevelThickness="2" OuterLineThickness="1"
+                                   Background="{DynamicResource WlrixFace}"
+                                   LightBrush="{DynamicResource WlrixTopShadow}"
+                                   DarkBrush="{DynamicResource WlrixBottomShadow}"
+                                   OuterLineBrush="{DynamicResource WlrixOuterLine}"
+                                   Padding="6">
+                    <StackPanel Spacing="6">
+                        <!-- Lamp + title -->
+                        <DockPanel>
+                            <wlrix:BevelBorder DockPanel.Dock="Left" Bevel="Sunken" BevelThickness="1"
+                                               OuterLineThickness="1" Width="14" Height="14"
+                                               Margin="0,0,8,0" VerticalAlignment="Center"
+                                               Background="{DynamicResource WlrixOuterLine}"
+                                               LightBrush="{DynamicResource WlrixTopShadow}"
+                                               DarkBrush="{DynamicResource WlrixBottomShadow}"
+                                               OuterLineBrush="{DynamicResource WlrixOuterLine}">
+                                <!-- Lit when chosen; otherwise hidden so the dark well shows
+                                     through, which is what makes an unlit LED read as unlit
+                                     rather than as a grey square. -->
+                                <Border Name="Lamp" Margin="1"
+                                        Background="{DynamicResource WlrixAccent}"
+                                        IsVisible="False" />
+                            </wlrix:BevelBorder>
+
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock Name="TitleText"
+                                           Text="{TemplateBinding Title}"
+                                           FontWeight="Bold"
+                                           TextTrimming="CharacterEllipsis"
+                                           ToolTip.Tip="{TemplateBinding Title}" />
+                                <TextBlock Name="SubtitleText"
+                                           Text="{TemplateBinding Subtitle}"
+                                           Foreground="{DynamicResource WlrixDisabledForeground}"
+                                           TextTrimming="CharacterEllipsis"
+                                           IsVisible="{Binding $self.Text, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                            </StackPanel>
+                        </DockPanel>
+
+                        <!-- Picture well. Fixed height so a grid of tiles lines up whatever the
+                             sources' aspect ratios are; the image is letterboxed inside it. -->
+                        <wlrix:BevelBorder Bevel="Sunken" BevelThickness="2" OuterLineThickness="1"
+                                           Background="{DynamicResource WlrixViewBackground}"
+                                           LightBrush="{DynamicResource WlrixTopShadow}"
+                                           DarkBrush="{DynamicResource WlrixBottomShadow}"
+                                           OuterLineBrush="{DynamicResource WlrixOuterLine}">
+                            <Panel Height="130" Margin="2">
+                                <!-- Shown until the first frame arrives, so an empty well says
+                                     "waiting" rather than looking like a broken tile. -->
+                                <TextBlock Text="no preview"
+                                           HorizontalAlignment="Center" VerticalAlignment="Center"
+                                           Foreground="{DynamicResource WlrixDisabledForeground}"
+                                           IsVisible="{Binding $parent[controls:LedButton].Preview,
+                                                               Converter={x:Static ObjectConverters.IsNull}}" />
+                                <Image Source="{TemplateBinding Preview}"
+                                       Stretch="Uniform"
+                                       RenderOptions.BitmapInterpolationMode="MediumQuality" />
+                            </Panel>
+                        </wlrix:BevelBorder>
+                    </StackPanel>
+                </wlrix:BevelBorder>
+            </ControlTemplate>
+        </Setter>
+
+        <!-- Chosen: the lamp lights and the face sinks, so the tile reads as pressed in as well
+             as lit. Both, because the lamp alone is easy to miss across a grid. -->
+        <Style Selector="^:checked /template/ Border#Lamp">
+            <Setter Property="IsVisible" Value="True" />
+        </Style>
+        <Style Selector="^:checked /template/ wlrix|BevelBorder#Face">
+            <Setter Property="Bevel" Value="Sunken" />
+            <Setter Property="Background" Value="{DynamicResource WlrixSelect}" />
+        </Style>
+
+        <!-- Pointer over an unchosen tile: nothing moves, only the face lightens. A tile that
+             pressed itself in on hover would be indistinguishable from a chosen one. Same
+             pairing the theme's own PathBar uses for hover and pressed. -->
+        <Style Selector="^:pointerover:not(:checked) /template/ wlrix|BevelBorder#Face">
+            <Setter Property="Background" Value="{DynamicResource WlrixTopShadow}" />
+        </Style>
+    </ControlTheme>
+
+</ResourceDictionary>
