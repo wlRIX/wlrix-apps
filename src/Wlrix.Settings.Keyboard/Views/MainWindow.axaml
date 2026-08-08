@@ -84,6 +84,12 @@
             <TextBox Grid.Column="1" />
         </Grid>
 
+        <!-- What became of the last change, when it is worth saying: the compositor not being
+             running, a value the daemon refused, or a config file somebody has half-edited.
+             Empty, and so invisible, when everything applied. -->
+        <TextBlock Text="{Binding Status}" TextWrapping="Wrap"
+                   IsVisible="{Binding Status, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="8" Margin="0,4,0,0">
             <Button Content="Close" Click="OnClose" />
             <Button Content="Reset" Click="OnReset" />

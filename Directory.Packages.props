@@ -22,6 +22,17 @@
              is referenced as an analyzer only, so it contributes no assembly. -->
         <PackageVersion Include="NWayland" Version="0.11.0" />
     </ItemGroup>
+    <ItemGroup Label="D-Bus">
+        <!-- For talking to wlrix-settings-daemon (see Wlrix.Settings.Client). Pinned to the
+             version the Avalonia fork pins: Avalonia.Wayland already drags this into every
+             app's output through Avalonia.FreeDesktop, so referencing it costs no assembly —
+             the pin only stops NuGet resolving a second, differently-versioned copy. -->
+        <PackageVersion Include="Tmds.DBus.Protocol" Version="0.94.1" />
+        <!-- Generates the proxy from the checked-in introspection XML. Analyzer only, so it
+             ships nothing. Same version as the runtime, and the same arrangement
+             Avalonia.FreeDesktop uses for its own eleven interfaces. -->
+        <PackageVersion Include="Tmds.DBus.Generator" Version="0.94.1" />
+    </ItemGroup>
     <ItemGroup Label="wlRIX theme">
         <PackageVersion Include="Wlrix.Avalonia" Version="0.0.0" />
         <PackageVersion Include="Wlrix.Avalonia.Dialogs" Version="1.0.0" />

@@ -1,0 +1,65 @@
+<!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN"
+ "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
+<node>
+  <interface name="com.wlrix.Settings1">
+    <method name="ListNamespaces">
+      <arg type="as" direction="out" />
+    </method>
+    <method name="Describe">
+      <arg name="key" type="s" direction="in" />
+      <arg type="a{sv}" direction="out" />
+    </method>
+    <method name="DescribeAll">
+      <arg name="namespace" type="s" direction="in" />
+      <arg type="a{sa{sv}}" direction="out" />
+    </method>
+    <method name="Get">
+      <arg name="key" type="s" direction="in" />
+      <arg type="v" direction="out" />
+    </method>
+    <method name="GetAll">
+      <arg name="namespace" type="s" direction="in" />
+      <arg type="a{sv}" direction="out" />
+    </method>
+    <method name="Sources">
+      <arg name="namespace" type="s" direction="in" />
+      <arg type="a{ss}" direction="out" />
+    </method>
+    <method name="Set">
+      <arg name="key" type="s" direction="in" />
+      <arg name="value" type="v" direction="in" />
+      <arg type="a{ss}" direction="out" />
+    </method>
+    <method name="SetMany">
+      <arg name="values" type="a{sv}" direction="in" />
+      <arg type="a{ss}" direction="out" />
+    </method>
+    <method name="Reset">
+      <arg name="keys" type="as" direction="in" />
+      <arg type="a{ss}" direction="out" />
+    </method>
+    <method name="ResetNamespace">
+      <arg name="namespace" type="s" direction="in" />
+      <arg type="a{ss}" direction="out" />
+    </method>
+    <method name="Reload">
+      <arg type="a{ss}" direction="out" />
+    </method>
+    <signal name="Changed">
+      <arg name="values" type="a{sv}" />
+      <arg name="origin" type="s" />
+    </signal>
+    <signal name="FileInvalid">
+      <arg name="namespace" type="s" />
+      <arg name="path" type="s" />
+      <arg name="message" type="s" />
+    </signal>
+    <signal name="FileRecovered">
+      <arg name="namespace" type="s" />
+      <arg name="path" type="s" />
+    </signal>
+    <property name="Invalid" type="a{ss}" access="read" />
+    <property name="Namespaces" type="as" access="read" />
+    <property name="Version" type="u" access="read" />
+  </interface>
+</node>

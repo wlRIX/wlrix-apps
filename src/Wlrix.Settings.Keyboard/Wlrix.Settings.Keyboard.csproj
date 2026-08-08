@@ -5,9 +5,6 @@
         <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
         <AssemblyName>wlrix-settings-keyboard</AssemblyName>
         <Version>0.0.0</Version>
-        <!-- The [LibraryImport] source generator emits an unsafe marshalling stub for the
-             libc kill() P/Invoke. No hand-written unsafe code. -->
-        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
 
     <ItemGroup>
@@ -24,5 +21,12 @@
         </PackageReference>
         <PackageReference Include="ReactiveUI.Avalonia" />
         <PackageReference Include="Wlrix.Avalonia" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <!-- Everything about the config file goes through wlrix-settings-daemon. This app used
+             to carry its own TOML editor and its own libc kill() for the SIGHUP; both are gone,
+             and with them the AllowUnsafeBlocks that only existed for the P/Invoke stub. -->
+        <ProjectReference Include="../Wlrix.Settings.Client/Wlrix.Settings.Client.csproj" />
     </ItemGroup>
 </Project>

@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <Version>0.1.0</Version>
+        <!-- The generated D-Bus proxy is `unsafe`-free, but Tmds.DBus.Protocol's readers and
+             writers are spans over the raw message buffer, and the generator emits code that
+             uses them directly. No hand-written unsafe code here. -->
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <!-- Already in every app's output via Avalonia.Wayland -> Avalonia.FreeDesktop, and
+             pinned here to the version the Avalonia fork pins, so referencing it adds no
+             assembly — it only stops NuGet resolving a second, differently-versioned copy. -->
+        <PackageReference Include="Tmds.DBus.Protocol" />
+        <PackageReference Include="Tmds.DBus.Generator" PrivateAssets="all" />
+        <PackageReference Include="ZLogger" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <!-- The proxy comes from the daemon's own introspection, so the two cannot disagree
+             about a signature. Regenerate with `just introspect` in wlrix-settings-daemon
+             (comments stripped: they are Rust prose, and a `—` in one makes the XML
+             unparseable, which is a mistake this file has already made once). -->
+        <AdditionalFiles Include="DBusXml/com.wlrix.Settings1.xml"
+                         Namespace="Wlrix.Settings.Client.DBus"
+                         DBusGeneratorMode="Proxy" />
+    </ItemGroup>
+</Project>
