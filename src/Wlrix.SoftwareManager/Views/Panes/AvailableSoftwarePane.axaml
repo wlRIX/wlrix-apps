@@ -1,0 +1,53 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Wlrix.SoftwareManager.ViewModels"
+             xmlns:loc="using:Wlrix.Common.Localization"
+             xmlns:wlrix="https://vic485.xyz/Wlrix.Avalonia"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="900"
+             x:Class="Wlrix.SoftwareManager.Views.Panes.AvailableSoftwarePane"
+             x:DataType="vm:MainWindowViewModel">
+
+    <!-- The IRIX original's top row: a label, a "drop pocket" to drag a medium onto, the path
+         or query field, and Lookup. Here the field takes either a package name to search the
+         repositories for or the path to a package file, which is why Lookup rather than Search:
+         it is the same button doing the same thing to whatever is in the field. -->
+    <Grid ColumnDefinitions="Auto,Auto,*,Auto" ColumnSpacing="8" Margin="8,8,8,4">
+
+        <TextBlock Grid.Column="0"
+                   Text="{loc:Tr AvailableSoftwareLabel}"
+                   VerticalAlignment="Center" />
+
+        <!-- Drop pocket. Dropping a file here fills the field, which is the whole of what it
+             promises; pressing Lookup is still the user's move. -->
+        <wlrix:BevelBorder Grid.Column="1"
+                           DragDrop.AllowDrop="True"
+                           DragDrop.DragOver="OnDragOver"
+                           DragDrop.Drop="OnDrop"
+                           Bevel="Sunken" BevelThickness="2" OuterLineThickness="1"
+                           Width="44" Height="44"
+                           Background="{DynamicResource WlrixFace}"
+                           LightBrush="{DynamicResource WlrixTopShadow}"
+                           DarkBrush="{DynamicResource WlrixBottomShadow}"
+                           OuterLineBrush="{DynamicResource WlrixOuterLine}"
+                           ToolTip.Tip="{loc:Tr SourceHint}">
+            <TextBlock Text="&#x1F5C1;" FontSize="20"
+                       HorizontalAlignment="Center" VerticalAlignment="Center" />
+        </wlrix:BevelBorder>
+
+        <TextBox Grid.Column="2"
+                 Text="{Binding SourceText}"
+                 VerticalAlignment="Center"
+                 PlaceholderText="{loc:Tr SourceHint}" />
+
+        <Button Grid.Column="3"
+                Content="{loc:Tr Lookup}"
+                MinWidth="80"
+                VerticalAlignment="Center"
+                IsDefault="True"
+                Command="{Binding Lookup}" />
+
+    </Grid>
+
+</UserControl>

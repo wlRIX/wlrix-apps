@@ -1,0 +1,38 @@
+Repository      : cachyos-znver4
+Name            : bash
+Version         : 5.3.15-2
+Description     : The GNU Bourne Again shell
+Architecture    : x86_64_v4
+URL             : https://www.gnu.org/software/bash/bash.html
+Licenses        : GPL-3.0-or-later
+Groups          : None
+Provides        : sh
+Depends On      : readline  libreadline.so=8-64  glibc  ncurses
+Optional Deps   : bash-completion: for tab completion
+Conflicts With  : None
+Replaces        : None
+Download Size   : 2022.96 KiB
+Installed Size  : 9907.84 KiB
+Packager        : CachyOS <admin@cachyos.org>
+Build Date      : Sun Jun 28 05:25:34 2026
+Validated By    : SHA-256 Sum  Signature
+
+Repository      : core
+Name            : bash
+Version         : 5.3.15-1
+Description     : The GNU Bourne Again shell
+Architecture    : x86_64
+URL             : https://www.gnu.org/software/bash/bash.html
+Licenses        : GPL-3.0-or-later
+Groups          : None
+Provides        : sh
+Depends On      : readline  libreadline.so=8-64  glibc  ncurses
+Optional Deps   : bash-completion: for tab completion
+Conflicts With  : None
+Replaces        : None
+Download Size   : 1955.09 KiB
+Installed Size  : 9819.83 KiB
+Packager        : Tobias Powalowski <tpowa@archlinux.org>
+Build Date      : Wed Jun 10 00:32:12 2026
+Validated By    : SHA-256 Sum  Signature
+

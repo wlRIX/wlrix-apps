@@ -1,0 +1,152 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Wlrix.SoftwareManager.ViewModels"
+        xmlns:panes="using:Wlrix.SoftwareManager.Views.Panes"
+        xmlns:loc="using:Wlrix.Common.Localization"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="720"
+        Width="900" Height="720" MinWidth="640" MinHeight="480"
+        x:Class="Wlrix.SoftwareManager.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Title="{Binding Title}">
+
+    <Design.DataContext>
+        <vm:MainWindowViewModel />
+    </Design.DataContext>
+
+    <Window.Resources>
+        <FontFamily x:Key="MonospaceFont">Cascadia Mono,DejaVu Sans Mono,Liberation Mono,Consolas,monospace</FontFamily>
+    </Window.Resources>
+
+    <Window.Styles>
+        <!-- Conflicts turns red once the plan has something to resolve. On the IRIX original
+             the button changing color is the whole of the notification, so it is a style on a
+             class rather than a converter: one selector, and the button is otherwise ordinary. -->
+        <Style Selector="Button.conflict">
+            <Setter Property="Foreground" Value="{DynamicResource WlrixError}" />
+        </Style>
+    </Window.Styles>
+
+    <DockPanel>
+
+        <Menu DockPanel.Dock="Top">
+            <!-- A DockPanel rather than the default wrapping row, so Help sits on the right
+                 edge the way every IRIX application put it. -->
+            <Menu.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <DockPanel LastChildFill="False" />
+                </ItemsPanelTemplate>
+            </Menu.ItemsPanel>
+
+            <MenuItem Header="{loc:Tr MenuFile}" DockPanel.Dock="Left">
+                <MenuItem Header="{loc:Tr FileClose}" Click="OnCloseClick" />
+            </MenuItem>
+            <MenuItem Header="{loc:Tr MenuInstall}" DockPanel.Dock="Left">
+                <MenuItem Header="{loc:Tr InstallFromFile}" Command="{Binding Lookup}" />
+                <Separator />
+                <MenuItem Header="{loc:Tr InstallStart}" Command="{Binding Start}" />
+                <MenuItem Header="{loc:Tr InstallStop}" Command="{Binding Stop}" />
+            </MenuItem>
+            <MenuItem Header="{loc:Tr MenuSelected}" DockPanel.Dock="Left">
+                <MenuItem Header="{loc:Tr SelectedInstall}" Command="{Binding MarkForInstall}" />
+                <MenuItem Header="{loc:Tr SelectedRemove}" Command="{Binding MarkForRemoval}" />
+                <Separator />
+                <MenuItem Header="{loc:Tr SelectedAll}" Command="{Binding SelectAll}" />
+                <MenuItem Header="{loc:Tr SelectedNone}" Command="{Binding DeselectAll}" />
+            </MenuItem>
+            <MenuItem Header="{loc:Tr MenuSoftware}" DockPanel.Dock="Left">
+                <MenuItem Header="{loc:Tr SoftwareRefresh}" Command="{Binding Refresh}" />
+                <MenuItem Header="{loc:Tr SoftwareRepositories}" Command="{Binding ShowRepositories}" />
+                <MenuItem Header="{loc:Tr SoftwareUserSoftware}" Command="{Binding ShowUserSoftware}" />
+            </MenuItem>
+            <!-- Each item toggles one region of the window, as on the IRIX original. -->
+            <MenuItem Header="{loc:Tr MenuPanes}" DockPanel.Dock="Left">
+                <MenuItem Header="{loc:Tr PaneAvailableSoftware}" ToggleType="CheckBox"
+                          IsChecked="{Binding Panes.AvailableSoftware}" />
+                <MenuItem Header="{loc:Tr PaneSoftwareInventory}" ToggleType="CheckBox"
+                          IsChecked="{Binding Panes.SoftwareInventory}" />
+                <MenuItem Header="{loc:Tr PaneStatusDiskSpace}" ToggleType="CheckBox"
+                          IsChecked="{Binding Panes.StatusDiskSpace}" />
+                <MenuItem Header="{loc:Tr PaneCommand}" ToggleType="CheckBox"
+                          IsChecked="{Binding Panes.Command}" />
+                <MenuItem Header="{loc:Tr PaneLog}" ToggleType="CheckBox"
+                          IsChecked="{Binding Panes.Log}" />
+            </MenuItem>
+            <MenuItem Header="{loc:Tr MenuHelp}" DockPanel.Dock="Right">
+                <MenuItem Header="{loc:Tr HelpAbout}" Command="{Binding ShowAbout}" />
+            </MenuItem>
+        </Menu>
+
+        <panes:AvailableSoftwarePane DockPanel.Dock="Top"
+                                     IsVisible="{Binding Panes.AvailableSoftware}" />
+
+        <!-- The mode row is not in the Panes menu: it is how the window is steered, so there is
+             no state in which hiding it would leave something usable behind. -->
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="8" Margin="8,4">
+            <ToggleButton Theme="{StaticResource WlrixLedButton}"
+                          Content="{loc:Tr ModeInstall}"
+                          IsChecked="{Binding IsInstallMode}" />
+            <ToggleButton Theme="{StaticResource WlrixLedButton}"
+                          Content="{loc:Tr ModeManage}"
+                          IsChecked="{Binding IsManageMode}" />
+            <ToggleButton Theme="{StaticResource WlrixLedButton}"
+                          Content="{loc:Tr ModeUpdates}"
+                          IsChecked="{Binding IsUpdatesMode}" />
+        </StackPanel>
+
+        <!-- The bottom half. A DockPanel puts the first bottom-docked child lowest, so these
+             are written in the reverse of the order they appear: Log ends up at the foot of the
+             window and the button row just under the inventory, as on the IRIX original. The
+             inventory is the only undocked child, so it is what grows when the window does. -->
+        <DockPanel DockPanel.Dock="Bottom" Margin="8,4" Height="140"
+                   IsVisible="{Binding Panes.Log}">
+            <TextBlock DockPanel.Dock="Top" Text="{loc:Tr PaneLog}" Margin="0,0,0,4" />
+            <!-- Read-only rather than a TextBlock in a ScrollViewer: the themed TextBox brings
+                 the sunken frame, the scroll bar, and Ctrl+C over a selection, which is what
+                 anyone reading a failed transaction wants. Same treatment as wlrix-console. -->
+            <TextBox Text="{Binding Log.Text, Mode=OneWay}"
+                     IsReadOnly="True"
+                     AcceptsReturn="True"
+                     TextWrapping="NoWrap"
+                     VerticalContentAlignment="Top"
+                     FontFamily="{StaticResource MonospaceFont}"
+                     PlaceholderText="{loc:Tr LogEmpty}">
+                <TextBox.Resources>
+                    <!-- The text-area gray rather than the pink of a single-line field: IRIX
+                         drew that distinction between a value you type into and output you only
+                         read. The theme defines both colors but its TextBox template always
+                         reaches for the field one, so the key is re-pointed here rather than
+                         set through Background, which that template does not consult. -->
+                    <SolidColorBrush x:Key="WlrixTextBackground"
+                                     Color="{DynamicResource WlrixTextAreaBackgroundColor}" />
+                </TextBox.Resources>
+            </TextBox>
+        </DockPanel>
+
+        <DockPanel DockPanel.Dock="Bottom" Margin="8,4"
+                   IsVisible="{Binding Panes.Command}">
+            <TextBlock DockPanel.Dock="Top" Text="{loc:Tr PaneCommand}" Margin="0,0,0,4" />
+            <TextBox Text="{Binding CommandLine, Mode=OneWay}" IsReadOnly="True"
+                     FontFamily="{StaticResource MonospaceFont}" />
+        </DockPanel>
+
+        <panes:StatusDiskSpacePane DockPanel.Dock="Bottom" Margin="8,4" Height="150"
+                                   IsVisible="{Binding Panes.StatusDiskSpace}" />
+
+        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Spacing="8" Margin="8,4">
+            <Button Content="{loc:Tr Start}" MinWidth="90" Command="{Binding Start}" />
+            <Button Content="{loc:Tr Stop}" MinWidth="90" Command="{Binding Stop}" />
+            <Button Content="{loc:Tr Conflicts}" MinWidth="90" Command="{Binding ShowConflicts}"
+                    Classes.conflict="{Binding HasConflicts}" />
+        </StackPanel>
+
+        <!-- The Panel keeps the window's own DataContext, so the pane inside it can rebind to
+             the inventory without the visibility binding following it there. -->
+        <Panel Margin="8,4" IsVisible="{Binding Panes.SoftwareInventory}">
+            <panes:InventoryPane DataContext="{Binding Inventory}" />
+        </Panel>
+
+    </DockPanel>
+
+</Window>

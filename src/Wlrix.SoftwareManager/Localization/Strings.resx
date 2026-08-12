@@ -1,0 +1,340 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+
+  <!-- Window and menus -->
+  <data name="SoftwareManager" xml:space="preserve">
+    <value>Software Manager</value>
+  </data>
+  <data name="MenuFile" xml:space="preserve">
+    <value>_File</value>
+  </data>
+  <data name="MenuInstall" xml:space="preserve">
+    <value>_Install</value>
+  </data>
+  <data name="MenuSelected" xml:space="preserve">
+    <value>_Selected</value>
+  </data>
+  <data name="MenuSoftware" xml:space="preserve">
+    <value>S_oftware</value>
+  </data>
+  <data name="MenuPanes" xml:space="preserve">
+    <value>_Panes</value>
+  </data>
+  <data name="MenuHelp" xml:space="preserve">
+    <value>_Help</value>
+  </data>
+  <data name="FileClose" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="InstallFromFile" xml:space="preserve">
+    <value>From File…</value>
+  </data>
+  <data name="InstallStart" xml:space="preserve">
+    <value>Start Installation</value>
+  </data>
+  <data name="InstallStop" xml:space="preserve">
+    <value>Stop Installation</value>
+  </data>
+  <data name="SelectedAll" xml:space="preserve">
+    <value>Select All</value>
+  </data>
+  <data name="SelectedNone" xml:space="preserve">
+    <value>Deselect All</value>
+  </data>
+  <data name="SelectedInstall" xml:space="preserve">
+    <value>Mark for Installation</value>
+  </data>
+  <data name="SelectedRemove" xml:space="preserve">
+    <value>Mark for Removal</value>
+  </data>
+  <data name="SoftwareRefresh" xml:space="preserve">
+    <value>Refresh Package Lists</value>
+  </data>
+  <data name="SoftwareRepositories" xml:space="preserve">
+    <value>Repositories…</value>
+  </data>
+  <data name="SoftwareUserSoftware" xml:space="preserve">
+    <value>User Software…</value>
+  </data>
+  <data name="HelpAbout" xml:space="preserve">
+    <value>About Software Manager</value>
+  </data>
+  <data name="AboutMessage" xml:space="preserve">
+    <value>wlRIX Software Manager
+Version {0}</value>
+  </data>
+
+  <!-- Panes -->
+  <data name="PaneAvailableSoftware" xml:space="preserve">
+    <value>Available Software</value>
+  </data>
+  <data name="PaneSoftwareInventory" xml:space="preserve">
+    <value>Software Inventory</value>
+  </data>
+  <data name="PaneStatusDiskSpace" xml:space="preserve">
+    <value>Status / Disk Space</value>
+  </data>
+  <data name="PaneCommand" xml:space="preserve">
+    <value>Command</value>
+  </data>
+  <data name="PaneLog" xml:space="preserve">
+    <value>Log</value>
+  </data>
+
+  <!-- Available Software -->
+  <data name="AvailableSoftwareLabel" xml:space="preserve">
+    <value>Available Software:</value>
+  </data>
+  <data name="Lookup" xml:space="preserve">
+    <value>Lookup</value>
+  </data>
+  <data name="SourceHint" xml:space="preserve">
+    <value>Type a package name to search for, or the path to a package file, and press "Lookup".</value>
+  </data>
+
+  <!-- Modes -->
+  <data name="ModeInstall" xml:space="preserve">
+    <value>Install Software …</value>
+  </data>
+  <data name="ModeManage" xml:space="preserve">
+    <value>Manage Installed Software …</value>
+  </data>
+  <data name="ModeUpdates" xml:space="preserve">
+    <value>System Updates …</value>
+  </data>
+
+  <!-- Inventory columns -->
+  <data name="ColumnRemove" xml:space="preserve">
+    <value>Remove</value>
+  </data>
+  <data name="ColumnInstall" xml:space="preserve">
+    <value>Install</value>
+  </data>
+  <data name="ColumnProduct" xml:space="preserve">
+    <value>Product</value>
+  </data>
+  <data name="ColumnStatus" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="ColumnSize" xml:space="preserve">
+    <value>Size (KB)</value>
+  </data>
+  <data name="ColumnType" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="InventoryEmpty" xml:space="preserve">
+    <value>No software to show.</value>
+  </data>
+
+  <!-- Package status values, matching the Status column -->
+  <data name="StatusNew" xml:space="preserve">
+    <value>New</value>
+  </data>
+  <data name="StatusInstalled" xml:space="preserve">
+    <value>Installed</value>
+  </data>
+  <data name="StatusSameVersion" xml:space="preserve">
+    <value>Same Version</value>
+  </data>
+  <data name="StatusUpgradeAvailable" xml:space="preserve">
+    <value>Upgrade</value>
+  </data>
+  <data name="StatusDowngrade" xml:space="preserve">
+    <value>Downgrade</value>
+  </data>
+
+  <!-- Transaction controls -->
+  <data name="Start" xml:space="preserve">
+    <value>Start</value>
+  </data>
+  <data name="Stop" xml:space="preserve">
+    <value>Stop</value>
+  </data>
+  <data name="Conflicts" xml:space="preserve">
+    <value>Conflicts …</value>
+  </data>
+
+  <!-- Status pane -->
+  <data name="StatusLabel" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="PhaseInitialize" xml:space="preserve">
+    <value>Initialize</value>
+  </data>
+  <data name="PhaseInstall" xml:space="preserve">
+    <value>Install</value>
+  </data>
+  <data name="PhasePostInstall" xml:space="preserve">
+    <value>Post Install</value>
+  </data>
+  <data name="StatusIdle" xml:space="preserve">
+    <value>{0} is running {1}.</value>
+  </data>
+  <data name="StatusNoBackend" xml:space="preserve">
+    <value>No supported package manager was found on this system. Software Manager can show the desktop's own software but cannot install or remove system packages.</value>
+  </data>
+  <data name="StatusSearching" xml:space="preserve">
+    <value>Searching…</value>
+  </data>
+  <data name="StatusReadingInstalled" xml:space="preserve">
+    <value>Reading the installed software…</value>
+  </data>
+  <data name="StatusCheckingUpdates" xml:space="preserve">
+    <value>Checking for updates…</value>
+  </data>
+  <data name="StatusFound" xml:space="preserve">
+    <value>{0} package(s).</value>
+  </data>
+  <data name="StatusNothingFound" xml:space="preserve">
+    <value>Nothing matched “{0}”.</value>
+  </data>
+  <data name="StatusUpToDate" xml:space="preserve">
+    <value>Everything is up to date.</value>
+  </data>
+  <data name="StatusNeedsQuery" xml:space="preserve">
+    <value>Type a package name and press “Lookup” to search {0}.</value>
+  </data>
+  <data name="StatusQueryFailed" xml:space="preserve">
+    <value>{0} could not answer. See the Log pane.</value>
+  </data>
+
+  <!-- Transaction outcomes -->
+  <data name="TransactionDone" xml:space="preserve">
+    <value>Done.</value>
+  </data>
+  <data name="TransactionFailed" xml:space="preserve">
+    <value>The transaction failed. See the Log pane.</value>
+  </data>
+  <data name="TransactionNotAuthorized" xml:space="preserve">
+    <value>Not authorized. Nothing was changed.</value>
+  </data>
+  <data name="TransactionStopped" xml:space="preserve">
+    <value>Stopped watching. The package manager may still be finishing.</value>
+  </data>
+  <data name="UnexpectedError" xml:space="preserve">
+    <value>Something went wrong: {0}</value>
+  </data>
+  <data name="TransactionRefused" xml:space="preserve">
+    <value>Refused to build the transaction: {0}</value>
+  </data>
+
+  <!-- Install from file -->
+  <data name="TypeLocalFile" xml:space="preserve">
+    <value>Local file</value>
+  </data>
+  <data name="FileNotFound" xml:space="preserve">
+    <value>There is no file at “{0}”.</value>
+  </data>
+  <data name="FileReady" xml:space="preserve">
+    <value>“{0}” is ready to install. Tick Install, then press Start.</value>
+  </data>
+
+  <!-- Repositories dialog -->
+  <data name="RepositoriesTitle" xml:space="preserve">
+    <value>Repositories</value>
+  </data>
+  <data name="RepositoryAlias" xml:space="preserve">
+    <value>Alias</value>
+  </data>
+  <data name="RepositoryUrl" xml:space="preserve">
+    <value>URL</value>
+  </data>
+  <data name="RepositoryAdd" xml:space="preserve">
+    <value>Add</value>
+  </data>
+  <data name="RepositoryRemove" xml:space="preserve">
+    <value>Remove</value>
+  </data>
+  <data name="RepositoryEnable" xml:space="preserve">
+    <value>Enable</value>
+  </data>
+  <data name="RepositoryDisable" xml:space="preserve">
+    <value>Disable</value>
+  </data>
+  <data name="RepositoryEnabled" xml:space="preserve">
+    <value>Enabled</value>
+  </data>
+  <data name="RepositoryDisabled" xml:space="preserve">
+    <value>Disabled</value>
+  </data>
+  <data name="RepositoriesReadOnly" xml:space="preserve">
+    <value>{0} has no command for changing repositories, so these can be listed but not edited here. Edit its configuration file directly.</value>
+  </data>
+
+  <!-- User software (AppImages) -->
+  <data name="UserSoftwareTitle" xml:space="preserve">
+    <value>User Software</value>
+  </data>
+  <data name="UserSoftwareExplanation" xml:space="preserve">
+    <value>AppImages you have installed for yourself. These need no administrator password and live in your home directory; each one also gets a launcher, so it appears in the Toolchest.</value>
+  </data>
+  <data name="UserSoftwareFile" xml:space="preserve">
+    <value>AppImage</value>
+  </data>
+  <data name="UserSoftwareFileHint" xml:space="preserve">
+    <value>Type a path, or drop an .AppImage here.</value>
+  </data>
+  <data name="UserSoftwareInstall" xml:space="preserve">
+    <value>Install</value>
+  </data>
+  <data name="UserSoftwareRemove" xml:space="preserve">
+    <value>Remove</value>
+  </data>
+  <data name="UserSoftwareEmpty" xml:space="preserve">
+    <value>Nothing installed yet. AppImages are kept in {0}.</value>
+  </data>
+  <data name="UserSoftwareInstalled" xml:space="preserve">
+    <value>Installed “{0}”. It will appear in the Toolchest after its next rebuild.</value>
+  </data>
+  <data name="UserSoftwareRemoved" xml:space="preserve">
+    <value>Removed “{0}”.</value>
+  </data>
+
+  <!-- Conflicts dialog -->
+  <data name="ConflictsTitle" xml:space="preserve">
+    <value>Conflicts</value>
+  </data>
+  <data name="ConflictsExplanation" xml:space="preserve">
+    <value>The package manager reported the following. Resolving these means choosing which package to keep, which is best done from a terminal — the exact wording below is what to act on.</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Close</value>
+  </data>
+
+  <!-- Disk space pane -->
+  <data name="DiskSpaceLabel" xml:space="preserve">
+    <value>Disk Space</value>
+  </data>
+  <data name="DiskUsed" xml:space="preserve">
+    <value>Used</value>
+  </data>
+  <data name="DiskFree" xml:space="preserve">
+    <value>Free</value>
+  </data>
+  <data name="DiskNetChange" xml:space="preserve">
+    <value>Net change</value>
+  </data>
+  <data name="DiskOverhead" xml:space="preserve">
+    <value>Overhead</value>
+  </data>
+  <data name="Kilobytes" xml:space="preserve">
+    <value>{0:N0} K</value>
+  </data>
+
+  <!-- Log pane -->
+  <data name="LogEmpty" xml:space="preserve">
+    <value>No log output yet.</value>
+  </data>
+</root>

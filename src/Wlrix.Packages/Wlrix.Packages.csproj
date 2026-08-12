@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <Version>0.1.0</Version>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Wlrix.Common\Wlrix.Common.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+        <PackageReference Include="ZLogger" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <!-- The tests reach the parsers, which are internal: they are an implementation detail
+             of each backend, not something an app should be calling. -->
+        <InternalsVisibleTo Include="Wlrix.Packages.Tests" />
+    </ItemGroup>
+</Project>

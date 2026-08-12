@@ -6,6 +6,7 @@
     <ItemGroup>
         <PackageVersion Include="Microsoft.CodeAnalysis.BannedApiAnalyzers" Version="5.6.0" />
         <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="10.0.10" />
+        <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.10" />
         <PackageVersion Include="ZLogger" Version="2.5.10" />
     </ItemGroup>
     <ItemGroup Label="Avalonia">
@@ -32,6 +33,11 @@
              ships nothing. Same version as the runtime, and the same arrangement
              Avalonia.FreeDesktop uses for its own eleven interfaces. -->
         <PackageVersion Include="Tmds.DBus.Generator" Version="0.94.1" />
+    </ItemGroup>
+    <ItemGroup Label="Testing">
+        <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
+        <PackageVersion Include="xunit" Version="2.9.3" />
+        <PackageVersion Include="xunit.runner.visualstudio" Version="3.0.2" />
     </ItemGroup>
     <ItemGroup Label="wlRIX theme">
         <PackageVersion Include="Wlrix.Avalonia" Version="0.0.0" />

@@ -7,5 +7,11 @@
         <Project Path="src/Wlrix.Settings.Client/Wlrix.Settings.Client.csproj" />
         <Project Path="src/Wlrix.Settings.Keyboard/Wlrix.Settings.Keyboard.csproj" />
         <Project Path="src/Wlrix.SourcePicker/Wlrix.SourcePicker.csproj" />
+        <Project Path="src/Wlrix.SoftwareManager/Wlrix.SoftwareManager.csproj" />
+        <Project Path="src/Wlrix.Packages/Wlrix.Packages.csproj" />
+        <Project Path="src/Wlrix.Packages.Helper/Wlrix.Packages.Helper.csproj" />
+    </Folder>
+    <Folder Name="/tests/">
+        <Project Path="tests/Wlrix.Packages.Tests/Wlrix.Packages.Tests.csproj" />
     </Folder>
 </Solution>

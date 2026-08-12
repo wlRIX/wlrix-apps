@@ -9,14 +9,48 @@ library. Apps recreate the IRIX Interactive Desktop surface.
 
 ## Projects
 
-| Project                 | Type | Purpose                                                           |
-|-------------------------|------|-------------------------------------------------------------------|
-| `Wlrix.Common`          | lib  | Shared branding, constants, and helpers.                          |
-| `Wlrix.Settings.Client` | lib  | Reads and writes wlRIX settings, through `wlrix-settings-daemon`. |
-| `Wlrix.Toolchest`       | app  | IRIX-style menu launcher anchored top-left of the desktop.        |
-| `Wlrix.Desks`           | app  | Virtual-desktop (Rooms) overview and switcher.                    |
+| Project                   | Type  | Purpose                                                           |
+|---------------------------|-------|-------------------------------------------------------------------|
+| `Wlrix.Common`            | lib   | Shared branding, constants, localization, and helpers.            |
+| `Wlrix.Settings.Client`   | lib   | Reads and writes wlRIX settings, through `wlrix-settings-daemon`. |
+| `Wlrix.Packages`          | lib   | The system package managers behind one interface. No UI.          |
+| `Wlrix.Packages.Helper`   | exe   | `wlrix-pkg-helper` — the privileged half, run through `pkexec`.   |
+| `Wlrix.Toolchest`         | app   | IRIX-style menu launcher anchored top-left of the desktop.        |
+| `Wlrix.Desks`             | app   | Virtual-desktop (Rooms) overview and switcher.                    |
+| `Wlrix.Console`           | app   | Tails the wlRIX component logs, one tab each.                     |
+| `Wlrix.Settings.Keyboard` | app   | Keyboard settings panel.                                          |
+| `Wlrix.SourcePicker`      | app   | The screen-share picker `xdg-desktop-portal-wlrix` puts up.       |
+| `Wlrix.SoftwareManager`   | app   | Package manager, after IRIX's `swmgr`.                            |
+| `Wlrix.Packages.Tests`    | tests | Parser and validation tests for `Wlrix.Packages`. Under `tests/`. |
 
 More apps (file manager, terminal, etc.) get added as sibling projects.
+
+## Translations
+
+Apps are localizable through `Wlrix.Common.Localization`. An app owns a `Localization/Strings.resx`
+and a small static `Strings` class over a `StringCatalog`; static labels in AXAML go through the
+`{loc:Tr Key}` markup extension, which reads the same catalog.
+
+`TrExtension` deliberately does not derive from Avalonia's `MarkupExtension` — Avalonia resolves markup extensions
+structurally, by the presence of a `ProvideValue` method — so `Wlrix.Common`
+stays free of an Avalonia reference.
+
+Only **American English** (`en-US`) ships today, in the resources and in the code: `Color`,
+`Initialize`, `License`, `Canceled`, `Behavior`. A translation is a `Strings.<culture>.resx`
+beside the neutral one, and nothing else. `Wlrix.Toolchest` also carries a `ja` satellite.
+
+## Managing software
+
+`Wlrix.SoftwareManager` reads through `Wlrix.Packages`, which runs the package manager unprivileged in-process. Anything
+that changes the system goes through `wlrix-pkg-helper` behind
+`pkexec`, one process per transaction, with a fixed and validated verb set — there is no verb that takes a command, and
+no shell anywhere in that path. See `src/Wlrix.Packages/README.md`.
+
+The helper is exercisable without root:
+
+```sh
+dotnet run --project src/Wlrix.Packages.Helper -- --check install pacman cowsay
+```
 
 **A settings app does not touch config files.** wlRIX settings are IRIX-style separate panels, one window per concern,
 and every one of them reads and writes through `Wlrix.Settings.Client`

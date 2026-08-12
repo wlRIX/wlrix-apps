@@ -1,0 +1,53 @@
+Installed From  : cachyos-znver4
+Name            : bash
+Version         : 5.3.15-2
+Description     : The GNU Bourne Again shell
+Architecture    : x86_64_v4
+URL             : https://www.gnu.org/software/bash/bash.html
+Licenses        : GPL-3.0-or-later
+Groups          : None
+Provides        : sh
+Depends On      : readline  libreadline.so=8-64  glibc  ncurses
+Optional Deps   : bash-completion: for tab completion [installed]
+Required By     : alsa-utils  archlinux-contrib  at-spi2-core  audit  aurorae  autoconf  automake  avahi  base  bash-completion  bind  bison  brltty  bzip2  ca-certificates-utils  cachy-update  cairo  cpupower  db  db5.3  dconf  device-mapper  diffutils  djvulibre  dkms  dtc  e2fsprogs  ebook-tools  elfutils  fakeroot  fftw  flex  fontconfig  fwupd  fzf  gawk  gdb  gdbm  gettext  ghostscript  glib2  gnupg  gpm  gtk-update-icon-cache  gtk4  gzip  hunspell  hwdetect  icu  ijs  iptables  kate  kde-cli-tools  kde-gtk-config  keyutils  kinfocenter  kio-extras  konsole  krb5  kwallet-pam  libassuan  libcups  libdca  libftdi  libgpg-error  libisoburn  libksba  libmakepkg-dropins  libmbim  libpcap  libpng  libpulse  libqmi  libreoffice-fresh  libteam  libtool  libusb-compat  libvirt  libxml2  libxslt  limine-mkinitcpio-hook  limine-snapper-sync  lm_sensors  lsb-release  lvm2  mame  man-db  mjpegtools  mkinitcpio  modemmanager  mtools  networkmanager  nfs-utils  npth  nspr  nss  os-prober  pacman  pahole  pcre  plasma-login-manager  plasma-workspace  plymouth  rasqal  rdma-core  redland  scx-scheds  sg3_utils  shelly  smartmontools  source-highlight  spirv-tools  srt  systemd  taglib  texinfo  unzip  which  wireless-regdb  xdg-utils  xfsprogs  xmlsec  xz
+Optional For    : mdadm  ncurses  openssh  pcre2  tzdata  usbutils  vim-runtime
+Conflicts With  : None
+Replaces        : None
+Installed Size  : 9.68 MiB
+Packager        : CachyOS <admin@cachyos.org>
+Build Date      : Sun Jun 28 05:25:34 2026
+Install Date    : Wed Jul  1 10:06:28 2026
+Install Reason  : Installed as a dependency for another package
+Install Script  : Yes
+Validated By    : Signature
+
+Installed From  : cachyos-extra-znver4
+Name            : zsh
+Version         : 5.9.2-1.1
+Description     : A very advanced and programmable command interpreter (shell) for UNIX
+Architecture    : x86_64_v4
+URL             : https://www.zsh.org/
+Licenses        : custom
+Groups          : None
+Provides        : None
+Depends On      : pcre2  libcap  gdbm
+Optional Deps   : grml-zsh-config: grml's zsh setup
+                  zsh-autosuggestions: Fish-like autosuggestions for zsh [installed]
+                  zsh-completions: Additional completion definitions for Zsh [installed]
+                  zsh-doc: Info, HTML and PDF format of the ZSH documentation
+                  zsh-history-substring-search: ZSH port of Fish history search (up arrow) [installed]
+                  zsh-lovers: A collection of tips, tricks and examples for the Z shell.
+                  zsh-syntax-highlighting: Fish shell like syntax highlighting for Zsh [installed]
+                  zshdb: A debugger for zsh scripts
+Required By     : cachyos-zsh-config  oh-my-zsh-git  zsh-autosuggestions  zsh-completions  zsh-history-substring-search  zsh-syntax-highlighting  zsh-theme-powerlevel10k
+Optional For    : fzf  shelly
+Conflicts With  : None
+Replaces        : None
+Installed Size  : 7.24 MiB
+Packager        : CachyOS <admin@cachyos.org>
+Build Date      : Sun Jul 12 16:47:18 2026
+Install Date    : Mon Jul 13 06:45:58 2026
+Install Reason  : Installed as a dependency for another package
+Install Script  : Yes
+Validated By    : Signature
+

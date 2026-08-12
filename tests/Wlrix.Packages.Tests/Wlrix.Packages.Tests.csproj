@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <IsPackable>false</IsPackable>
+        <IsTestProject>true</IsTestProject>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <!-- Recorded output from the real tools, so a parser is tested against what a package
+             manager actually prints rather than against what this project remembers of it. -->
+        <None Include="Fixtures\**" CopyToOutputDirectory="PreserveNewest" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\src\Wlrix.Packages\Wlrix.Packages.csproj" />
+        <!-- The window's view model too: it is where the state machine lives, and a crash there
+             is what the user sees. Nothing here needs a display; the view models are plain
+             objects, and the tests stay on the paths that do not reach the dispatcher. -->
+        <ProjectReference Include="..\..\src\Wlrix.SoftwareManager\Wlrix.SoftwareManager.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" />
+        <PackageReference Include="xunit" />
+        <PackageReference Include="xunit.runner.visualstudio" />
+    </ItemGroup>
+
+</Project>

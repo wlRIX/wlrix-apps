@@ -1,0 +1,136 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Wlrix.SoftwareManager.ViewModels"
+             xmlns:svc="using:Wlrix.SoftwareManager.Services"
+             xmlns:controls="using:Wlrix.SoftwareManager.Controls"
+             xmlns:loc="using:Wlrix.Common.Localization"
+             xmlns:wlrix="https://vic485.xyz/Wlrix.Avalonia"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="180"
+             x:Class="Wlrix.SoftwareManager.Views.Panes.StatusDiskSpacePane"
+             x:DataType="vm:MainWindowViewModel">
+
+    <Grid ColumnDefinitions="2*,3*" ColumnSpacing="12">
+
+        <!-- Status: what happened, over the three phases a transaction moves through. -->
+        <DockPanel Grid.Column="0">
+            <TextBlock DockPanel.Dock="Top" Text="{loc:Tr StatusLabel}" Margin="0,0,0,4" />
+
+            <wlrix:BevelBorder Bevel="Sunken" BevelThickness="2" OuterLineThickness="1"
+                               Background="{DynamicResource WlrixPanel}"
+                               LightBrush="{DynamicResource WlrixTopShadow}"
+                               DarkBrush="{DynamicResource WlrixBottomShadow}"
+                               OuterLineBrush="{DynamicResource WlrixOuterLine}"
+                               Padding="8">
+                <DockPanel>
+                    <!-- The phase strip is docked to the bottom so a long status message grows
+                         upwards into the free space instead of pushing the bars off the pane. -->
+                    <Grid DockPanel.Dock="Bottom" ColumnDefinitions="*,*,*" ColumnSpacing="6"
+                          Margin="0,8,0,0">
+                        <StackPanel Grid.Column="0" Spacing="2">
+                            <ProgressBar Minimum="0" Maximum="100" Value="{Binding Status.Initialize}" />
+                            <TextBlock Text="{loc:Tr PhaseInitialize}" FontSize="11"
+                                       HorizontalAlignment="Center" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="1" Spacing="2">
+                            <ProgressBar Minimum="0" Maximum="100" Value="{Binding Status.Install}" />
+                            <TextBlock Text="{loc:Tr PhaseInstall}" FontSize="11"
+                                       HorizontalAlignment="Center" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="2" Spacing="2">
+                            <ProgressBar Minimum="0" Maximum="100" Value="{Binding Status.PostInstall}" />
+                            <TextBlock Text="{loc:Tr PhasePostInstall}" FontSize="11"
+                                       HorizontalAlignment="Center" />
+                        </StackPanel>
+                    </Grid>
+
+                    <TextBlock Text="{Binding Status.Message}" TextWrapping="Wrap"
+                               VerticalAlignment="Top" />
+                </DockPanel>
+            </wlrix:BevelBorder>
+        </DockPanel>
+
+        <!-- Disk space: which filesystem, the pie, and the legend beside it. -->
+        <DockPanel Grid.Column="1">
+            <Grid DockPanel.Dock="Top" ColumnDefinitions="Auto,Auto,*" ColumnSpacing="8"
+                  Margin="0,0,0,4">
+                <TextBlock Grid.Column="0" Text="{loc:Tr DiskSpaceLabel}" VerticalAlignment="Center" />
+                <ComboBox Grid.Column="1" MinWidth="90"
+                          ItemsSource="{Binding DiskSpace.Filesystems}"
+                          SelectedItem="{Binding DiskSpace.Selected}">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate x:DataType="svc:DiskUsage">
+                            <TextBlock Text="{Binding MountPoint}" />
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+            </Grid>
+
+            <wlrix:BevelBorder Bevel="Sunken" BevelThickness="2" OuterLineThickness="1"
+                               Background="{DynamicResource WlrixViewBackground}"
+                               LightBrush="{DynamicResource WlrixTopShadow}"
+                               DarkBrush="{DynamicResource WlrixBottomShadow}"
+                               OuterLineBrush="{DynamicResource WlrixOuterLine}"
+                               Padding="8">
+                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+
+                    <controls:DiskSpaceGauge Grid.Column="0"
+                                             Width="130" Height="90"
+                                             VerticalAlignment="Center"
+                                             Total="{Binding DiskSpace.TotalKilobytes}"
+                                             Used="{Binding DiskSpace.UsedKilobytes}"
+                                             NetChange="{Binding DiskSpace.NetChangeKilobytes}"
+                                             UsedBrush="{DynamicResource WlrixFace}"
+                                             FreeBrush="White"
+                                             NetChangeBrush="{DynamicResource WlrixAccent}"
+                                             OutlineBrush="{DynamicResource WlrixOuterLine}" />
+
+                    <!-- The legend. Net change and Overhead only appear once a transaction has
+                         been planned; before that they would be two rows of zeroes. -->
+                    <Grid Grid.Column="1"
+                          ColumnDefinitions="Auto,Auto,*" RowDefinitions="Auto,Auto,Auto,Auto"
+                          ColumnSpacing="8" RowSpacing="4"
+                          VerticalAlignment="Center">
+                        <Border Grid.Row="0" Grid.Column="0" Width="12" Height="12"
+                                Background="{DynamicResource WlrixFace}"
+                                BorderThickness="1" BorderBrush="{DynamicResource WlrixOuterLine}" />
+                        <TextBlock Grid.Row="0" Grid.Column="1" Text="{loc:Tr DiskUsed}" />
+                        <TextBlock Grid.Row="0" Grid.Column="2" Text="{Binding DiskSpace.UsedText}"
+                                   TextAlignment="Right" />
+
+                        <Border Grid.Row="1" Grid.Column="0" Width="12" Height="12"
+                                Background="White"
+                                BorderThickness="1" BorderBrush="{DynamicResource WlrixOuterLine}" />
+                        <TextBlock Grid.Row="1" Grid.Column="1" Text="{loc:Tr DiskFree}" />
+                        <TextBlock Grid.Row="1" Grid.Column="2" Text="{Binding DiskSpace.FreeText}"
+                                   TextAlignment="Right" />
+
+                        <Border Grid.Row="2" Grid.Column="0" Width="12" Height="12"
+                                Background="{DynamicResource WlrixAccent}"
+                                BorderThickness="1" BorderBrush="{DynamicResource WlrixOuterLine}"
+                                IsVisible="{Binding DiskSpace.HasPendingChange}" />
+                        <TextBlock Grid.Row="2" Grid.Column="1" Text="{loc:Tr DiskNetChange}"
+                                   IsVisible="{Binding DiskSpace.HasPendingChange}" />
+                        <TextBlock Grid.Row="2" Grid.Column="2" Text="{Binding DiskSpace.NetChangeText}"
+                                   TextAlignment="Right"
+                                   IsVisible="{Binding DiskSpace.HasPendingChange}" />
+
+                        <Border Grid.Row="3" Grid.Column="0" Width="12" Height="12"
+                                Background="Transparent"
+                                BorderThickness="1" BorderBrush="{DynamicResource WlrixOuterLine}"
+                                IsVisible="{Binding DiskSpace.HasPendingChange}" />
+                        <TextBlock Grid.Row="3" Grid.Column="1" Text="{loc:Tr DiskOverhead}"
+                                   IsVisible="{Binding DiskSpace.HasPendingChange}" />
+                        <TextBlock Grid.Row="3" Grid.Column="2" Text="{Binding DiskSpace.OverheadText}"
+                                   TextAlignment="Right"
+                                   IsVisible="{Binding DiskSpace.HasPendingChange}" />
+                    </Grid>
+
+                </Grid>
+            </wlrix:BevelBorder>
+        </DockPanel>
+
+    </Grid>
+
+</UserControl>

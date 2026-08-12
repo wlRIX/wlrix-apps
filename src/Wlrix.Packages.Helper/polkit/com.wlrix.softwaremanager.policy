@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE policyconfig PUBLIC
+ "-//freedesktop//DTD PolicyKit Policy Configuration 1.0//EN"
+ "http://www.freedesktop.org/standards/PolicyKit/1/policyconfig.dtd">
+
+<!--
+    The polkit action behind the wlRIX Software Manager's privileged half.
+
+    One action, not one per verb. The helper's verbs are install, remove, upgrade and the
+    repository changes, and every one of them can change what software the machine runs: a user
+    who may install a package may already install one that replaces anything else. Splitting
+    them would offer an administrator a choice that does not correspond to a real difference in
+    what can be done, and would ask the user to authenticate several times over for one
+    transaction.
+
+    auth_admin_keep, not auth_admin: the grace window is what lets somebody install three
+    packages in a row without three password prompts. It is polkit's default for package
+    management on every distribution that ships a graphical installer, and the window is
+    polkit's to decide, not this file's.
+
+    Installed to $PREFIX/share/polkit-1/actions/.
+-->
+<policyconfig>
+
+    <vendor>wlRIX</vendor>
+    <vendor_url>https://github.com/wlRIX</vendor_url>
+
+    <action id="com.wlrix.softwaremanager.manage-packages">
+        <description>Install or remove system software</description>
+        <message>Authentication is required to change the software installed on this system.</message>
+        <defaults>
+            <allow_any>auth_admin</allow_any>
+            <allow_inactive>auth_admin</allow_inactive>
+            <allow_active>auth_admin_keep</allow_active>
+        </defaults>
+        <annotate key="org.freedesktop.policykit.exec.path">/usr/bin/wlrix-pkg-helper</annotate>
+    </action>
+
+</policyconfig>

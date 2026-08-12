@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <AssemblyName>wlrix-pkg-helper</AssemblyName>
+        <Version>0.1.0</Version>
+        <!-- Runs as root under pkexec. Nothing here should be a surprise at run time. -->
+        <InvariantGlobalization>true</InvariantGlobalization>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <!-- The verb set, the validation and the command table are shared with the application,
+             so the two cannot disagree about what is allowed. -->
+        <ProjectReference Include="..\Wlrix.Packages\Wlrix.Packages.csproj" />
+    </ItemGroup>
+
+</Project>

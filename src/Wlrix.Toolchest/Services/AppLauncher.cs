@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using System.Diagnostics;
 using Microsoft.Extensions.Logging;
+using Wlrix.Common;
 using Wlrix.Toolchest.Desktop;
 using ZLogger;
 
@@ -83,25 +84,15 @@ public sealed class AppLauncher(ILogger<AppLauncher> logger) : IAppLauncher
 
     private static string? ResolveTerminal()
     {
-        if (Environment.GetEnvironmentVariable("TERMINAL") is { Length: > 0 } env && Which(env) is { } configured)
+        if (Environment.GetEnvironmentVariable("TERMINAL") is { Length: > 0 } env
+            && Executables.Which(env) is { } configured)
             return configured;
 
         foreach (var candidate in TerminalCandidates)
-            if (Which(candidate) is { } path)
+            if (Executables.Which(candidate) is { } path)
                 return path;
 
         return null;
-    }
-
-    private static string? Which(string program)
-    {
-        if (program.Contains('/'))
-            return File.Exists(program) ? program : null;
-
-        var path = Environment.GetEnvironmentVariable("PATH") ?? string.Empty;
-        return path.Split(':', StringSplitOptions.RemoveEmptyEntries)
-            .Select(dir => Path.Combine(dir, program))
-            .FirstOrDefault(File.Exists);
     }
 
     private void Fail(string displayName, string message)

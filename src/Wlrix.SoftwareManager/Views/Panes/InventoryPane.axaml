@@ -1,0 +1,95 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Wlrix.SoftwareManager.ViewModels"
+             xmlns:loc="using:Wlrix.Common.Localization"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="420"
+             x:Class="Wlrix.SoftwareManager.Views.Panes.InventoryPane"
+             x:DataType="vm:InventoryViewModel">
+
+    <!--
+        The list is a ListBox with a Grid per row rather than a DataGrid: WlrixTheme templates
+        ListBox and does not template DataGrid, so a DataGrid would arrive in the middle of the
+        window wearing no theme at all.
+
+        The price is that the heading row and the item template each carry their own copy of the
+        column widths, and the two have to agree. They cannot be shared through a resource:
+        ColumnDefinitions is an object a Grid takes ownership of, so one instance cannot serve
+        two grids, and a string resource is never run through the type converter. Both copies
+        are marked; change them together.
+    -->
+    <DockPanel>
+
+        <TextBlock DockPanel.Dock="Top" Text="{loc:Tr PaneSoftwareInventory}" Margin="0,0,0,4" />
+
+        <!-- The selected row's name, in a read-only field, as on the original. -->
+        <Grid DockPanel.Dock="Top" ColumnDefinitions="Auto,*" ColumnSpacing="8" Margin="0,0,0,4">
+            <TextBlock Grid.Column="0" Text="{loc:Tr ColumnProduct}" VerticalAlignment="Center" />
+            <TextBox Grid.Column="1" Text="{Binding SelectedName, Mode=OneWay}" IsReadOnly="True" />
+        </Grid>
+
+        <!-- Column headings. Outside the scroller, so they stay put while the list moves.
+             COLUMNS (1 of 2): keep in step with the item template below. -->
+        <Grid DockPanel.Dock="Top"
+              ColumnDefinitions="64,64,*,110,90,150" ColumnSpacing="8"
+              Margin="11,0,28,4">
+            <TextBlock Grid.Column="0" Text="{loc:Tr ColumnRemove}" />
+            <TextBlock Grid.Column="1" Text="{loc:Tr ColumnInstall}" />
+            <TextBlock Grid.Column="2" Text="{loc:Tr ColumnProduct}" />
+            <TextBlock Grid.Column="3" Text="{loc:Tr ColumnStatus}" />
+            <TextBlock Grid.Column="4" Text="{loc:Tr ColumnSize}" TextAlignment="Right" />
+            <TextBlock Grid.Column="5" Text="{loc:Tr ColumnType}" />
+        </Grid>
+
+        <Panel>
+            <ListBox ItemsSource="{Binding Rows}"
+                     SelectedItem="{Binding Selected}">
+                <ListBox.Styles>
+                    <!-- The theme aligns item content left and says consumers may override it.
+                         A row here is a column layout, not a label, so it has to fill the
+                         viewport: left-aligned, each Grid would size to its own content and no
+                         two rows would put Status in the same place, let alone agree with the
+                         heading row above. -->
+                    <Style Selector="ListBoxItem">
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                    </Style>
+                </ListBox.Styles>
+                <ListBox.ItemTemplate>
+                    <DataTemplate x:DataType="vm:PackageRowViewModel">
+                        <!-- COLUMNS (2 of 2): keep in step with the heading row above. -->
+                        <Grid ColumnDefinitions="64,64,*,110,90,150" ColumnSpacing="8">
+                            <!-- A box that cannot apply to this row is hidden rather than
+                                 disabled: a column of greyed boxes reads as "broken", where an
+                                 empty cell reads as "not applicable", which is what it is. -->
+                            <CheckBox Grid.Column="0"
+                                      IsChecked="{Binding MarkedForRemoval}"
+                                      IsVisible="{Binding CanRemove}" />
+                            <CheckBox Grid.Column="1"
+                                      IsChecked="{Binding MarkedForInstall}"
+                                      IsVisible="{Binding CanInstall}" />
+                            <TextBlock Grid.Column="2" Text="{Binding DisplayName}"
+                                       VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                            <TextBlock Grid.Column="3" Text="{Binding StatusText}"
+                                       VerticalAlignment="Center" />
+                            <TextBlock Grid.Column="4" Text="{Binding SizeKilobytes}"
+                                       VerticalAlignment="Center" TextAlignment="Right" />
+                            <TextBlock Grid.Column="5" Text="{Binding TypeText}"
+                                       VerticalAlignment="Center" />
+                        </Grid>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+
+            <!-- Over the empty list, not instead of it: the ListBox keeps its sunken frame. -->
+            <TextBlock Text="{loc:Tr InventoryEmpty}"
+                       IsVisible="{Binding IsEmpty}"
+                       Margin="16"
+                       HorizontalAlignment="Center" VerticalAlignment="Top"
+                       IsHitTestVisible="False"
+                       Foreground="{DynamicResource WlrixViewForeground}" />
+        </Panel>
+
+    </DockPanel>
+
+</UserControl>

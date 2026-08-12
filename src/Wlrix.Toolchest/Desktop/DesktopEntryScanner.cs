@@ -1,3 +1,5 @@
+using Wlrix.Common;
+
 namespace Wlrix.Toolchest.Desktop;
 
 /// <summary>
@@ -51,7 +53,7 @@ public sealed class DesktopEntryScanner
         if (e.Type is not "Application" || e.NoDisplay || e.Hidden || string.IsNullOrWhiteSpace(e.Exec))
             return false;
 
-        if (e.TryExec is { Length: > 0 } tryExec && !ExecutableExists(tryExec))
+        if (e.TryExec is { Length: > 0 } tryExec && !Executables.Exists(tryExec))
             return false;
 
         if (e.OnlyShowIn.Count > 0 && !e.OnlyShowIn.Any(_currentDesktop.Contains))
@@ -76,15 +78,5 @@ public sealed class DesktopEntryScanner
             dirs = "/usr/local/share:/usr/share";
         foreach (var dir in dirs.Split(':', StringSplitOptions.RemoveEmptyEntries))
             yield return Path.Combine(dir, "applications");
-    }
-
-    private static bool ExecutableExists(string program)
-    {
-        if (program.Contains('/'))
-            return File.Exists(program);
-
-        var path = Environment.GetEnvironmentVariable("PATH") ?? string.Empty;
-        return path.Split(':', StringSplitOptions.RemoveEmptyEntries)
-            .Any(dir => File.Exists(Path.Combine(dir, program)));
     }
 }

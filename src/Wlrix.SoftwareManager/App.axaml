@@ -1,0 +1,11 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:wlrix="https://vic485.xyz/Wlrix.Avalonia"
+             x:Class="Wlrix.SoftwareManager.App"
+             RequestedThemeVariant="Default">
+    <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
+
+    <Application.Styles>
+        <wlrix:WlrixTheme />
+    </Application.Styles>
+</Application>

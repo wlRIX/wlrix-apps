@@ -1,0 +1,8 @@
+cachyos-znver4/bash 5.3.15-2 [installed]
+    The GNU Bourne Again shell
+cachyos-extra-znver4/zsh 5.9.2-1.1 [installed]
+    A very advanced and programmable command interpreter (shell) for UNIX
+core/bash 5.3.15-1 [installed: 5.3.15-2]
+    The GNU Bourne Again shell
+extra/zsh 5.9.2-1 [installed: 5.9.2-1.1]
+    A very advanced and programmable command interpreter (shell) for UNIX

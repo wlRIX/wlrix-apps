@@ -1,0 +1,53 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:parsing="using:Wlrix.Packages.Backends.Parsing"
+        xmlns:loc="using:Wlrix.Common.Localization"
+        xmlns:wlrix="https://vic485.xyz/Wlrix.Avalonia"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="520" d:DesignHeight="320"
+        Width="520" Height="320" MinWidth="360" MinHeight="220"
+        x:Class="Wlrix.SoftwareManager.Views.Dialogs.ConflictsDialog"
+        x:DataType="parsing:TransactionConflict"
+        WindowStartupLocation="CenterOwner"
+        Title="{loc:Tr ConflictsTitle}">
+
+    <DockPanel Margin="12">
+
+        <TextBlock DockPanel.Dock="Top" Text="{loc:Tr ConflictsExplanation}"
+                   TextWrapping="Wrap" Margin="0,0,0,10" />
+
+        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal"
+                    HorizontalAlignment="Right" Spacing="8" Margin="0,10,0,0">
+            <Button Content="{loc:Tr Close}" MinWidth="90" Click="OnClose" IsCancel="True" IsDefault="True" />
+        </StackPanel>
+
+        <!-- Read-only, and deliberately so. Resolving a conflict means choosing which package
+             to keep, and the package managers spell that as different commands with different
+             consequences on each of the three. Reporting exactly what was said, so the user can
+             act on it themselves, is worth more than a Resolve button that guesses. -->
+        <wlrix:BevelBorder Bevel="Sunken" BevelThickness="2" OuterLineThickness="1"
+                           Background="{DynamicResource WlrixViewBackground}"
+                           LightBrush="{DynamicResource WlrixTopShadow}"
+                           DarkBrush="{DynamicResource WlrixBottomShadow}"
+                           OuterLineBrush="{DynamicResource WlrixOuterLine}">
+            <ScrollViewer Padding="6">
+                <ItemsControl Name="Conflicts">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="parsing:TransactionConflict">
+                            <StackPanel Margin="0,0,0,8">
+                                <TextBlock Text="{Binding Package}" FontWeight="Bold"
+                                           IsVisible="{Binding Package, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                           Foreground="{DynamicResource WlrixViewForeground}" />
+                                <TextBlock Text="{Binding Description}" TextWrapping="Wrap"
+                                           Foreground="{DynamicResource WlrixViewForeground}" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+        </wlrix:BevelBorder>
+
+    </DockPanel>
+
+</Window>
