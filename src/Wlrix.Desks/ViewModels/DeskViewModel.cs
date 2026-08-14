@@ -4,8 +4,10 @@ using Wlrix.Desks.Models;
 
 namespace Wlrix.Desks.ViewModels;
 
-/// <summary>A window rectangle already scaled into a desk's preview box.</summary>
-public sealed record PreviewWindow(double X, double Y, double W, double H);
+/// <summary>A window rectangle already scaled into a desk's preview box. <paramref name="Id"/>
+/// is the snapshot's window id, which the preview hit-tests against and reports as hovered or
+/// selected — the same window drawn on several desks keeps the same id.</summary>
+public sealed record PreviewWindow(long Id, double X, double Y, double W, double H);
 
 /// <summary>
 /// One desk tile: its name, whether it is the active desk (drives the LED lamp), and the
@@ -126,6 +128,7 @@ public sealed class DeskViewModel(int id) : ViewModelBase
             // icon in the minimized grid, so they land in the preview's corner exactly where
             // the icons sit on screen.
             result.Add(new PreviewWindow(
+                w.Id,
                 (w.X - world.X) * scale,
                 (w.Y - world.Y) * scale,
                 Math.Max(1, w.W * scale),

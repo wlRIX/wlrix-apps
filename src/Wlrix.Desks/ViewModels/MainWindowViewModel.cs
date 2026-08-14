@@ -16,6 +16,8 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
     private bool _showGlobalDesk = true;
     private bool _showSnapshots = true;
     private DeskSnapshot? _lastSnapshot;
+    private long? _hoveredWindowId;
+    private long? _selectedWindowId;
     private Rect _world = new(0, 0, 1920, 1080);
 
     /// <summary>Design-time / previewer constructor: shows the sample layout.</summary>
@@ -60,6 +62,24 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
 
     /// <summary>Goto / Delete apply only to a selected, non-Global desk.</summary>
     public bool CanOperateOnSelected => SelectedDesk is { IsGlobal: false };
+
+    /// <summary>
+    /// The window under the pointer, by snapshot id, shared by every tile: a window that shows
+    /// on more than one desk (anything on the Global desk) is drawn hovered in all of them.
+    /// </summary>
+    public long? HoveredWindowId
+    {
+        get => _hoveredWindowId;
+        set => this.RaiseAndSetIfChanged(ref _hoveredWindowId, value);
+    }
+
+    /// <summary>The selected window, by snapshot id — one at a time, across all desks. The
+    /// window options to come act on this.</summary>
+    public long? SelectedWindowId
+    {
+        get => _selectedWindowId;
+        set => this.RaiseAndSetIfChanged(ref _selectedWindowId, value);
+    }
 
     public bool ShowGlobalDesk
     {
@@ -166,6 +186,14 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
         var world = _world;
         var globalWindows = snapshot.Windows.Where(w => w.DeskId == 0).ToList();
         var selectedId = SelectedDesk?.Id;
+
+        // A closed window must not leave its id behind: the feed restarts its ids from 1 when
+        // it reconnects, so a stale one could later point at an unrelated window.
+        var live = snapshot.Windows.Select(w => w.Id).ToHashSet();
+        if (SelectedWindowId is { } selectedWindow && !live.Contains(selectedWindow))
+            SelectedWindowId = null;
+        if (HoveredWindowId is { } hoveredWindow && !live.Contains(hoveredWindow))
+            HoveredWindowId = null;
 
         // The pinned Global desk (id 0).
         if (snapshot.Desks.FirstOrDefault(d => d.Id == 0) is { } globalInfo)

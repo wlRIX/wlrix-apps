@@ -71,7 +71,11 @@
                                               Height="{Binding PreviewHeight}"
                                               Windows="{Binding PreviewWindows}"
                                               WindowBrush="{DynamicResource WlrixFace}"
-                                              WindowBorderBrush="{DynamicResource WlrixForeground}" />
+                                              WindowBorderBrush="{DynamicResource WlrixForeground}"
+                                              HoverBorderBrush="White"
+                                              SelectionBorderBrush="{DynamicResource WlrixSelectFill}"
+                                              HoveredWindowId="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).HoveredWindowId, Mode=TwoWay}"
+                                              SelectedWindowId="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).SelectedWindowId, Mode=TwoWay}" />
                     </wlrix:BevelBorder>
                 </StackPanel>
             </wlrix:BevelBorder>
