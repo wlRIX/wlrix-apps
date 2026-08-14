@@ -63,6 +63,14 @@ public sealed class WaylandDeskFeed : IDeskFeed
         return Task.CompletedTask;
     }
 
+    public Task RenameAsync(int id, string name)
+    {
+        // The compositor answers with a fresh `name` event, so the tile picks the rename up
+        // through the normal snapshot path rather than from this call.
+        Post(() => Desk(id)?.SetName(name));
+        return Task.CompletedTask;
+    }
+
     public void Dispose()
     {
         if (!_cts.IsCancellationRequested)

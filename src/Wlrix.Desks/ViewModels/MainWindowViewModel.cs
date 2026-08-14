@@ -108,6 +108,32 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
     public Task GotoSelectedAsync() =>
         SelectedDesk is { IsGlobal: false } d ? Guard(() => _feed.SwitchAsync(d.Id)) : Task.CompletedTask;
 
+    /// <summary>Opens the inline name editor on the selected desk.</summary>
+    public void BeginRenameSelected()
+    {
+        if (SelectedDesk is { IsGlobal: false } d)
+            d.BeginEdit();
+    }
+
+    /// <summary>
+    /// Closes the inline editor and sends the rename. A blank or unchanged name is treated as
+    /// "leave it alone", so committing an untouched field can't wipe a desk's name.
+    /// </summary>
+    public Task CommitRenameAsync(DeskViewModel desk)
+    {
+        if (!desk.IsEditing)
+            return Task.CompletedTask;
+
+        desk.EndEdit();
+        var name = desk.EditName.Trim();
+        return name.Length == 0 || name == desk.Name || desk.IsGlobal
+            ? Task.CompletedTask
+            : Guard(() => _feed.RenameAsync(desk.Id, name));
+    }
+
+    /// <summary>Closes the inline editor, discarding the draft.</summary>
+    public void CancelRename(DeskViewModel desk) => desk.EndEdit();
+
     public Task DeleteSelectedAsync() =>
         SelectedDesk is { IsGlobal: false } d ? Guard(() => _feed.RemoveAsync(d.Id)) : Task.CompletedTask;
 
@@ -162,9 +188,27 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
             ordered.Add(vm);
         }
 
-        Desks.Clear();
-        foreach (var vm in ordered)
-            Desks.Add(vm);
+        // Sync the collection in place rather than Clear + re-Add: snapshots arrive on every
+        // window move, and rebuilding the list would drop the ListBox containers — taking an
+        // open inline rename editor, and the keyboard focus in it, down with them.
+        for (var i = 0; i < ordered.Count; i++)
+        {
+            if (i >= Desks.Count)
+            {
+                Desks.Add(ordered[i]);
+            }
+            else if (!ReferenceEquals(Desks[i], ordered[i]))
+            {
+                var existing = Desks.IndexOf(ordered[i]);
+                if (existing >= 0)
+                    Desks.Move(existing, i);
+                else
+                    Desks.Insert(i, ordered[i]);
+            }
+        }
+
+        while (Desks.Count > ordered.Count)
+            Desks.RemoveAt(Desks.Count - 1);
 
         SelectedDesk = selectedId is null ? null : ordered.FirstOrDefault(d => d.Id == selectedId);
     }

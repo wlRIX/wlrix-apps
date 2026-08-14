@@ -44,7 +44,18 @@
                                     Background="{DynamicResource WlrixAccent}"
                                     IsVisible="{Binding IsActive}" />
                         </wlrix:BevelBorder>
-                        <TextBlock Text="{Binding Name}" FontWeight="Bold" VerticalAlignment="Center" />
+                        <!-- The name is renamed in place (IRIX had no rename prompt): the label
+                             gives way to a text field for the length of the edit. -->
+                        <Panel MinHeight="20">
+                            <TextBlock Text="{Binding Name}" FontWeight="Bold"
+                                       VerticalAlignment="Center"
+                                       IsVisible="{Binding !IsEditing}" />
+                            <TextBox Name="NameEditor" Text="{Binding EditName}"
+                                     FontWeight="Bold" Padding="2,0" VerticalAlignment="Center"
+                                     IsVisible="{Binding IsEditing}"
+                                     KeyDown="OnRenameKeyDown"
+                                     LostFocus="OnRenameLostFocus" />
+                        </Panel>
                     </DockPanel>
 
                     <!-- Window geometry preview -->
@@ -54,7 +65,10 @@
                                      DarkBrush="{DynamicResource WlrixBottomShadow}"
                                      OuterLineBrush="{DynamicResource WlrixOuterLine}"
                                      IsVisible="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).ShowSnapshots}">
-                        <controls:DeskPreview Width="160" Height="100"
+                        <!-- The box carries the screen layout's aspect ratio, so it fits the
+                             sunken well exactly rather than letterboxing inside a fixed box. -->
+                        <controls:DeskPreview Width="{Binding PreviewWidth}"
+                                              Height="{Binding PreviewHeight}"
                                               Windows="{Binding PreviewWindows}"
                                               WindowBrush="{DynamicResource WlrixFace}"
                                               WindowBorderBrush="{DynamicResource WlrixForeground}" />
@@ -75,6 +89,8 @@
             </MenuItem>
             <MenuItem Header="Desk">
                 <MenuItem Header="New Desk" Click="OnNewDesk" />
+                <MenuItem Header="Rename Selected" Click="OnRenameSelected"
+                          IsEnabled="{Binding CanOperateOnSelected}" />
                 <MenuItem Header="Goto Selected" Click="OnGotoSelected"
                           IsEnabled="{Binding CanOperateOnSelected}" />
                 <MenuItem Header="Delete Selected" Click="OnDeleteSelected"
@@ -92,7 +108,8 @@
                             VerticalAlignment="Top"
                             Margin="0,0,8,0" />
 
-            <ListBox ItemsSource="{Binding Desks}"
+            <ListBox x:Name="DeskList"
+                     ItemsSource="{Binding Desks}"
                      SelectedItem="{Binding SelectedDesk}"
                      ItemTemplate="{StaticResource DeskTile}"
                      PointerPressed="OnDeskListPointerPressed"

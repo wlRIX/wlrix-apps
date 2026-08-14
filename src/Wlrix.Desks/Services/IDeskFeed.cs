@@ -26,6 +26,9 @@ public interface IDeskFeed : IDisposable
 
     /// <summary>Removes a desk. Throws <see cref="DeskCommandException"/> on rejection.</summary>
     Task RemoveAsync(int id);
+
+    /// <summary>Renames a desk. Throws <see cref="DeskCommandException"/> on rejection.</summary>
+    Task RenameAsync(int id, string name);
 }
 
 /// <summary>Thrown when the compositor answers a command with an <c>err</c> reply.</summary>

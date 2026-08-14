@@ -4,6 +4,7 @@ using Avalonia.Controls.Primitives;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
+using Avalonia.Threading;
 using Avalonia.VisualTree;
 using Wlrix.Avalonia.Dialogs;
 using Wlrix.Desks.ViewModels;
@@ -95,6 +96,59 @@ public partial class MainWindow : Window
             await vm.NewDeskAsync();
     }
 
+    // Rename opens the editor on the selected tile; the template only realizes the field when
+    // IsEditing flips, so focusing it waits for that layout pass.
+    private void OnRenameSelected(object? sender, RoutedEventArgs e)
+    {
+        if (DataContext is not MainWindowViewModel vm || vm.SelectedDesk is not { } desk)
+            return;
+
+        vm.BeginRenameSelected();
+        Dispatcher.UIThread.Post(() => FocusNameEditor(desk), DispatcherPriority.Loaded);
+    }
+
+    private void FocusNameEditor(DeskViewModel desk)
+    {
+        var editor = this.GetVisualDescendants()
+            .OfType<TextBox>()
+            .FirstOrDefault(t => t.Name == "NameEditor" && ReferenceEquals(t.DataContext, desk));
+        if (editor is null)
+            return;
+
+        editor.Focus();
+        editor.SelectAll();
+    }
+
+    // Enter commits, Escape abandons the draft. Clicking away commits too (LostFocus), which is
+    // how IRIX's inline edits behaved.
+    private void OnRenameKeyDown(object? sender, KeyEventArgs e)
+    {
+        if (DataContext is not MainWindowViewModel vm ||
+            sender is not TextBox { DataContext: DeskViewModel desk })
+            return;
+
+        switch (e.Key)
+        {
+            case Key.Enter:
+                e.Handled = true;
+                _ = vm.CommitRenameAsync(desk);
+                DeskList.Focus();
+                break;
+            case Key.Escape:
+                e.Handled = true;
+                vm.CancelRename(desk);
+                DeskList.Focus();
+                break;
+        }
+    }
+
+    private void OnRenameLostFocus(object? sender, RoutedEventArgs e)
+    {
+        if (DataContext is MainWindowViewModel vm &&
+            sender is TextBox { DataContext: DeskViewModel desk })
+            _ = vm.CommitRenameAsync(desk);
+    }
+
     private async void OnGotoSelected(object? sender, RoutedEventArgs e)
     {
         if (DataContext is MainWindowViewModel vm)
@@ -122,7 +176,7 @@ public partial class MainWindow : Window
     private async void OnDeskDoubleTapped(object? sender, TappedEventArgs e)
     {
         if (DataContext is MainWindowViewModel vm &&
-            DeskItemFrom(e.Source)?.DataContext is DeskViewModel desk)
+            DeskItemFrom(e.Source)?.DataContext is DeskViewModel { IsEditing: false } desk)
         {
             vm.SelectedDesk = desk;
             await vm.GotoSelectedAsync();

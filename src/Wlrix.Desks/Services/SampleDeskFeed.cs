@@ -62,6 +62,20 @@ public sealed class SampleDeskFeed : IDeskFeed
         return Task.CompletedTask;
     }
 
+    public Task RenameAsync(int id, string name)
+    {
+        lock (_gate)
+        {
+            var i = _desks.FindIndex(d => d.Id == id);
+            if (i < 0)
+                return Task.CompletedTask;
+            _desks[i] = _desks[i] with { Name = name };
+        }
+
+        Emit();
+        return Task.CompletedTask;
+    }
+
     public Task RemoveAsync(int id)
     {
         lock (_gate)
