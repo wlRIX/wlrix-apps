@@ -91,7 +91,61 @@ public sealed class SampleDeskFeed : IDeskFeed
         return Task.CompletedTask;
     }
 
+    public Task MinimizeWindowAsync(long id) => SetMinimized(id, true);
+
+    public Task RestoreWindowAsync(long id) => SetMinimized(id, false);
+
+    // No compositor here to own a stacking order, so the list order stands in for it: the
+    // preview draws (and hit-tests) later entries on top.
+    public Task RaiseWindowAsync(long id) => Restack(id, toTop: true);
+
+    public Task LowerWindowAsync(long id) => Restack(id, toTop: false);
+
+    public Task MoveWindowToDeskAsync(long id, int deskId)
+    {
+        lock (_gate)
+        {
+            var i = _windows.FindIndex(w => w.Id == id);
+            if (i < 0)
+                return Task.CompletedTask;
+            _windows[i] = _windows[i] with { DeskId = deskId };
+        }
+
+        Emit();
+        return Task.CompletedTask;
+    }
+
     public void Dispose() => _timer?.Dispose();
+
+    private Task SetMinimized(long id, bool minimized)
+    {
+        lock (_gate)
+        {
+            var i = _windows.FindIndex(w => w.Id == id);
+            if (i < 0)
+                return Task.CompletedTask;
+            _windows[i] = _windows[i] with { Minimized = minimized };
+        }
+
+        Emit();
+        return Task.CompletedTask;
+    }
+
+    private Task Restack(long id, bool toTop)
+    {
+        lock (_gate)
+        {
+            var i = _windows.FindIndex(w => w.Id == id);
+            if (i < 0)
+                return Task.CompletedTask;
+            var window = _windows[i];
+            _windows.RemoveAt(i);
+            _windows.Insert(toTop ? _windows.Count : 0, window);
+        }
+
+        Emit();
+        return Task.CompletedTask;
+    }
 
     private void CycleActive()
     {

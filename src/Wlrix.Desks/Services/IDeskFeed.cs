@@ -29,6 +29,22 @@ public interface IDeskFeed : IDisposable
 
     /// <summary>Renames a desk. Throws <see cref="DeskCommandException"/> on rejection.</summary>
     Task RenameAsync(int id, string name);
+
+    /// <summary>Minimizes a window to its icon in the compositor's minimized grid.</summary>
+    Task MinimizeWindowAsync(long id);
+
+    /// <summary>Restores a minimized window.</summary>
+    Task RestoreWindowAsync(long id);
+
+    /// <summary>Raises a window to the top of the stacking order.</summary>
+    Task RaiseWindowAsync(long id);
+
+    /// <summary>Lowers a window to the bottom of the stacking order.</summary>
+    Task LowerWindowAsync(long id);
+
+    /// <summary>Moves a window to another desk; desk 0 is the Global desk, which shows its
+    /// windows on every desk.</summary>
+    Task MoveWindowToDeskAsync(long id, int deskId);
 }
 
 /// <summary>Thrown when the compositor answers a command with an <c>err</c> reply.</summary>

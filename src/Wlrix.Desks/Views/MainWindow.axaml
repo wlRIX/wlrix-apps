@@ -88,7 +88,7 @@
             <MenuItem Header="Overview">
                 <MenuItem Header="{Binding GlobalDeskMenuHeader}" Click="OnToggleGlobalDesk" />
                 <MenuItem Header="{Binding SnapshotsMenuHeader}" Click="OnToggleSnapshots" />
-                <Separator />
+                <MenuItem Header="-" />
                 <MenuItem Header="Exit" Click="OnExit" />
             </MenuItem>
             <MenuItem Header="Desk">
@@ -100,7 +100,32 @@
                 <MenuItem Header="Delete Selected" Click="OnDeleteSelected"
                           IsEnabled="{Binding CanOperateOnSelected}" />
             </MenuItem>
-            <MenuItem Header="Window" IsEnabled="False" />
+            <!-- Accelerators are declared twice on purpose: InputGesture is what the menu
+                 *shows*, HotKey is what makes the key work while the menu is closed. -->
+            <MenuItem Header="Window">
+                <MenuItem Header="List All" InputGesture="Ctrl+L" IsEnabled="False" />
+                <MenuItem Header="Minimize All" InputGesture="Ctrl+M" HotKey="Ctrl+M"
+                          Click="OnMinimizeAll" />
+                <MenuItem Header="Restore All" InputGesture="Shift+Ctrl+M" HotKey="Shift+Ctrl+M"
+                          Click="OnRestoreAll" />
+                <!-- The theme draws a separator from a MenuItem headed "-" (Avalonia's
+                     :separator pseudo-class); a bare <Separator/> gets no template here and
+                     renders as nothing at all. -->
+                <MenuItem Header="-" />
+                <MenuItem Header="Add to Global" InputGesture="Ctrl+G" HotKey="Ctrl+G"
+                          Click="OnAddToGlobal" IsEnabled="{Binding HasSelectedWindow}" />
+                <MenuItem Header="Remove from Desk" InputGesture="Ctrl+D" HotKey="Ctrl+D"
+                          Click="OnRemoveFromDesk" IsEnabled="{Binding HasSelectedWindow}" />
+                <MenuItem Header="-" />
+                <MenuItem Header="Minimize" InputGesture="Ctrl+E" HotKey="Ctrl+E"
+                          Click="OnMinimizeSelected" IsEnabled="{Binding CanMinimizeSelected}" />
+                <MenuItem Header="Restore" InputGesture="Shift+Ctrl+E" HotKey="Shift+Ctrl+E"
+                          Click="OnRestoreSelected" IsEnabled="{Binding CanRestoreSelected}" />
+                <MenuItem Header="Lower" Click="OnLowerSelected"
+                          IsEnabled="{Binding HasSelectedWindow}" />
+                <MenuItem Header="Raise" Click="OnRaiseSelected"
+                          IsEnabled="{Binding HasSelectedWindow}" />
+            </MenuItem>
         </Menu>
 
         <!-- Desk strip: pinned Global tile + horizontally scrolling desk list -->

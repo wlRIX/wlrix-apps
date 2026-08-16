@@ -74,12 +74,27 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
     }
 
     /// <summary>The selected window, by snapshot id — one at a time, across all desks. The
-    /// window options to come act on this.</summary>
+    /// Window menu acts on this.</summary>
     public long? SelectedWindowId
     {
         get => _selectedWindowId;
-        set => this.RaiseAndSetIfChanged(ref _selectedWindowId, value);
+        set
+        {
+            this.RaiseAndSetIfChanged(ref _selectedWindowId, value);
+            RaiseWindowMenuStates();
+        }
     }
+
+    /// <summary>The selected window as the last snapshot described it, or null.</summary>
+    public WindowInfo? SelectedWindow =>
+        SelectedWindowId is { } id ? _lastSnapshot?.Windows.FirstOrDefault(w => w.Id == id) : null;
+
+    /// <summary>Most of the Window menu needs a selected window.</summary>
+    public bool HasSelectedWindow => SelectedWindow is not null;
+
+    public bool CanMinimizeSelected => SelectedWindow is { Minimized: false };
+
+    public bool CanRestoreSelected => SelectedWindow is { Minimized: true };
 
     public bool ShowGlobalDesk
     {
@@ -157,11 +172,74 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
     public Task DeleteSelectedAsync() =>
         SelectedDesk is { IsGlobal: false } d ? Guard(() => _feed.RemoveAsync(d.Id)) : Task.CompletedTask;
 
+    // ── Window menu ─────────────────────────────────────────────────────────────────────
+
+    /// <summary>Minimizes the active desk's own windows. Global-desk windows are left alone:
+    /// they are on every desk, and they are the furniture (toolchest, background, this app).</summary>
+    public Task MinimizeAllAsync() =>
+        ForEachOnActiveDesk(w => !w.Minimized, w => _feed.MinimizeWindowAsync(w.Id));
+
+    /// <summary>Restores the active desk's own minimized windows.</summary>
+    public Task RestoreAllAsync() =>
+        ForEachOnActiveDesk(w => w.Minimized, w => _feed.RestoreWindowAsync(w.Id));
+
+    /// <summary>Moves the selected window onto the Global desk, so it shows on every desk.</summary>
+    public Task AddSelectedToGlobalAsync() =>
+        SelectedWindow is { } w && w.DeskId != 0
+            ? Guard(() => _feed.MoveWindowToDeskAsync(w.Id, 0))
+            : Task.CompletedTask;
+
+    /// <summary>
+    /// Takes the selected window off the Global desk, leaving it on the active desk only.
+    /// A window that is already on a single ordinary desk has no second copy to remove, so
+    /// this does nothing for it.
+    /// </summary>
+    public Task RemoveSelectedFromDeskAsync() =>
+        SelectedWindow is { DeskId: 0 } w && ActiveDeskId is { } desk
+            ? Guard(() => _feed.MoveWindowToDeskAsync(w.Id, desk))
+            : Task.CompletedTask;
+
+    public Task MinimizeSelectedAsync() =>
+        SelectedWindow is { Minimized: false } w
+            ? Guard(() => _feed.MinimizeWindowAsync(w.Id))
+            : Task.CompletedTask;
+
+    public Task RestoreSelectedAsync() =>
+        SelectedWindow is { Minimized: true } w
+            ? Guard(() => _feed.RestoreWindowAsync(w.Id))
+            : Task.CompletedTask;
+
+    public Task RaiseSelectedAsync() =>
+        SelectedWindow is { } w ? Guard(() => _feed.RaiseWindowAsync(w.Id)) : Task.CompletedTask;
+
+    public Task LowerSelectedAsync() =>
+        SelectedWindow is { } w ? Guard(() => _feed.LowerWindowAsync(w.Id)) : Task.CompletedTask;
+
     public void Dispose()
     {
         _feed.SnapshotReceived -= OnSnapshot;
         _feed.Unavailable -= OnUnavailable;
         _feed.Dispose();
+    }
+
+    /// <summary>The active desk, or null before the first snapshot.</summary>
+    private int? ActiveDeskId => _lastSnapshot?.Desks.FirstOrDefault(d => d.Active)?.Id;
+
+    private async Task ForEachOnActiveDesk(Func<WindowInfo, bool> match, Func<WindowInfo, Task> action)
+    {
+        if (_lastSnapshot is not { } snapshot || ActiveDeskId is not { } deskId)
+            return;
+
+        foreach (var w in snapshot.Windows.Where(w => w.DeskId == deskId && match(w)).ToList())
+            await Guard(() => action(w));
+    }
+
+    private void RaiseWindowMenuStates()
+    {
+        this.RaisePropertyChanged(nameof(SelectedWindow));
+        this.RaisePropertyChanged(nameof(HasSelectedWindow));
+        this.RaisePropertyChanged(nameof(CanMinimizeSelected));
+        this.RaisePropertyChanged(nameof(CanRestoreSelected));
     }
 
     private async Task Guard(Func<Task> action)
@@ -239,6 +317,10 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
             Desks.RemoveAt(Desks.Count - 1);
 
         SelectedDesk = selectedId is null ? null : ordered.FirstOrDefault(d => d.Id == selectedId);
+
+        // The selected window's own state (minimized, which desk it is on) rides on the
+        // snapshot, so the Window menu's enablement has to be re-evaluated with it.
+        RaiseWindowMenuStates();
     }
 
     // Smallest "Desk N" (N >= 1) not already in use.

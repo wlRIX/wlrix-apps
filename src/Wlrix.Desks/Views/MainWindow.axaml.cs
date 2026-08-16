@@ -161,6 +161,54 @@ public partial class MainWindow : Window
             await vm.DeleteSelectedAsync();
     }
 
+    private async void OnMinimizeAll(object? sender, RoutedEventArgs e)
+    {
+        if (DataContext is MainWindowViewModel vm)
+            await vm.MinimizeAllAsync();
+    }
+
+    private async void OnRestoreAll(object? sender, RoutedEventArgs e)
+    {
+        if (DataContext is MainWindowViewModel vm)
+            await vm.RestoreAllAsync();
+    }
+
+    private async void OnAddToGlobal(object? sender, RoutedEventArgs e)
+    {
+        if (DataContext is MainWindowViewModel vm)
+            await vm.AddSelectedToGlobalAsync();
+    }
+
+    private async void OnRemoveFromDesk(object? sender, RoutedEventArgs e)
+    {
+        if (DataContext is MainWindowViewModel vm)
+            await vm.RemoveSelectedFromDeskAsync();
+    }
+
+    private async void OnMinimizeSelected(object? sender, RoutedEventArgs e)
+    {
+        if (DataContext is MainWindowViewModel vm)
+            await vm.MinimizeSelectedAsync();
+    }
+
+    private async void OnRestoreSelected(object? sender, RoutedEventArgs e)
+    {
+        if (DataContext is MainWindowViewModel vm)
+            await vm.RestoreSelectedAsync();
+    }
+
+    private async void OnLowerSelected(object? sender, RoutedEventArgs e)
+    {
+        if (DataContext is MainWindowViewModel vm)
+            await vm.LowerSelectedAsync();
+    }
+
+    private async void OnRaiseSelected(object? sender, RoutedEventArgs e)
+    {
+        if (DataContext is MainWindowViewModel vm)
+            await vm.RaiseSelectedAsync();
+    }
+
     // Clicking empty space in the desk strip (not on a tile, not the scrollbar) clears the selection.
     private void OnDeskListPointerPressed(object? sender, PointerPressedEventArgs e)
     {

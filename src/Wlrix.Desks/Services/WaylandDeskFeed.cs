@@ -71,6 +71,41 @@ public sealed class WaylandDeskFeed : IDeskFeed
         return Task.CompletedTask;
     }
 
+    public Task MinimizeWindowAsync(long id)
+    {
+        Post(() => Toplevel(id)?.Minimize());
+        return Task.CompletedTask;
+    }
+
+    public Task RestoreWindowAsync(long id)
+    {
+        Post(() => Toplevel(id)?.Restore());
+        return Task.CompletedTask;
+    }
+
+    public Task RaiseWindowAsync(long id)
+    {
+        Post(() => Toplevel(id)?.Raise());
+        return Task.CompletedTask;
+    }
+
+    public Task LowerWindowAsync(long id)
+    {
+        Post(() => Toplevel(id)?.Lower());
+        return Task.CompletedTask;
+    }
+
+    public Task MoveWindowToDeskAsync(long id, int deskId)
+    {
+        Post(() =>
+        {
+            // Both objects have to still be around by the time this runs on the Wayland thread.
+            if (Toplevel(id) is { } toplevel && Desk(deskId) is { } desk)
+                toplevel.MoveToDesk(desk);
+        });
+        return Task.CompletedTask;
+    }
+
     public void Dispose()
     {
         if (!_cts.IsCancellationRequested)
@@ -85,6 +120,9 @@ public sealed class WaylandDeskFeed : IDeskFeed
 
     private WlrixDeskV1? Desk(int id) =>
         _desks.FirstOrDefault(kv => kv.Value.Id == id).Key;
+
+    private WlrixToplevelV1? Toplevel(long id) =>
+        _toplevels.FirstOrDefault(kv => kv.Value.WindowId == id).Key;
 
     private Thread StartThread()
     {
