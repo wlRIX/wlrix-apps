@@ -14,9 +14,16 @@ public static class Strings
 
     public static string Toolchest => Catalog.Get("Toolchest");
     public static string Desktop => Catalog.Get("Desktop");
+    public static string System => Catalog.Get("System");
     public static string Applications => Catalog.Get("Applications");
     public static string Help => Catalog.Get("Help");
-    public static string OpenUnixShell => Catalog.Get("OpenUnixShell");
+    public static string ExtraDesks => Catalog.Get("ExtraDesks");
+    public static string OpenTerminal => Catalog.Get("OpenTerminal");
+    public static string LogOut => Catalog.Get("LogOut");
+    public static string LogOutPrompt => Catalog.Get("LogOutPrompt");
+    public static string SoftwareManager => Catalog.Get("SoftwareManager");
+    public static string RestartSystem => Catalog.Get("RestartSystem");
+    public static string ShutDownSystem => Catalog.Get("ShutDownSystem");
     public static string AboutToolchest => Catalog.Get("AboutToolchest");
     public static string Loading => Catalog.Get("Loading");
 

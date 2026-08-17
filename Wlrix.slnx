@@ -13,5 +13,6 @@
     </Folder>
     <Folder Name="/tests/">
         <Project Path="tests/Wlrix.Packages.Tests/Wlrix.Packages.Tests.csproj" />
+        <Project Path="tests/Wlrix.Toolchest.Tests/Wlrix.Toolchest.Tests.csproj" />
     </Folder>
 </Solution>

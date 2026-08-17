@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <IsPackable>false</IsPackable>
+        <IsTestProject>true</IsTestProject>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <!-- The app itself: the Desktop menu's shape and the pid the Log Out path is willing to
+             signal both live in it, and neither needs a display. The view models are plain
+             objects, and these tests stay off the paths that reach the dispatcher. -->
+        <ProjectReference Include="..\..\src\Wlrix.Toolchest\Wlrix.Toolchest.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" />
+        <PackageReference Include="xunit" />
+        <PackageReference Include="xunit.runner.visualstudio" />
+    </ItemGroup>
+
+</Project>

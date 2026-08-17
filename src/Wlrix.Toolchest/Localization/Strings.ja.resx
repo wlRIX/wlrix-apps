@@ -18,14 +18,37 @@
   <data name="Desktop" xml:space="preserve">
     <value>デスクトップ</value>
   </data>
+  <data name="System" xml:space="preserve">
+    <value>システム</value>
+  </data>
   <data name="Applications" xml:space="preserve">
     <value>アプリケーション</value>
   </data>
   <data name="Help" xml:space="preserve">
     <value>ヘルプ</value>
   </data>
-  <data name="OpenUnixShell" xml:space="preserve">
-    <value>Unix シェルを開く</value>
+  <data name="ExtraDesks" xml:space="preserve">
+    <value>デスクの追加</value>
+  </data>
+  <data name="OpenTerminal" xml:space="preserve">
+    <value>ターミナルを開く</value>
+  </data>
+  <data name="LogOut" xml:space="preserve">
+    <value>ログアウト</value>
+  </data>
+  <data name="LogOutPrompt" xml:space="preserve">
+    <value>この wlRIX セッションからログアウトしますか？
+
+実行中のアプリケーションはすべて終了し、保存していない内容は失われます。</value>
+  </data>
+  <data name="SoftwareManager" xml:space="preserve">
+    <value>ソフトウェアマネージャ</value>
+  </data>
+  <data name="RestartSystem" xml:space="preserve">
+    <value>システムを再起動</value>
+  </data>
+  <data name="ShutDownSystem" xml:space="preserve">
+    <value>システムを終了</value>
   </data>
   <data name="AboutToolchest" xml:space="preserve">
     <value>ツールチェストについて</value>

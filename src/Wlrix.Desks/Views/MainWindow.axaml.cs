@@ -3,7 +3,6 @@ using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Input;
 using Avalonia.Interactivity;
-using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
 using Wlrix.Avalonia.Dialogs;
@@ -235,5 +234,7 @@ public partial class MainWindow : Window
     private static ListBoxItem? DeskItemFrom(object? source) =>
         (source as Visual)?.FindAncestorOfType<ListBoxItem>(includeSelf: true);
 
-    private void InitializeComponent() => AvaloniaXamlLoader.Load(this);
+    // No hand-written `InitializeComponent()` here on purpose. The generated one
+    // (InitializeComponent(bool loadXaml = true)) loads the XAML *and* assigns the x:Name
+    // fields; a parameterless override wins overload resolution, leaving DeskList null.
 }

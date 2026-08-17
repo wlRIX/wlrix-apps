@@ -16,7 +16,13 @@ public interface IAppLauncher
     /// <summary>Launches <paramref name="exec"/> (a <c>.desktop</c> Exec value), optionally in a terminal.</summary>
     void Launch(string displayName, string exec, bool terminal);
 
-    /// <summary>Opens a bare terminal emulator (Desktop → Open Unix Shell).</summary>
+    /// <summary>
+    /// Launches <paramref name="program"/> from the <c>PATH</c> by name, for the wlRIX apps the
+    /// Desktop menu names outright rather than finding in a <c>.desktop</c> file.
+    /// </summary>
+    void Run(string displayName, string program);
+
+    /// <summary>Opens a bare terminal emulator (Desktop → Open Terminal).</summary>
     void OpenTerminal();
 }
 
@@ -56,12 +62,23 @@ public sealed class AppLauncher(ILogger<AppLauncher> logger) : IAppLauncher
         Start(displayName, term, termArgs);
     }
 
+    public void Run(string displayName, string program)
+    {
+        // By name off the PATH, which is where `just install-cs` puts the wlRIX apps. Nothing
+        // beside this assembly to fall back to: each app publishes into its own directory, so
+        // running the Toolchest from a source tree never has a sibling to find.
+        if (Executables.Which(program) is { } path)
+            Start(displayName, path, []);
+        else
+            Fail(displayName, $"“{program}” is not installed.");
+    }
+
     public void OpenTerminal()
     {
         if (ResolveTerminal() is { } term)
-            Start("Unix Shell", term, []);
+            Start("Terminal", term, []);
         else
-            Fail("Unix Shell", "No terminal emulator was found.");
+            Fail("Terminal", "No terminal emulator was found.");
     }
 
     private void Start(string displayName, string file, IReadOnlyList<string> args)

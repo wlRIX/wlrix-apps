@@ -20,7 +20,8 @@ public partial class MainWindow : Window
             return;
 
         vm.ShowAbout += OnShowAbout;
-        vm.LaunchError += OnLaunchError;
+        vm.ShowError += OnShowError;
+        vm.ConfirmLogOut += OnConfirmLogOut;
         _ = vm.LoadAsync();
     }
 
@@ -30,7 +31,8 @@ public partial class MainWindow : Window
         if (DataContext is MainWindowViewModel vm)
         {
             vm.ShowAbout -= OnShowAbout;
-            vm.LaunchError -= OnLaunchError;
+            vm.ShowError -= OnShowError;
+            vm.ConfirmLogOut -= OnConfirmLogOut;
         }
     }
 
@@ -39,6 +41,14 @@ public partial class MainWindow : Window
     private void OnShowAbout(string message) => _ = MessageDialog.ShowAsync(this, DialogType.Information,
         message, buttons: DialogButtons.Ok, title: Strings.AboutToolchest);
 
-    private void OnLaunchError(string message) =>
+    private void OnShowError(string message) =>
         _ = MessageDialog.ShowAsync(this, DialogType.Error, message, buttons: DialogButtons.Ok);
+
+    /// <summary>Whether the user confirmed ending the session. Dismissed (no result) is a no.</summary>
+    private async Task<bool> OnConfirmLogOut()
+    {
+        var result = await MessageDialog.ShowAsync(this, DialogType.Question, Strings.LogOutPrompt,
+            buttons: DialogButtons.OkCancel, title: Strings.LogOut, okText: Strings.LogOut);
+        return result == DialogResult.Ok;
+    }
 }

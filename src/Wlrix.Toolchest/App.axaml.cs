@@ -21,6 +21,7 @@ public partial class App : Application
             services.AddZLogger("toolchest");
             services.AddSingleton<IApplicationCatalog, ApplicationCatalog>();
             services.AddSingleton<IAppLauncher, AppLauncher>();
+            services.AddSingleton<ISessionService, SessionService>();
             services.AddTransient<MainWindowViewModel>();
             _services = services.BuildServiceProvider();
 

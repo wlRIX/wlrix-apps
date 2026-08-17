@@ -18,14 +18,37 @@
   <data name="Desktop" xml:space="preserve">
     <value>Desktop</value>
   </data>
+  <data name="System" xml:space="preserve">
+    <value>System</value>
+  </data>
   <data name="Applications" xml:space="preserve">
     <value>Applications</value>
   </data>
   <data name="Help" xml:space="preserve">
     <value>Help</value>
   </data>
-  <data name="OpenUnixShell" xml:space="preserve">
-    <value>Open Unix Shell</value>
+  <data name="ExtraDesks" xml:space="preserve">
+    <value>Extra Desks</value>
+  </data>
+  <data name="OpenTerminal" xml:space="preserve">
+    <value>Open Terminal</value>
+  </data>
+  <data name="LogOut" xml:space="preserve">
+    <value>Log Out</value>
+  </data>
+  <data name="LogOutPrompt" xml:space="preserve">
+    <value>Log out of this wlRIX session?
+
+Every running application will be closed, and anything not saved will be lost.</value>
+  </data>
+  <data name="SoftwareManager" xml:space="preserve">
+    <value>Software Manager</value>
+  </data>
+  <data name="RestartSystem" xml:space="preserve">
+    <value>Restart System</value>
+  </data>
+  <data name="ShutDownSystem" xml:space="preserve">
+    <value>Shut Down System</value>
   </data>
   <data name="AboutToolchest" xml:space="preserve">
     <value>About Toolchest</value>
