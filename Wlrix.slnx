@@ -10,9 +10,11 @@
         <Project Path="src/Wlrix.SoftwareManager/Wlrix.SoftwareManager.csproj" />
         <Project Path="src/Wlrix.Packages/Wlrix.Packages.csproj" />
         <Project Path="src/Wlrix.Packages.Helper/Wlrix.Packages.Helper.csproj" />
+        <Project Path="src/Wlrix.Archiver/Wlrix.Archiver.csproj" />
     </Folder>
     <Folder Name="/tests/">
         <Project Path="tests/Wlrix.Packages.Tests/Wlrix.Packages.Tests.csproj" />
         <Project Path="tests/Wlrix.Toolchest.Tests/Wlrix.Toolchest.Tests.csproj" />
+        <Project Path="tests/Wlrix.Archiver.Tests/Wlrix.Archiver.Tests.csproj" />
     </Folder>
 </Solution>

@@ -21,6 +21,7 @@ library. Apps recreate the IRIX Interactive Desktop surface.
 | `Wlrix.Settings.Keyboard` | app   | Keyboard settings panel.                                          |
 | `Wlrix.SourcePicker`      | app   | The screen-share picker `xdg-desktop-portal-wlrix` puts up.       |
 | `Wlrix.SoftwareManager`   | app   | Package manager, after IRIX's `swmgr`.                            |
+| `Wlrix.Archiver`          | app   | Archive browser and extractor, after KDE's Ark.                   |
 | `Wlrix.Packages.Tests`    | tests | Parser and validation tests for `Wlrix.Packages`. Under `tests/`. |
 
 More apps (file manager, terminal, etc.) get added as sibling projects.
@@ -37,7 +38,36 @@ stays free of an Avalonia reference.
 
 Only **American English** (`en-US`) ships today, in the resources and in the code: `Color`,
 `Initialize`, `License`, `Canceled`, `Behavior`. A translation is a `Strings.<culture>.resx`
-beside the neutral one, and nothing else. `Wlrix.Toolchest` also carries a `ja` satellite.
+beside the neutral one, and nothing else. `Wlrix.Toolchest` and `Wlrix.Archiver` also carry a `ja` satellite.
+
+## Archives
+
+`Wlrix.Archiver` reads tar, zip, 7z, rar and the common compressed formats through
+[SharpCompress](https://github.com/adamhathcock/sharpcompress), which is pure managed and needs nothing installed.
+Writing is narrower than reading — there is no encoder for 7z or rar — so each backend declares what it can do per
+format and the menu enables itself from that: `Edit ▸
+Remove from archive` is disabled on a rar because it would not work, not because it was forgotten. With `7z` on the
+`PATH`, `SevenZipCliBackend` takes over that format and it becomes writable.
+
+Reading a large archive is slow in a way no amount of tuning removes: gzip is not seekable, so listing a 3.1 GB
+`.tar.gz` means decompressing all of it — about 51 seconds, against a third of a second to walk the 29,631 entries that
+come out. The status line therefore carries a real percentage for the decompression (bytes read against the file's
+length, which is known up front)
+and a running count for the enumeration, plus a Cancel that actually stops it.
+
+Two things about that are worth not undoing. The scratch file a compressed tar is unwrapped into goes under the app's
+data directory, **not** `/tmp` — that is a tmpfs here, and the archive above unpacks to 9.3 GB. And only the top level
+of the tree starts expanded: the same archive has 5,304 directories, and a `TreeView` asked to realize all of them at
+once locks the window for seconds after the read has already finished.
+
+**Filenames are the interesting part.** Zip and tar predate Unicode and neither has to say what encoding a name is in.
+Zip's general-purpose bit 11 marks a name as UTF-8, but the archives that cause trouble are the ones written by tools
+that never set it — a Shift-JIS zip from a Japanese Windows box, a GBK one from a Chinese one. Decoded as UTF-8 or
+Latin-1 those come out as mojibake, and mojibake in a filename is not cosmetic: it is the name the extracted file gets.
+
+`FilenameDecoder` takes valid UTF-8 at its word and otherwise scores the candidate code pages, weighing script coherence
+over raw character counts — a misread Shift-JIS name reads as a jumble alternating between scripts, where the right
+answer reads as one. `View ▸ Encoding` overrides the guess for the cases no heuristic gets right.
 
 ## Managing software
 

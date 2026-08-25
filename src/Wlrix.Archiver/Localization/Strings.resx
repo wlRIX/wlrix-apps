@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Archiver" xml:space="preserve">
+    <value>wlRIX Archiver</value>
+  </data>
+  <data name="MenuFile" xml:space="preserve">
+    <value>_File</value>
+  </data>
+  <data name="MenuEdit" xml:space="preserve">
+    <value>_Edit</value>
+  </data>
+  <data name="MenuView" xml:space="preserve">
+    <value>_View</value>
+  </data>
+  <data name="MenuHelp" xml:space="preserve">
+    <value>_Help</value>
+  </data>
+  <data name="FileNew" xml:space="preserve">
+    <value>_New...</value>
+  </data>
+  <data name="FileOpen" xml:space="preserve">
+    <value>_Open...</value>
+  </data>
+  <data name="FileExtract" xml:space="preserve">
+    <value>_Extract...</value>
+  </data>
+  <data name="FileExit" xml:space="preserve">
+    <value>E_xit</value>
+  </data>
+  <data name="EditRemove" xml:space="preserve">
+    <value>_Remove from archive</value>
+  </data>
+  <data name="ViewEncoding" xml:space="preserve">
+    <value>_Encoding</value>
+  </data>
+  <data name="HelpAbout" xml:space="preserve">
+    <value>_About</value>
+  </data>
+  <data name="ColumnName" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="ColumnSize" xml:space="preserve">
+    <value>Original Size</value>
+  </data>
+  <data name="ColumnMode" xml:space="preserve">
+    <value>Mode</value>
+  </data>
+  <data name="ColumnOwner" xml:space="preserve">
+    <value>Owner</value>
+  </data>
+  <data name="ColumnGroup" xml:space="preserve">
+    <value>Group</value>
+  </data>
+  <data name="ColumnDate" xml:space="preserve">
+    <value>Date</value>
+  </data>
+  <data name="OpenTitle" xml:space="preserve">
+    <value>Open Archive</value>
+  </data>
+  <data name="ExtractTitle" xml:space="preserve">
+    <value>Extract To</value>
+  </data>
+  <data name="FilterArchives" xml:space="preserve">
+    <value>Archives</value>
+  </data>
+  <data name="FilterAllFiles" xml:space="preserve">
+    <value>All files</value>
+  </data>
+  <data name="AboutTitle" xml:space="preserve">
+    <value>About wlRIX Archiver</value>
+  </data>
+  <data name="AboutMessage" xml:space="preserve">
+    <value>wlRIX Archiver
+Version {0}
+
+Works with tar, zip, 7z, rar and the common compressed formats.</value>
+  </data>
+  <data name="AboutMessageWithoutSevenZip" xml:space="preserve">
+    <value>wlRIX Archiver
+Version {0}
+
+Works with tar, zip, 7z, rar and the common compressed formats.
+
+7z is not installed, so 7z archives are read-only.</value>
+  </data>
+  <data name="ConfirmRemoveTitle" xml:space="preserve">
+    <value>Remove from Archive</value>
+  </data>
+  <data name="ConfirmRemove" xml:space="preserve">
+    <value>Remove {0} from the archive? This cannot be undone.</value>
+  </data>
+  <data name="EmptyNoArchive" xml:space="preserve">
+    <value>No archive is open. Use File ▸ Open.</value>
+  </data>
+  <data name="EmptyArchive" xml:space="preserve">
+    <value>This archive is empty.</value>
+  </data>
+  <data name="ErrorTitle" xml:space="preserve">
+    <value>Archiver</value>
+  </data>
+  <data name="ErrorUnsupported" xml:space="preserve">
+    <value>{0} is not a format this application can read.</value>
+  </data>
+  <data name="ErrorReadOnly" xml:space="preserve">
+    <value>{0} archives cannot be modified.</value>
+  </data>
+  <data name="ErrorOpenFailed" xml:space="preserve">
+    <value>Could not open {0}.</value>
+  </data>
+  <data name="ErrorExtractFailed" xml:space="preserve">
+    <value>Could not extract from {0}.</value>
+  </data>
+  <data name="ErrorAddFailed" xml:space="preserve">
+    <value>Could not add to {0}.</value>
+  </data>
+  <data name="ErrorRemoveFailed" xml:space="preserve">
+    <value>Could not remove from {0}.</value>
+  </data>
+  <data name="ExtractedTo" xml:space="preserve">
+    <value>Extracted {0} to {1}.</value>
+  </data>
+  <data name="ExtractedCountTo" xml:space="preserve">
+    <value>Extracted {0} entries to {1}.</value>
+  </data>
+  <data name="EncodingAutomaticDetected" xml:space="preserve">
+    <value>Automatic ({0})</value>
+  </data>
+  <data name="NewNotImplemented" xml:space="preserve">
+    <value>Creating a new archive is not built yet.</value>
+  </data>
+  <data name="StatusDecompressing" xml:space="preserve">
+    <value>Decompressing {0}...</value>
+  </data>
+  <data name="StatusReading" xml:space="preserve">
+    <value>Reading {0}...</value>
+  </data>
+  <data name="StatusReadingCount" xml:space="preserve">
+    <value>Reading {0}... {1} entries</value>
+  </data>
+  <data name="StatusExtracting" xml:space="preserve">
+    <value>Extracting...</value>
+  </data>
+  <data name="StatusExtractingCount" xml:space="preserve">
+    <value>Extracting... {0} entries</value>
+  </data>
+  <data name="StatusSaving" xml:space="preserve">
+    <value>Saving {0}...</value>
+  </data>
+  <data name="StatusCanceled" xml:space="preserve">
+    <value>Canceled.</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+</root>

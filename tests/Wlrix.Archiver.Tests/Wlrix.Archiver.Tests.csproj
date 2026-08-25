@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <IsPackable>false</IsPackable>
+        <IsTestProject>true</IsTestProject>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <!-- The app itself. The backends and the decoder are plain objects with no Avalonia in
+             them, and these tests stay off any path that reaches the dispatcher. -->
+        <ProjectReference Include="..\..\src\Wlrix.Archiver\Wlrix.Archiver.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <!-- Real archives rather than generated ones: the cases that matter here are exactly
+             the ones a writing library would normalize away — a zip with the UTF-8 flag clear,
+             a tar with no directory entries. See Fixtures/README.md for how they were made. -->
+        <None Include="Fixtures\**" CopyToOutputDirectory="PreserveNewest" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" />
+        <PackageReference Include="xunit" />
+        <PackageReference Include="xunit.runner.visualstudio" />
+    </ItemGroup>
+
+</Project>

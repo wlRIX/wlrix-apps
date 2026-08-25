@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Archiver" xml:space="preserve">
+    <value>wlRIX アーカイバ</value>
+  </data>
+  <data name="MenuFile" xml:space="preserve">
+    <value>ファイル(_F)</value>
+  </data>
+  <data name="MenuEdit" xml:space="preserve">
+    <value>編集(_E)</value>
+  </data>
+  <data name="MenuView" xml:space="preserve">
+    <value>表示(_V)</value>
+  </data>
+  <data name="MenuHelp" xml:space="preserve">
+    <value>ヘルプ(_H)</value>
+  </data>
+  <data name="FileNew" xml:space="preserve">
+    <value>新規作成(_N)...</value>
+  </data>
+  <data name="FileOpen" xml:space="preserve">
+    <value>開く(_O)...</value>
+  </data>
+  <data name="FileExtract" xml:space="preserve">
+    <value>展開(_E)...</value>
+  </data>
+  <data name="FileExit" xml:space="preserve">
+    <value>終了(_X)</value>
+  </data>
+  <data name="EditRemove" xml:space="preserve">
+    <value>アーカイブから削除(_R)</value>
+  </data>
+  <data name="ViewEncoding" xml:space="preserve">
+    <value>文字エンコード(_E)</value>
+  </data>
+  <data name="HelpAbout" xml:space="preserve">
+    <value>バージョン情報(_A)</value>
+  </data>
+  <data name="ColumnName" xml:space="preserve">
+    <value>名前</value>
+  </data>
+  <data name="ColumnSize" xml:space="preserve">
+    <value>元のサイズ</value>
+  </data>
+  <data name="ColumnMode" xml:space="preserve">
+    <value>モード</value>
+  </data>
+  <data name="ColumnOwner" xml:space="preserve">
+    <value>所有者</value>
+  </data>
+  <data name="ColumnGroup" xml:space="preserve">
+    <value>グループ</value>
+  </data>
+  <data name="ColumnDate" xml:space="preserve">
+    <value>日付</value>
+  </data>
+  <data name="OpenTitle" xml:space="preserve">
+    <value>アーカイブを開く</value>
+  </data>
+  <data name="ExtractTitle" xml:space="preserve">
+    <value>展開先</value>
+  </data>
+  <data name="FilterArchives" xml:space="preserve">
+    <value>アーカイブ</value>
+  </data>
+  <data name="FilterAllFiles" xml:space="preserve">
+    <value>すべてのファイル</value>
+  </data>
+  <data name="AboutTitle" xml:space="preserve">
+    <value>wlRIX アーカイバについて</value>
+  </data>
+  <data name="AboutMessage" xml:space="preserve">
+    <value>wlRIX アーカイバ
+バージョン {0}
+
+tar、zip、7z、rar などの一般的な圧縮形式に対応しています。</value>
+  </data>
+  <data name="AboutMessageWithoutSevenZip" xml:space="preserve">
+    <value>wlRIX アーカイバ
+バージョン {0}
+
+tar、zip、7z、rar などの一般的な圧縮形式に対応しています。
+
+7z がインストールされていないため、7z アーカイブは読み取り専用です。</value>
+  </data>
+  <data name="ConfirmRemoveTitle" xml:space="preserve">
+    <value>アーカイブから削除</value>
+  </data>
+  <data name="ConfirmRemove" xml:space="preserve">
+    <value>{0} をアーカイブから削除しますか？この操作は取り消せません。</value>
+  </data>
+  <data name="EmptyNoArchive" xml:space="preserve">
+    <value>アーカイブが開いていません。「ファイル ▸ 開く」を選んでください。</value>
+  </data>
+  <data name="EmptyArchive" xml:space="preserve">
+    <value>このアーカイブは空です。</value>
+  </data>
+  <data name="ErrorTitle" xml:space="preserve">
+    <value>アーカイバ</value>
+  </data>
+  <data name="ErrorUnsupported" xml:space="preserve">
+    <value>{0} はこのアプリケーションが読める形式ではありません。</value>
+  </data>
+  <data name="ErrorReadOnly" xml:space="preserve">
+    <value>{0} 形式のアーカイブは変更できません。</value>
+  </data>
+  <data name="ErrorOpenFailed" xml:space="preserve">
+    <value>{0} を開けませんでした。</value>
+  </data>
+  <data name="ErrorExtractFailed" xml:space="preserve">
+    <value>{0} から展開できませんでした。</value>
+  </data>
+  <data name="ErrorAddFailed" xml:space="preserve">
+    <value>{0} に追加できませんでした。</value>
+  </data>
+  <data name="ErrorRemoveFailed" xml:space="preserve">
+    <value>{0} から削除できませんでした。</value>
+  </data>
+  <data name="ExtractedTo" xml:space="preserve">
+    <value>{0} を {1} に展開しました。</value>
+  </data>
+  <data name="ExtractedCountTo" xml:space="preserve">
+    <value>{0} 件を {1} に展開しました。</value>
+  </data>
+  <data name="EncodingAutomaticDetected" xml:space="preserve">
+    <value>自動検出（{0}）</value>
+  </data>
+  <data name="NewNotImplemented" xml:space="preserve">
+    <value>新規アーカイブの作成はまだ実装されていません。</value>
+  </data>
+  <data name="StatusDecompressing" xml:space="preserve">
+    <value>{0} を展開しています...</value>
+  </data>
+  <data name="StatusReading" xml:space="preserve">
+    <value>{0} を読み込んでいます...</value>
+  </data>
+  <data name="StatusReadingCount" xml:space="preserve">
+    <value>{0} を読み込んでいます... {1} 件</value>
+  </data>
+  <data name="StatusExtracting" xml:space="preserve">
+    <value>展開しています...</value>
+  </data>
+  <data name="StatusExtractingCount" xml:space="preserve">
+    <value>展開しています... {0} 件</value>
+  </data>
+  <data name="StatusSaving" xml:space="preserve">
+    <value>{0} を保存しています...</value>
+  </data>
+  <data name="StatusCanceled" xml:space="preserve">
+    <value>中止しました。</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>中止</value>
+  </data>
+</root>

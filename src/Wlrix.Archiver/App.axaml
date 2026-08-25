@@ -1,0 +1,21 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:wlrix="https://vic485.xyz/Wlrix.Avalonia"
+             x:Class="Wlrix.Archiver.App"
+             RequestedThemeVariant="Default">
+    <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
+
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <!-- The listing's own TreeViewItem theme. Note the avares authority is the
+                     assembly name (kebab-case), not the namespace. -->
+                <ResourceInclude Source="avares://wlrix-archiver/Themes/ArchiveTree.axaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+
+    <Application.Styles>
+        <wlrix:WlrixTheme />
+    </Application.Styles>
+</Application>

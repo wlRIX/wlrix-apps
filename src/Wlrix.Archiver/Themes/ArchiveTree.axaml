@@ -1,0 +1,89 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:vm="using:Wlrix.Archiver.ViewModels"
+                    xmlns:wlrix="https://vic485.xyz/Wlrix.Avalonia">
+    <!--
+        The listing's TreeViewItem, replacing the one in Wlrix.Avalonia.
+
+        The shipped theme puts the indent margin on the *whole* row, which is right for an
+        ordinary tree and wrong for this one: every column of a nested row would shift right with
+        the name and stop lining up with its heading. Here the indent applies to the expander and
+        name cell only, so Size, Mode, Owner, Group and Date stay in their columns at any depth.
+
+        The other difference is the selection highlight. It sits behind the entire row rather
+        than behind the header content, because a table row that highlights only as far as its
+        text reads as a ragged stripe rather than a selected row.
+
+        Everything else — the +/- toggle, the bevels, the colors — is the shipped theme's, and
+        should be kept in step with it.
+    -->
+
+    <!-- Square +/- expander toggle, IRIX style. Same shape as the one in Wlrix.Avalonia's
+         TreeView.axaml; duplicated because a keyed theme there is not reachable from here. -->
+    <ControlTheme x:Key="ArchiveTreeExpandToggle" TargetType="ToggleButton">
+        <Setter Property="Focusable" Value="False" />
+        <Setter Property="Width" Value="11" />
+        <Setter Property="Height" Value="11" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <wlrix:BevelBorder Bevel="Raised" BevelThickness="1" OuterLineThickness="1"
+                                   Background="{DynamicResource WlrixFace}"
+                                   LightBrush="{DynamicResource WlrixTopShadow}"
+                                   DarkBrush="{DynamicResource WlrixBottomShadow}"
+                                   OuterLineBrush="{DynamicResource WlrixOuterLine}">
+                    <Panel>
+                        <Rectangle Width="5" Height="1"
+                                   Fill="{DynamicResource WlrixForeground}"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        <Rectangle Name="VBar" Width="1" Height="5"
+                                   Fill="{DynamicResource WlrixForeground}"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Panel>
+                </wlrix:BevelBorder>
+            </ControlTemplate>
+        </Setter>
+        <Style Selector="^:checked /template/ Rectangle#VBar">
+            <Setter Property="IsVisible" Value="False" />
+        </Style>
+    </ControlTheme>
+
+    <!-- x:DataType because the IsExpanded setter below binds against the row view model:
+         compiled bindings are on by default and will not infer a type inside a theme. -->
+    <ControlTheme x:Key="ArchiveTreeItem" TargetType="TreeViewItem"
+                  x:DataType="vm:EntryNodeViewModel">
+        <Setter Property="Foreground" Value="{DynamicResource WlrixViewForeground}" />
+        <Setter Property="Padding" Value="0,1" />
+        <!-- Rows span the full width, or the selection stripe and the columns both stop short. -->
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <StackPanel>
+                    <Border Name="PART_LayoutRoot"
+                            Background="{TemplateBinding Background}"
+                            HorizontalAlignment="Stretch"
+                            Focusable="True">
+                        <!-- No Margin here. That is the whole point of this file: the shipped
+                             theme indents this grid, which moves every column. -->
+                        <ContentPresenter Name="PART_HeaderPresenter"
+                                          Content="{TemplateBinding Header}"
+                                          ContentTemplate="{TemplateBinding HeaderTemplate}"
+                                          Padding="{TemplateBinding Padding}"
+                                          HorizontalAlignment="Stretch"
+                                          VerticalAlignment="Center" />
+                    </Border>
+                    <ItemsPresenter Name="PART_ItemsPresenter"
+                                    IsVisible="{TemplateBinding IsExpanded}"
+                                    ItemsPanel="{TemplateBinding ItemsPanel}" />
+                </StackPanel>
+            </ControlTemplate>
+        </Setter>
+
+        <Style Selector="^:selected /template/ Border#PART_LayoutRoot">
+            <Setter Property="Background" Value="{DynamicResource WlrixSelection}" />
+        </Style>
+        <Style Selector="^:selected /template/ ContentPresenter#PART_HeaderPresenter">
+            <Setter Property="TextElement.Foreground" Value="{DynamicResource WlrixSelectionForeground}" />
+        </Style>
+    </ControlTheme>
+</ResourceDictionary>
