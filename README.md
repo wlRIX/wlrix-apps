@@ -26,6 +26,39 @@ library. Apps recreate the IRIX Interactive Desktop surface.
 
 More apps (file manager, terminal, etc.) get added as sibling projects.
 
+## Installing
+
+`wlrix-apps` had no packaging until the archiver needed to be an `xdg-open` handler; the
+`Justfile` covers that one application so far, and the others are still launched by name from the Toolchest and the
+session.
+
+```
+just publish            # Linux-only, framework-dependent
+sudo just install       # /usr/bin, /usr/lib/wlrix, /usr/share/applications
+```
+
+`publish` passes `-r linux-x64` and that is not incidental: a RID-agnostic publish ships
+`runtimes/` for every platform Avalonia supports, Windows and macOS natives included, which is 567 MB against 28 MB. A
+published .NET application is a directory of assemblies the executable finds relative to itself, so the payload goes to
+`/usr/lib/wlrix/archiver` and `/usr/bin` gets a symlink — the apphost reads `/proc/self/exe` and resolves through it.
+
+An application that opens files owns a `data/<app-id>.desktop` beside its source. Three things about writing one are
+easy to get wrong and all of them fail quietly:
+
+- **The format has no line continuations.** A `MimeType=` list wrapped for readability parses as several broken lines
+  and still looks right in an editor. `just check-desktop` catches it.
+- **`update-desktop-database` is what makes the registration real.** Without it the entry is on disk, nothing has
+  indexed its `MimeType=`, and every lookup still misses. `install` runs it, except when staging into a `rootdir`, where
+  it belongs to the package's post-install.
+- **`TryExec` hides the entry until the binary is genuinely on `PATH`.** That is what you want — no "Open With" entry
+  for something that is not installed — but it also means an entry installed without its binary is invisible rather than
+  broken, and GIO enforces it where `xdg-mime` does not.
+
+Compressed tars are registered under two MIME types each, and that is not redundancy: `xdg-mime
+query filetype backup.tar.gz` sniffs the gzip magic and answers `application/gzip`, while `gio
+info` honours the `*.tar.gz` glob and answers `application/x-compressed-tar`. Register one and tarballs route from a
+file manager but not from `xdg-open`, or the reverse.
+
 ## Translations
 
 Apps are localizable through `Wlrix.Common.Localization`. An app owns a `Localization/Strings.resx`

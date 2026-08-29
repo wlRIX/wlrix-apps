@@ -12,6 +12,12 @@
     </ItemGroup>
 
     <ItemGroup>
+        <!-- Not compiled or copied: the desktop entry is installed by the Justfile, not by the
+             build. Listed so it is visible in the IDE rather than an orphan directory. -->
+        <None Include="data\**" />
+    </ItemGroup>
+
+    <ItemGroup>
         <InternalsVisibleTo Include="Wlrix.Archiver.Tests" />
     </ItemGroup>
 

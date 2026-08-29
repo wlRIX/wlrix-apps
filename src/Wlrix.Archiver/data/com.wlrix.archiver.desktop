@@ -1,0 +1,31 @@
+[Desktop Entry]
+Type=Application
+Name=wlRIX Archiver
+Name[ja]=wlRIX アーカイバ
+Comment=Work with compressed archives
+Comment[ja]=圧縮アーカイブを操作します
+Categories=Utility;Archiving;Compression;
+
+# %f, not %F: the window holds one archive at a time, and `Main` opens `args[0]` only. Claiming
+# %U would additionally promise to handle non-local URIs, which nothing here can do.
+Exec=wlrix-archiver %f
+TryExec=wlrix-archiver
+Terminal=false
+
+# Matches the Wayland app id set in Program.BuildAvaloniaApp. `wlrix-desktop` looks a running
+# window up by StartupWMClass first, so without this its running-application state would never
+# find the archiver.
+StartupWMClass=com.wlrix.archiver
+StartupNotify=false
+
+# Only what the application can actually open. `.tar.zst` is deliberately absent: SharpCompress
+# has no zstd decompressor, so registering for it would put wlRIX Archiver in the "Open With"
+# list for a file it can only fail on.
+#
+# The compressed tars are listed *twice over*, and that is not redundancy. The two resolvers on
+# a normal desktop disagree about them: `xdg-mime query filetype backup.tar.gz` sniffs the gzip
+# magic and answers application/gzip, while `gio info` honours the *.tar.gz glob and answers
+# application/x-compressed-tar. Register one and not the other and tarballs route to the
+# archiver from a file manager but not from `xdg-open`, or the reverse. The app resolves the
+# real format from the contents and the compound extension either way.
+MimeType=application/zip;application/java-archive;application/x-tar;application/x-compressed-tar;application/gzip;application/x-bzip-compressed-tar;application/x-bzip2;application/x-xz-compressed-tar;application/x-xz;application/x-lzip-compressed-tar;application/x-lzip;application/x-7z-compressed;application/vnd.rar;application/x-rar-compressed;
