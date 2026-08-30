@@ -56,7 +56,7 @@ public class MenuTests
     }
 
     [Fact]
-    public void RestartAndShutDownAreGreyedOutUntilTheyHaveADialog()
+    public void RestartAndShutDownAreGrayedOutUntilTheyHaveADialog()
     {
         // Not merely command-less: an enabled item that does nothing when chosen reads as a bug,
         // so these have to *look* unavailable. See the note in BuildTopLevel.

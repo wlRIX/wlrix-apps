@@ -102,7 +102,7 @@ public sealed class PkexecRunner(ILogger<PkexecRunner> logger) : IPrivilegedRunn
         _ = Task.Run(() => PumpAsync(request, channel.Writer, cancellationToken), CancellationToken.None);
 
         // Deliberately not passing the cancellation token to the reader. The contract is that
-        // the sequence always ends with a Completed, and a cancelled read would throw instead of
+        // the sequence always ends with a Completed, and a canceled read would throw instead of
         // delivering the Canceled one -- leaving the UI showing a transaction still in flight.
         await foreach (var @event in channel.Reader.ReadAllAsync(CancellationToken.None).ConfigureAwait(false))
             yield return @event;

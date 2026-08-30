@@ -47,7 +47,7 @@
                                                OuterLineBrush="{DynamicResource WlrixOuterLine}">
                                 <!-- Lit when chosen; otherwise hidden so the dark well shows
                                      through, which is what makes an unlit LED read as unlit
-                                     rather than as a grey square. -->
+                                     rather than as a gray square. -->
                                 <Border Name="Lamp" Margin="1"
                                         Background="{DynamicResource WlrixAccent}"
                                         IsVisible="False" />

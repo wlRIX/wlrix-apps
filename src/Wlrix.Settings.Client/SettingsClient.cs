@@ -115,7 +115,7 @@ public sealed class SettingsClient : IDisposable
     /// Where each value in a namespace comes from: <c>user</c>, <c>system</c> or
     /// <c>default</c>.
     ///
-    /// What lets a panel grey out a Reset that would do nothing, and be honest that a value it
+    /// What lets a panel gray out a Reset that would do nothing, and be honest that a value it
     /// is showing came from <c>/etc/wlrix</c> rather than from the person using it.
     /// </summary>
     public async Task<IReadOnlyDictionary<string, string>> SourcesAsync(string ns) =>

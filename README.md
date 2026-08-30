@@ -57,7 +57,7 @@ easy to get wrong and all of them fail quietly:
 
 Compressed tars are registered under two MIME types each, and that is not redundancy: `xdg-mime
 query filetype backup.tar.gz` sniffs the gzip magic and answers `application/gzip`, while `gio
-info` honours the `*.tar.gz` glob and answers `application/x-compressed-tar`. Register one and tarballs route from a
+info` honors the `*.tar.gz` glob and answers `application/x-compressed-tar`. Register one and tarballs route from a
 file manager but not from `xdg-open`, or the reverse.
 
 ## Translations

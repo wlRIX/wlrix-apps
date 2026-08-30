@@ -3,7 +3,7 @@ namespace Wlrix.Packages.Models;
 /// <summary>
 /// What a given package manager can be asked to do. The UI disables controls from these rather
 /// than each view knowing which backends support what — the difference between "pacman has no
-/// command for adding a repository" and "the Add button is greyed out" belongs in one place.
+/// command for adding a repository" and "the Add button is grayed out" belongs in one place.
 /// </summary>
 [Flags]
 public enum BackendCapabilities

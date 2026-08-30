@@ -97,7 +97,7 @@ public sealed class MainWindowViewModel : ViewModelBase
             // Disabled until they have somewhere to go: both need a themed confirmation of their
             // own, and neither should be a menu item that silently powers the machine off. The
             // shape is here so the work to come has somewhere to land -- the same reason
-            // wlrix-desktop keeps its own unfinished items on screen and greyed out.
+            // wlrix-desktop keeps its own unfinished items on screen and grayed out.
             new MenuNode(Strings.RestartSystem, isEnabled: false),
             new MenuNode(Strings.ShutDownSystem, isEnabled: false),
         ]));

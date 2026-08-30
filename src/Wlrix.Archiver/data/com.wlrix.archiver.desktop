@@ -24,7 +24,7 @@ StartupNotify=false
 #
 # The compressed tars are listed *twice over*, and that is not redundancy. The two resolvers on
 # a normal desktop disagree about them: `xdg-mime query filetype backup.tar.gz` sniffs the gzip
-# magic and answers application/gzip, while `gio info` honours the *.tar.gz glob and answers
+# magic and answers application/gzip, while `gio info` honors the *.tar.gz glob and answers
 # application/x-compressed-tar. Register one and not the other and tarballs route to the
 # archiver from a file manager but not from `xdg-open`, or the reverse. The app resolves the
 # real format from the contents and the compound extension either way.

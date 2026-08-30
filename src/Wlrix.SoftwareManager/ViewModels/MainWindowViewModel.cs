@@ -80,7 +80,7 @@ public sealed class MainWindowViewModel : ViewModelBase, ITransactionObserver, I
             Observable.Return(_system.Backend.Capabilities.HasFlag(BackendCapabilities.ListRepositories)));
 
         // Always available: managing AppImages needs no package manager and no root, so this
-        // works on a system where everything else in the window is greyed out.
+        // works on a system where everything else in the window is grayed out.
         ShowUserSoftware = ReactiveCommand.Create(() => UserSoftwareRequested?.Invoke());
 
         SelectAll = ReactiveCommand.Create(() => MarkAll(install: Mode != ManagerMode.Manage));
@@ -528,7 +528,7 @@ public sealed class MainWindowViewModel : ViewModelBase, ITransactionObserver, I
 
     private void RunStop()
     {
-        // Cancelling kills the helper, not the package manager under it: a package manager
+        // Canceling kills the helper, not the package manager under it: a package manager
         // stopped halfway through writing files is how a system ends up needing a rescue disk.
         // What this actually stops is watching -- which is why the button is Stop and not Undo.
         _transaction?.Cancel();

@@ -80,7 +80,7 @@ public class ProgressTests
     }
 
     [Fact]
-    public async Task CancellingAReadThrowsRatherThanReturningHalfAnArchive()
+    public async Task CancelingAReadThrowsRatherThanReturningHalfAnArchive()
     {
         using var source = new CancellationTokenSource();
         await source.CancelAsync();
@@ -91,7 +91,7 @@ public class ProgressTests
     }
 
     [Fact]
-    public async Task ACancelledReadLeavesNoScratchFileBehind()
+    public async Task ACanceledReadLeavesNoScratchFileBehind()
     {
         // The scratch file for a compressed tar is the size of the whole uncompressed archive —
         // 9.3 GB for the tarball this was found on — so leaking one is not a tidiness question.
