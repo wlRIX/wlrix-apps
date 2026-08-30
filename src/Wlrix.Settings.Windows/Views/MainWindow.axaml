@@ -1,0 +1,106 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Wlrix.Settings.Windows.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="320" d:DesignHeight="245"
+        Width="320" Height="245"
+        x:Class="Wlrix.Settings.Windows.Views.MainWindow"
+        x:DataType="vm:WindowSettingsViewModel"
+        CanResize="False"
+        Title="Window Settings">
+
+    <Design.DataContext>
+        <vm:WindowSettingsViewModel />
+    </Design.DataContext>
+
+    <!-- The layout follows 4Dwm's Window Settings: a title banner, then a labeled radio group
+         with its buttons indented on the line below, then a column of flags whose names are on
+         the left and whose boxes line up on the right. -->
+    <DockPanel Margin="12" LastChildFill="True">
+
+        <!-- Title banner: icon slot plus the panel name, as on the IRIX original. -->
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="12" Margin="0,0,0,12">
+            <Border Width="48" Height="48"
+                    BorderThickness="1"
+                    BorderBrush="{DynamicResource WlrixOuterLine}"
+                    Background="{DynamicResource WlrixSelect}">
+                <!-- Placeholder for the window icon (a real asset comes from wlrix-assets). -->
+                <TextBlock Text="&#x25A3;" FontSize="26"
+                           HorizontalAlignment="Center" VerticalAlignment="Center" />
+            </Border>
+            <TextBlock Text="Window Settings" FontWeight="Bold" FontSize="16"
+                       VerticalAlignment="Center" />
+        </StackPanel>
+
+        <!-- Close / Reset / Help, along the bottom as on the original. -->
+        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal"
+                    HorizontalAlignment="Center" Spacing="8" Margin="0,12,0,0">
+            <Button Content="Close" Click="OnClose" />
+            <Button Content="Reset" Click="OnReset" />
+            <Button Content="Help">
+                <Button.Flyout>
+                    <Flyout>
+                        <TextBlock MaxWidth="260" TextWrapping="Wrap"
+                                   Text="Choose how a window comes to have the keyboard, whether clicking one raises it, and whether moving and resizing show the window's contents or an outline. Changes apply as you make them, to windows already open as well as new ones. Reset restores the settings from when this window opened." />
+                    </Flyout>
+                </Button.Flyout>
+            </Button>
+        </StackPanel>
+
+        <!-- What became of the last change, when it is worth saying: the compositor not being
+             running, a value the daemon refused, or a config file somebody has half-edited.
+             Empty, and so invisible, when everything applied. -->
+        <TextBlock DockPanel.Dock="Bottom" Text="{Binding Status}" TextWrapping="Wrap" Margin="0,8,0,0"
+                   IsVisible="{Binding Status, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+
+        <StackPanel Spacing="8">
+
+            <!-- Keyboard focus, one of many. The options are not written out here: they come
+                 from the settings daemon's schema, which is the only thing that knows what
+                 strings the compositor's FocusPolicy will accept. GroupName is needed because
+                 each item sits in its own container, so the default "group by parent" rule
+                 would put every button in a group of one and let both be checked at once. -->
+            <StackPanel Spacing="2">
+                <TextBlock Text="Keyboard Focus:" FontWeight="Bold" />
+                <ItemsControl ItemsSource="{Binding FocusPolicies}" Margin="12,0,0,0">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal" Spacing="12" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="vm:FocusChoice">
+                            <RadioButton GroupName="FocusPolicy"
+                                         Content="{Binding Label}"
+                                         IsChecked="{Binding IsSelected, Mode=TwoWay}" />
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+
+            <!-- The three flags. Name on the left, box on the right, as 4Dwm laid them out; the
+                 CheckBox carries no content of its own so its template collapses to the box
+                 alone in the Auto-sized column. -->
+            <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto,Auto" RowSpacing="6">
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="Click Raise:"
+                           VerticalAlignment="Center" />
+                <CheckBox Grid.Row="0" Grid.Column="1" IsChecked="{Binding RaiseOnClick}"
+                          ToolTip.Tip="Clicking in a window brings it to the front." />
+
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="Opaque Window Move:"
+                           VerticalAlignment="Center" />
+                <CheckBox Grid.Row="1" Grid.Column="1" IsChecked="{Binding OpaqueMove}"
+                          ToolTip.Tip="Drag the window itself, rather than an outline of where it will land." />
+
+                <TextBlock Grid.Row="2" Grid.Column="0" Text="Opaque Window Resize:"
+                           VerticalAlignment="Center" />
+                <CheckBox Grid.Row="2" Grid.Column="1" IsChecked="{Binding OpaqueResize}"
+                          ToolTip.Tip="Redraw the window as it is resized, rather than on release." />
+            </Grid>
+
+        </StackPanel>
+
+    </DockPanel>
+
+</Window>

@@ -19,6 +19,7 @@ library. Apps recreate the IRIX Interactive Desktop surface.
 | `Wlrix.Desks`             | app   | Virtual-desktop (Rooms) overview and switcher.                    |
 | `Wlrix.Console`           | app   | Tails the wlRIX component logs, one tab each.                     |
 | `Wlrix.Settings.Keyboard` | app   | Keyboard settings panel.                                          |
+| `Wlrix.Settings.Windows`  | app   | Window settings panel: focus policy and the 4Dwm flags.           |
 | `Wlrix.SourcePicker`      | app   | The screen-share picker `xdg-desktop-portal-wlrix` puts up.       |
 | `Wlrix.SoftwareManager`   | app   | Package manager, after IRIX's `swmgr`.                            |
 | `Wlrix.Archiver`          | app   | Archive browser and extractor, after KDE's Ark.                   |

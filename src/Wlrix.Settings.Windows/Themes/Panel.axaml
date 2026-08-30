@@ -1,0 +1,22 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- `Wlrix.Avalonia` is a *standalone* theme: it includes no Avalonia base theme, so a
+         control it does not cover has no ControlTheme, gets no template, and renders nothing at
+         all — no error, no warning, just an empty space where the control should be. It has no
+         `ItemsControl` (only `ListBox`), so one is supplied here, the same way
+         `Wlrix.SourcePicker` supplies its own.
+
+         This is the plain default: an items presenter and nothing else. The focus radio group is
+         a layout of controls rather than a list to pick from, so `ListBox` would be wrong twice
+         over — it would draw a selection highlight behind the diamond that already shows the
+         choice, and it would put the whole group in the tab order as one stop. -->
+    <ControlTheme x:Key="{x:Type ItemsControl}" TargetType="ItemsControl">
+        <Setter Property="Template">
+            <ControlTemplate>
+                <ItemsPresenter ItemsPanel="{TemplateBinding ItemsPanel}" />
+            </ControlTemplate>
+        </Setter>
+    </ControlTheme>
+
+</ResourceDictionary>

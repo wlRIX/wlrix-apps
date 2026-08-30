@@ -20,7 +20,7 @@ namespace Wlrix.Settings.Keyboard.ViewModels;
 ///
 /// One commit is one <c>SetMany</c>. That is not only tidier than a write followed by a
 /// <c>SIGHUP</c>: those were two steps with a real race between them, where the compositor
-/// could be signalled against a file that had been replaced again in the meantime.
+/// could be signaled against a file that had been replaced again in the meantime.
 /// </summary>
 public sealed class KeyboardSettingsViewModel : ViewModelBase, IDisposable
 {
@@ -279,7 +279,7 @@ public sealed class KeyboardSettingsViewModel : ViewModelBase, IDisposable
         catch (Exception e)
         {
             // The daemon refusing a value, or the compositor refusing the file, both land here
-            // with a message that names the key. Showing it beats the old behaviour, which was
+            // with a message that names the key. Showing it beats the old behavior, which was
             // to swallow the failure and leave the UI claiming a setting that was never applied.
             Status = e.Message.Split('\n')[0];
         }
