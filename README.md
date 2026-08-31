@@ -151,6 +151,10 @@ The Wayland patches, on the `wlrix-12.1.0` branch of the [Avalonia fork](https:/
 
 ### Rebuilding the localfeed
 
+`localfeed/` is **committed**. Two of the four packages in it exist nowhere else, so a checkout without them restores to
+`NU1101` rather than to something merely unpatched, and that would take CI and every fresh clone with it. The four total
+under 400 KB and change only when a pinned version is bumped. Whatever you rebuild, commit the result.
+
 ```bash
 cd ../Avalonia && git checkout wlrix-12.1.0 && git submodule update --init --recursive
 ```
@@ -168,7 +172,8 @@ than by `dotnet pack`, and running the whole Nuke pipeline for one library is no
 2. Those versions come out matching `PackageVersion` rather than the source version. They must say **12.1.0** — the tag
    the code is built from, and what the assembly references resolve to.
 
-Then drop the `.nupkg` into `localfeed/`, delete the version it replaces, and bump
-`Avalonia.Wayland` in `Directory.Packages.props` to match. Bump the `-wlrix.N` suffix on every rebuild: NuGet caches by
-id and version, so reusing a version means the old one is served from
+Then drop the `.nupkg` into `localfeed/`, delete the version it replaces, bump
+`Avalonia.Wayland` in `Directory.Packages.props` to match, and commit all three changes together — a bumped pin without
+its package is a red CI run. Bump the `-wlrix.N` suffix on every rebuild: NuGet caches by id and version, so reusing a
+version means the old one is served from
 `~/.nuget/packages` and the new bits are silently ignored.

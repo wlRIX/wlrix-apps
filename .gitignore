@@ -3,8 +3,7 @@
 ##
 ## Get latest from `dotnet new gitignore`
 
-# Local nuget feed for wlRIX packages and Avalonia.Wayland
-localfeed/
+# localfeed/ is deliberately NOT ignored -- see the rule under "NuGet Packages" below.
 
 # dotenv files
 .env
@@ -205,6 +204,13 @@ PublishScripts/
 
 # NuGet Packages
 *.nupkg
+# ...except the local feed, which is tracked. It carries the four packages nuget.org does not
+# have -- the wlRIX theme and dialogs, and the patched Avalonia.Wayland -- and without them in
+# the checkout nothing restores: not CI, and not a fresh clone. They total under 400 KB, they
+# are rebuilt only when their pinned version is bumped, and the alternative is a registry that
+# needs a token to read, which would cost every fresh clone the thing that makes this repo easy
+# to pick up. Rebuilding one (`just feed` in wlrix-epoch) means committing the result.
+!localfeed/*.nupkg
 # NuGet Symbol Packages
 *.snupkg
 # The packages folder can be ignored because of Package Restore
@@ -483,3 +489,14 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+
+# Archive test fixtures.
+#
+# Everything above this line is the stock `dotnet new gitignore`, written for a tree where every
+# .zip, .tar.gz and .cab is build output. This is a repo whose archive tool is tested against
+# exactly those, so the boilerplate and the fixtures collide. It had already happened once:
+# `*.tar.gz` was quietly swallowing `modes.tar.gz` while its uncompressed twin `modes.tar` sat
+# tracked beside it, so eight Archiver tests passed on the machine that made the file and failed
+# on any fresh checkout. A blanket negation for the fixture directory, so the next format added
+# there cannot repeat it.
+!tests/Wlrix.Archiver.Tests/Fixtures/*
