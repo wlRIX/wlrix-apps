@@ -7,6 +7,7 @@
         <Project Path="src/Wlrix.Settings.Client/Wlrix.Settings.Client.csproj" />
         <Project Path="src/Wlrix.Settings.Keyboard/Wlrix.Settings.Keyboard.csproj" />
         <Project Path="src/Wlrix.Settings.Windows/Wlrix.Settings.Windows.csproj" />
+        <Project Path="src/Wlrix.Shutdown/Wlrix.Shutdown.csproj" />
         <Project Path="src/Wlrix.SourcePicker/Wlrix.SourcePicker.csproj" />
         <Project Path="src/Wlrix.SoftwareManager/Wlrix.SoftwareManager.csproj" />
         <Project Path="src/Wlrix.Packages/Wlrix.Packages.csproj" />
@@ -17,5 +18,6 @@
         <Project Path="tests/Wlrix.Packages.Tests/Wlrix.Packages.Tests.csproj" />
         <Project Path="tests/Wlrix.Toolchest.Tests/Wlrix.Toolchest.Tests.csproj" />
         <Project Path="tests/Wlrix.Archiver.Tests/Wlrix.Archiver.Tests.csproj" />
+        <Project Path="tests/Wlrix.Shutdown.Tests/Wlrix.Shutdown.Tests.csproj" />
     </Folder>
 </Solution>

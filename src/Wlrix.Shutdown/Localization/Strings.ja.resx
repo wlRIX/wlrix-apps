@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="WindowTitle" xml:space="preserve">
+    <value>{0} のシステムを終了</value>
+  </data>
+  <data name="Heading" xml:space="preserve">
+    <value>システムを終了します</value>
+  </data>
+  <data name="Body1" xml:space="preserve">
+    <value>システムを終了すると、実行中のアプリケーションはすべて停止し、リモートのユーザーはすべてログアウトします。</value>
+  </data>
+  <data name="NoteLabel" xml:space="preserve">
+    <value>注意:</value>
+  </data>
+  <data name="Body2" xml:space="preserve">
+    <value>先に開いているアプリケーションとファイルを閉じてください。閉じないとデータを失うおそれがあります。</value>
+  </data>
+  <data name="Body3" xml:space="preserve">
+    <value>電源を切らずにシステムを再起動することもできます。下のオプションをクリックしてください。</value>
+  </data>
+  <data name="Body4" xml:space="preserve">
+    <value>オプションを選ぶ場合は、OK をクリックする前にクリックしてください。</value>
+  </data>
+  <data name="RestartLabel" xml:space="preserve">
+    <value>システムを再起動:</value>
+  </data>
+  <data name="FirmwareSetupLabel" xml:space="preserve">
+    <value>UEFI 設定画面で再起動:</value>
+  </data>
+  <data name="Ok" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>取消</value>
+  </data>
+  <data name="Help" xml:space="preserve">
+    <value>ヘルプ</value>
+  </data>
+  <data name="HelpText" xml:space="preserve">
+    <value>OK を押すと電源を切ります。「システムを再起動」をチェックすると、電源を切らずに起動し直します。
+
+このマシンをファームウェアの設定画面で起動できる場合は、その下にもうひとつオプションが現れます。チェックすると、通常の起動ではなく設定画面で止まります。
+
+取消 を押すとこのウィンドウを閉じ、マシンはそのまま動き続けます。</value>
+  </data>
+  <data name="ErrorTitle" xml:space="preserve">
+    <value>システムを終了</value>
+  </data>
+  <data name="NoSystemBus" xml:space="preserve">
+    <value>システムバスに接続できないため、このマシンの終了を依頼する相手がいません。</value>
+  </data>
+  <data name="PowerOffUnavailable" xml:space="preserve">
+    <value>このセッションにはシステムの電源を切る権限がありません。</value>
+  </data>
+  <data name="RestartUnavailable" xml:space="preserve">
+    <value>このセッションにはシステムを再起動する権限がありません。</value>
+  </data>
+  <data name="PowerOffFailed" xml:space="preserve">
+    <value>システムの電源を切れませんでした。
+{0}</value>
+  </data>
+  <data name="RestartFailed" xml:space="preserve">
+    <value>システムを再起動できませんでした。
+{0}</value>
+  </data>
+  <data name="FirmwareSetupFailed" xml:space="preserve">
+    <value>UEFI 設定画面での再起動を準備できなかったため、システムはそのままにしました。
+{0}</value>
+  </data>
+</root>

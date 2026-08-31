@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN"
+ "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
+
+<!--
+    systemd-logind's manager interface, trimmed to the six members wlrix-shutdown calls.
+
+    Taken verbatim from the live introspection, which busctl's introspect verb prints given
+    the bus name org.freedesktop.login1, the object path /org/freedesktop/login1, its system
+    switch and its xml-interface switch. (Spelled out rather than pasted as a command line
+    because a double dash cannot appear inside an XML comment, and one that does makes this
+    whole file unparseable at build time, as a DBUS1004 that names no line of C#.
+    Wlrix.Settings.Client's introspection XML was broken by the same class of character once
+    already, which is why the comments were stripped out of it.)
+
+    Trimmed because the real interface runs to over a hundred members - every sleep verb, every
+    session and seat method, every property - and none of the rest has any business being
+    reachable from a shutdown dialog. Signatures are copied unchanged, so the generated proxy
+    cannot disagree with the daemon about one.
+
+    The `Can*` methods answer a string, not a boolean: "yes", "no", "na" (the operation does not
+    apply to this machine - what a non-EFI box says to CanRebootToFirmwareSetup) or "challenge"
+    (allowed, but polkit will want authentication first). See Allowed in PowerService.
+-->
+<node>
+  <interface name="org.freedesktop.login1.Manager">
+    <method name="PowerOff">
+      <arg type="b" name="interactive" direction="in"/>
+    </method>
+    <method name="Reboot">
+      <arg type="b" name="interactive" direction="in"/>
+    </method>
+    <method name="CanPowerOff">
+      <arg type="s" name="result" direction="out"/>
+    </method>
+    <method name="CanReboot">
+      <arg type="s" name="result" direction="out"/>
+    </method>
+    <method name="CanRebootToFirmwareSetup">
+      <arg type="s" name="result" direction="out"/>
+    </method>
+    <method name="SetRebootToFirmwareSetup">
+      <arg type="b" name="enable" direction="in"/>
+    </method>
+  </interface>
+</node>

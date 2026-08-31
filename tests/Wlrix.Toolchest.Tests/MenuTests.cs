@@ -56,15 +56,15 @@ public class MenuTests
     }
 
     [Fact]
-    public void RestartAndShutDownAreGrayedOutUntilTheyHaveADialog()
+    public void RestartAndShutDownBothOpenTheShutDownDialog()
     {
-        // Not merely command-less: an enabled item that does nothing when chosen reads as a bug,
-        // so these have to *look* unavailable. See the note in BuildTopLevel.
+        // They were grayed out for as long as there was nowhere for them to go. There is now:
+        // wlrix-shutdown, which asks before anything happens to the machine.
         foreach (var header in new[] { Strings.RestartSystem, Strings.ShutDownSystem })
         {
             var item = Assert.Single(ItemsUnder(Strings.System), node => node.Header == header);
-            Assert.False(item.IsEnabled, header);
-            Assert.Null(item.Command);
+            Assert.True(item.IsEnabled, header);
+            Assert.NotNull(item.Command);
         }
     }
 

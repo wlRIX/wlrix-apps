@@ -1,0 +1,51 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+        <ApplicationManifest>app.manifest</ApplicationManifest>
+        <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+        <AssemblyName>wlrix-shutdown</AssemblyName>
+        <Version>0.1.0</Version>
+        <!-- The generated logind proxy is `unsafe`-free, but Tmds.DBus.Protocol's readers and
+             writers are spans over the raw message buffer, and the generator emits code that
+             uses them directly. No hand-written unsafe code here. Same arrangement as
+             Wlrix.Settings.Client. -->
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Wlrix.Common\Wlrix.Common.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <InternalsVisibleTo Include="Wlrix.Shutdown.Tests" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <!-- The proxy comes from logind's own introspection, trimmed to the six members this
+             app calls: the full org.freedesktop.login1.Manager interface is some two hundred
+             members, and none of the rest has any business being reachable from here.
+             The header of the XML itself says how to regenerate the source. -->
+        <AdditionalFiles Include="DBusXml/org.freedesktop.login1.xml"
+                         Namespace="Wlrix.Shutdown.DBus"
+                         DBusGeneratorMode="Proxy" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Avalonia" />
+        <PackageReference Include="Avalonia.Desktop" />
+        <PackageReference Include="Avalonia.Wayland" />
+        <PackageReference Include="AvaloniaUI.DiagnosticsSupport">
+            <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
+            <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
+        </PackageReference>
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+        <PackageReference Include="ReactiveUI.Avalonia" />
+        <PackageReference Include="Tmds.DBus.Protocol" />
+        <PackageReference Include="Tmds.DBus.Generator" PrivateAssets="all" />
+        <PackageReference Include="Wlrix.Avalonia" />
+        <PackageReference Include="Wlrix.Avalonia.Dialogs" />
+        <PackageReference Include="ZLogger" />
+    </ItemGroup>
+
+</Project>

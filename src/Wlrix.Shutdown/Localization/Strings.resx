@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="WindowTitle" xml:space="preserve">
+    <value>Shut Down System on {0}</value>
+  </data>
+  <data name="Heading" xml:space="preserve">
+    <value>Shut Down the System</value>
+  </data>
+  <data name="Body1" xml:space="preserve">
+    <value>When you shut down the system, you stop all running applications and log out all remote users.</value>
+  </data>
+  <data name="NoteLabel" xml:space="preserve">
+    <value>Note:</value>
+  </data>
+  <data name="Body2" xml:space="preserve">
+    <value>Be sure to close any open applications and files first, or you may risk losing data.</value>
+  </data>
+  <data name="Body3" xml:space="preserve">
+    <value>You can choose to restart the system instead of powering it off by clicking an option below.</value>
+  </data>
+  <data name="Body4" xml:space="preserve">
+    <value>If you want to select an option, click it before clicking OK.</value>
+  </data>
+  <data name="RestartLabel" xml:space="preserve">
+    <value>Restart the system:</value>
+  </data>
+  <data name="FirmwareSetupLabel" xml:space="preserve">
+    <value>Restart to UEFI setup:</value>
+  </data>
+  <data name="Ok" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Help" xml:space="preserve">
+    <value>Help</value>
+  </data>
+  <data name="HelpText" xml:space="preserve">
+    <value>OK powers the machine off. Check “Restart the system” to have it come back up instead.
+
+If this machine can be sent to its firmware setup screen, a second option appears under the first; check it to stop at the setup screen rather than booting normally.
+
+Cancel closes this window and leaves the machine running.</value>
+  </data>
+  <data name="ErrorTitle" xml:space="preserve">
+    <value>Shut Down System</value>
+  </data>
+  <data name="NoSystemBus" xml:space="preserve">
+    <value>Could not reach the system bus, so there is nothing to ask to shut this machine down.</value>
+  </data>
+  <data name="PowerOffUnavailable" xml:space="preserve">
+    <value>This session is not allowed to power the system off.</value>
+  </data>
+  <data name="RestartUnavailable" xml:space="preserve">
+    <value>This session is not allowed to restart the system.</value>
+  </data>
+  <data name="PowerOffFailed" xml:space="preserve">
+    <value>Could not power the system off.
+{0}</value>
+  </data>
+  <data name="RestartFailed" xml:space="preserve">
+    <value>Could not restart the system.
+{0}</value>
+  </data>
+  <data name="FirmwareSetupFailed" xml:space="preserve">
+    <value>Could not arrange to restart to UEFI setup, so the system was left running.
+{0}</value>
+  </data>
+</root>

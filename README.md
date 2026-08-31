@@ -20,6 +20,7 @@ library. Apps recreate the IRIX Interactive Desktop surface.
 | `Wlrix.Console`           | app   | Tails the wlRIX component logs, one tab each.                     |
 | `Wlrix.Settings.Keyboard` | app   | Keyboard settings panel.                                          |
 | `Wlrix.Settings.Windows`  | app   | Window settings panel: focus policy and the 4Dwm flags.           |
+| `Wlrix.Shutdown`          | app   | The Shut Down System dialog, behind the Toolchest's two items.    |
 | `Wlrix.SourcePicker`      | app   | The screen-share picker `xdg-desktop-portal-wlrix` puts up.       |
 | `Wlrix.SoftwareManager`   | app   | Package manager, after IRIX's `swmgr`.                            |
 | `Wlrix.Archiver`          | app   | Archive browser and extractor, after KDE's Ark.                   |
@@ -57,8 +58,8 @@ easy to get wrong and all of them fail quietly:
 
 Compressed tars are registered under two MIME types each, and that is not redundancy: `xdg-mime
 query filetype backup.tar.gz` sniffs the gzip magic and answers `application/gzip`, while `gio
-info` honors the `*.tar.gz` glob and answers `application/x-compressed-tar`. Register one and tarballs route from a
-file manager but not from `xdg-open`, or the reverse.
+info` honors the `*.tar.gz` glob and answers `application/x-compressed-tar`. Register one and tarballs route from a file
+manager but not from `xdg-open`, or the reverse.
 
 ## Translations
 

@@ -16,6 +16,19 @@ public sealed class MainWindowViewModel : ViewModelBase
     /// <summary>The installed name of the Software Manager, launched by System → Software Manager.</summary>
     private const string SoftwareManagerProgram = "wlrix-software-manager";
 
+    /// <summary>
+    /// The installed name of the Shut Down System dialog, behind both of the System menu's
+    /// machine-wide items.
+    /// </summary>
+    private const string ShutdownProgram = "wlrix-shutdown";
+
+    /// <summary>
+    /// What tells the dialog it was reached through Restart System rather than Shut Down
+    /// System. It only presets the checkbox; the choice is still the user's until they press
+    /// OK, which is the whole reason these two items open a window instead of acting.
+    /// </summary>
+    private const string RestartFlag = "--restart";
+
     private readonly IApplicationCatalog _catalog;
     private readonly IAppLauncher _launcher;
     private readonly ISessionService _session;
@@ -94,12 +107,15 @@ public sealed class MainWindowViewModel : ViewModelBase
             new MenuNode(Strings.SoftwareManager,
                 command: new RelayCommand(() => _launcher.Run(Strings.SoftwareManager, SoftwareManagerProgram))),
             MenuNode.Separator(),
-            // Disabled until they have somewhere to go: both need a themed confirmation of their
-            // own, and neither should be a menu item that silently powers the machine off. The
-            // shape is here so the work to come has somewhere to land -- the same reason
-            // wlrix-desktop keeps its own unfinished items on screen and grayed out.
-            new MenuNode(Strings.RestartSystem, isEnabled: false),
-            new MenuNode(Strings.ShutDownSystem, isEnabled: false),
+            // Neither acts: both open the Shut Down System dialog, which is where the machine
+            // actually gets asked to go down. That indirection is the point -- a menu item that
+            // powered the box off on a mis-click would be unrecoverable in a way no other item
+            // here is -- and it is why these two stopped being grayed out.
+            new MenuNode(Strings.RestartSystem,
+                command: new RelayCommand(() =>
+                    _launcher.Run(Strings.RestartSystem, ShutdownProgram, RestartFlag))),
+            new MenuNode(Strings.ShutDownSystem,
+                command: new RelayCommand(() => _launcher.Run(Strings.ShutDownSystem, ShutdownProgram))),
         ]));
         TopLevel.Add(applications);
         TopLevel.Add(new MenuNode(Strings.Help,

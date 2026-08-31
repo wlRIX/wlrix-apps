@@ -1,0 +1,110 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Wlrix.Shutdown.ViewModels"
+        xmlns:loc="using:Wlrix.Common.Localization"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="540" d:DesignHeight="400"
+        x:Class="Wlrix.Shutdown.Views.ShutdownWindow"
+        x:DataType="vm:ShutdownViewModel"
+        Width="540" Height="400"
+        CanResize="False"
+        WindowStartupLocation="CenterScreen"
+        Title="Shut Down System">
+
+    <!-- Fixed Width/Height rather than SizeToContent: the firmware-setup row comes and goes
+         with the Restart checkbox, and a window that resized itself under the pointer each
+         time would move the button the user is about to click. The row keeps its space
+         whether or not it is drawn.
+
+         No SystemDecorations or ExtendClientArea: the compositor draws the 4Dwm frame.
+         CanResize="False" is what tells it so. Avalonia turns that into a min size equal to
+         the max size, which is the only thing xdg-shell can say about being fixed, and the
+         compositor reads it to drop the resize border and the maximize button. -->
+
+    <Design.DataContext>
+        <vm:ShutdownViewModel />
+    </Design.DataContext>
+
+    <Grid Margin="16" RowDefinitions="Auto,*,Auto">
+
+        <!-- Title banner: icon slot plus what this window does, as on the IRIX original. -->
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="12">
+            <Border Width="48" Height="48"
+                    BorderThickness="1"
+                    BorderBrush="{DynamicResource WlrixOuterLine}"
+                    Background="{DynamicResource WlrixSelect}">
+                <!-- Placeholder for the shutdown icon (a real asset comes from wlrix-assets). -->
+                <TextBlock Text="&#x23FB;" FontSize="26"
+                           HorizontalAlignment="Center" VerticalAlignment="Center" />
+            </Border>
+            <TextBlock Text="{loc:Tr Heading}" FontWeight="Bold" FontSize="16"
+                       VerticalAlignment="Center" />
+        </StackPanel>
+
+        <!-- The prose and the options, indented past the icon the way the original's were. -->
+        <StackPanel Grid.Row="1" Margin="60,16,0,0" Spacing="12">
+
+            <TextBlock Text="{loc:Tr Body1}" TextWrapping="Wrap" />
+
+            <!-- "Note:" is italic and the sentence after it is not, so this is one paragraph of
+                 two runs rather than two TextBlocks: a wrapped line has to be able to break
+                 between them. -->
+            <TextBlock TextWrapping="Wrap">
+                <Run Text="{loc:Tr NoteLabel}" FontStyle="Italic" />
+                <Run Text=" " />
+                <Run Text="{loc:Tr Body2}" />
+            </TextBlock>
+
+            <TextBlock Text="{loc:Tr Body3}" TextWrapping="Wrap" />
+            <TextBlock Text="{loc:Tr Body4}" TextWrapping="Wrap" />
+
+            <!-- Label to the left of the box, right-aligned against it, as IRIX had it. The
+                 two rows share a column width so the boxes line up under each other. -->
+            <Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto"
+                  ColumnSpacing="8" RowSpacing="6" Margin="0,4,0,0"
+                  HorizontalAlignment="Left">
+                <TextBlock Grid.Row="0" Grid.Column="0"
+                           Text="{loc:Tr RestartLabel}" FontWeight="Bold"
+                           VerticalAlignment="Center" />
+                <CheckBox Grid.Row="0" Grid.Column="1"
+                          IsChecked="{Binding Restart}"
+                          IsEnabled="{Binding !Busy}" />
+
+                <!-- Only under a checked Restart, and only where the firmware can be asked
+                     for it. Faded out rather than taken out of the layout: this label is the
+                     longer of the two, so a row that left the layout would shrink the column
+                     both share and slide the Restart checkbox out from under the pointer that
+                     had just clicked it. IsEnabled goes with the opacity, so a faded row is
+                     neither clickable nor tab-reachable. -->
+                <TextBlock Grid.Row="1" Grid.Column="0"
+                           Text="{loc:Tr FirmwareSetupLabel}" FontWeight="Bold"
+                           VerticalAlignment="Center"
+                           Opacity="{Binding FirmwareSetupOpacity}"
+                           IsEnabled="{Binding IsFirmwareSetupEnabled}" />
+                <CheckBox Grid.Row="1" Grid.Column="1"
+                          IsChecked="{Binding RebootToFirmwareSetup}"
+                          Opacity="{Binding FirmwareSetupOpacity}"
+                          IsEnabled="{Binding IsFirmwareSetupEnabled}" />
+            </Grid>
+
+        </StackPanel>
+
+        <StackPanel Grid.Row="2" Orientation="Horizontal"
+                    HorizontalAlignment="Center" Spacing="12" Margin="0,16,0,0">
+            <Button Content="{loc:Tr Ok}" MinWidth="80"
+                    IsDefault="True" IsEnabled="{Binding !Busy}" Click="OnOk" />
+            <Button Content="{loc:Tr Cancel}" MinWidth="80"
+                    IsCancel="True" Click="OnCancel" />
+            <Button Content="{loc:Tr Help}" MinWidth="80">
+                <Button.Flyout>
+                    <Flyout>
+                        <TextBlock MaxWidth="320" TextWrapping="Wrap" Text="{loc:Tr HelpText}" />
+                    </Flyout>
+                </Button.Flyout>
+            </Button>
+        </StackPanel>
+
+    </Grid>
+
+</Window>
