@@ -2,6 +2,7 @@ using Avalonia.Threading;
 using ReactiveUI;
 using Wlrix.Avalonia;
 using Wlrix.Settings.Client;
+using Wlrix.Settings.Schemes.Localization;
 
 namespace Wlrix.Settings.Schemes.ViewModels;
 
@@ -81,7 +82,7 @@ public sealed class ColorSchemeViewModel : ViewModelBase, IDisposable
     /// The line under the list, which is where IRIX put "Default SGI scheme".
     /// </summary>
     public string SelectedDescription =>
-        $"{Selected.Name} — {(Selected.IsDark ? "dark" : "light")}, gamma {Selected.Gamma}";
+        Strings.SchemeDescription(Selected.Name, Selected.IsDark, Selected.Gamma);
 
     /// <summary>Whether the settings have loaded and Apply means anything yet.</summary>
     public bool IsReady
@@ -130,7 +131,7 @@ public sealed class ColorSchemeViewModel : ViewModelBase, IDisposable
         {
             // Bus activation means "not on the bus" is a broken install rather than an idle
             // session, so say so rather than silently doing nothing.
-            Status = $"No settings service: {e.Message}";
+            Status = Strings.NoSettingsService(e.Message);
         }
     }
 
@@ -204,7 +205,7 @@ public sealed class ColorSchemeViewModel : ViewModelBase, IDisposable
             values.Add(await _client.GetAsync(member).ConfigureAwait(true) as string ?? string.Empty);
 
         if (values.Distinct().Count() > 1)
-            Status = "The components are set to different schemes; Apply puts them back together.";
+            Status = Strings.ComponentsDisagree;
     }
 
     /// <summary>
@@ -224,7 +225,7 @@ public sealed class ColorSchemeViewModel : ViewModelBase, IDisposable
 
     private void OnFileInvalid(object? sender, SettingsFileInvalidEventArgs e) =>
         Dispatcher.UIThread.Post(() =>
-            Status = $"{e.Path} is not valid; showing the last good values.");
+            Status = Strings.FileInvalid(e.Path));
 
     private void Adopt(object? value) => Select(value as string);
 

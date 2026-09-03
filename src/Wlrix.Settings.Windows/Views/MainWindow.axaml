@@ -1,6 +1,7 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:Wlrix.Settings.Windows.ViewModels"
+        xmlns:loc="using:Wlrix.Common.Localization"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="320" d:DesignHeight="245"
@@ -8,7 +9,7 @@
         x:Class="Wlrix.Settings.Windows.Views.MainWindow"
         x:DataType="vm:WindowSettingsViewModel"
         CanResize="False"
-        Title="Window Settings">
+        Title="{loc:Tr WindowTitle}">
 
     <Design.DataContext>
         <vm:WindowSettingsViewModel />
@@ -29,20 +30,20 @@
                 <TextBlock Text="&#x25A3;" FontSize="26"
                            HorizontalAlignment="Center" VerticalAlignment="Center" />
             </Border>
-            <TextBlock Text="Window Settings" FontWeight="Bold" FontSize="16"
+            <TextBlock Text="{loc:Tr PanelTitle}" FontWeight="Bold" FontSize="16"
                        VerticalAlignment="Center" />
         </StackPanel>
 
         <!-- Close / Reset / Help, along the bottom as on the original. -->
         <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal"
                     HorizontalAlignment="Center" Spacing="8" Margin="0,12,0,0">
-            <Button Content="Close" Click="OnClose" />
-            <Button Content="Reset" Click="OnReset" />
-            <Button Content="Help">
+            <Button Content="{loc:Tr Close}" Click="OnClose" />
+            <Button Content="{loc:Tr Reset}" Click="OnReset" />
+            <Button Content="{loc:Tr Help}">
                 <Button.Flyout>
                     <Flyout>
                         <TextBlock MaxWidth="260" TextWrapping="Wrap"
-                                   Text="Choose how a window comes to have the keyboard, whether clicking one raises it, and whether moving and resizing show the window's contents or an outline. Changes apply as you make them, to windows already open as well as new ones. Reset restores the settings from when this window opened." />
+                                   Text="{loc:Tr HelpText}" />
                     </Flyout>
                 </Button.Flyout>
             </Button>
@@ -62,7 +63,7 @@
                  each item sits in its own container, so the default "group by parent" rule
                  would put every button in a group of one and let both be checked at once. -->
             <StackPanel Spacing="2">
-                <TextBlock Text="Keyboard Focus:" FontWeight="Bold" />
+                <TextBlock Text="{loc:Tr KeyboardFocus}" FontWeight="Bold" />
                 <ItemsControl ItemsSource="{Binding FocusPolicies}" Margin="12,0,0,0">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
@@ -83,20 +84,20 @@
                  CheckBox carries no content of its own so its template collapses to the box
                  alone in the Auto-sized column. -->
             <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto,Auto" RowSpacing="6">
-                <TextBlock Grid.Row="0" Grid.Column="0" Text="Click Raise:"
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="{loc:Tr ClickRaise}"
                            VerticalAlignment="Center" />
                 <CheckBox Grid.Row="0" Grid.Column="1" IsChecked="{Binding RaiseOnClick}"
-                          ToolTip.Tip="Clicking in a window brings it to the front." />
+                          ToolTip.Tip="{loc:Tr ClickRaiseTip}" />
 
-                <TextBlock Grid.Row="1" Grid.Column="0" Text="Opaque Window Move:"
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="{loc:Tr OpaqueMove}"
                            VerticalAlignment="Center" />
                 <CheckBox Grid.Row="1" Grid.Column="1" IsChecked="{Binding OpaqueMove}"
-                          ToolTip.Tip="Drag the window itself, rather than an outline of where it will land." />
+                          ToolTip.Tip="{loc:Tr OpaqueMoveTip}" />
 
-                <TextBlock Grid.Row="2" Grid.Column="0" Text="Opaque Window Resize:"
+                <TextBlock Grid.Row="2" Grid.Column="0" Text="{loc:Tr OpaqueResize}"
                            VerticalAlignment="Center" />
                 <CheckBox Grid.Row="2" Grid.Column="1" IsChecked="{Binding OpaqueResize}"
-                          ToolTip.Tip="Redraw the window as it is resized, rather than on release." />
+                          ToolTip.Tip="{loc:Tr OpaqueResizeTip}" />
             </Grid>
 
         </StackPanel>

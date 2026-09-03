@@ -1,8 +1,9 @@
-using System.Collections.ObjectModel;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Threading;
 using ReactiveUI;
+using System.Collections.ObjectModel;
+using Wlrix.Desks.Localization;
 using Wlrix.Desks.Models;
 using Wlrix.Desks.Services;
 
@@ -132,9 +133,9 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
         }
     }
 
-    public string GlobalDeskMenuHeader => ShowGlobalDesk ? "Hide Global Desk" : "Show Global Desk";
+    public string GlobalDeskMenuHeader => Strings.GlobalDeskToggle(ShowGlobalDesk);
 
-    public string SnapshotsMenuHeader => ShowSnapshots ? "Hide Snapshots" : "Show Snapshots";
+    public string SnapshotsMenuHeader => Strings.SnapshotsToggle(ShowSnapshots);
 
     public void Start() => _feed.Start();
 
@@ -329,7 +330,7 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
         var names = Desks.Select(d => d.Name).ToHashSet(StringComparer.Ordinal);
         for (var n = 1; ; n++)
         {
-            var candidate = $"Desk {n}";
+            var candidate = Strings.DefaultDeskName(n);
             if (!names.Contains(candidate))
                 return candidate;
         }

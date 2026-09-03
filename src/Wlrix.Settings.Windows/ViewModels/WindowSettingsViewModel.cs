@@ -1,6 +1,7 @@
 using Avalonia.Threading;
 using ReactiveUI;
 using Wlrix.Settings.Client;
+using Wlrix.Settings.Windows.Localization;
 
 namespace Wlrix.Settings.Windows.ViewModels;
 
@@ -25,22 +26,6 @@ public sealed class WindowSettingsViewModel : ViewModelBase, IDisposable
     private const string RaiseKey = "compositor.focus.raise_on_click";
     private const string OpaqueMoveKey = "compositor.windows.opaque_move";
     private const string OpaqueResizeKey = "compositor.windows.opaque_resize";
-
-    /// <summary>
-    /// What IRIX called each focus policy, against the value the compositor writes.
-    ///
-    /// The daemon supplies labels of its own and they are perfectly good English ("Click to
-    /// focus", "Focus follows pointer") — but this panel is a reproduction of a specific window,
-    /// and 4Dwm's Window Settings said "Click to type" and "Point to type". Presentation is the
-    /// app's, which is what <see cref="SettingDescription.ChoiceLabels"/> documents itself as
-    /// being for: a fallback for a value the app has no words of its own for. A policy that
-    /// turns up here unknown gets the daemon's label rather than nothing.
-    /// </summary>
-    private static readonly Dictionary<string, string> IrixLabels = new()
-    {
-        ["click"] = "Click to type",
-        ["pointer"] = "Point to type",
-    };
 
     /// <summary>
     /// The radio group to show before the daemon has been asked, and if it never answers.
@@ -185,7 +170,7 @@ public sealed class WindowSettingsViewModel : ViewModelBase, IDisposable
         {
             // Bus activation means "not on the bus" is a broken install rather than an idle
             // session, so say so rather than silently doing nothing.
-            Status = $"No settings service: {e.Message}";
+            Status = Strings.NoSettingsService(e.Message);
         }
     }
 
@@ -292,7 +277,7 @@ public sealed class WindowSettingsViewModel : ViewModelBase, IDisposable
 
     private void OnFileInvalid(object? sender, SettingsFileInvalidEventArgs e) =>
         Dispatcher.UIThread.Post(() =>
-            Status = $"{e.Path} is not valid; showing the last good values.");
+            Status = Strings.FileInvalid(e.Path));
 
     /// <summary>
     /// Replace the radio group with the choices the daemon declares.
@@ -359,9 +344,19 @@ public sealed class WindowSettingsViewModel : ViewModelBase, IDisposable
             choice.IsSelected = ReferenceEquals(choice, wanted);
     }
 
-    /// <summary>IRIX's name for a policy, or the daemon's if this build has none.</summary>
+    /// <summary>
+    /// IRIX's name for a policy, or the daemon's if this build has none.
+    ///
+    /// The daemon supplies labels of its own and they are perfectly good English ("Click to
+    /// focus", "Focus follows pointer") — but this panel is a reproduction of a specific window,
+    /// and 4Dwm's Window Settings said "Click to type" and "Point to type". Presentation is the
+    /// app's, which is what <see cref="SettingDescription.ChoiceLabels"/> documents itself as
+    /// being for: a fallback for a value the app has no words of its own for. A policy that
+    /// turns up here unknown gets the daemon's label rather than nothing — untranslated, but
+    /// English words beat a resource key.
+    /// </summary>
     private static string Label(string value, string fallback) =>
-        IrixLabels.GetValueOrDefault(value) ?? fallback;
+        Strings.FocusPolicy(value) ?? fallback;
 
     private void Watch(IReadOnlyList<FocusChoice> choices)
     {

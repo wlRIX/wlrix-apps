@@ -1,8 +1,9 @@
+using Microsoft.Extensions.Logging;
 using System.ComponentModel;
 using System.Diagnostics;
-using Microsoft.Extensions.Logging;
 using Wlrix.Common;
 using Wlrix.Toolchest.Desktop;
+using Wlrix.Toolchest.Localization;
 using ZLogger;
 
 namespace Wlrix.Toolchest.Services;
@@ -39,7 +40,7 @@ public sealed class AppLauncher(ILogger<AppLauncher> logger) : IAppLauncher
     {
         if (ExecParser.Parse(exec) is not { } parsed || parsed.File.Length == 0)
         {
-            Fail(displayName, $"“{exec}” has no runnable command.");
+            Fail(displayName, Strings.NoRunnableCommand(exec));
             return;
         }
 
@@ -54,7 +55,7 @@ public sealed class AppLauncher(ILogger<AppLauncher> logger) : IAppLauncher
         // Terminal apps: run as `<terminal> -e <program> <args…>` (best-effort; -e is common).
         if (ResolveTerminal() is not { } term)
         {
-            Fail(displayName, "No terminal emulator was found to run this application.");
+            Fail(displayName, Strings.NoTerminalForApp);
             return;
         }
 
@@ -71,7 +72,7 @@ public sealed class AppLauncher(ILogger<AppLauncher> logger) : IAppLauncher
         if (Executables.Which(program) is { } path)
             Start(displayName, path, args);
         else
-            Fail(displayName, $"“{program}” is not installed.");
+            Fail(displayName, Strings.NotInstalled(program));
     }
 
     public void OpenTerminal()
@@ -79,7 +80,7 @@ public sealed class AppLauncher(ILogger<AppLauncher> logger) : IAppLauncher
         if (ResolveTerminal() is { } term)
             Start("Terminal", term, []);
         else
-            Fail("Terminal", "No terminal emulator was found.");
+            Fail("Terminal", Strings.NoTerminal);
     }
 
     private void Start(string displayName, string file, IReadOnlyList<string> args)
@@ -96,7 +97,7 @@ public sealed class AppLauncher(ILogger<AppLauncher> logger) : IAppLauncher
         catch (Exception ex) when (ex is Win32Exception or InvalidOperationException or IOException)
         {
             logger.ZLogError(ex, $"Failed to launch '{displayName}' ({file}).");
-            Fail(displayName, $"Could not start “{displayName}”.\n{ex.Message}");
+            Fail(displayName, Strings.CouldNotStart(displayName, ex.Message));
         }
     }
 

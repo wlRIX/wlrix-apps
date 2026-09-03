@@ -3,13 +3,14 @@
         xmlns:vm="using:Wlrix.Settings.Schemes.ViewModels"
         xmlns:wlrix="https://vic485.xyz/Wlrix.Avalonia"
         xmlns:theme="using:Wlrix.Avalonia"
+        xmlns:loc="using:Wlrix.Common.Localization"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="470" d:DesignHeight="530"
         Width="470" Height="530" MinWidth="430" MinHeight="440"
         x:Class="Wlrix.Settings.Schemes.Views.MainWindow"
         x:DataType="vm:ColorSchemeViewModel"
-        Title="Color Scheme Browser">
+        Title="{loc:Tr WindowTitle}">
 
     <Design.DataContext>
         <vm:ColorSchemeViewModel />
@@ -23,11 +24,11 @@
         <!-- The original also had a Sample Image menu, which chose between several samples.
              There is one, so the menu is left out rather than stubbed. -->
         <Menu DockPanel.Dock="Top">
-            <MenuItem Header="_Application">
-                <MenuItem Header="_Close" Click="OnCancel" />
+            <MenuItem Header="{loc:Tr MenuApplication}">
+                <MenuItem Header="{loc:Tr MenuClose}" Click="OnCancel" />
             </MenuItem>
-            <MenuItem Header="_Help">
-                <MenuItem Header="_Click for Help" Click="OnHelp" />
+            <MenuItem Header="{loc:Tr MenuHelp}">
+                <MenuItem Header="{loc:Tr MenuClickForHelp}" Click="OnHelp" />
             </MenuItem>
         </Menu>
 
@@ -41,17 +42,17 @@
                 <TextBlock Text="&#x1F3A8;" FontSize="24"
                            HorizontalAlignment="Center" VerticalAlignment="Center" />
             </Border>
-            <TextBlock Text="Color Schemes" FontWeight="Bold" FontSize="16"
+            <TextBlock Text="{loc:Tr PanelTitle}" FontWeight="Bold" FontSize="16"
                        VerticalAlignment="Center" />
         </StackPanel>
 
         <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal"
                     HorizontalAlignment="Center" Spacing="10" Margin="12,10,12,12">
-            <Button Content="Apply" MinWidth="92" Click="OnApply"
+            <Button Content="{loc:Tr Apply}" MinWidth="92" Click="OnApply"
                     IsEnabled="{Binding IsReady}" />
-            <Button Content="Reset ..." MinWidth="92" Click="OnReset"
+            <Button Content="{loc:Tr Reset}" MinWidth="92" Click="OnReset"
                     IsEnabled="{Binding IsReady}" />
-            <Button Content="Cancel" MinWidth="92" Click="OnCancel" />
+            <Button Content="{loc:Tr Cancel}" MinWidth="92" Click="OnCancel" />
         </StackPanel>
 
         <!-- The scheme under the cursor, and then whatever the last write had to say about
@@ -83,7 +84,7 @@
                  Resource lookup walks up the tree, so the whole subtree is covered by the one
                  dictionary. -->
             <DockPanel Grid.Column="2" LastChildFill="True">
-                <TextBlock DockPanel.Dock="Top" Text="Sample Image" Margin="0,0,0,3" />
+                <TextBlock DockPanel.Dock="Top" Text="{loc:Tr SampleImage}" Margin="0,0,0,3" />
                 <wlrix:BevelBorder x:Name="SampleImage"
                                    Bevel="Sunken" BevelThickness="2" OuterLineThickness="1"
                                    Background="{DynamicResource WlrixPanel}"
@@ -126,25 +127,25 @@
                         </Border>
 
                         <StackPanel Spacing="3">
-                            <TextBlock Text="File Name:" />
+                            <TextBlock Text="{loc:Tr SampleFileName}" />
                             <Grid ColumnDefinitions="*,6,*">
-                                <TextBox Grid.Column="0" Text="scheme" />
+                                <TextBox Grid.Column="0" Text="{loc:Tr SampleFileNameValue}" />
                                 <TextBox Grid.Column="2" Text="" />
                             </Grid>
                         </StackPanel>
 
                         <StackPanel Orientation="Horizontal" Spacing="18">
-                            <CheckBox Content="option" IsChecked="True" />
-                            <RadioButton Content="off" GroupName="Sample" />
+                            <CheckBox Content="{loc:Tr SampleOption}" IsChecked="True" />
+                            <RadioButton Content="{loc:Tr SampleOff}" GroupName="Sample" />
                         </StackPanel>
 
                         <StackPanel Orientation="Horizontal" Spacing="8"
                                     HorizontalAlignment="Center">
                             <!-- MinWidth rather than Width: the theme's button padding is a
                                  scheme metric, so a fixed width clips the longest label. -->
-                            <Button Content="OK" MinWidth="66" />
-                            <Button Content="Cancel" MinWidth="66" />
-                            <Button Content="Help" MinWidth="66" />
+                            <Button Content="{loc:Tr Ok}" MinWidth="66" />
+                            <Button Content="{loc:Tr Cancel}" MinWidth="66" />
+                            <Button Content="{loc:Tr Help}" MinWidth="66" />
                         </StackPanel>
 
                     </StackPanel>

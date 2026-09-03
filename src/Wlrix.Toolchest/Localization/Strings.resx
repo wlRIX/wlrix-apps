@@ -96,4 +96,20 @@ Version {0}</value>
   <data name="Category_Other" xml:space="preserve">
     <value>Other</value>
   </data>
+  <data name="NoRunnableCommand" xml:space="preserve">
+    <value>“{0}” has no runnable command.</value>
+  </data>
+  <data name="NoTerminalForApp" xml:space="preserve">
+    <value>No terminal emulator was found to run this application.</value>
+  </data>
+  <data name="NoTerminal" xml:space="preserve">
+    <value>No terminal emulator was found.</value>
+  </data>
+  <data name="NotInstalled" xml:space="preserve">
+    <value>“{0}” is not installed.</value>
+  </data>
+  <data name="CouldNotStart" xml:space="preserve">
+    <value>Could not start “{0}”.
+{1}</value>
+  </data>
 </root>

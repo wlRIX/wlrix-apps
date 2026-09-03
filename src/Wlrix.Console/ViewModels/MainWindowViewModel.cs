@@ -1,4 +1,5 @@
 using ReactiveUI;
+using Wlrix.Console.Localization;
 
 namespace Wlrix.Console.ViewModels;
 
@@ -14,8 +15,8 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
     {
         Logs =
         [
-            new LogViewModel("Compositor", Path.Combine(LogDirectory, "wlrix-compositor.log")),
-            new LogViewModel("Session", Path.Combine(LogDirectory, "wlrix-session.log")),
+            new LogViewModel(Strings.TabCompositor, Path.Combine(LogDirectory, "wlrix-compositor.log")),
+            new LogViewModel(Strings.TabSession, Path.Combine(LogDirectory, "wlrix-session.log")),
         ];
         _selectedLog = Logs[0];
     }

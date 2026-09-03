@@ -1,6 +1,8 @@
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using Wlrix.Common.Localization;
+using Wlrix.Settings.Keyboard.Localization;
 using Wlrix.Settings.Keyboard.ViewModels;
 using Wlrix.Settings.Keyboard.Views;
 using Wlrix.Theme;
@@ -11,6 +13,10 @@ public partial class App : Application
 {
     public override void Initialize()
     {
+        // Before any XAML is loaded: {loc:Tr} in the window resolves against this, and a
+        // catalog set afterwards would leave every static label showing its own key.
+        TrExtension.Catalog = Strings.Catalog;
+
         AvaloniaXamlLoader.Load(this);
     }
 

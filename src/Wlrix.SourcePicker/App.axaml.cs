@@ -1,6 +1,8 @@
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using Wlrix.Common.Localization;
+using Wlrix.SourcePicker.Localization;
 using Wlrix.SourcePicker.Models;
 using Wlrix.SourcePicker.ViewModels;
 using Wlrix.SourcePicker.Views;
@@ -19,7 +21,14 @@ public partial class App : Application
 
     public App(Manifest manifest) => _manifest = manifest;
 
-    public override void Initialize() => AvaloniaXamlLoader.Load(this);
+    public override void Initialize()
+    {
+        // Before any XAML is loaded: {loc:Tr} in the window resolves against this, and a
+        // catalog set afterwards would leave every static label showing its own key.
+        TrExtension.Catalog = Strings.Catalog;
+
+        AvaloniaXamlLoader.Load(this);
+    }
 
     public override void OnFrameworkInitializationCompleted()
     {

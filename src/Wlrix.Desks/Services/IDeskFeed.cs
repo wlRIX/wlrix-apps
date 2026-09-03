@@ -1,3 +1,4 @@
+using Wlrix.Desks.Localization;
 using Wlrix.Desks.Models;
 
 namespace Wlrix.Desks.Services;
@@ -48,5 +49,10 @@ public interface IDeskFeed : IDisposable
 }
 
 /// <summary>Thrown when the compositor answers a command with an <c>err</c> reply.</summary>
+/// <remarks>
+/// The message is localized because it is shown to the person: the view model hands it straight
+/// to a <c>MessageDialog</c> rather than logging it. What the compositor said is not translated
+/// and cannot be — it is the protocol's own word for what went wrong.
+/// </remarks>
 public sealed class DeskCommandException(string reply)
-    : Exception($"The compositor rejected the request: {reply}");
+    : Exception(Strings.CommandRejected(reply));

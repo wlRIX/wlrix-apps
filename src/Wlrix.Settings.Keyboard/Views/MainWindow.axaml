@@ -2,6 +2,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:Wlrix.Settings.Keyboard.ViewModels"
         xmlns:svc="using:Wlrix.Settings.Keyboard.Services"
+        xmlns:loc="using:Wlrix.Common.Localization"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="380" d:DesignHeight="440"
@@ -9,7 +10,7 @@
         x:Class="Wlrix.Settings.Keyboard.Views.MainWindow"
         x:DataType="vm:KeyboardSettingsViewModel"
         CanResize="False"
-        Title="Keyboard Settings">
+        Title="{loc:Tr WindowTitle}">
 
     <Design.DataContext>
         <vm:KeyboardSettingsViewModel />
@@ -27,11 +28,11 @@
                 <TextBlock Text="&#x2328;" FontSize="26"
                            HorizontalAlignment="Center" VerticalAlignment="Center" />
             </Border>
-            <TextBlock Text="Keyboard Settings" FontWeight="Bold" FontSize="16"
+            <TextBlock Text="{loc:Tr PanelTitle}" FontWeight="Bold" FontSize="16"
                        VerticalAlignment="Center" />
         </StackPanel>
 
-        <CheckBox Content="Key Repeat" IsChecked="{Binding RepeatEnabled}" />
+        <CheckBox Content="{loc:Tr KeyRepeat}" IsChecked="{Binding RepeatEnabled}" />
 
         <!-- Repeat speed/delay: slider on the left, label on the right; each slider's current
              value shows in its tooltip. Disabled together with Key Repeat. -->
@@ -42,7 +43,7 @@
                     Value="{Binding RepeatRate}"
                     IsEnabled="{Binding RepeatEnabled}"
                     ToolTip.Tip="{Binding RepeatRateText}" />
-            <TextBlock Grid.Column="1" Text="Repeat Speed"
+            <TextBlock Grid.Column="1" Text="{loc:Tr RepeatSpeed}"
                        VerticalAlignment="Center" Margin="8,0,0,0" />
         </Grid>
         <Grid ColumnDefinitions="*,Auto">
@@ -52,13 +53,13 @@
                     Value="{Binding RepeatDelay}"
                     IsEnabled="{Binding RepeatEnabled}"
                     ToolTip.Tip="{Binding RepeatDelayText}" />
-            <TextBlock Grid.Column="1" Text="Repeat Delay"
+            <TextBlock Grid.Column="1" Text="{loc:Tr RepeatDelay}"
                        VerticalAlignment="Center" Margin="8,0,0,0" />
         </Grid>
 
         <!-- Layout and model selectors, ahead of the test field. -->
         <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto" ColumnSpacing="8" RowSpacing="8">
-            <TextBlock Grid.Row="0" Grid.Column="0" Text="Layout" VerticalAlignment="Center" />
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="{loc:Tr Layout}" VerticalAlignment="Center" />
             <ComboBox Grid.Row="0" Grid.Column="1" HorizontalAlignment="Stretch"
                       ItemsSource="{Binding Layouts}" SelectedItem="{Binding SelectedLayout}">
                 <ComboBox.ItemTemplate>
@@ -67,7 +68,7 @@
                     </DataTemplate>
                 </ComboBox.ItemTemplate>
             </ComboBox>
-            <TextBlock Grid.Row="1" Grid.Column="0" Text="Model" VerticalAlignment="Center" />
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="{loc:Tr Model}" VerticalAlignment="Center" />
             <ComboBox Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch"
                       ItemsSource="{Binding Models}" SelectedItem="{Binding SelectedModel}">
                 <ComboBox.ItemTemplate>
@@ -80,7 +81,7 @@
 
         <!-- Live test field: typing here uses whatever settings were last committed. -->
         <Grid ColumnDefinitions="Auto,*">
-            <TextBlock Grid.Column="0" Text="Test:" VerticalAlignment="Center" Margin="0,0,8,0" />
+            <TextBlock Grid.Column="0" Text="{loc:Tr Test}" VerticalAlignment="Center" Margin="0,0,8,0" />
             <TextBox Grid.Column="1" />
         </Grid>
 
@@ -91,13 +92,13 @@
                    IsVisible="{Binding Status, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
 
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="8" Margin="0,4,0,0">
-            <Button Content="Close" Click="OnClose" />
-            <Button Content="Reset" Click="OnReset" />
-            <Button Content="Help">
+            <Button Content="{loc:Tr Close}" Click="OnClose" />
+            <Button Content="{loc:Tr Reset}" Click="OnReset" />
+            <Button Content="{loc:Tr Help}">
                 <Button.Flyout>
                     <Flyout>
                         <TextBlock MaxWidth="260" TextWrapping="Wrap"
-                                   Text="Adjust the key repeat speed and delay, and pick a keyboard layout and model. Changes apply as you make them; type in the Test box to try them. Reset restores the settings from when this window opened." />
+                                   Text="{loc:Tr HelpText}" />
                     </Flyout>
                 </Button.Flyout>
             </Button>

@@ -24,6 +24,11 @@
     </ItemGroup>
 
     <ItemGroup>
+        <!-- The localized strings and the {loc:Tr} markup extension. -->
+        <ProjectReference Include="../Wlrix.Common/Wlrix.Common.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
         <!-- The only way this panel touches compositor.toml. Everything it knows about these
              four settings (their defaults, their choices, their prose) comes from the daemon's
              schema over this reference. -->

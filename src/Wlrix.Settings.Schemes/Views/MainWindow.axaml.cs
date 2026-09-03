@@ -4,6 +4,7 @@ using Avalonia.Markup.Xaml.Styling;
 using Avalonia.Media;
 using Wlrix.Avalonia;
 using Wlrix.Avalonia.Dialogs;
+using Wlrix.Settings.Schemes.Localization;
 using Wlrix.Settings.Schemes.ViewModels;
 
 namespace Wlrix.Settings.Schemes.Views;
@@ -52,15 +53,8 @@ public partial class MainWindow : Window
     }
 
     private void OnHelp(object? sender, RoutedEventArgs e) =>
-        _ = MessageDialog.ShowAsync(this, DialogType.Information, HelpText,
-            title: "Color Schemes Help", buttons: DialogButtons.Ok);
-
-    private const string HelpText =
-        "Pick a scheme to see it in the sample image, then press Apply to give it to the whole "
-        + "desktop \u2014 the window frames, the desktop icons, the tray and every application, "
-        + "at once and without restarting anything.\n\n"
-        + "Reset goes back to the scheme that was in force when this window opened. Cancel does "
-        + "the same and then closes.";
+        _ = MessageDialog.ShowAsync(this, DialogType.Information, Strings.HelpText,
+            title: Strings.HelpTitle, buttons: DialogButtons.Ok);
 
     /// <summary>
     /// Draw the sample image in <paramref name="scheme"/>, whatever the rest of the window is in.

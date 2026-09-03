@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="WindowTitle" xml:space="preserve">
+    <value>Share screen</value>
+  </data>
+  <data name="PromptAnonymous" xml:space="preserve">
+    <value>Select what to share</value>
+  </data>
+  <data name="PromptForApp" xml:space="preserve">
+    <value>Select what to share with {0}</value>
+  </data>
+  <data name="HintMultiple" xml:space="preserve">
+    <value>You can choose more than one.</value>
+  </data>
+  <data name="HintSingle" xml:space="preserve">
+    <value>You can choose one.</value>
+  </data>
+  <data name="CursorVisible" xml:space="preserve">
+    <value>The mouse pointer will be visible in the shared image.</value>
+  </data>
+  <data name="Screens" xml:space="preserve">
+    <value>Screens</value>
+  </data>
+  <data name="Windows" xml:space="preserve">
+    <value>Windows</value>
+  </data>
+  <data name="NothingToShare" xml:space="preserve">
+    <value>There is nothing available to share.</value>
+  </data>
+  <data name="NoPreview" xml:space="preserve">
+    <value>no preview</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Share" xml:space="preserve">
+    <value>Share</value>
+  </data>
+</root>

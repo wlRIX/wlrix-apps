@@ -1,9 +1,12 @@
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Markup.Xaml;
 using Microsoft.Extensions.DependencyInjection;
 using Wlrix.Common;
+using Wlrix.Common.Localization;
 using Wlrix.Theme;
 using Wlrix.Toolchest.Applications;
+using Wlrix.Toolchest.Localization;
 using Wlrix.Toolchest.Services;
 using Wlrix.Toolchest.ViewModels;
 using Wlrix.Toolchest.Views;
@@ -13,6 +16,16 @@ namespace Wlrix.Toolchest;
 public partial class App : Application
 {
     private ServiceProvider? _services;
+
+    public override void Initialize()
+    {
+        // Before any XAML is loaded. This window's labels come through Strings.X rather than
+        // {loc:Tr}, so nothing depends on it yet — but an unset catalog makes the first
+        // {loc:Tr} anybody adds render as its own key, silently.
+        TrExtension.Catalog = Strings.Catalog;
+
+        AvaloniaXamlLoader.Load(this);
+    }
 
     public override void OnFrameworkInitializationCompleted()
     {

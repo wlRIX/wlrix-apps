@@ -32,4 +32,20 @@ public static class Strings
 
     /// <summary>The About dialog body, with the version substituted in.</summary>
     public static string AboutMessage(string version) => Catalog.Format("AboutMessage", version);
+
+    // What a failed launch says. These reach a MessageDialog, not just the log — see
+    // AppLauncher.Fail, which does both.
+
+    public static string NoTerminalForApp => Catalog.Get("NoTerminalForApp");
+    public static string NoTerminal => Catalog.Get("NoTerminal");
+
+    /// <summary>The desktop entry's <c>Exec=</c> had nothing runnable in it.</summary>
+    public static string NoRunnableCommand(string exec) => Catalog.Format("NoRunnableCommand", exec);
+
+    /// <summary>The program a launcher names is not on the PATH.</summary>
+    public static string NotInstalled(string program) => Catalog.Format("NotInstalled", program);
+
+    /// <summary>Starting it threw; <paramref name="detail"/> is what the OS said.</summary>
+    public static string CouldNotStart(string displayName, string detail) =>
+        Catalog.Format("CouldNotStart", displayName, detail);
 }

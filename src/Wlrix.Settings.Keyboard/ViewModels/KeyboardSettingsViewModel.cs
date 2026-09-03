@@ -1,6 +1,7 @@
 using Avalonia.Threading;
 using ReactiveUI;
 using Wlrix.Settings.Client;
+using Wlrix.Settings.Keyboard.Localization;
 using Wlrix.Settings.Keyboard.Services;
 
 namespace Wlrix.Settings.Keyboard.ViewModels;
@@ -165,7 +166,7 @@ public sealed class KeyboardSettingsViewModel : ViewModelBase, IDisposable
     public string RepeatRateText => ((int)Math.Round(RepeatRate)).ToString();
 
     /// <summary>The current repeat delay, for the slider's tooltip.</summary>
-    public string RepeatDelayText => $"{(int)Math.Round(RepeatDelay)} ms";
+    public string RepeatDelayText => Strings.Milliseconds((int)Math.Round(RepeatDelay));
 
     /// <summary>
     /// Ask the daemon what these settings are and what they currently hold, then start
@@ -206,7 +207,7 @@ public sealed class KeyboardSettingsViewModel : ViewModelBase, IDisposable
         {
             // Bus activation means "not on the bus" is a broken install rather than an idle
             // session, so say so rather than silently doing nothing.
-            Status = $"No settings service: {e.Message}";
+            Status = Strings.NoSettingsService(e.Message);
         }
     }
 
@@ -307,7 +308,7 @@ public sealed class KeyboardSettingsViewModel : ViewModelBase, IDisposable
 
     private void OnFileInvalid(object? sender, SettingsFileInvalidEventArgs e) =>
         Dispatcher.UIThread.Post(() =>
-            Status = $"{e.Path} is not valid; showing the last good values.");
+            Status = Strings.FileInvalid(e.Path));
 
     /// <summary>
     /// Put whatever of these four settings is present into the controls.

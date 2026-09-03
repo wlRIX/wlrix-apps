@@ -1,8 +1,9 @@
+using Avalonia.Threading;
+using ReactiveUI;
 using System.Collections.ObjectModel;
 using System.Reactive;
 using System.Reactive.Linq;
-using Avalonia.Threading;
-using ReactiveUI;
+using Wlrix.SourcePicker.Localization;
 using Wlrix.SourcePicker.Models;
 
 namespace Wlrix.SourcePicker.ViewModels;
@@ -66,13 +67,9 @@ public sealed class PickerViewModel : ViewModelBase, IDisposable
     /// is what there is, and telling the user *something* asked is worth more than a sentence
     /// that names nobody.
     /// </remarks>
-    public string Prompt => string.IsNullOrWhiteSpace(Manifest.AppId)
-        ? "Select what to share"
-        : $"Select what to share with {Manifest.AppId}";
+    public string Prompt => Strings.Prompt(Manifest.AppId);
 
-    public string Hint => Manifest.Multiple
-        ? "You can choose more than one."
-        : "You can choose one.";
+    public string Hint => Strings.Hint(Manifest.Multiple);
 
     /// <summary>Shown only when the pointer really will be in the stream.</summary>
     public bool ShowsCursor => Manifest.Cursor;

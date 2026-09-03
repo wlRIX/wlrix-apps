@@ -2,6 +2,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:Wlrix.Desks.ViewModels"
         xmlns:controls="using:Wlrix.Desks.Controls"
+        xmlns:loc="using:Wlrix.Common.Localization"
         xmlns:wlrix="https://vic485.xyz/Wlrix.Avalonia"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -10,7 +11,7 @@
         x:Name="Root"
         x:Class="Wlrix.Desks.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
-        Title="wlRIX Desks">
+        Title="{loc:Tr WindowTitle}">
 
     <Design.DataContext>
         <!-- This only sets the DataContext for the previewer in an IDE,
@@ -85,45 +86,45 @@
     <DockPanel>
         <!-- Menu bar -->
         <Menu DockPanel.Dock="Top">
-            <MenuItem Header="Overview">
+            <MenuItem Header="{loc:Tr MenuOverview}">
                 <MenuItem Header="{Binding GlobalDeskMenuHeader}" Click="OnToggleGlobalDesk" />
                 <MenuItem Header="{Binding SnapshotsMenuHeader}" Click="OnToggleSnapshots" />
                 <MenuItem Header="-" />
-                <MenuItem Header="Exit" Click="OnExit" />
+                <MenuItem Header="{loc:Tr Exit}" Click="OnExit" />
             </MenuItem>
-            <MenuItem Header="Desk">
-                <MenuItem Header="New Desk" Click="OnNewDesk" />
-                <MenuItem Header="Rename Selected" Click="OnRenameSelected"
+            <MenuItem Header="{loc:Tr MenuDesk}">
+                <MenuItem Header="{loc:Tr NewDesk}" Click="OnNewDesk" />
+                <MenuItem Header="{loc:Tr RenameSelected}" Click="OnRenameSelected"
                           IsEnabled="{Binding CanOperateOnSelected}" />
-                <MenuItem Header="Goto Selected" Click="OnGotoSelected"
+                <MenuItem Header="{loc:Tr GotoSelected}" Click="OnGotoSelected"
                           IsEnabled="{Binding CanOperateOnSelected}" />
-                <MenuItem Header="Delete Selected" Click="OnDeleteSelected"
+                <MenuItem Header="{loc:Tr DeleteSelected}" Click="OnDeleteSelected"
                           IsEnabled="{Binding CanOperateOnSelected}" />
             </MenuItem>
             <!-- Accelerators are declared twice on purpose: InputGesture is what the menu
                  *shows*, HotKey is what makes the key work while the menu is closed. -->
-            <MenuItem Header="Window">
-                <MenuItem Header="List All" InputGesture="Ctrl+L" IsEnabled="False" />
-                <MenuItem Header="Minimize All" InputGesture="Ctrl+M" HotKey="Ctrl+M"
+            <MenuItem Header="{loc:Tr MenuWindow}">
+                <MenuItem Header="{loc:Tr ListAll}" InputGesture="Ctrl+L" IsEnabled="False" />
+                <MenuItem Header="{loc:Tr MinimizeAll}" InputGesture="Ctrl+M" HotKey="Ctrl+M"
                           Click="OnMinimizeAll" />
-                <MenuItem Header="Restore All" InputGesture="Shift+Ctrl+M" HotKey="Shift+Ctrl+M"
+                <MenuItem Header="{loc:Tr RestoreAll}" InputGesture="Shift+Ctrl+M" HotKey="Shift+Ctrl+M"
                           Click="OnRestoreAll" />
                 <!-- The theme draws a separator from a MenuItem headed "-" (Avalonia's
                      :separator pseudo-class); a bare <Separator/> gets no template here and
                      renders as nothing at all. -->
                 <MenuItem Header="-" />
-                <MenuItem Header="Add to Global" InputGesture="Ctrl+G" HotKey="Ctrl+G"
+                <MenuItem Header="{loc:Tr AddToGlobal}" InputGesture="Ctrl+G" HotKey="Ctrl+G"
                           Click="OnAddToGlobal" IsEnabled="{Binding HasSelectedWindow}" />
-                <MenuItem Header="Remove from Desk" InputGesture="Ctrl+D" HotKey="Ctrl+D"
+                <MenuItem Header="{loc:Tr RemoveFromDesk}" InputGesture="Ctrl+D" HotKey="Ctrl+D"
                           Click="OnRemoveFromDesk" IsEnabled="{Binding HasSelectedWindow}" />
                 <MenuItem Header="-" />
-                <MenuItem Header="Minimize" InputGesture="Ctrl+E" HotKey="Ctrl+E"
+                <MenuItem Header="{loc:Tr Minimize}" InputGesture="Ctrl+E" HotKey="Ctrl+E"
                           Click="OnMinimizeSelected" IsEnabled="{Binding CanMinimizeSelected}" />
-                <MenuItem Header="Restore" InputGesture="Shift+Ctrl+E" HotKey="Shift+Ctrl+E"
+                <MenuItem Header="{loc:Tr Restore}" InputGesture="Shift+Ctrl+E" HotKey="Shift+Ctrl+E"
                           Click="OnRestoreSelected" IsEnabled="{Binding CanRestoreSelected}" />
-                <MenuItem Header="Lower" Click="OnLowerSelected"
+                <MenuItem Header="{loc:Tr Lower}" Click="OnLowerSelected"
                           IsEnabled="{Binding HasSelectedWindow}" />
-                <MenuItem Header="Raise" Click="OnRaiseSelected"
+                <MenuItem Header="{loc:Tr Raise}" Click="OnRaiseSelected"
                           IsEnabled="{Binding HasSelectedWindow}" />
             </MenuItem>
         </Menu>

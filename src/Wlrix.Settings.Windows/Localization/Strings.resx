@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="WindowTitle" xml:space="preserve">
+    <value>Window Settings</value>
+  </data>
+  <data name="PanelTitle" xml:space="preserve">
+    <value>Window Settings</value>
+  </data>
+  <data name="KeyboardFocus" xml:space="preserve">
+    <value>Keyboard Focus:</value>
+  </data>
+  <data name="FocusClick" xml:space="preserve">
+    <value>Click to type</value>
+  </data>
+  <data name="FocusPointer" xml:space="preserve">
+    <value>Point to type</value>
+  </data>
+  <data name="ClickRaise" xml:space="preserve">
+    <value>Click Raise:</value>
+  </data>
+  <data name="ClickRaiseTip" xml:space="preserve">
+    <value>Clicking in a window brings it to the front.</value>
+  </data>
+  <data name="OpaqueMove" xml:space="preserve">
+    <value>Opaque Window Move:</value>
+  </data>
+  <data name="OpaqueMoveTip" xml:space="preserve">
+    <value>Drag the window itself, rather than an outline of where it will land.</value>
+  </data>
+  <data name="OpaqueResize" xml:space="preserve">
+    <value>Opaque Window Resize:</value>
+  </data>
+  <data name="OpaqueResizeTip" xml:space="preserve">
+    <value>Redraw the window as it is resized, rather than on release.</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="Reset" xml:space="preserve">
+    <value>Reset</value>
+  </data>
+  <data name="Help" xml:space="preserve">
+    <value>Help</value>
+  </data>
+  <data name="HelpText" xml:space="preserve">
+    <value>Choose how a window comes to have the keyboard, whether clicking one raises it, and whether moving and resizing show the window's contents or an outline. Changes apply as you make them, to windows already open as well as new ones. Reset restores the settings from when this window opened.</value>
+  </data>
+  <data name="NoSettingsService" xml:space="preserve">
+    <value>No settings service: {0}</value>
+  </data>
+  <data name="FileInvalid" xml:space="preserve">
+    <value>{0} is not valid; showing the last good values.</value>
+  </data>
+</root>

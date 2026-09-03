@@ -1,13 +1,14 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:Wlrix.Console.ViewModels"
+        xmlns:loc="using:Wlrix.Common.Localization"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="500"
         Width="800" Height="500"
         x:Class="Wlrix.Console.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
-        Title="wlRIX Console">
+        Title="{loc:Tr WindowTitle}">
 
     <Design.DataContext>
         <!-- This only sets the DataContext for the previewer in an IDE,
@@ -36,7 +37,7 @@
                          TextWrapping="Wrap"
                          VerticalContentAlignment="Top"
                          FontFamily="Cascadia Mono,DejaVu Sans Mono,Liberation Mono,Consolas,monospace"
-                         PlaceholderText="No log output yet." />
+                         PlaceholderText="{loc:Tr NoOutputYet}" />
             </DataTemplate>
         </TabControl.ContentTemplate>
     </TabControl>

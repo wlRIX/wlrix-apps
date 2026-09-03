@@ -24,6 +24,11 @@
     </ItemGroup>
 
     <ItemGroup>
+        <!-- The localized strings and the {loc:Tr} markup extension. -->
+        <ProjectReference Include="../Wlrix.Common/Wlrix.Common.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
         <!-- Everything about the config file goes through wlrix-settings-daemon. This app used
              to carry its own TOML editor and its own libc kill() for the SIGHUP; both are gone,
              and with them the AllowUnsafeBlocks that only existed for the P/Invoke stub. -->

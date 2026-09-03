@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="WindowTitle" xml:space="preserve">
+    <value>Color Scheme Browser</value>
+  </data>
+  <data name="PanelTitle" xml:space="preserve">
+    <value>Color Schemes</value>
+  </data>
+  <data name="MenuApplication" xml:space="preserve">
+    <value>_Application</value>
+  </data>
+  <data name="MenuClose" xml:space="preserve">
+    <value>_Close</value>
+  </data>
+  <data name="MenuHelp" xml:space="preserve">
+    <value>_Help</value>
+  </data>
+  <data name="MenuClickForHelp" xml:space="preserve">
+    <value>_Click for Help</value>
+  </data>
+  <data name="SampleImage" xml:space="preserve">
+    <value>Sample Image</value>
+  </data>
+  <data name="SampleFileName" xml:space="preserve">
+    <value>File Name:</value>
+  </data>
+  <data name="SampleFileNameValue" xml:space="preserve">
+    <value>scheme</value>
+  </data>
+  <data name="SampleOption" xml:space="preserve">
+    <value>option</value>
+  </data>
+  <data name="SampleOff" xml:space="preserve">
+    <value>off</value>
+  </data>
+  <data name="Ok" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="Apply" xml:space="preserve">
+    <value>Apply</value>
+  </data>
+  <data name="Reset" xml:space="preserve">
+    <value>Reset ...</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Help" xml:space="preserve">
+    <value>Help</value>
+  </data>
+  <data name="HelpTitle" xml:space="preserve">
+    <value>Color Schemes Help</value>
+  </data>
+  <data name="HelpText" xml:space="preserve">
+    <value>Pick a scheme to see it in the sample image, then press Apply to give it to the whole desktop — the window frames, the desktop icons, the tray and every application, at once and without restarting anything.
+
+Reset goes back to the scheme that was in force when this window opened. Cancel does the same and then closes.</value>
+  </data>
+  <data name="SchemeDark" xml:space="preserve">
+    <value>dark</value>
+  </data>
+  <data name="SchemeLight" xml:space="preserve">
+    <value>light</value>
+  </data>
+  <data name="SchemeDescription" xml:space="preserve">
+    <value>{0} — {1}, gamma {2}</value>
+  </data>
+  <data name="ComponentsDisagree" xml:space="preserve">
+    <value>The components are set to different schemes; Apply puts them back together.</value>
+  </data>
+  <data name="NoSettingsService" xml:space="preserve">
+    <value>No settings service: {0}</value>
+  </data>
+  <data name="FileInvalid" xml:space="preserve">
+    <value>{0} is not valid; showing the last good values.</value>
+  </data>
+</root>

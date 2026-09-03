@@ -6,6 +6,7 @@ using Avalonia.Interactivity;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
 using Wlrix.Avalonia.Dialogs;
+using Wlrix.Desks.Localization;
 using Wlrix.Desks.ViewModels;
 
 namespace Wlrix.Desks.Views;
@@ -69,8 +70,7 @@ public partial class MainWindow : Window
     }
 
     private void OnFeedUnavailable() => _ = MessageDialog.ShowAsync(this, DialogType.Error,
-        "Could not reach the wlRIX compositor.\nThe compositor may not be running.",
-        buttons: DialogButtons.Ok);
+        Strings.CompositorUnreachable, buttons: DialogButtons.Ok);
 
     private void OnCommandFailed(string message) =>
         _ = MessageDialog.ShowAsync(this, DialogType.Error, message, buttons: DialogButtons.Ok);

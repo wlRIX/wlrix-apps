@@ -26,6 +26,11 @@
     </ItemGroup>
 
     <ItemGroup>
+        <!-- The localized strings and the {loc:Tr} markup extension. -->
+        <ProjectReference Include="../Wlrix.Common/Wlrix.Common.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
         <!-- The only way this panel touches a config file. It writes one key,
              `appearance.palette`, and the daemon turns that into four files and four signals. -->
         <ProjectReference Include="../Wlrix.Settings.Client/Wlrix.Settings.Client.csproj" />

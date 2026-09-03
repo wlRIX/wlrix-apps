@@ -1,6 +1,8 @@
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using Wlrix.Common.Localization;
+using Wlrix.Desks.Localization;
 using Wlrix.Desks.Services;
 using Wlrix.Desks.ViewModels;
 using Wlrix.Desks.Views;
@@ -12,6 +14,10 @@ public partial class App : Application
 {
     public override void Initialize()
     {
+        // Before any XAML is loaded: {loc:Tr} in the window resolves against this, and a
+        // catalog set afterwards would leave every menu showing its own key.
+        TrExtension.Catalog = Strings.Catalog;
+
         AvaloniaXamlLoader.Load(this);
     }
 

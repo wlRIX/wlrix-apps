@@ -28,4 +28,9 @@
         <ProjectReference Include="../Wlrix.Theme/Wlrix.Theme.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+        <!-- The localized strings and the {loc:Tr} markup extension. -->
+        <ProjectReference Include="../Wlrix.Common/Wlrix.Common.csproj" />
+    </ItemGroup>
+
 </Project>
