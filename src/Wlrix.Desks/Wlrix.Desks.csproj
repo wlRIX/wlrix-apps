@@ -49,4 +49,10 @@
          The targets reference the generator with ReferenceOutputAssembly="false", so the fork
          supplies codegen only: the NWayland assembly the app loads is the nuget one above. -->
     <Import Project="../../../NWayland/src/NWayland.Generator/NWayland.Generator.Use.targets" />
+    <ItemGroup>
+        <!-- Follows the session's color scheme, so this window is the same gray as the desktop
+             behind it and stays that way when somebody changes it. One call in App.axaml.cs. -->
+        <ProjectReference Include="../Wlrix.Theme/Wlrix.Theme.csproj" />
+    </ItemGroup>
+
 </Project>

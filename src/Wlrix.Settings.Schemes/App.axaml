@@ -1,0 +1,14 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:wlrix="https://vic485.xyz/Wlrix.Avalonia"
+             x:Class="Wlrix.Settings.Schemes.App"
+             RequestedThemeVariant="Default">
+
+    <Application.Styles>
+        <wlrix:WlrixTheme />
+    </Application.Styles>
+
+    <!-- Deliberately no scheme dictionary in Application.Resources. It is consulted before a
+         style's own resources, so one here would shadow the theme's and both the live scheme
+         and the sample image would stop responding. -->
+</Application>

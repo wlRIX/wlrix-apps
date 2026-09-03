@@ -35,4 +35,10 @@
         <PackageReference Include="ZLogger" />
     </ItemGroup>
 
+    <ItemGroup>
+        <!-- Follows the session's color scheme, so this window is the same gray as the desktop
+             behind it and stays that way when somebody changes it. One call in App.axaml.cs. -->
+        <ProjectReference Include="../Wlrix.Theme/Wlrix.Theme.csproj" />
+    </ItemGroup>
+
 </Project>

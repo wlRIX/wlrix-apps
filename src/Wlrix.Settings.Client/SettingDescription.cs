@@ -79,6 +79,23 @@ public sealed record SettingDescription
     public IReadOnlyList<string> ChoiceLabels { get; init; } = [];
 
     /// <summary>
+    /// For a fan-out key such as <c>appearance.palette</c>, the per-component keys writing it
+    /// expands to. Empty for an ordinary setting.
+    /// </summary>
+    /// <remarks>
+    /// A color scheme is one setting that four config files each hold a copy of, and the daemon
+    /// writes all four from one call. This is what it expands to, so a client that wants to
+    /// know whether the components have drifted apart — only a hand-edit of one file can do
+    /// that — reads each of these rather than hardcoding the list.
+    /// <see cref="Owner"/> and <see cref="File"/> are empty for such a key, since there are
+    /// several of each, and <see cref="Reload"/> is the least live member's.
+    /// </remarks>
+    public IReadOnlyList<string> Members { get; init; } = [];
+
+    /// <summary>Whether this key writes several files at once.</summary>
+    public bool IsGroup => Members.Count > 0;
+
+    /// <summary>
     /// Read a description off the wire.
     ///
     /// Every field is looked up rather than positional, because the daemon sends
@@ -120,6 +137,7 @@ public sealed record SettingDescription
             Max = Number("max"),
             Choices = Strings("choices"),
             ChoiceLabels = Strings("choice_labels"),
+            Members = Strings("members"),
         };
     }
 }

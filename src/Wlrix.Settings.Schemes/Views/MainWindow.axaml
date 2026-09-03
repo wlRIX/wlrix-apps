@@ -1,0 +1,158 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Wlrix.Settings.Schemes.ViewModels"
+        xmlns:wlrix="https://vic485.xyz/Wlrix.Avalonia"
+        xmlns:theme="using:Wlrix.Avalonia"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="470" d:DesignHeight="530"
+        Width="470" Height="530" MinWidth="430" MinHeight="440"
+        x:Class="Wlrix.Settings.Schemes.Views.MainWindow"
+        x:DataType="vm:ColorSchemeViewModel"
+        Title="Color Scheme Browser">
+
+    <Design.DataContext>
+        <vm:ColorSchemeViewModel />
+    </Design.DataContext>
+
+    <!-- The layout follows IRIX's Color Scheme Browser: a menu bar, a title banner, the scheme
+         list on the left with a sample image beside it, then Apply / Reset / Cancel along the
+         bottom and a line of prose under those. -->
+    <DockPanel LastChildFill="True">
+
+        <!-- The original also had a Sample Image menu, which chose between several samples.
+             There is one, so the menu is left out rather than stubbed. -->
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="_Application">
+                <MenuItem Header="_Close" Click="OnCancel" />
+            </MenuItem>
+            <MenuItem Header="_Help">
+                <MenuItem Header="_Click for Help" Click="OnHelp" />
+            </MenuItem>
+        </Menu>
+
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="12"
+                    Margin="12,12,12,10">
+            <Border Width="48" Height="48"
+                    BorderThickness="1"
+                    BorderBrush="{DynamicResource WlrixOuterLine}"
+                    Background="{DynamicResource WlrixSelect}">
+                <!-- Placeholder for the panel icon (a real asset comes from wlrix-assets). -->
+                <TextBlock Text="&#x1F3A8;" FontSize="24"
+                           HorizontalAlignment="Center" VerticalAlignment="Center" />
+            </Border>
+            <TextBlock Text="Color Schemes" FontWeight="Bold" FontSize="16"
+                       VerticalAlignment="Center" />
+        </StackPanel>
+
+        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal"
+                    HorizontalAlignment="Center" Spacing="10" Margin="12,10,12,12">
+            <Button Content="Apply" MinWidth="92" Click="OnApply"
+                    IsEnabled="{Binding IsReady}" />
+            <Button Content="Reset ..." MinWidth="92" Click="OnReset"
+                    IsEnabled="{Binding IsReady}" />
+            <Button Content="Cancel" MinWidth="92" Click="OnCancel" />
+        </StackPanel>
+
+        <!-- The scheme under the cursor, and then whatever the last write had to say about
+             itself. IRIX put a one-line description here; ours says what the scheme is, and
+             gives way to a warning when there is one. -->
+        <TextBlock DockPanel.Dock="Bottom" Margin="12,0,12,0" TextWrapping="Wrap"
+                   Text="{Binding SelectedDescription}"
+                   IsVisible="{Binding Status, Converter={x:Static StringConverters.IsNullOrEmpty}}" />
+        <TextBlock DockPanel.Dock="Bottom" Margin="12,0,12,0" TextWrapping="Wrap"
+                   Text="{Binding Status}"
+                   IsVisible="{Binding Status, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+
+        <Grid Margin="12,0,12,10" ColumnDefinitions="180,10,*">
+
+            <ListBox Grid.Column="0"
+                     ItemsSource="{Binding Schemes}"
+                     SelectedItem="{Binding Selected, Mode=TwoWay}"
+                     SelectionChanged="OnSchemeChanged">
+                <ListBox.ItemTemplate>
+                    <DataTemplate x:DataType="theme:WlrixScheme">
+                        <TextBlock Text="{Binding Name}" />
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+
+            <!-- The sample image. Its Resources are replaced from the code-behind with the
+                 selected scheme's colors and a brush per color, so everything inside draws in
+                 the scheme being considered while the window around it stays in the session's.
+                 Resource lookup walks up the tree, so the whole subtree is covered by the one
+                 dictionary. -->
+            <DockPanel Grid.Column="2" LastChildFill="True">
+                <TextBlock DockPanel.Dock="Top" Text="Sample Image" Margin="0,0,0,3" />
+                <wlrix:BevelBorder x:Name="SampleImage"
+                                   Bevel="Sunken" BevelThickness="2" OuterLineThickness="1"
+                                   Background="{DynamicResource WlrixPanel}"
+                                   LightBrush="{DynamicResource WlrixTopShadow}"
+                                   DarkBrush="{DynamicResource WlrixBottomShadow}"
+                                   OuterLineBrush="{DynamicResource WlrixOuterLine}"
+                                   Padding="10">
+                    <StackPanel Spacing="8">
+
+                        <!-- A drawing area with a few nodes on it, as the IRIX sample had:
+                             the one place a scheme's view background and its contrast colors
+                             are visible together. -->
+                        <Border Height="104" BorderThickness="1"
+                                BorderBrush="{DynamicResource WlrixOuterLine}"
+                                Background="{DynamicResource WlrixViewBackground}">
+                            <Canvas>
+                                <!-- Boxes joined by lines, as the IRIX sample drew them. The
+                                     fills are the scheme's own surfaces rather than decorative
+                                     colors, so this shows the three grays a scheme is really
+                                     made of against its view background. -->
+                                <Rectangle Canvas.Left="14" Canvas.Top="16" Width="44" Height="26"
+                                           Stroke="{DynamicResource WlrixOuterLine}" StrokeThickness="1"
+                                           Fill="{DynamicResource WlrixFace}" />
+                                <Rectangle Canvas.Left="98" Canvas.Top="22" Width="44" Height="26"
+                                           Stroke="{DynamicResource WlrixOuterLine}" StrokeThickness="1"
+                                           Fill="{DynamicResource WlrixPanel}" />
+                                <Rectangle Canvas.Left="166" Canvas.Top="22" Width="44" Height="26"
+                                           Stroke="{DynamicResource WlrixOuterLine}" StrokeThickness="1"
+                                           Fill="{DynamicResource WlrixSelect}" />
+                                <Rectangle Canvas.Left="14" Canvas.Top="62" Width="44" Height="26"
+                                           Stroke="{DynamicResource WlrixOuterLine}" StrokeThickness="1"
+                                           Fill="{DynamicResource WlrixTextBackground}" />
+                                <Line StartPoint="58,29" EndPoint="98,35"
+                                      Stroke="{DynamicResource WlrixOuterLine}" StrokeThickness="1" />
+                                <Line StartPoint="142,35" EndPoint="166,35"
+                                      Stroke="{DynamicResource WlrixOuterLine}" StrokeThickness="1" />
+                                <Line StartPoint="36,42" EndPoint="36,62"
+                                      Stroke="{DynamicResource WlrixOuterLine}" StrokeThickness="1" />
+                            </Canvas>
+                        </Border>
+
+                        <StackPanel Spacing="3">
+                            <TextBlock Text="File Name:" />
+                            <Grid ColumnDefinitions="*,6,*">
+                                <TextBox Grid.Column="0" Text="scheme" />
+                                <TextBox Grid.Column="2" Text="" />
+                            </Grid>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Spacing="18">
+                            <CheckBox Content="option" IsChecked="True" />
+                            <RadioButton Content="off" GroupName="Sample" />
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Spacing="8"
+                                    HorizontalAlignment="Center">
+                            <!-- MinWidth rather than Width: the theme's button padding is a
+                                 scheme metric, so a fixed width clips the longest label. -->
+                            <Button Content="OK" MinWidth="66" />
+                            <Button Content="Cancel" MinWidth="66" />
+                            <Button Content="Help" MinWidth="66" />
+                        </StackPanel>
+
+                    </StackPanel>
+                </wlrix:BevelBorder>
+            </DockPanel>
+
+        </Grid>
+
+    </DockPanel>
+
+</Window>

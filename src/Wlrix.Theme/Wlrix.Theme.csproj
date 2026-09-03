@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <Version>0.1.0</Version>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Avalonia" />
+        <!-- The theme, for WlrixTheme.Scheme and the generated scheme catalog. -->
+        <PackageReference Include="Wlrix.Avalonia" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <!-- Where the session's scheme comes from. This project is the only thing that joins
+             the two: the theme knows nothing about D-Bus, and the settings client knows nothing
+             about Avalonia, and neither should. -->
+        <ProjectReference Include="../Wlrix.Settings.Client/Wlrix.Settings.Client.csproj" />
+    </ItemGroup>
+</Project>

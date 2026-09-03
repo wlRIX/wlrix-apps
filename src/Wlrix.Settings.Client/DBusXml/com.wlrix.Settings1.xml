@@ -58,6 +58,7 @@
       <arg name="namespace" type="s" />
       <arg name="path" type="s" />
     </signal>
+    <property name="Groups" type="as" access="read" />
     <property name="Invalid" type="a{ss}" access="read" />
     <property name="Namespaces" type="as" access="read" />
     <property name="Version" type="u" access="read" />

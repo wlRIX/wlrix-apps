@@ -13,6 +13,7 @@ library. Apps recreate the IRIX Interactive Desktop surface.
 |---------------------------|-------|-------------------------------------------------------------------|
 | `Wlrix.Common`            | lib   | Shared branding, constants, localization, and helpers.            |
 | `Wlrix.Settings.Client`   | lib   | Reads and writes wlRIX settings, through `wlrix-settings-daemon`. |
+| `Wlrix.Theme`             | lib   | Keeps an app drawing in the session's color scheme. One call.     |
 | `Wlrix.Packages`          | lib   | The system package managers behind one interface. No UI.          |
 | `Wlrix.Packages.Helper`   | exe   | `wlrix-pkg-helper` — the privileged half, run through `pkexec`.   |
 | `Wlrix.Toolchest`         | app   | IRIX-style menu launcher anchored top-left of the desktop.        |
@@ -20,6 +21,7 @@ library. Apps recreate the IRIX Interactive Desktop surface.
 | `Wlrix.Console`           | app   | Tails the wlRIX component logs, one tab each.                     |
 | `Wlrix.Settings.Keyboard` | app   | Keyboard settings panel.                                          |
 | `Wlrix.Settings.Windows`  | app   | Window settings panel: focus policy and the 4Dwm flags.           |
+| `Wlrix.Settings.Schemes`  | app   | Color scheme browser, after IRIX's. One Apply, whole desktop.     |
 | `Wlrix.Shutdown`          | app   | The Shut Down System dialog, behind the Toolchest's two items.    |
 | `Wlrix.SourcePicker`      | app   | The screen-share picker `xdg-desktop-portal-wlrix` puts up.       |
 | `Wlrix.SoftwareManager`   | app   | Package manager, after IRIX's `swmgr`.                            |

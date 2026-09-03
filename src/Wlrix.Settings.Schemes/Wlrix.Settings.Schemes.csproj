@@ -1,9 +1,9 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <OutputType>WinExe</OutputType>
         <ApplicationManifest>app.manifest</ApplicationManifest>
         <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
-        <AssemblyName>wlrix-console</AssemblyName>
+        <AssemblyName>wlrix-settings-schemes</AssemblyName>
         <Version>0.0.0</Version>
     </PropertyGroup>
 
@@ -21,7 +21,16 @@
         </PackageReference>
         <PackageReference Include="ReactiveUI.Avalonia" />
         <PackageReference Include="Wlrix.Avalonia" />
+        <!-- The IRIX message window, for the Help item. -->
+        <PackageReference Include="Wlrix.Avalonia.Dialogs" />
     </ItemGroup>
+
+    <ItemGroup>
+        <!-- The only way this panel touches a config file. It writes one key,
+             `appearance.palette`, and the daemon turns that into four files and four signals. -->
+        <ProjectReference Include="../Wlrix.Settings.Client/Wlrix.Settings.Client.csproj" />
+    </ItemGroup>
+
     <ItemGroup>
         <!-- Follows the session's color scheme, so this window is the same gray as the desktop
              behind it and stays that way when somebody changes it. One call in App.axaml.cs. -->

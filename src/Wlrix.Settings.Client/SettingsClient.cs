@@ -101,6 +101,50 @@ public sealed class SettingsClient : IDisposable
     public async Task<SettingDescription> DescribeAsync(string ns, string key) =>
         SettingDescription.From(await _proxy.DescribeAsync(Key(ns, key)).ConfigureAwait(false));
 
+    /// <summary>The schema for one setting, by its full key.</summary>
+    /// <remarks>
+    /// The two-argument overload above builds the key from a namespace, which a fan-out key
+    /// such as <c>appearance.palette</c> does not have — its prefix is a category, and there is
+    /// no <c>appearance.toml</c> for <see cref="DescribeAsync(string)"/> or
+    /// <see cref="GetAllAsync"/> to answer for.
+    /// </remarks>
+    public async Task<SettingDescription> DescribeKeyAsync(string key) =>
+        SettingDescription.From(await _proxy.DescribeAsync(key).ConfigureAwait(false));
+
+    /// <summary>
+    /// The effective value of one setting: what the file says, or its declared default.
+    /// </summary>
+    /// <remarks>
+    /// A setting with neither answers an empty value of its own type rather than failing —
+    /// there is nothing wrong with the request, the answer is simply "nothing". For a fan-out
+    /// key this is the first member's value; the members can differ after somebody hand-edits
+    /// one file, and the next write reconciles them.
+    /// </remarks>
+    public async Task<object?> GetAsync(string key) =>
+        Values.ToClr(await _proxy.GetAsync(key).ConfigureAwait(false));
+
+    /// <summary>
+    /// The keys that write several config files at once — today, <c>appearance.palette</c>.
+    /// </summary>
+    /// <remarks>
+    /// Empty against a daemon older than interface version 2, which does not have the property.
+    /// A client that needs one should say so rather than appear to do nothing.
+    /// </remarks>
+    public async Task<string[]> GroupsAsync()
+    {
+        try
+        {
+            return await _proxy.GetGroupsAsync().ConfigureAwait(false);
+        }
+        catch (DBusErrorReplyException)
+        {
+            // `UnknownProperty` from a version-1 daemon, which had no groups. An error reply
+            // is the answer here rather than a failure; a transport problem is a different
+            // exception and still propagates.
+            return [];
+        }
+    }
+
     /// <summary>
     /// The effective value of every setting in a namespace: what the file says, or the
     /// declared default.

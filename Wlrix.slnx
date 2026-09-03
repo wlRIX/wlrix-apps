@@ -5,7 +5,9 @@
         <Project Path="src/Wlrix.Toolchest/Wlrix.Toolchest.csproj" />
         <Project Path="src/Wlrix.Console/Wlrix.Console.csproj" />
         <Project Path="src/Wlrix.Settings.Client/Wlrix.Settings.Client.csproj" />
+        <Project Path="src/Wlrix.Theme/Wlrix.Theme.csproj" />
         <Project Path="src/Wlrix.Settings.Keyboard/Wlrix.Settings.Keyboard.csproj" />
+        <Project Path="src/Wlrix.Settings.Schemes/Wlrix.Settings.Schemes.csproj" />
         <Project Path="src/Wlrix.Settings.Windows/Wlrix.Settings.Windows.csproj" />
         <Project Path="src/Wlrix.Shutdown/Wlrix.Shutdown.csproj" />
         <Project Path="src/Wlrix.SourcePicker/Wlrix.SourcePicker.csproj" />
