@@ -1,0 +1,32 @@
+<root>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="MenuApplication" xml:space="preserve">
+        <value>アプリケーション (_A)</value>
+    </data>
+    <data name="Reset" xml:space="preserve">
+        <value>リセット...</value>
+    </data>
+    <data name="WindowTitle" xml:space="preserve">
+        <value>カラー・スキーム・ブラウザ</value>
+    </data>
+    <data name="MenuHelp" xml:space="preserve">
+        <value>ヘルプ (_H)</value>
+    </data>
+    <data name="PanelTitle" xml:space="preserve">
+        <value>カラー・スキームの設定</value>
+    </data>
+    <data name="MenuClose" xml:space="preserve">
+        <value>終了 (_X)</value>
+    </data>
+</root>

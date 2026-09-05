@@ -15,9 +15,9 @@
   <data name="WindowTitle" xml:space="preserve">
     <value>wlRIX Desks</value>
   </data>
-  <data name="MenuOverview" xml:space="preserve">
-    <value>Overview</value>
-  </data>
+    <data name="MenuOverview" xml:space="preserve">
+        <value>_Overview</value>
+    </data>
   <data name="ShowGlobalDesk" xml:space="preserve">
     <value>Show Global Desk</value>
   </data>
@@ -30,12 +30,12 @@
   <data name="HideSnapshots" xml:space="preserve">
     <value>Hide Snapshots</value>
   </data>
-  <data name="Exit" xml:space="preserve">
-    <value>Exit</value>
-  </data>
-  <data name="MenuDesk" xml:space="preserve">
-    <value>Desk</value>
-  </data>
+    <data name="Exit" xml:space="preserve">
+        <value>E_xit</value>
+    </data>
+    <data name="MenuDesk" xml:space="preserve">
+        <value>_Desk</value>
+    </data>
   <data name="NewDesk" xml:space="preserve">
     <value>New Desk</value>
   </data>
@@ -48,9 +48,9 @@
   <data name="DeleteSelected" xml:space="preserve">
     <value>Delete Selected</value>
   </data>
-  <data name="MenuWindow" xml:space="preserve">
-    <value>Window</value>
-  </data>
+    <data name="MenuWindow" xml:space="preserve">
+        <value>_Window</value>
+    </data>
   <data name="ListAll" xml:space="preserve">
     <value>List All</value>
   </data>

@@ -21,9 +21,9 @@
   <data name="MenuApplication" xml:space="preserve">
     <value>_Application</value>
   </data>
-  <data name="MenuClose" xml:space="preserve">
-    <value>_Close</value>
-  </data>
+    <data name="MenuClose" xml:space="preserve">
+        <value>E_xit</value>
+    </data>
   <data name="MenuHelp" xml:space="preserve">
     <value>_Help</value>
   </data>
