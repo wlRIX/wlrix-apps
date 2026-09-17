@@ -45,11 +45,13 @@ public partial class App : Application
             // The window closing is the end of the question, however it closed. Taking the
             // answer here rather than from the Share button means every other way out --
             // Escape, the frame's close button, the compositor withdrawing the surface --
-            // lands on the same path and reports a cancel.
+            // lands on the same path and reports a cancel. Recorded rather than acted on:
+            // `Program.Main` writes it and chooses the exit code once the toolkit has gone,
+            // because a `Shutdown(code)` from here is too late to decide one.
             window.Closed += (_, _) =>
             {
                 model.Dispose();
-                desktop.Shutdown(Program.Answer(window.Result));
+                Program.Result = window.Result;
             };
 
             desktop.MainWindow = window;

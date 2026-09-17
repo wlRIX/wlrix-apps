@@ -35,8 +35,24 @@ internal sealed class Program
             return ExitFailed;
         }
 
-        return BuildAvaloniaApp(manifest).StartWithClassicDesktopLifetime(args);
+        // The toolkit's own exit code is deliberately dropped. `desktop.Shutdown(code)` from
+        // inside `Window.Closed` does not decide it: the lifetime is already shutting down by
+        // then because the last window closed, and the code it settled on is 0 -- so a canceled
+        // dialog exited "accepted" with nothing on stdout, which the portal reads as a picker
+        // that died mid-answer and reports to the application as a failure rather than as the
+        // cancel it was. The answer is taken from what the window left behind instead, once the
+        // toolkit has gone, which also means nothing is writing to stdout while a UI is still
+        // alive on it.
+        BuildAvaloniaApp(manifest).StartWithClassicDesktopLifetime(args);
+        return Answer(Result);
     }
+
+    /// <summary>What the dialog chose, or null for a cancel.</summary>
+    /// <remarks>
+    /// Static because it has to outlive the toolkit: it is read after
+    /// <c>StartWithClassicDesktopLifetime</c> has returned and everything else is gone.
+    /// </remarks>
+    internal static IReadOnlyList<string>? Result { get; set; }
 
     /// <remarks>
     /// No <c>LogToTrace</c>, unlike the other wlRIX apps. This program's stdout carries the

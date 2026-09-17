@@ -1,5 +1,6 @@
 using Avalonia;
 using Avalonia.Controls.Primitives;
+using Avalonia.Input;
 using Avalonia.Media;
 
 namespace Wlrix.SourcePicker.Controls;
@@ -64,4 +65,32 @@ public class LedButton : ToggleButton
     }
 
     protected override Type StyleKeyOverride => typeof(LedButton);
+
+    /// <summary>
+    /// Leaves Return for the dialog's default button.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <see cref="Avalonia.Controls.Button.OnKeyDown"/> clicks on Return and marks the event
+    /// handled, which for a toggle means the tile turns itself off. That is reasonable for a
+    /// button on its own and wrong for one that is a choice in a list: Space picks a source and
+    /// Return accepts it, which is how a list behaves everywhere else.
+    /// </para>
+    /// <para>
+    /// It also made the Share button unreachable from the keyboard. <c>IsDefault</c> is served
+    /// by a handler the button adds to the <b>window</b> on the bubble route with
+    /// <c>handledEventsToo: false</c>, so a tile marking Return handled means the default button
+    /// is never told. Nothing here handles Return any more, so it reaches the window and Share
+    /// runs — verified with the virtual keyboard rather than reasoned about, the same way the
+    /// menu accelerators were.
+    /// </para>
+    /// </remarks>
+    protected override void OnKeyDown(KeyEventArgs e)
+    {
+        // Deliberately not calling base for this one key: the base is what would handle it.
+        if (e.Key == Key.Enter)
+            return;
+
+        base.OnKeyDown(e);
+    }
 }

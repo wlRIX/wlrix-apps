@@ -36,12 +36,20 @@
         </StackPanel>
 
         <!-- Buttons. Docked before the scroller so they keep their height when the list is
-             long, rather than being pushed off the bottom. -->
+             long, rather than being pushed off the bottom — a DockPanel gives its last child
+             whatever is left, so the scroller has to be last.
+
+             That puts them first in the tree and so first in the tab order, which is backwards
+             from where they are drawn. TabIndex puts it right: everything else is 0 and comes
+             first in tree order, and these two follow. It has to go on the buttons rather than
+             on a panel, because the ordering only consults elements that are themselves tab
+             stops — a TabIndex on a StackPanel is read by nothing. -->
         <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal"
                     HorizontalAlignment="Right" Spacing="8" Margin="0,10,0,0">
-            <Button Content="{loc:Tr Cancel}" MinWidth="90" Click="OnCancel" IsCancel="True" />
+            <Button Content="{loc:Tr Cancel}" MinWidth="90" Click="OnCancel" IsCancel="True"
+                    TabIndex="1" />
             <Button Content="{loc:Tr Share}" MinWidth="90" Click="OnShare" IsDefault="True"
-                    Command="{Binding Share}" />
+                    TabIndex="1" Command="{Binding Share}" />
         </StackPanel>
 
         <wlrix:BevelBorder Bevel="Sunken" BevelThickness="2" OuterLineThickness="1"

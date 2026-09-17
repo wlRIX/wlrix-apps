@@ -4,6 +4,7 @@
         xmlns:loc="using:Wlrix.Common.Localization"
         xmlns:vm="using:Wlrix.FilePicker.ViewModels"
         xmlns:portal="using:Wlrix.Files.Core.Portal"
+        xmlns:controls="using:Wlrix.FilePicker.Controls"
         x:Class="Wlrix.FilePicker.Views.PickerWindow"
         x:DataType="vm:PickerViewModel"
         Title="{Binding Title}"
@@ -93,9 +94,11 @@
                 <StackPanel Name="ChoicesPanel" Spacing="4" IsVisible="{Binding ShowChoices}" />
 
                 <DockPanel>
-                    <CheckBox DockPanel.Dock="Left"
-                              Content="{loc:Tr ShowHidden}"
-                              IsChecked="{Binding ShowHidden}" />
+                    <!-- DialogCheckBox, not CheckBox: a plain one takes Return and toggles
+                         itself, so the accept button beside it never hears the key. -->
+                    <controls:DialogCheckBox DockPanel.Dock="Left"
+                                             Content="{loc:Tr ShowHidden}"
+                                             IsChecked="{Binding ShowHidden}" />
                     <StackPanel DockPanel.Dock="Right"
                                 Orientation="Horizontal"
                                 Spacing="6"

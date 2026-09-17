@@ -7,6 +7,7 @@ using Avalonia.Interactivity;
 using Wlrix.Avalonia.Controls;
 using Wlrix.Avalonia.Dialogs;
 using Wlrix.Files.Core.Portal;
+using Wlrix.FilePicker.Controls;
 using Wlrix.FilePicker.Localization;
 using Wlrix.FilePicker.ViewModels;
 // Avalonia.Controls has a Location of its own, and Wlrix.Avalonia.Controls is in scope here.
@@ -161,7 +162,10 @@ public partial class PickerWindow : Window
         {
             if (choice.IsBoolean)
             {
-                var box = new CheckBox { Content = choice.Label };
+                // DialogCheckBox rather than CheckBox: see the type, but in short a plain one
+                // takes Return and toggles itself, which changes the answer at the moment
+                // somebody meant to submit it.
+                var box = new DialogCheckBox { Content = choice.Label };
                 box.IsCheckedChanged += (_, _) => choice.Checked = box.IsChecked == true;
                 box.IsChecked = choice.Checked;
                 ChoicesPanel.Children.Add(box);
