@@ -1,0 +1,17 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:wlrix="https://vic485.xyz/Wlrix.Avalonia"
+        xmlns:loc="using:Wlrix.Common.Localization"
+        x:Class="Wlrix.Files.Views.PromptDialog"
+        Width="380" SizeToContent="Height"
+        CanResize="False"
+        WindowStartupLocation="CenterOwner">
+    <StackPanel Margin="16" Spacing="12">
+        <TextBlock Name="Prompt" TextWrapping="Wrap" />
+        <TextBox Name="Input" />
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
+            <Button Name="Accept" Content="{loc:Tr DialogOk}" MinWidth="80" IsDefault="True" />
+            <Button Name="Reject" Content="{loc:Tr DialogCancel}" MinWidth="80" IsCancel="True" />
+        </StackPanel>
+    </StackPanel>
+</Window>

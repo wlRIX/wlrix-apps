@@ -12,7 +12,7 @@
     <ItemGroup Label="Avalonia">
         <PackageVersion Include="Avalonia" Version="12.1.0" />
         <PackageVersion Include="Avalonia.Desktop" Version="12.1.0"/>
-        <PackageVersion Include="Avalonia.Wayland" Version="12.1.1-wlrix.2" />
+        <PackageVersion Include="Avalonia.Wayland" Version="12.1.1-wlrix.6" />
         <PackageVersion Include="AvaloniaUI.DiagnosticsSupport" Version="2.2.3" />
         <PackageVersion Include="ReactiveUI.Avalonia" Version="11.3.8"/>
     </ItemGroup>
@@ -39,12 +39,47 @@
         <PackageVersion Include="xunit" Version="2.9.3" />
         <PackageVersion Include="xunit.runner.visualstudio" Version="3.0.2" />
     </ItemGroup>
+    <ItemGroup Label="Remote filesystems">
+        <!-- Licenses and versions verified in the M0.2 gate, all GPL-3 compatible: SMBLibrary
+             is LGPL-3.0-or-later, the other two MIT, and SSH.NET's transitive BouncyCastle is
+             MIT as well. SMB2/3 only is a policy in SmbFileSystem, not a package
+             choice: SMBLibrary speaks SMB1 too and is never asked to. -->
+        <PackageVersion Include="SMBLibrary" Version="1.5.7.1" />
+        <PackageVersion Include="FluentFTP" Version="54.2.1" />
+        <PackageVersion Include="SSH.NET" Version="2026.0.0" />
+    </ItemGroup>
+
+    <ItemGroup Label="Images">
+        <!-- Must equal what Avalonia.Skia pins, verified as 3.119.4 in
+             ~/.nuget/packages/avalonia.skia/12.1.0/avalonia.skia.nuspec. A different version
+             means two SkiaSharps in the output and two copies of the native library. -->
+        <PackageVersion Include="SkiaSharp" Version="3.119.4" />
+        <PackageVersion Include="SkiaSharp.NativeAssets.Linux" Version="3.119.4" />
+        <!-- SVG rasterization, which an icon theme needs: Adwaita is 93% SVG here. Wraps
+             resvg, the same engine wlrix-ui uses on the Rust side, so both halves of the
+             workspace draw an SVG the same way.
+
+             NOT Svg.Skia, the obvious choice: it depends on Svg.Custom, which is MS-PL, and
+             the FSF lists that as GPL-incompatible. This repo is GPL-3.0-or-later. -->
+        <PackageVersion Include="ResvgSharp" Version="1.0.3" />
+    </ItemGroup>
+
+    <ItemGroup Label="Configuration">
+        <!-- Reading files.toml, which wlrix-settings-daemon writes. A real parser rather than
+             a hand-rolled one, and that is not fastidiousness: the daemon exists because
+             Wlrix.Settings.Keyboard hand-rolled a TOML editor, failed to recognize a section
+             header with a comment after it, appended a second table, and cost the user their
+             whole compositor.toml. Writing another one here would be repeating the founding
+             bug of the subsystem this file is talking to. -->
+        <PackageVersion Include="Tomlyn" Version="2.10.1" />
+    </ItemGroup>
+
     <ItemGroup Label="Archives">
         <PackageVersion Include="SharpCompress" Version="1.0.0" />
     </ItemGroup>
 
     <ItemGroup Label="wlRIX theme">
-        <PackageVersion Include="Wlrix.Avalonia" Version="0.1.0" />
+        <PackageVersion Include="Wlrix.Avalonia" Version="0.2.0" />
         <PackageVersion Include="Wlrix.Avalonia.Dialogs" Version="1.0.0" />
     </ItemGroup>
 </Project>

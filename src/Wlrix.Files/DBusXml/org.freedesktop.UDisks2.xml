@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN"
+ "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
+
+<!--
+    udisks2, trimmed to what the devices rail reads and the two verbs it calls.
+
+    Taken from the live introspection, which busctl prints given the bus name
+    org.freedesktop.UDisks2, an object path, its system switch and its xml-interface switch.
+    Spelled out rather than pasted as a command line because a double dash cannot appear inside
+    an XML comment, and one that does breaks the whole file at build time as a DBUS1004 naming
+    no line of C#. The same character broke Wlrix.Settings.Client's XML once already.
+
+    Trimmed because the real interfaces are enormous: Block alone has some forty properties and
+    Filesystem offers to resize, relabel and repair a filesystem. None of that has any business
+    being reachable from a sidebar. Signatures are copied unchanged, so the generated proxy
+    cannot disagree with the daemon about one.
+
+    ObjectManager is how the whole set is read at once and how additions and removals arrive:
+    plugging a stick in is an InterfacesAdded carrying every property of the new object, so
+    there is nothing to poll.
+-->
+<node>
+  <interface name="org.freedesktop.DBus.ObjectManager">
+    <method name="GetManagedObjects">
+      <arg type="a{oa{sa{sv}}}" name="object_paths_interfaces_and_properties" direction="out" />
+    </method>
+    <signal name="InterfacesAdded">
+      <arg type="o" name="object_path" />
+      <arg type="a{sa{sv}}" name="interfaces_and_properties" />
+    </signal>
+    <signal name="InterfacesRemoved">
+      <arg type="o" name="object_path" />
+      <arg type="as" name="interfaces" />
+    </signal>
+  </interface>
+  <interface name="org.freedesktop.UDisks2.Block">
+    <property type="ay" name="Device" access="read" />
+    <property type="t" name="Size" access="read" />
+    <property type="b" name="ReadOnly" access="read" />
+    <property type="o" name="Drive" access="read" />
+    <property type="s" name="IdUsage" access="read" />
+    <property type="s" name="IdType" access="read" />
+    <property type="s" name="IdLabel" access="read" />
+    <property type="b" name="HintSystem" access="read" />
+    <property type="b" name="HintIgnore" access="read" />
+  </interface>
+  <interface name="org.freedesktop.UDisks2.Filesystem">
+    <method name="Mount">
+      <arg type="a{sv}" name="options" direction="in" />
+      <arg type="s" name="mount_path" direction="out" />
+    </method>
+    <method name="Unmount">
+      <arg type="a{sv}" name="options" direction="in" />
+    </method>
+    <property type="aay" name="MountPoints" access="read" />
+  </interface>
+  <interface name="org.freedesktop.UDisks2.Drive">
+    <method name="Eject">
+      <arg type="a{sv}" name="options" direction="in" />
+    </method>
+    <property type="s" name="Vendor" access="read" />
+    <property type="s" name="Model" access="read" />
+    <property type="s" name="ConnectionBus" access="read" />
+    <property type="b" name="Removable" access="read" />
+    <property type="b" name="Ejectable" access="read" />
+  </interface>
+</node>

@@ -1,6 +1,7 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Threading;
+using System.Reactive;
 using ReactiveUI;
 using System.Collections.ObjectModel;
 using Wlrix.Desks.Localization;
@@ -33,6 +34,18 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
         _feed = feed;
         _feed.SnapshotReceived += OnSnapshot;
         _feed.Unavailable += OnUnavailable;
+
+        NewDesk = ReactiveCommand.CreateFromTask(NewDeskAsync);
+        GotoSelected = ReactiveCommand.CreateFromTask(GotoSelectedAsync);
+        DeleteSelected = ReactiveCommand.CreateFromTask(DeleteSelectedAsync);
+        MinimizeAll = ReactiveCommand.CreateFromTask(MinimizeAllAsync);
+        RestoreAll = ReactiveCommand.CreateFromTask(RestoreAllAsync);
+        AddSelectedToGlobal = ReactiveCommand.CreateFromTask(AddSelectedToGlobalAsync);
+        RemoveSelectedFromDesk = ReactiveCommand.CreateFromTask(RemoveSelectedFromDeskAsync);
+        MinimizeSelected = ReactiveCommand.CreateFromTask(MinimizeSelectedAsync);
+        RestoreSelected = ReactiveCommand.CreateFromTask(RestoreSelectedAsync);
+        RaiseSelected = ReactiveCommand.CreateFromTask(RaiseSelectedAsync);
+        LowerSelected = ReactiveCommand.CreateFromTask(LowerSelectedAsync);
     }
 
     /// <summary>Raised (on the UI thread) the first time the compositor can't be reached.</summary>
@@ -136,6 +149,35 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
     public string GlobalDeskMenuHeader => Strings.GlobalDeskToggle(ShowGlobalDesk);
 
     public string SnapshotsMenuHeader => Strings.SnapshotsToggle(ShowSnapshots);
+
+
+    // ── The menu's commands ─────────────────────────────────────────────────────────────
+    //
+    // Commands rather than Click handlers, because a keyboard shortcut needs something to
+    // invoke. A MenuItem's InputGesture only draws the shortcut and its HotKey does not fire
+    // from a submenu that has never been opened, so the accelerators live in the window's
+    // KeyBindings — and a KeyBinding takes an ICommand and nothing else.
+    //
+    // None of them carries a canExecute: each underlying method already checks its own
+    // preconditions and answers a completed task when they do not hold, so a shortcut pressed
+    // with nothing selected does nothing rather than throwing. That is what lets the menu's
+    // IsEnabled stay a matter of appearance.
+    //
+    // Rename is deliberately absent. It opens an inline editor and then has to focus it once
+    // the template has realized the field, which is view work and stays in the view — and it
+    // advertises no shortcut to need this.
+
+    public ReactiveCommand<Unit, Unit> NewDesk { get; }
+    public ReactiveCommand<Unit, Unit> GotoSelected { get; }
+    public ReactiveCommand<Unit, Unit> DeleteSelected { get; }
+    public ReactiveCommand<Unit, Unit> MinimizeAll { get; }
+    public ReactiveCommand<Unit, Unit> RestoreAll { get; }
+    public ReactiveCommand<Unit, Unit> AddSelectedToGlobal { get; }
+    public ReactiveCommand<Unit, Unit> RemoveSelectedFromDesk { get; }
+    public ReactiveCommand<Unit, Unit> MinimizeSelected { get; }
+    public ReactiveCommand<Unit, Unit> RestoreSelected { get; }
+    public ReactiveCommand<Unit, Unit> RaiseSelected { get; }
+    public ReactiveCommand<Unit, Unit> LowerSelected { get; }
 
     public void Start() => _feed.Start();
 

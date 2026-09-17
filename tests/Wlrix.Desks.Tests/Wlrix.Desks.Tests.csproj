@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <IsPackable>false</IsPackable>
+        <IsTestProject>true</IsTestProject>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\src\Wlrix.Desks\Wlrix.Desks.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" />
+        <PackageReference Include="xunit" />
+        <PackageReference Include="xunit.runner.visualstudio" />
+    </ItemGroup>
+
+    <!-- The markup as data, for AcceleratorTests. Copied by hand rather than as a None item,
+         because Avalonia's build claims every *.axaml as AvaloniaXaml and removes it from None
+         again, which copies nothing and leaves the scan reading an empty directory. -->
+    <Target Name="CopyMarkupForAcceleratorTests" BeforeTargets="Build">
+        <ItemGroup>
+            <AcceleratorMarkup Include="$(MSBuildThisFileDirectory)..\..\src\Wlrix.Desks\Views\*.axaml" />
+        </ItemGroup>
+        <Copy SourceFiles="@(AcceleratorMarkup)"
+              DestinationFolder="$(OutDir)Markup"
+              SkipUnchangedFiles="true" />
+    </Target>
+
+</Project>

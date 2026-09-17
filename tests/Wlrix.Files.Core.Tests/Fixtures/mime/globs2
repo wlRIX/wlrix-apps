@@ -1,0 +1,20 @@
+# Trimmed from a real update-mime-database output. See ../README.md for why each
+# line is here.
+50:text/plain:*.txt
+50:text/markdown:*.md
+50:application/gzip:*.gz
+50:application/x-compressed-tar:*.tar.gz
+50:application/x-tar:*.tar
+50:image/png:*.png
+50:image/jpeg:*.jpg
+50:image/jpeg:*.jpeg
+50:text/x-csrc:*.c
+50:text/x-genie:*.gs:cs
+50:application/x-core:core:cs
+50:text/x-makefile:Makefile
+50:text/x-makefile:makefile
+50:text/x-cmake:CMakeLists.txt
+50:text/x-scons:sconscript.*
+50:application/x-trash:*~
+20:text/x-readme:README*
+80:text/html:*.html

@@ -1,0 +1,25 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:loc="using:Wlrix.Common.Localization"
+        x:Class="Wlrix.Files.Views.ConflictDialog"
+        Width="460" SizeToContent="Height"
+        CanResize="False"
+        WindowStartupLocation="CenterOwner">
+    <StackPanel Margin="16" Spacing="12">
+        <TextBlock Name="Summary" TextWrapping="Wrap" />
+        <!-- Both sides' size and date, because that is what the decision actually turns on. -->
+        <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto" Margin="8,0,0,0">
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="{loc:Tr ConflictExisting}" Margin="0,0,12,2" />
+            <TextBlock Grid.Row="0" Grid.Column="1" Name="Existing" />
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="{loc:Tr ConflictReplacement}" Margin="0,0,12,0" />
+            <TextBlock Grid.Row="1" Grid.Column="1" Name="Replacement" />
+        </Grid>
+        <CheckBox Name="ApplyToAll" Content="{loc:Tr ConflictApplyToAll}" />
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
+            <Button Name="OverwriteButton" Content="{loc:Tr ConflictOverwrite}" MinWidth="90" />
+            <Button Name="RenameButton" Content="{loc:Tr ConflictRename}" MinWidth="90" />
+            <Button Name="SkipButton" Content="{loc:Tr ConflictSkip}" MinWidth="90" IsDefault="True" />
+            <Button Name="CancelButton" Content="{loc:Tr DialogCancel}" MinWidth="90" IsCancel="True" />
+        </StackPanel>
+    </StackPanel>
+</Window>

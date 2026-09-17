@@ -1,0 +1,61 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:loc="using:Wlrix.Common.Localization"
+        x:Class="Wlrix.Files.Views.ConnectDialog"
+        Width="420" SizeToContent="Height"
+        CanResize="False"
+        WindowStartupLocation="CenterOwner">
+    <StackPanel Margin="16" Spacing="10">
+
+        <!-- Why the last attempt was refused. Hidden on the first ask, because there is
+             nothing to say yet and an empty red line looks like a fault. -->
+        <TextBlock Name="Problem" TextWrapping="Wrap" IsVisible="False"
+                   Foreground="{DynamicResource WlrixForeground}" FontWeight="Bold" />
+
+        <Grid ColumnDefinitions="90,*" RowDefinitions="Auto,Auto,Auto,Auto" Name="Address">
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="{loc:Tr ConnectProtocol}" VerticalAlignment="Center" />
+            <ComboBox Grid.Row="0" Grid.Column="1" Name="Scheme" HorizontalAlignment="Stretch" Margin="0,2">
+                <ComboBoxItem Content="smb" />
+                <ComboBoxItem Content="sftp" />
+                <ComboBoxItem Content="ftp" />
+            </ComboBox>
+
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="{loc:Tr ConnectServer}" VerticalAlignment="Center" />
+            <TextBox Grid.Row="1" Grid.Column="1" Name="Host" Margin="0,2" />
+
+            <TextBlock Grid.Row="2" Grid.Column="0" Text="{loc:Tr ConnectShare}" VerticalAlignment="Center"
+                       Name="ShareLabel" />
+            <TextBox Grid.Row="2" Grid.Column="1" Name="Share" Margin="0,2" />
+
+            <TextBlock Grid.Row="3" Grid.Column="0" Text="{loc:Tr ConnectPath}" VerticalAlignment="Center"
+                       Name="PathLabel" />
+            <TextBox Grid.Row="3" Grid.Column="1" Name="Path" Margin="0,2" />
+        </Grid>
+
+        <Separator />
+
+        <!-- Hidden for SFTP, which has no anonymous login at all. A checkbox that can only
+             fail is worse than no checkbox. -->
+        <CheckBox Name="Anonymous" Content="{loc:Tr ConnectAnonymous}" />
+
+        <Grid ColumnDefinitions="90,*" RowDefinitions="Auto,Auto" Name="Login">
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="{loc:Tr ConnectUser}" VerticalAlignment="Center" />
+            <TextBox Grid.Row="0" Grid.Column="1" Name="User" Margin="0,2" />
+
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="{loc:Tr ConnectPassword}" VerticalAlignment="Center" />
+            <TextBox Grid.Row="1" Grid.Column="1" Name="Password" PasswordChar="*" Margin="0,2" />
+        </Grid>
+
+        <CheckBox Name="Remember" Content="{loc:Tr ConnectRemember}" />
+        <!-- The honest label. Shown when there is no working keyring, which on wlRIX today is
+             always: nothing in the session starts gnome-keyring and no prompter exists to
+             unlock a collection, so "remember" means "until this application exits". -->
+        <TextBlock Name="RememberNote" Text="{loc:Tr ConnectRememberTransient}"
+                   TextWrapping="Wrap" IsVisible="False" Margin="22,0,0,0" />
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
+            <Button Name="Accept" Content="{loc:Tr ConnectAccept}" MinWidth="90" IsDefault="True" />
+            <Button Name="Reject" Content="{loc:Tr DialogCancel}" MinWidth="90" IsCancel="True" />
+        </StackPanel>
+    </StackPanel>
+</Window>

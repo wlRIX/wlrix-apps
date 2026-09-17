@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <IsPackable>false</IsPackable>
+        <IsTestProject>true</IsTestProject>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" />
+        <PackageReference Include="xunit" />
+        <PackageReference Include="xunit.runner.visualstudio" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\src\Wlrix.Files.Core\Wlrix.Files.Core.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Include="Fixtures\**" CopyToOutputDirectory="PreserveNewest" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <!-- The error classifiers are tested against the libraries' own status codes and
+             exception types, which means naming them here. Nothing else in the tests touches
+             a protocol library. -->
+        <PackageReference Include="SMBLibrary" />
+        <PackageReference Include="SSH.NET" />
+    </ItemGroup>
+</Project>

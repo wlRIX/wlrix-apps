@@ -12,6 +12,21 @@
         x:DataType="vm:MainWindowViewModel"
         Title="{Binding Title}"
         Width="900" Height="600" MinWidth="560" MinHeight="320">
+    <!-- The accelerators.
+         A MenuItem's InputGesture only *draws* the shortcut, and its HotKey — which is meant
+         to be the half that works — does not fire from inside a submenu that has never been
+         opened. Both halves of that were established under the nested compositor with a
+         virtual keyboard while fixing the file manager, which had the same arrangement and
+         the same dead keys. Window.KeyBindings is what actually runs. -->
+    <Window.KeyBindings>
+        <KeyBinding Gesture="Ctrl+N" Command="{Binding New}" />
+        <KeyBinding Gesture="Ctrl+O" Command="{Binding Open}" />
+        <KeyBinding Gesture="Ctrl+E" Command="{Binding Extract}" />
+        <KeyBinding Gesture="Ctrl+Q" Command="{Binding Exit}" />
+        <KeyBinding Gesture="Delete" Command="{Binding Remove}" />
+    </Window.KeyBindings>
+
+
     <!--
         No SystemDecorations or ExtendClientArea: the compositor draws the 4Dwm frame, and a
         window that draws its own would get two.
@@ -36,22 +51,20 @@
                 </ItemsPanelTemplate>
             </Menu.ItemsPanel>
 
-            <!-- Accelerators are declared twice on purpose: InputGesture is what the menu
-                 *shows*, HotKey is what makes the key work while the menu is closed. -->
             <MenuItem Header="{loc:Tr MenuFile}" DockPanel.Dock="Left">
-                <MenuItem Header="{loc:Tr FileNew}" InputGesture="Ctrl+N" HotKey="Ctrl+N"
+                <MenuItem Header="{loc:Tr FileNew}" InputGesture="Ctrl+N"
                           Command="{Binding New}" />
-                <MenuItem Header="{loc:Tr FileOpen}" InputGesture="Ctrl+O" HotKey="Ctrl+O"
+                <MenuItem Header="{loc:Tr FileOpen}" InputGesture="Ctrl+O"
                           Command="{Binding Open}" />
-                <MenuItem Header="{loc:Tr FileExtract}" InputGesture="Ctrl+E" HotKey="Ctrl+E"
+                <MenuItem Header="{loc:Tr FileExtract}" InputGesture="Ctrl+E"
                           Command="{Binding Extract}" />
                 <Separator />
-                <MenuItem Header="{loc:Tr FileExit}" InputGesture="Ctrl+Q" HotKey="Ctrl+Q"
+                <MenuItem Header="{loc:Tr FileExit}" InputGesture="Ctrl+Q"
                           Command="{Binding Exit}" />
             </MenuItem>
 
             <MenuItem Header="{loc:Tr MenuEdit}" DockPanel.Dock="Left">
-                <MenuItem Header="{loc:Tr EditRemove}" InputGesture="Delete" HotKey="Delete"
+                <MenuItem Header="{loc:Tr EditRemove}" InputGesture="Delete"
                           Command="{Binding Remove}" />
             </MenuItem>
 

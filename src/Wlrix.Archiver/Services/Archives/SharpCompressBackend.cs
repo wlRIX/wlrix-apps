@@ -14,6 +14,7 @@ using SharpCompress.Writers;
 using Wlrix.Archiver.Models;
 using Wlrix.Archiver.Services.Encodings;
 using Wlrix.Common;
+using Wlrix.Common.Progress;
 
 namespace Wlrix.Archiver.Services.Archives;
 
@@ -77,7 +78,7 @@ public sealed class SharpCompressBackend : IArchiveBackend
 
             using var session = OpenSession(path, format, progress, cancellationToken);
             var entries = new List<ArchiveEntry>();
-            var throttle = new ProgressThrottle(progress);
+            var throttle = new ProgressThrottle<ArchiveProgress>(progress);
             foreach (var entry in session.Archive.Entries)
             {
                 cancellationToken.ThrowIfCancellationRequested();
@@ -114,7 +115,7 @@ public sealed class SharpCompressBackend : IArchiveBackend
             }
 
             using var session = OpenSession(path, format, progress, cancellationToken);
-            var throttle = new ProgressThrottle(progress);
+            var throttle = new ProgressThrottle<ArchiveProgress>(progress);
             var written = 0;
             foreach (var entry in session.Archive.Entries)
             {
@@ -262,7 +263,7 @@ public sealed class SharpCompressBackend : IArchiveBackend
             using var decompressed = Decompressor(counted, format);
             using var destination = File.Create(scratch);
 
-            var throttle = new ProgressThrottle(progress);
+            var throttle = new ProgressThrottle<ArchiveProgress>(progress);
             var buffer = new byte[128 * 1024];
             int read;
             while ((read = decompressed.Read(buffer, 0, buffer.Length)) > 0)

@@ -2,7 +2,7 @@ using Microsoft.Extensions.Logging;
 using System.ComponentModel;
 using System.Diagnostics;
 using Wlrix.Common;
-using Wlrix.Toolchest.Desktop;
+using Wlrix.Common.Desktop;
 using Wlrix.Toolchest.Localization;
 using ZLogger;
 
@@ -31,9 +31,6 @@ public interface IAppLauncher
 /// <inheritdoc />
 public sealed class AppLauncher(ILogger<AppLauncher> logger) : IAppLauncher
 {
-    private static readonly string[] TerminalCandidates =
-        ["alacritty", "foot", "kitty", "wezterm", "konsole", "gnome-terminal", "xterm"];
-
     public event Action<string>? LaunchFailed;
 
     public void Launch(string displayName, string exec, bool terminal)
@@ -59,9 +56,7 @@ public sealed class AppLauncher(ILogger<AppLauncher> logger) : IAppLauncher
             return;
         }
 
-        var termArgs = new List<string> { "-e", file };
-        termArgs.AddRange(args);
-        Start(displayName, term, termArgs);
+        Start(displayName, term, TerminalEmulator.Wrap(file, args));
     }
 
     public void Run(string displayName, string program, params string[] args)
@@ -101,18 +96,8 @@ public sealed class AppLauncher(ILogger<AppLauncher> logger) : IAppLauncher
         }
     }
 
-    private static string? ResolveTerminal()
-    {
-        if (Environment.GetEnvironmentVariable("TERMINAL") is { Length: > 0 } env
-            && Executables.Which(env) is { } configured)
-            return configured;
-
-        foreach (var candidate in TerminalCandidates)
-            if (Executables.Which(candidate) is { } path)
-                return path;
-
-        return null;
-    }
+    // Shared with the file manager, which opens files with console applications.
+    private static string? ResolveTerminal() => TerminalEmulator.Resolve();
 
     private void Fail(string displayName, string message)
     {

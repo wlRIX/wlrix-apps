@@ -1,0 +1,162 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:loc="using:Wlrix.Common.Localization"
+             xmlns:vm="using:Wlrix.Files.ViewModels"
+             xmlns:controls="using:Wlrix.Files.Controls"
+             x:Class="Wlrix.Files.Views.ListingView"
+             x:DataType="vm:PaneViewModel">
+
+    <!-- One tab's listing: the icon grid and the details table, one of which is showing.
+
+         Its own control, and its data context is the tab rather than the window, because
+         the tab strip gives each tab one of these. Everything it needs from the window it
+         reaches through Tab.Window: the icon renderer, the drop policy and the operations.
+
+         The places rail is deliberately not in here. It belongs to the window, not to a
+         tab, and the file picker wants the rail beside a listing with no tabs at all. -->
+
+    <UserControl.Styles>
+        <!-- The folder a drag is aimed at. Kept visually distinct from selection, because a
+             drop usually lands on something that is not selected and both are on screen at
+             once. The border is always there and only changes color, so a row does not
+             shift by a pixel the moment a drag passes over it. -->
+        <Style Selector="Border.dropTarget">
+            <Setter Property="Background" Value="{DynamicResource WlrixSelection}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource WlrixForeground}" />
+        </Style>
+        <Style Selector="Border.dropTarget TextBlock">
+            <Setter Property="Foreground" Value="{DynamicResource WlrixSelectionForeground}" />
+        </Style>
+    </UserControl.Styles>
+
+    <Panel>
+        <!-- The icon view, with the rubber-band overlay above it. The band is drawn in a
+             Canvas rather than by the panel so it floats over the cells and does not take
+             part in layout. -->
+        <Panel IsVisible="{Binding IsIconView}">
+        <ListBox Name="IconView"
+                 ItemsSource="{Binding Entries}"
+                 SelectionMode="Multiple"
+                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                 ScrollViewer.VerticalScrollBarVisibility="Auto">
+            <ListBox.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <controls:VirtualizingIconPanel CellWidth="96" CellHeight="104" CellGap="8" CellMargin="12" />
+                </ItemsPanelTemplate>
+            </ListBox.ItemsPanel>
+            <ListBox.ItemContainerTheme>
+                <ControlTheme TargetType="ListBoxItem" BasedOn="{StaticResource {x:Type ListBoxItem}}">
+                    <!-- The container fills its cell so the whole cell is a hit target, but
+                         paints nothing: the highlight belongs to the label below. -->
+                    <Setter Property="Padding" Value="0" />
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                    <Setter Property="VerticalContentAlignment" Value="Stretch" />
+                    <Setter Property="Background" Value="Transparent" />
+                    <Setter Property="Template">
+                        <ControlTemplate>
+                            <Border Background="{TemplateBinding Background}">
+                                <ContentPresenter Content="{TemplateBinding Content}"
+                                                  ContentTemplate="{TemplateBinding ContentTemplate}" />
+                            </Border>
+                        </ControlTemplate>
+                    </Setter>
+                </ControlTheme>
+            </ListBox.ItemContainerTheme>
+            <ListBox.ItemTemplate>
+                <DataTemplate x:DataType="vm:FileEntryViewModel">
+                    <StackPanel Margin="0,6,0,0" Spacing="3">
+                        <Panel Height="52">
+                            <Image Source="{Binding Preview}"
+                                   Width="48" Height="48"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center" />
+                            <!-- Shown until the type's icon has been rendered, so a cell is
+                                 never visibly empty while resvg works. -->
+                            <Path Width="48" Height="40" Stretch="Uniform"
+                                  HorizontalAlignment="Center" VerticalAlignment="Center"
+                                  Data="M1,4 L1,3 L6,3 L7,4.5 L15,4.5 L15,13 L1,13 Z"
+                                  Fill="{DynamicResource WlrixFace}"
+                                  Stroke="{DynamicResource WlrixOuterLine}"
+                                  StrokeThickness="1"
+                                  IsVisible="{Binding ShowDirectoryGlyph}" />
+                        </Panel>
+                        <Border Name="Label"
+                                HorizontalAlignment="Center"
+                                Padding="3,1"
+                                BorderThickness="1"
+                                BorderBrush="Transparent"
+                                Classes.dropTarget="{Binding IsDropTarget}">
+                            <TextBlock Text="{Binding DisplayName}"
+                                       TextAlignment="Center"
+                                       TextWrapping="Wrap"
+                                       TextTrimming="CharacterEllipsis"
+                                       MaxWidth="88"
+                                       MaxLines="2" />
+                        </Border>
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+
+            <Canvas Name="BandLayer" IsHitTestVisible="False" ClipToBounds="True">
+                <Rectangle Name="Band"
+                           IsVisible="False"
+                           Fill="{DynamicResource WlrixSelection}"
+                           Opacity="0.3"
+                           Stroke="{DynamicResource WlrixSelection}"
+                           StrokeThickness="1" />
+            </Canvas>
+        </Panel>
+
+        <!-- The details view. TableView virtualizes through the VirtualizingStackPanel it
+             inherits from ListBox, which is what makes a very large directory usable. -->
+        <TableView
+                   Name="Listing"
+                   IsVisible="{Binding IsDetailsView}"
+                   ItemsSource="{Binding Entries}"
+                   SelectionMode="Multiple"
+                   CanUserResizeColumns="True">
+            <TableView.Columns>
+                <TableViewColumn Header="{loc:Tr ColumnName}" Width="*">
+                    <TableViewColumn.CellTemplate>
+                        <DataTemplate x:DataType="vm:FileEntryViewModel">
+                          <Border BorderThickness="1"
+                                  BorderBrush="Transparent"
+                                  Background="Transparent"
+                                  Classes.dropTarget="{Binding IsDropTarget}">
+                            <StackPanel Orientation="Horizontal" Spacing="5">
+                                <!-- Placeholder geometry, matching Wlrix.Archiver's. Real
+                                     icons arrive with the icon-theme resolver, at which
+                                     point these two Paths become an Image. Drawn rather
+                                     than themed so a folder still reads as a folder in
+                                     every color scheme. -->
+                                <Image Source="{Binding Preview}" Width="16" Height="16"
+                                       VerticalAlignment="Center" />
+                                <Path Width="16" Height="16" Stretch="None"
+                                      VerticalAlignment="Center"
+                                      IsVisible="{Binding ShowDirectoryGlyph}"
+                                      Data="M1,4 L1,3 L6,3 L7,4.5 L15,4.5 L15,13 L1,13 Z"
+                                      Fill="{DynamicResource WlrixFace}"
+                                      Stroke="{DynamicResource WlrixOuterLine}"
+                                      StrokeThickness="1" />
+                                <Path Width="16" Height="16" Stretch="None"
+                                      VerticalAlignment="Center"
+                                      Data="M3,1 L10,1 L13,4 L13,15 L3,15 Z M10,1 L10,4 L13,4"
+                                      Fill="{DynamicResource WlrixTopShadow}"
+                                      Stroke="{DynamicResource WlrixOuterLine}"
+                                      StrokeThickness="1"
+                                      IsVisible="{Binding ShowFileGlyph}" />
+                                <TextBlock Text="{Binding DisplayName}" VerticalAlignment="Center" />
+                            </StackPanel>
+                          </Border>
+                        </DataTemplate>
+                    </TableViewColumn.CellTemplate>
+                </TableViewColumn>
+                <TableViewColumn Header="{loc:Tr ColumnSize}" Width="110"
+                                 HorizontalContentAlignment="Right" Binding="{Binding SizeText}" />
+                <TableViewColumn Header="{loc:Tr ColumnKind}" Width="90" Binding="{Binding KindText}" />
+                <TableViewColumn Header="{loc:Tr ColumnModified}" Width="150" Binding="{Binding ModifiedText}" />
+            </TableView.Columns>
+        </TableView>
+    </Panel>
+</UserControl>

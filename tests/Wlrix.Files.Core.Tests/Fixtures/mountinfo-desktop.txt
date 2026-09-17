@@ -1,0 +1,13 @@
+21 27 0:20 / /proc rw,nosuid,nodev,noexec,relatime shared:5 - proc proc rw
+22 27 0:21 / /sys rw,nosuid,nodev,noexec,relatime shared:6 - sysfs sys rw
+23 27 0:5 / /dev rw,nosuid,relatime shared:2 - devtmpfs dev rw,size=10240k,nr_inodes=4084608,mode=755
+25 27 0:23 / /run rw,nosuid,nodev,relatime shared:4 - tmpfs run rw,mode=755
+27 1 0:24 /@ / rw,noatime,compress=zstd:3,ssd,space_cache=v2,subvolid=256,subvol=/@ - btrfs /dev/nvme0n1p2 rw
+28 21 0:25 / /proc/sys/fs/binfmt_misc rw,nosuid,nodev,noexec,relatime shared:16 - binfmt_misc binfmt_misc rw
+36 27 0:24 /@home /home rw,noatime,compress=zstd:3,ssd,space_cache=v2,subvolid=257,subvol=/@home - btrfs /dev/nvme0n1p2 rw
+41 27 259:1 / /boot rw,relatime shared:38 - vfat /dev/nvme0n1p1 rw,fmask=0022,dmask=0022
+48 27 8:17 / /mnt/scratch rw,relatime shared:44 - ext4 /dev/sdb1 rw
+52 27 8:17 /projects /mnt/work rw,relatime shared:44 - ext4 /dev/sdb1 rw
+55 27 0:56 / /mnt/tag\040space rw,relatime shared:48 - ext4 /dev/sdc1 rw
+60 27 0:60 / /run/user/1000/doc rw,nosuid,nodev,relatime shared:52 - fuse.portal portal rw
+64 27 0:64 / /mnt/nas ro,relatime shared:56 - cifs //nas.local/share ro,vers=3.1.1

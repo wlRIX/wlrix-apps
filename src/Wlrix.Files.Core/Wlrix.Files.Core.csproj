@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <Version>0.1.0</Version>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <InternalsVisibleTo Include="Wlrix.Files.Core.Tests" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <!-- Deliberately no Avalonia reference of any kind. This library is what a
+             future FileChooser portal backend reuses, and it is the only part of the
+             file manager that CI can exercise with no display — both of which stop
+             being true the moment a UI type leaks in. -->
+        <PackageReference Include="ZLogger" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <!-- Decoding icons and, later, thumbnails. Skia is already in every app's output
+             through Avalonia; pinning the same version keeps it to one native library. -->
+        <PackageReference Include="SkiaSharp" />
+        <PackageReference Include="SkiaSharp.NativeAssets.Linux" />
+        <PackageReference Include="ResvgSharp" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <!-- The three remote protocols. Each is reached only through one IRemoteSession
+             implementation, and nothing above that layer references these assemblies:
+             the isolation invariant is that no library exception escapes a session. -->
+        <PackageReference Include="SMBLibrary" />
+        <PackageReference Include="FluentFTP" />
+        <PackageReference Include="SSH.NET" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Wlrix.Common\Wlrix.Common.csproj" />
+    </ItemGroup>
+</Project>

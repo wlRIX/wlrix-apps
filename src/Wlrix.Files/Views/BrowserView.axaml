@@ -1,0 +1,179 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:wlrix="https://vic485.xyz/Wlrix.Avalonia"
+             xmlns:loc="using:Wlrix.Common.Localization"
+             xmlns:vm="using:Wlrix.Files.ViewModels"
+             xmlns:views="using:Wlrix.Files.Views"
+             x:Class="Wlrix.Files.Views.BrowserView"
+             x:DataType="vm:MainWindowViewModel">
+
+    <!-- Places rail beside the tabs.
+
+         Kept as its own control from the first commit, because this is close to the shape a
+         file-picker dialog needs: the future FileChooser portal backend puts a filename field
+         and a filter combo beneath a rail and a single ListingView, with no tab strip. -->
+
+    <UserControl.Styles>
+        <!-- A strip with one tab in it is a row of chrome that says nothing, and IRIX's fm
+             had no tabs at all. It appears when a second one does. -->
+        <Style Selector="TabControl.oneTab /template/ ItemsPresenter#PART_ItemsPresenter">
+            <Setter Property="IsVisible" Value="False" />
+        </Style>
+
+        <!-- Which pane the window acts on, drawn only while a tab is split. Transparent rather
+             than absent, so the two panes stay the same size whichever is active. -->
+        <Style Selector="Border">
+            <Setter Property="BorderBrush" Value="Transparent" />
+        </Style>
+        <Style Selector="Border.activePane">
+            <Setter Property="BorderBrush" Value="{DynamicResource WlrixSelection}" />
+        </Style>
+    </UserControl.Styles>
+
+    <!-- A pixel column rather than Auto, and the rail carries no width of its own. A
+         GridSplitter moves the column; against an Auto column holding a fixed-width child it
+         has nothing to move and sits there doing nothing. -->
+    <Grid Name="Layout" ColumnDefinitions="170,Auto,*">
+
+        <!-- Places. A ListBox rather than a TreeView: one flat section today, and the
+             Bookmarks / Devices / Network sections will each get their own beside it. -->
+        <!-- One scroller over a stack of sections, rather than one list with group headers:
+             ListBox groups poorly, and Bookmarks, Devices and Network each want their own
+             list with its own selection. Selecting in one clears the others. -->
+        <ScrollViewer Grid.Column="0"
+                      Name="Sidebar"
+                      HorizontalScrollBarVisibility="Disabled"
+                      VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+                <wlrix:BevelBorder Bevel="Raised"
+                                   BevelThickness="2"
+                                   OuterLineThickness="1"
+                                   Background="{DynamicResource WlrixFace}"
+                                   LightBrush="{DynamicResource WlrixTopShadow}"
+                                   DarkBrush="{DynamicResource WlrixBottomShadow}"
+                                   OuterLineBrush="{DynamicResource WlrixOuterLine}">
+                    <TextBlock Text="{loc:Tr PlacesHeading}"
+                               FontWeight="Bold"
+                               Margin="6,3" />
+                </wlrix:BevelBorder>
+
+                <ListBox Name="PlacesList"
+                         ItemsSource="{Binding Places}"
+                         SelectionMode="Single">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate x:DataType="vm:PlaceViewModel">
+                            <TextBlock Text="{Binding Label}" />
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+
+                <wlrix:BevelBorder Bevel="Raised"
+                                   BevelThickness="2"
+                                   OuterLineThickness="1"
+                                   IsVisible="{Binding HasBookmarks}"
+                                   Background="{DynamicResource WlrixFace}"
+                                   LightBrush="{DynamicResource WlrixTopShadow}"
+                                   DarkBrush="{DynamicResource WlrixBottomShadow}"
+                                   OuterLineBrush="{DynamicResource WlrixOuterLine}">
+                    <TextBlock Text="{loc:Tr BookmarksHeading}"
+                               FontWeight="Bold"
+                               Margin="6,3" />
+                </wlrix:BevelBorder>
+
+                <ListBox Name="BookmarksList"
+                         IsVisible="{Binding HasBookmarks}"
+                         ItemsSource="{Binding Bookmarks}"
+                         SelectionMode="Single">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate x:DataType="vm:PlaceViewModel">
+                            <TextBlock Text="{Binding Label}" />
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+
+                <wlrix:BevelBorder Bevel="Raised"
+                                   BevelThickness="2"
+                                   OuterLineThickness="1"
+                                   IsVisible="{Binding HasDevices}"
+                                   Background="{DynamicResource WlrixFace}"
+                                   LightBrush="{DynamicResource WlrixTopShadow}"
+                                   DarkBrush="{DynamicResource WlrixBottomShadow}"
+                                   OuterLineBrush="{DynamicResource WlrixOuterLine}">
+                    <TextBlock Text="{loc:Tr DevicesHeading}"
+                               FontWeight="Bold"
+                               Margin="6,3" />
+                </wlrix:BevelBorder>
+
+                <!-- The disks. Two lines each: what it is called, and how full it is — the
+                     second being the question anybody opening this list is usually asking. -->
+                <ListBox Name="DevicesList"
+                         IsVisible="{Binding HasDevices}"
+                         ItemsSource="{Binding Devices}"
+                         SelectionMode="Single">
+                    <ListBox.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="{loc:Tr DeviceMount}" Name="MountItem" />
+                            <MenuItem Header="{loc:Tr DeviceUnmount}" Name="UnmountItem" />
+                        </ContextMenu>
+                    </ListBox.ContextMenu>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate x:DataType="vm:DeviceViewModel">
+                            <StackPanel>
+                                <TextBlock Text="{Binding Label}" />
+                                <TextBlock Text="{Binding Detail}"
+                                           FontSize="10"
+                                           Opacity="0.75"
+                                           TextTrimming="CharacterEllipsis" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </StackPanel>
+        </ScrollViewer>
+
+        <GridSplitter Grid.Column="1" Width="6" ResizeDirection="Columns"
+                      DragCompleted="OnSidebarResized" />
+
+        <TabControl Grid.Column="2"
+                    Name="TabStrip"
+                    ItemsSource="{Binding Tabs}"
+                    SelectedItem="{Binding ActiveTab}"
+                    Classes.oneTab="{Binding !HasMultipleTabs}">
+            <TabControl.ItemTemplate>
+                <DataTemplate x:DataType="vm:TabViewModel">
+                    <TextBlock Text="{Binding Title}" />
+                </DataTemplate>
+            </TabControl.ItemTemplate>
+            <TabControl.ContentTemplate>
+                <DataTemplate x:DataType="vm:TabViewModel">
+                    <!-- One listing per pane. An ItemsControl rather than two named children,
+                         so splitting is a collection change and the two cases are not two
+                         layouts that can drift apart. A UniformGrid because the two halves are
+                         equal by definition; a GridSplitter between them would need a third
+                         column and a width to remember, which is a preference nobody has asked
+                         for yet. -->
+                    <ItemsControl ItemsSource="{Binding Panes}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <UniformGrid Rows="1" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="vm:PaneViewModel">
+                                <!-- The active pane is outlined, and only while the tab is
+                                     split: with one pane the answer is never in doubt and a
+                                     highlight around the only listing would be noise. Paste
+                                     and Delete go somewhere, and which somewhere has to be
+                                     visible before the click rather than after it. -->
+                                <Border BorderThickness="2"
+                                        Classes.activePane="{Binding ShowActiveOutline}">
+                                    <views:ListingView />
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </DataTemplate>
+            </TabControl.ContentTemplate>
+        </TabControl>
+    </Grid>
+</UserControl>

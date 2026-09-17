@@ -1,0 +1,48 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <IsPackable>false</IsPackable>
+        <IsTestProject>true</IsTestProject>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <!-- The Core suite's trimmed shared-mime-info fixtures, shared rather than copied:
+             the descriptions asserted here are the ones those tests pin. Never the machine's
+             own database, whose shared-mime-info version differs from CI's. -->
+        <None Include="..\Wlrix.Files.Core.Tests\Fixtures\mime\**"
+              Link="Fixtures\mime\%(RecursiveDir)%(Filename)%(Extension)"
+              CopyToOutputDirectory="PreserveNewest" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" />
+        <PackageReference Include="xunit" />
+        <PackageReference Include="xunit.runner.visualstudio" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\src\Wlrix.Files\Wlrix.Files.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <!-- The markup and the catalogs as data, so a test can read what the application
+             actually ships rather than a copy of it. A missing catalog key renders as the key
+             itself, silently and at runtime only, which is exactly the kind of thing that has
+             to be caught by a build rather than by looking at the window. -->
+        <None Include="..\..\src\Wlrix.Files\Localization\*.resx"
+              Link="Localization\%(Filename)%(Extension)"
+              CopyToOutputDirectory="PreserveNewest" />
+    </ItemGroup>
+
+    <!-- The markup is copied by hand rather than as a None item, because Avalonia's build
+         claims every *.axaml as AvaloniaXaml and removes it from None again — which copies
+         nothing, silently, and leaves the localization tests scanning an empty directory. A
+         Copy task owns no item type and nothing takes it back. -->
+    <Target Name="CopyMarkupForLocalizationTests" BeforeTargets="Build">
+        <ItemGroup>
+            <LocalizationMarkup Include="$(MSBuildThisFileDirectory)..\..\src\Wlrix.Files\Views\*.axaml" />
+        </ItemGroup>
+        <Copy SourceFiles="@(LocalizationMarkup)"
+              DestinationFolder="$(OutDir)Localization"
+              SkipUnchangedFiles="true" />
+    </Target>
+</Project>

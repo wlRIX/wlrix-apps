@@ -1,0 +1,12 @@
+[Icon Theme]
+Name=Parent
+Directories=16x16/mimetypes,32x32/mimetypes
+Inherits=hicolor
+
+[16x16/mimetypes]
+Size=16
+Type=Fixed
+
+[32x32/mimetypes]
+Size=32
+Type=Fixed

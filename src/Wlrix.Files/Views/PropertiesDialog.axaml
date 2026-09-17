@@ -1,0 +1,137 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:loc="using:Wlrix.Common.Localization"
+        xmlns:vm="using:Wlrix.Files.ViewModels"
+        x:Class="Wlrix.Files.Views.PropertiesDialog"
+        x:DataType="vm:PropertiesViewModel"
+        Width="440" SizeToContent="Height"
+        CanResize="False"
+        WindowStartupLocation="CenterOwner">
+    <Window.Resources>
+        <!-- A real family with a real fallback chain. FontFamily="monospace" throws out of
+             the layout pass rather than falling back, so the mode line below would take the
+             window down with it. -->
+        <FontFamily x:Key="PermissionsFont">DejaVu Sans Mono, Liberation Mono, Courier New, monospace</FontFamily>
+    </Window.Resources>
+
+    <StackPanel Margin="16" Spacing="12">
+
+        <!-- The heading: what this is, with its own icon beside it. -->
+        <StackPanel Orientation="Horizontal" Spacing="12">
+            <Image Source="{Binding Icon}" Width="48" Height="48" VerticalAlignment="Top" />
+            <TextBlock Text="{Binding Name}" FontWeight="Bold" TextWrapping="Wrap"
+                       VerticalAlignment="Center" />
+        </StackPanel>
+
+        <Separator />
+
+        <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto">
+            <Grid.Styles>
+                <Style Selector="TextBlock">
+                    <Setter Property="Margin" Value="0,2,0,2" />
+                </Style>
+                <Style Selector="TextBlock.label">
+                    <Setter Property="Margin" Value="0,2,10,2" />
+                </Style>
+            </Grid.Styles>
+
+            <TextBlock Grid.Row="0" Grid.Column="0" Classes="label" Text="{loc:Tr PropKind}" />
+            <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding KindText}" TextWrapping="Wrap" />
+
+            <TextBlock Grid.Row="1" Grid.Column="0" Classes="label" Text="{loc:Tr PropWhere}" />
+            <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding LocationText}" TextWrapping="Wrap" />
+
+            <TextBlock Grid.Row="2" Grid.Column="0" Classes="label" Text="{loc:Tr PropSize}" />
+            <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding SizeText}" TextWrapping="Wrap" />
+
+            <TextBlock Grid.Row="3" Grid.Column="0" Classes="label" Text="{loc:Tr PropContentsLabel}"
+                       IsVisible="{Binding HasContents}" />
+            <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding ContentsText}" TextWrapping="Wrap"
+                       IsVisible="{Binding HasContents}" />
+
+            <TextBlock Grid.Row="4" Grid.Column="0" Classes="label" Text="{loc:Tr PropModifiedLabel}"
+                       IsVisible="{Binding HasModified}" />
+            <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding ModifiedText}"
+                       IsVisible="{Binding HasModified}" />
+
+            <TextBlock Grid.Row="5" Grid.Column="0" Classes="label" Text="{loc:Tr PropLinkTarget}"
+                       IsVisible="{Binding HasLinkTarget}" />
+            <TextBlock Grid.Row="5" Grid.Column="1" Text="{Binding LinkTargetText}" TextWrapping="Wrap"
+                       IsVisible="{Binding HasLinkTarget}" />
+
+            <TextBlock Grid.Row="6" Grid.Column="0" Classes="label" Text="{loc:Tr PropFreeSpace}"
+                       IsVisible="{Binding HasFreeSpace}" />
+            <TextBlock Grid.Row="6" Grid.Column="1" Text="{Binding FreeSpaceText}"
+                       IsVisible="{Binding HasFreeSpace}" />
+        </Grid>
+
+        <!-- The permissions grid is absent, not disabled, when there is no mode to show: a
+             share has none, and a disabled checkbox only raises the question of how to
+             enable it. -->
+        <StackPanel Spacing="8" IsVisible="{Binding HasPermissions}">
+            <Separator />
+            <TextBlock Text="{loc:Tr PropPermissions}" FontWeight="Bold" />
+
+            <Grid ColumnDefinitions="Auto,Auto,Auto,Auto" RowDefinitions="Auto,Auto,Auto,Auto"
+                  IsEnabled="{Binding CanEditPermissions}">
+                <Grid.Styles>
+                    <Style Selector="CheckBox">
+                        <Setter Property="Margin" Value="12,1,0,1" />
+                    </Style>
+                    <Style Selector="TextBlock">
+                        <Setter Property="Margin" Value="0,1,0,1" />
+                        <Setter Property="VerticalAlignment" Value="Center" />
+                    </Style>
+                </Grid.Styles>
+
+                <TextBlock Grid.Row="0" Grid.Column="1" Text="{loc:Tr PropRead}" Margin="12,1,0,1" />
+                <TextBlock Grid.Row="0" Grid.Column="2" Text="{loc:Tr PropWrite}" Margin="12,1,0,1" />
+                <TextBlock Grid.Row="0" Grid.Column="3" Text="{loc:Tr PropExecute}" Margin="12,1,0,1" />
+
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="{loc:Tr PropOwner}" />
+                <CheckBox Grid.Row="1" Grid.Column="1" IsChecked="{Binding OwnerRead}" />
+                <CheckBox Grid.Row="1" Grid.Column="2" IsChecked="{Binding OwnerWrite}" />
+                <CheckBox Grid.Row="1" Grid.Column="3" IsChecked="{Binding OwnerExecute}" />
+
+                <TextBlock Grid.Row="2" Grid.Column="0" Text="{loc:Tr PropGroup}" />
+                <CheckBox Grid.Row="2" Grid.Column="1" IsChecked="{Binding GroupRead}" />
+                <CheckBox Grid.Row="2" Grid.Column="2" IsChecked="{Binding GroupWrite}" />
+                <CheckBox Grid.Row="2" Grid.Column="3" IsChecked="{Binding GroupExecute}" />
+
+                <TextBlock Grid.Row="3" Grid.Column="0" Text="{loc:Tr PropOther}" />
+                <CheckBox Grid.Row="3" Grid.Column="1" IsChecked="{Binding OtherRead}" />
+                <CheckBox Grid.Row="3" Grid.Column="2" IsChecked="{Binding OtherWrite}" />
+                <CheckBox Grid.Row="3" Grid.Column="3" IsChecked="{Binding OtherExecute}" />
+            </Grid>
+
+            <StackPanel Orientation="Horizontal" Spacing="14" IsEnabled="{Binding CanEditPermissions}">
+                <CheckBox Content="{loc:Tr PropSetUserId}" IsChecked="{Binding SetUserId}" />
+                <CheckBox Content="{loc:Tr PropSetGroupId}" IsChecked="{Binding SetGroupId}" />
+                <CheckBox Content="{loc:Tr PropSticky}" IsChecked="{Binding Sticky}" />
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Spacing="8" IsEnabled="{Binding CanEditPermissions}">
+                <TextBlock Text="{loc:Tr PropOctal}" VerticalAlignment="Center" />
+                <TextBox Text="{Binding OctalText}" Width="70" />
+                <!-- The same twelve bits a third way. It is here because the case of the
+                     special bits carries information nothing else in this window shows:
+                     "rwS" is a setuid file nobody can execute. -->
+                <TextBlock Text="{Binding PermissionsText}" VerticalAlignment="Center"
+                           FontFamily="{StaticResource PermissionsFont}" />
+            </StackPanel>
+
+            <TextBlock Text="{loc:Tr PropPermissionsReadOnly}" TextWrapping="Wrap"
+                       IsVisible="{Binding !CanEditPermissions}" />
+        </StackPanel>
+
+        <TextBlock Text="{Binding Problem}" TextWrapping="Wrap" FontWeight="Bold"
+                   IsVisible="{Binding HasProblem}" />
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
+            <Button Name="ApplyButton" Content="{loc:Tr DialogApply}" MinWidth="90"
+                    IsVisible="{Binding CanEditPermissions}" Command="{Binding Apply}" />
+            <Button Name="CloseButton" Content="{loc:Tr DialogClose}" MinWidth="90"
+                    IsDefault="True" IsCancel="True" />
+        </StackPanel>
+    </StackPanel>
+</Window>

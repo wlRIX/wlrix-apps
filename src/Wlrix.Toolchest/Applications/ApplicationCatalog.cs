@@ -2,7 +2,7 @@ using System.Globalization;
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using Wlrix.Common;
-using Wlrix.Toolchest.Desktop;
+using Wlrix.Common.Desktop;
 using ZLogger;
 
 namespace Wlrix.Toolchest.Applications;

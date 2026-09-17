@@ -89,11 +89,6 @@ public partial class MainWindow : Window
 
     private void OnExit(object? sender, RoutedEventArgs e) => Close();
 
-    private async void OnNewDesk(object? sender, RoutedEventArgs e)
-    {
-        if (DataContext is MainWindowViewModel vm)
-            await vm.NewDeskAsync();
-    }
 
     // Rename opens the editor on the selected tile; the template only realizes the field when
     // IsEditing flips, so focusing it waits for that layout pass.
@@ -148,65 +143,15 @@ public partial class MainWindow : Window
             _ = vm.CommitRenameAsync(desk);
     }
 
-    private async void OnGotoSelected(object? sender, RoutedEventArgs e)
-    {
-        if (DataContext is MainWindowViewModel vm)
-            await vm.GotoSelectedAsync();
-    }
 
-    private async void OnDeleteSelected(object? sender, RoutedEventArgs e)
-    {
-        if (DataContext is MainWindowViewModel vm)
-            await vm.DeleteSelectedAsync();
-    }
 
-    private async void OnMinimizeAll(object? sender, RoutedEventArgs e)
-    {
-        if (DataContext is MainWindowViewModel vm)
-            await vm.MinimizeAllAsync();
-    }
 
-    private async void OnRestoreAll(object? sender, RoutedEventArgs e)
-    {
-        if (DataContext is MainWindowViewModel vm)
-            await vm.RestoreAllAsync();
-    }
 
-    private async void OnAddToGlobal(object? sender, RoutedEventArgs e)
-    {
-        if (DataContext is MainWindowViewModel vm)
-            await vm.AddSelectedToGlobalAsync();
-    }
 
-    private async void OnRemoveFromDesk(object? sender, RoutedEventArgs e)
-    {
-        if (DataContext is MainWindowViewModel vm)
-            await vm.RemoveSelectedFromDeskAsync();
-    }
 
-    private async void OnMinimizeSelected(object? sender, RoutedEventArgs e)
-    {
-        if (DataContext is MainWindowViewModel vm)
-            await vm.MinimizeSelectedAsync();
-    }
 
-    private async void OnRestoreSelected(object? sender, RoutedEventArgs e)
-    {
-        if (DataContext is MainWindowViewModel vm)
-            await vm.RestoreSelectedAsync();
-    }
 
-    private async void OnLowerSelected(object? sender, RoutedEventArgs e)
-    {
-        if (DataContext is MainWindowViewModel vm)
-            await vm.LowerSelectedAsync();
-    }
 
-    private async void OnRaiseSelected(object? sender, RoutedEventArgs e)
-    {
-        if (DataContext is MainWindowViewModel vm)
-            await vm.RaiseSelectedAsync();
-    }
 
     // Clicking empty space in the desk strip (not on a tile, not the scrollbar) clears the selection.
     private void OnDeskListPointerPressed(object? sender, PointerPressedEventArgs e)

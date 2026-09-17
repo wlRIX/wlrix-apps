@@ -12,6 +12,23 @@
         x:Class="Wlrix.Desks.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Title="{loc:Tr WindowTitle}">
+    <!-- The accelerators.
+         A MenuItem's InputGesture only *draws* the shortcut, and its HotKey — which is meant
+         to be the half that works — does not fire from inside a submenu that has never been
+         opened. Both were established under the nested compositor with a virtual keyboard
+         while fixing wlRIX Files, which had the same arrangement and the same dead keys.
+         Window.KeyBindings is what runs, and it needs commands, which is why the Window menu's
+         items stopped being Click handlers. -->
+    <Window.KeyBindings>
+        <KeyBinding Gesture="Ctrl+M" Command="{Binding MinimizeAll}" />
+        <KeyBinding Gesture="Shift+Ctrl+M" Command="{Binding RestoreAll}" />
+        <KeyBinding Gesture="Ctrl+G" Command="{Binding AddSelectedToGlobal}" />
+        <KeyBinding Gesture="Ctrl+D" Command="{Binding RemoveSelectedFromDesk}" />
+        <KeyBinding Gesture="Ctrl+E" Command="{Binding MinimizeSelected}" />
+        <KeyBinding Gesture="Shift+Ctrl+E" Command="{Binding RestoreSelected}" />
+    </Window.KeyBindings>
+
+
 
     <Design.DataContext>
         <!-- This only sets the DataContext for the previewer in an IDE,
@@ -93,38 +110,36 @@
                 <MenuItem Header="{loc:Tr Exit}" Click="OnExit" />
             </MenuItem>
             <MenuItem Header="{loc:Tr MenuDesk}">
-                <MenuItem Header="{loc:Tr NewDesk}" Click="OnNewDesk" />
+                <MenuItem Header="{loc:Tr NewDesk}" Command="{Binding NewDesk}" />
                 <MenuItem Header="{loc:Tr RenameSelected}" Click="OnRenameSelected"
                           IsEnabled="{Binding CanOperateOnSelected}" />
-                <MenuItem Header="{loc:Tr GotoSelected}" Click="OnGotoSelected"
+                <MenuItem Header="{loc:Tr GotoSelected}" Command="{Binding GotoSelected}"
                           IsEnabled="{Binding CanOperateOnSelected}" />
-                <MenuItem Header="{loc:Tr DeleteSelected}" Click="OnDeleteSelected"
+                <MenuItem Header="{loc:Tr DeleteSelected}" Command="{Binding DeleteSelected}"
                           IsEnabled="{Binding CanOperateOnSelected}" />
             </MenuItem>
-            <!-- Accelerators are declared twice on purpose: InputGesture is what the menu
-                 *shows*, HotKey is what makes the key work while the menu is closed. -->
             <MenuItem Header="{loc:Tr MenuWindow}">
                 <MenuItem Header="{loc:Tr ListAll}" InputGesture="Ctrl+L" IsEnabled="False" />
-                <MenuItem Header="{loc:Tr MinimizeAll}" InputGesture="Ctrl+M" HotKey="Ctrl+M"
-                          Click="OnMinimizeAll" />
-                <MenuItem Header="{loc:Tr RestoreAll}" InputGesture="Shift+Ctrl+M" HotKey="Shift+Ctrl+M"
-                          Click="OnRestoreAll" />
+                <MenuItem Header="{loc:Tr MinimizeAll}" InputGesture="Ctrl+M"
+                          Command="{Binding MinimizeAll}" />
+                <MenuItem Header="{loc:Tr RestoreAll}" InputGesture="Shift+Ctrl+M"
+                          Command="{Binding RestoreAll}" />
                 <!-- The theme draws a separator from a MenuItem headed "-" (Avalonia's
                      :separator pseudo-class); a bare <Separator/> gets no template here and
                      renders as nothing at all. -->
                 <MenuItem Header="-" />
-                <MenuItem Header="{loc:Tr AddToGlobal}" InputGesture="Ctrl+G" HotKey="Ctrl+G"
-                          Click="OnAddToGlobal" IsEnabled="{Binding HasSelectedWindow}" />
-                <MenuItem Header="{loc:Tr RemoveFromDesk}" InputGesture="Ctrl+D" HotKey="Ctrl+D"
-                          Click="OnRemoveFromDesk" IsEnabled="{Binding HasSelectedWindow}" />
+                <MenuItem Header="{loc:Tr AddToGlobal}" InputGesture="Ctrl+G"
+                          Command="{Binding AddSelectedToGlobal}" IsEnabled="{Binding HasSelectedWindow}" />
+                <MenuItem Header="{loc:Tr RemoveFromDesk}" InputGesture="Ctrl+D"
+                          Command="{Binding RemoveSelectedFromDesk}" IsEnabled="{Binding HasSelectedWindow}" />
                 <MenuItem Header="-" />
-                <MenuItem Header="{loc:Tr Minimize}" InputGesture="Ctrl+E" HotKey="Ctrl+E"
-                          Click="OnMinimizeSelected" IsEnabled="{Binding CanMinimizeSelected}" />
-                <MenuItem Header="{loc:Tr Restore}" InputGesture="Shift+Ctrl+E" HotKey="Shift+Ctrl+E"
-                          Click="OnRestoreSelected" IsEnabled="{Binding CanRestoreSelected}" />
-                <MenuItem Header="{loc:Tr Lower}" Click="OnLowerSelected"
+                <MenuItem Header="{loc:Tr Minimize}" InputGesture="Ctrl+E"
+                          Command="{Binding MinimizeSelected}" IsEnabled="{Binding CanMinimizeSelected}" />
+                <MenuItem Header="{loc:Tr Restore}" InputGesture="Shift+Ctrl+E"
+                          Command="{Binding RestoreSelected}" IsEnabled="{Binding CanRestoreSelected}" />
+                <MenuItem Header="{loc:Tr Lower}" Command="{Binding LowerSelected}"
                           IsEnabled="{Binding HasSelectedWindow}" />
-                <MenuItem Header="{loc:Tr Raise}" Click="OnRaiseSelected"
+                <MenuItem Header="{loc:Tr Raise}" Command="{Binding RaiseSelected}"
                           IsEnabled="{Binding HasSelectedWindow}" />
             </MenuItem>
         </Menu>

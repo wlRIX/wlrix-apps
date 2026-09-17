@@ -1,0 +1,531 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Files" xml:space="preserve">
+    <value>wlRIX ファイル</value>
+  </data>
+  <data name="MenuActions" xml:space="preserve">
+    <value>操作(_A)</value>
+  </data>
+  <data name="MenuSelected" xml:space="preserve">
+    <value>選択(_S)</value>
+  </data>
+  <data name="OptionClassic" xml:space="preserve">
+    <value>クラシック(_C)（ディレクトリごとにウィンドウ）</value>
+  </data>
+  <data name="OptionModern" xml:space="preserve">
+    <value>モダン(_M)（その場で移動）</value>
+  </data>
+  <data name="OptionDefaultFileManager" xml:space="preserve">
+    <value>既定のファイルマネージャにする(_F)</value>
+  </data>
+  <data name="OptionSingleClick" xml:space="preserve">
+    <value>シングルクリックで開く(_S)</value>
+  </data>
+  <data name="OptionConfirmDelete" xml:space="preserve">
+    <value>削除を確認(_D)</value>
+  </data>
+  <data name="MenuSort" xml:space="preserve">
+    <value>並べ替え(_O)</value>
+  </data>
+  <data name="MenuView" xml:space="preserve">
+    <value>表示(_V)</value>
+  </data>
+  <data name="MenuInternet" xml:space="preserve">
+    <value>インターネット(_I)</value>
+  </data>
+  <data name="InternetConnect" xml:space="preserve">
+    <value>サーバへ接続(_C)...</value>
+  </data>
+  <data name="InternetSaved" xml:space="preserve">
+    <value>保存した共有(_S)</value>
+  </data>
+  <data name="InternetDisconnect" xml:space="preserve">
+    <value>切断(_D)</value>
+  </data>
+  <data name="ConnectTitle" xml:space="preserve">
+    <value>サーバへ接続</value>
+  </data>
+  <data name="ConnectAuthTitle" xml:space="preserve">
+    <value>認証が必要です</value>
+  </data>
+  <data name="ConnectProtocol" xml:space="preserve">
+    <value>プロトコル</value>
+  </data>
+  <data name="ConnectServer" xml:space="preserve">
+    <value>サーバ</value>
+  </data>
+  <data name="ConnectShare" xml:space="preserve">
+    <value>共有</value>
+  </data>
+  <data name="ConnectPath" xml:space="preserve">
+    <value>フォルダ</value>
+  </data>
+  <data name="ConnectAnonymous" xml:space="preserve">
+    <value>匿名で接続</value>
+  </data>
+  <data name="ConnectUser" xml:space="preserve">
+    <value>ユーザ名</value>
+  </data>
+  <data name="ConnectPassword" xml:space="preserve">
+    <value>パスワード</value>
+  </data>
+  <data name="ConnectRemember" xml:space="preserve">
+    <value>このパスワードを記憶する</value>
+  </data>
+  <data name="ConnectRememberTransient" xml:space="preserve">
+    <value>キーリングが利用できないため、このパスワードは wlRIX ファイルの終了までしか保持されません。</value>
+  </data>
+  <data name="ConnectAccept" xml:space="preserve">
+    <value>接続</value>
+  </data>
+  <data name="MenuOptions" xml:space="preserve">
+    <value>設定(_O)</value>
+  </data>
+  <data name="MenuHelp" xml:space="preserve">
+    <value>ヘルプ(_H)</value>
+  </data>
+  <data name="ActionNewWindow" xml:space="preserve">
+    <value>新しいウィンドウ(_W)</value>
+  </data>
+  <data name="ActionOpen" xml:space="preserve">
+    <value>開く(_O)</value>
+  </data>
+  <data name="ActionUp" xml:space="preserve">
+    <value>上へ(_U)</value>
+  </data>
+  <data name="ActionBack" xml:space="preserve">
+    <value>戻る(_B)</value>
+  </data>
+  <data name="ActionForward" xml:space="preserve">
+    <value>進む(_F)</value>
+  </data>
+  <data name="ActionHome" xml:space="preserve">
+    <value>ホーム(_H)</value>
+  </data>
+  <data name="ActionRefresh" xml:space="preserve">
+    <value>再読み込み(_R)</value>
+  </data>
+  <data name="ActionNewTab" xml:space="preserve">
+    <value>新しいタブ(_T)</value>
+  </data>
+  <data name="ActionCloseTab" xml:space="preserve">
+    <value>タブを閉じる(_A)</value>
+  </data>
+  <data name="ActionClose" xml:space="preserve">
+    <value>閉じる(_C)</value>
+  </data>
+  <data name="SortName" xml:space="preserve">
+    <value>名前順(_N)</value>
+  </data>
+  <data name="SortSize" xml:space="preserve">
+    <value>サイズ順(_S)</value>
+  </data>
+  <data name="SortKind" xml:space="preserve">
+    <value>種類順(_K)</value>
+  </data>
+  <data name="SortDate" xml:space="preserve">
+    <value>日付順(_D)</value>
+  </data>
+  <data name="SortDescending" xml:space="preserve">
+    <value>逆順(_R)</value>
+  </data>
+  <data name="SortFoldersFirst" xml:space="preserve">
+    <value>フォルダを先頭に(_F)</value>
+  </data>
+  <data name="ViewThumbnails" xml:space="preserve">
+    <value>サムネイル(_B)</value>
+  </data>
+  <data name="ViewShowHidden" xml:space="preserve">
+    <value>隠しファイルを表示(_H)</value>
+  </data>
+  <data name="HelpAbout" xml:space="preserve">
+    <value>wlRIX ファイルについて(_A)</value>
+  </data>
+  <data name="ColumnName" xml:space="preserve">
+    <value>名前</value>
+  </data>
+  <data name="ColumnSize" xml:space="preserve">
+    <value>サイズ</value>
+  </data>
+  <data name="ColumnKind" xml:space="preserve">
+    <value>種類</value>
+  </data>
+  <data name="ColumnModified" xml:space="preserve">
+    <value>更新日時</value>
+  </data>
+  <data name="BookmarksHeading" xml:space="preserve">
+    <value>ブックマーク</value>
+  </data>
+  <data name="ActionBookmark" xml:space="preserve">
+    <value>ブックマークに追加(_M)</value>
+  </data>
+  <data name="PlacesHeading" xml:space="preserve">
+    <value>場所</value>
+  </data>
+  <data name="PlaceHome" xml:space="preserve">
+    <value>ホーム</value>
+  </data>
+  <data name="PlaceFilesystem" xml:space="preserve">
+    <value>ファイルシステム</value>
+  </data>
+  <data name="PlaceDesktop" xml:space="preserve">
+    <value>デスクトップ</value>
+  </data>
+  <data name="PlaceDocuments" xml:space="preserve">
+    <value>ドキュメント</value>
+  </data>
+  <data name="PlaceDownloads" xml:space="preserve">
+    <value>ダウンロード</value>
+  </data>
+  <data name="PlaceMusic" xml:space="preserve">
+    <value>音楽</value>
+  </data>
+  <data name="PlacePictures" xml:space="preserve">
+    <value>画像</value>
+  </data>
+  <data name="PlaceVideos" xml:space="preserve">
+    <value>ビデオ</value>
+  </data>
+  <data name="KindFolder" xml:space="preserve">
+    <value>フォルダ</value>
+  </data>
+  <data name="KindFile" xml:space="preserve">
+    <value>ファイル</value>
+  </data>
+  <data name="KindLink" xml:space="preserve">
+    <value>リンク</value>
+  </data>
+  <data name="KindSpecial" xml:space="preserve">
+    <value>特殊</value>
+  </data>
+  <data name="StatusLoading" xml:space="preserve">
+    <value>読み込み中...</value>
+  </data>
+  <data name="StatusItems" xml:space="preserve">
+    <value>{0} 個の項目</value>
+  </data>
+  <data name="StatusItemsSelected" xml:space="preserve">
+    <value>{0} 個の項目、{1} 個を選択</value>
+  </data>
+  <data name="StatusEmpty" xml:space="preserve">
+    <value>空のフォルダ</value>
+  </data>
+  <data name="StatusFree" xml:space="preserve">
+    <value>{1} 中 {0} の空き</value>
+  </data>
+  <data name="ErrorTitle" xml:space="preserve">
+    <value>エラー</value>
+  </data>
+  <data name="AboutTitle" xml:space="preserve">
+    <value>wlRIX ファイルについて</value>
+  </data>
+  <data name="AboutText" xml:space="preserve">
+    <value>wlRIX ファイル\n\nwlRIX デスクトップのファイルマネージャです。</value>
+  </data>
+  <data name="ViewIcons" xml:space="preserve">
+    <value>アイコン(_I)</value>
+  </data>
+  <data name="ViewDetails" xml:space="preserve">
+    <value>詳細(_D)</value>
+  </data>
+  <data name="DialogOk" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="DialogCancel" xml:space="preserve">
+    <value>キャンセル</value>
+  </data>
+  <data name="SelectedCopy" xml:space="preserve">
+    <value>コピー(_C)</value>
+  </data>
+  <data name="SelectedCut" xml:space="preserve">
+    <value>切り取り(_T)</value>
+  </data>
+  <data name="SelectedPaste" xml:space="preserve">
+    <value>貼り付け(_P)</value>
+  </data>
+  <data name="SelectedOpenWith" xml:space="preserve">
+    <value>別のアプリで開く(_H)</value>
+  </data>
+  <data name="OpenWithAlways" xml:space="preserve">
+    <value>{0} を常にこれで開く</value>
+  </data>
+  <data name="NoHandler" xml:space="preserve">
+    <value>「{0}」({1}) を開けるアプリが登録されていません。</value>
+  </data>
+  <data name="SelectedAlwaysOpenWith" xml:space="preserve">
+    <value>常にこのアプリで開く(_W)</value>
+  </data>
+  <data name="SelectedRename" xml:space="preserve">
+    <value>名前を変更(_R)...</value>
+  </data>
+  <data name="SelectedDuplicate" xml:space="preserve">
+    <value>コピーを作成(_K)</value>
+  </data>
+  <data name="SelectedMakeReference" xml:space="preserve">
+    <value>参照を作成(_F)</value>
+  </data>
+  <data name="SelectedTrash" xml:space="preserve">
+    <value>ごみ箱へ移動(_V)</value>
+  </data>
+  <data name="SelectedDelete" xml:space="preserve">
+    <value>削除(_D)...</value>
+  </data>
+  <data name="ActionNewFolder" xml:space="preserve">
+    <value>新しいフォルダ(_D)...</value>
+  </data>
+  <data name="NewFolderTitle" xml:space="preserve">
+    <value>新しいフォルダ</value>
+  </data>
+  <data name="NewFolderPrompt" xml:space="preserve">
+    <value>新しいフォルダの名前:</value>
+  </data>
+  <data name="NewFolderDefault" xml:space="preserve">
+    <value>新しいフォルダ</value>
+  </data>
+  <data name="RenameTitle" xml:space="preserve">
+    <value>名前の変更</value>
+  </data>
+  <data name="RenamePrompt" xml:space="preserve">
+    <value>「{0}」の新しい名前:</value>
+  </data>
+  <data name="ConfirmDeleteTitle" xml:space="preserve">
+    <value>削除</value>
+  </data>
+  <data name="ConfirmDeleteOne" xml:space="preserve">
+    <value>「{0}」を完全に削除しますか。元に戻せません。</value>
+  </data>
+  <data name="ConfirmDeleteMany" xml:space="preserve">
+    <value>{0} 個の項目を完全に削除しますか。元に戻せません。</value>
+  </data>
+  <data name="ConflictTitle" xml:space="preserve">
+    <value>ファイルが存在します</value>
+  </data>
+  <data name="ConflictSummary" xml:space="preserve">
+    <value>「{0}」はすでに存在します。</value>
+  </data>
+  <data name="ConflictExisting" xml:space="preserve">
+    <value>既存:</value>
+  </data>
+  <data name="ConflictReplacement" xml:space="preserve">
+    <value>置換後:</value>
+  </data>
+  <data name="ConflictApplyToAll" xml:space="preserve">
+    <value>以降の競合すべてに適用</value>
+  </data>
+  <data name="ConflictOverwrite" xml:space="preserve">
+    <value>上書き</value>
+  </data>
+  <data name="ConflictRename" xml:space="preserve">
+    <value>名前を変更</value>
+  </data>
+  <data name="ConflictSkip" xml:space="preserve">
+    <value>スキップ</value>
+  </data>
+  <data name="OperationCopying" xml:space="preserve">
+    <value>コピーしています...</value>
+  </data>
+  <data name="OperationMoving" xml:space="preserve">
+    <value>移動しています...</value>
+  </data>
+  <data name="OperationDeleting" xml:space="preserve">
+    <value>削除しています...</value>
+  </data>
+  <data name="OperationTrashing" xml:space="preserve">
+    <value>ごみ箱へ移動しています...</value>
+  </data>
+  <data name="OperationScanning" xml:space="preserve">
+    <value>{0} 個の項目を調べています...</value>
+  </data>
+  <data name="OperationCancel" xml:space="preserve">
+    <value>中止</value>
+  </data>
+  <data name="OperationFailed" xml:space="preserve">
+    <value>操作の {0} 件を完了できませんでした。</value>
+  </data>
+  <data name="SelectedProperties" xml:space="preserve">
+    <value>プロパティ(_I)...</value>
+  </data>
+  <data name="ActionProperties" xml:space="preserve">
+    <value>フォルダーのプロパティ(_R)...</value>
+  </data>
+  <data name="PropertiesTitle" xml:space="preserve">
+    <value>{0} のプロパティ</value>
+  </data>
+  <data name="PropertiesTitleMany" xml:space="preserve">
+    <value>{0} 項目のプロパティ</value>
+  </data>
+  <data name="PropItemCount" xml:space="preserve">
+    <value>{0} 項目</value>
+  </data>
+  <data name="PropName" xml:space="preserve">
+    <value>名前:</value>
+  </data>
+  <data name="PropKind" xml:space="preserve">
+    <value>種類:</value>
+  </data>
+  <data name="PropWhere" xml:space="preserve">
+    <value>場所:</value>
+  </data>
+  <data name="PropSize" xml:space="preserve">
+    <value>サイズ:</value>
+  </data>
+  <data name="PropContentsLabel" xml:space="preserve">
+    <value>内容:</value>
+  </data>
+  <data name="PropModifiedLabel" xml:space="preserve">
+    <value>更新日時:</value>
+  </data>
+  <data name="PropLinkTarget" xml:space="preserve">
+    <value>リンク先:</value>
+  </data>
+  <data name="PropFreeSpace" xml:space="preserve">
+    <value>空き容量:</value>
+  </data>
+  <data name="PropKindFolder" xml:space="preserve">
+    <value>フォルダー</value>
+  </data>
+  <data name="PropCalculating" xml:space="preserve">
+    <value>計算中...</value>
+  </data>
+  <data name="PropCounting" xml:space="preserve">
+    <value>{0}、集計中 (現在 {1} 項目)</value>
+  </data>
+  <data name="PropSizeExact" xml:space="preserve">
+    <value>{0} ({1:N0} バイト)</value>
+  </data>
+  <data name="PropContents" xml:space="preserve">
+    <value>{0}、{1}</value>
+  </data>
+  <data name="PropContentsPartial" xml:space="preserve">
+    <value>{0}、{1}。{2} 個は読み取れませんでした</value>
+  </data>
+  <data name="PropFreeOf" xml:space="preserve">
+    <value>{1} 中 {0} が空き</value>
+  </data>
+  <data name="PropPermissions" xml:space="preserve">
+    <value>アクセス権</value>
+  </data>
+  <data name="PropOwner" xml:space="preserve">
+    <value>所有者</value>
+  </data>
+  <data name="PropGroup" xml:space="preserve">
+    <value>グループ</value>
+  </data>
+  <data name="PropOther" xml:space="preserve">
+    <value>その他</value>
+  </data>
+  <data name="PropRead" xml:space="preserve">
+    <value>読み取り</value>
+  </data>
+  <data name="PropWrite" xml:space="preserve">
+    <value>書き込み</value>
+  </data>
+  <data name="PropExecute" xml:space="preserve">
+    <value>実行</value>
+  </data>
+  <data name="PropSetUserId" xml:space="preserve">
+    <value>ユーザー ID を設定</value>
+  </data>
+  <data name="PropSetGroupId" xml:space="preserve">
+    <value>グループ ID を設定</value>
+  </data>
+  <data name="PropSticky" xml:space="preserve">
+    <value>削除を制限</value>
+  </data>
+  <data name="PropOctal" xml:space="preserve">
+    <value>8 進数:</value>
+  </data>
+  <data name="PropPermissionsReadOnly" xml:space="preserve">
+    <value>このファイルシステムはアクセス権の変更を受け付けません。</value>
+  </data>
+  <data name="DialogApply" xml:space="preserve">
+    <value>適用</value>
+  </data>
+  <data name="DialogClose" xml:space="preserve">
+    <value>閉じる</value>
+  </data>
+  <data name="PropFileCountOne" xml:space="preserve">
+    <value>ファイル 1 個</value>
+  </data>
+  <data name="PropFileCount" xml:space="preserve">
+    <value>ファイル {0} 個</value>
+  </data>
+  <data name="PropFolderCountOne" xml:space="preserve">
+    <value>フォルダー 1 個</value>
+  </data>
+  <data name="PropFolderCount" xml:space="preserve">
+    <value>フォルダー {0} 個</value>
+  </data>
+  <data name="ActionNextTab" xml:space="preserve">
+    <value>次のタブ(_N)</value>
+  </data>
+  <data name="ActionPreviousTab" xml:space="preserve">
+    <value>前のタブ(_P)</value>
+  </data>
+  <data name="PropKindEmpty" xml:space="preserve">
+    <value>空のファイル</value>
+  </data>
+  <data name="ActionFind" xml:space="preserve">
+    <value>検索(_I)...</value>
+  </data>
+  <data name="FindTitle" xml:space="preserve">
+    <value>検索</value>
+  </data>
+  <data name="FindPrompt" xml:space="preserve">
+    <value>「{0}」の下から名前に次を含むファイルを検索:</value>
+  </data>
+  <data name="StatusSearching" xml:space="preserve">
+    <value>検索中... ({0} 件)</value>
+  </data>
+  <data name="StatusFound" xml:space="preserve">
+    <value>「{1}」に一致するもの {0} 件</value>
+  </data>
+  <data name="StatusFoundPartial" xml:space="preserve">
+    <value>「{1}」に一致するもの {0} 件。{2} 個のフォルダーは読み取れませんでした</value>
+  </data>
+  <data name="StatusFoundTruncated" xml:space="preserve">
+    <value>「{1}」に一致する最初の {0} 件。さらにあります</value>
+  </data>
+  <data name="StatusFoundNothing" xml:space="preserve">
+    <value>「{0}」に一致するものはありません</value>
+  </data>
+  <data name="ViewSplit" xml:space="preserve">
+    <value>分割表示(_L)</value>
+  </data>
+  <data name="DevicesHeading" xml:space="preserve">
+    <value>デバイス</value>
+  </data>
+  <data name="DeviceFree" xml:space="preserve">
+    <value>{1} 中 {0} が空き</value>
+  </data>
+  <data name="DeviceMount" xml:space="preserve">
+    <value>マウント(_M)</value>
+  </data>
+  <data name="DeviceUnmount" xml:space="preserve">
+    <value>アンマウント(_U)</value>
+  </data>
+  <data name="DeviceMountFailed" xml:space="preserve">
+    <value>{0} をマウントできませんでした: {1}</value>
+  </data>
+  <data name="DeviceUnmountFailed" xml:space="preserve">
+    <value>{0} をアンマウントできませんでした: {1}</value>
+  </data>
+  <data name="DeviceUnmounted" xml:space="preserve">
+    <value>{0} をアンマウントしました。</value>
+  </data>
+  <data name="SettingFailed" xml:space="preserve">
+    <value>設定を保存できませんでした: {0}</value>
+  </data>
+</root>

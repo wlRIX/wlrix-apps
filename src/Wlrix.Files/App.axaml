@@ -1,0 +1,24 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:wlrix="https://vic485.xyz/Wlrix.Avalonia"
+             x:Class="Wlrix.Files.App"
+             RequestedThemeVariant="Default">
+    <Application.Styles>
+        <wlrix:WlrixTheme />
+    </Application.Styles>
+
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <!-- Controls Wlrix.Avalonia does not theme. One of these missing is not an
+                     error, it is a blank rectangle, so anything added here is load-bearing.
+
+                     Application.Resources is consulted before a style's own, so a theme added
+                     here would shadow one the package grows later. That is only safe because
+                     these are control templates: never put scheme colors or brushes here, or
+                     runtime scheme switching stops working. -->
+                <ResourceInclude Source="avares://wlrix-files/Themes/ItemsControl.axaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

@@ -1,0 +1,20 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- Wlrix.Avalonia themes ListBox and not ItemsControl, and a control it does not cover
+         has no template at all: it renders as empty space, with no error, no warning and
+         nothing in the log. The split view is a plain repeater over the tab's panes, so
+         without this the whole listing area is simply blank.
+
+         Minimal on purpose. An ItemsControl has no chrome of its own to draw — it is a panel
+         and its items — so a presenter honoring the declared ItemsPanel is the whole
+         template. -->
+    <ControlTheme x:Key="{x:Type ItemsControl}" TargetType="ItemsControl">
+        <Setter Property="Template">
+            <ControlTemplate>
+                <ItemsPresenter ItemsPanel="{TemplateBinding ItemsPanel}" />
+            </ControlTemplate>
+        </Setter>
+    </ControlTheme>
+
+</ResourceDictionary>

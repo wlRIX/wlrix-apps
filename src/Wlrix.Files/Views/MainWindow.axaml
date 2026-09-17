@@ -1,0 +1,279 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:wlrix="https://vic485.xyz/Wlrix.Avalonia"
+        xmlns:loc="using:Wlrix.Common.Localization"
+        xmlns:vm="using:Wlrix.Files.ViewModels"
+        xmlns:views="using:Wlrix.Files.Views"
+        x:Class="Wlrix.Files.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Title="{loc:Tr Files}"
+        Width="900" Height="620">
+    <!-- The accelerators, and they have to live here.
+         A MenuItem's InputGesture only *draws* the shortcut — Avalonia's own doc comment on
+         the property says so — and its HotKey, which is meant to be the half that works, does
+         not fire from inside a submenu that has never been opened. Verified under the nested
+         compositor with a virtual keyboard: the same command reached through Window.KeyBindings
+         ran, and through HotKey did not. So the gesture is written twice, once to show and
+         once to work, and AcceleratorTests checks the two never drift apart.
+
+         Being on the window rather than the listing is what makes them yield to a text box: a
+         focused TextBox marks Delete and Ctrl+C handled, and only what it leaves unhandled
+         reaches here. -->
+    <Window.KeyBindings>
+        <KeyBinding Gesture="Alt+Left" Command="{Binding GoBack}" />
+        <KeyBinding Gesture="Alt+Right" Command="{Binding GoForward}" />
+        <KeyBinding Gesture="Alt+Up" Command="{Binding GoUp}" />
+        <KeyBinding Gesture="Alt+Home" Command="{Binding GoHome}" />
+        <KeyBinding Gesture="Ctrl+Shift+N" Command="{Binding NewFolder}" />
+        <KeyBinding Gesture="Ctrl+F" Command="{Binding Find}" />
+        <KeyBinding Gesture="Ctrl+D" Command="{Binding ToggleBookmark}" />
+        <KeyBinding Gesture="Ctrl+T" Command="{Binding NewTab}" />
+        <KeyBinding Gesture="Ctrl+W" Command="{Binding CloseTab}" />
+        <KeyBinding Gesture="Ctrl+Tab" Command="{Binding NextTab}" />
+        <KeyBinding Gesture="Ctrl+Shift+Tab" Command="{Binding PreviousTab}" />
+        <KeyBinding Gesture="Ctrl+Shift+W" Command="{Binding Close}" />
+        <KeyBinding Gesture="Ctrl+X" Command="{Binding CutSelection}" />
+        <KeyBinding Gesture="Ctrl+C" Command="{Binding CopySelection}" />
+        <KeyBinding Gesture="Ctrl+V" Command="{Binding Paste}" />
+        <KeyBinding Gesture="F2" Command="{Binding RenameSelection}" />
+        <KeyBinding Gesture="Delete" Command="{Binding TrashSelection}" />
+        <KeyBinding Gesture="Shift+Delete" Command="{Binding DeleteSelection}" />
+        <KeyBinding Gesture="Alt+Return" Command="{Binding ShowProperties}" />
+        <KeyBinding Gesture="F3" Command="{Binding ToggleSplit}" />
+        <KeyBinding Gesture="F5" Command="{Binding Refresh}" />
+    </Window.KeyBindings>
+
+
+
+    <DockPanel>
+        <!-- Menu bar. IRIX puts Help at the right end, and Avalonia's Menu has no per-item
+             alignment, so this is two Menus in one DockPanel — the arrangement
+             Wlrix.Archiver already uses. -->
+        <wlrix:BevelBorder DockPanel.Dock="Top"
+                           Bevel="Raised"
+                           BevelThickness="1"
+                           Background="{DynamicResource WlrixMenubarBackground}"
+                           LightBrush="{DynamicResource WlrixPanelTopShadow}"
+                           DarkBrush="{DynamicResource WlrixPanelBottomShadow}">
+            <DockPanel>
+                <Menu DockPanel.Dock="Right">
+                    <MenuItem Header="{loc:Tr MenuHelp}">
+                        <MenuItem Header="{loc:Tr HelpAbout}" Command="{Binding About}" />
+                    </MenuItem>
+                </Menu>
+                <Menu>
+                    <MenuItem Header="{loc:Tr MenuActions}">
+                        <MenuItem Header="{loc:Tr ActionOpen}" InputGesture="Return" />
+                        <MenuItem Header="-" />
+                        <MenuItem Header="{loc:Tr ActionBack}" Command="{Binding GoBack}" InputGesture="Alt+Left" />
+                        <MenuItem Header="{loc:Tr ActionForward}" Command="{Binding GoForward}" InputGesture="Alt+Right" />
+                        <MenuItem Header="{loc:Tr ActionUp}" Command="{Binding GoUp}" InputGesture="Alt+Up" />
+                        <MenuItem Header="{loc:Tr ActionHome}" Command="{Binding GoHome}" InputGesture="Alt+Home" />
+                        <MenuItem Header="-" />
+                        <MenuItem Header="{loc:Tr ActionNewFolder}" Command="{Binding NewFolder}" InputGesture="Ctrl+Shift+N" />
+                        <MenuItem Header="{loc:Tr ActionFind}" Command="{Binding Find}" InputGesture="Ctrl+F" />
+                        <MenuItem Header="-" />
+                        <MenuItem Header="{loc:Tr ActionBookmark}"
+                                  ToggleType="CheckBox"
+                                  IsChecked="{Binding IsBookmarked}"
+                                  Command="{Binding ToggleBookmark}"
+                                  InputGesture="Ctrl+D" />
+                        <MenuItem Header="-" />
+                        <MenuItem Header="{loc:Tr ActionNewTab}" Command="{Binding NewTab}" InputGesture="Ctrl+T" />
+                        <MenuItem Header="{loc:Tr ActionCloseTab}" Command="{Binding CloseTab}" InputGesture="Ctrl+W" />
+                        <MenuItem Header="{loc:Tr ActionNextTab}" Command="{Binding NextTab}"
+                                  InputGesture="Ctrl+Tab" />
+                        <MenuItem Header="{loc:Tr ActionPreviousTab}" Command="{Binding PreviousTab}"
+                                  InputGesture="Ctrl+Shift+Tab" />
+                        <MenuItem Header="-" />
+                        <MenuItem Header="{loc:Tr ActionProperties}" Command="{Binding ShowFolderProperties}" />
+                        <MenuItem Header="-" />
+                        <MenuItem Header="{loc:Tr ActionClose}" Command="{Binding Close}" InputGesture="Ctrl+Shift+W" />
+                    </MenuItem>
+                    <MenuItem Header="{loc:Tr MenuSelected}" Name="SelectedMenu">
+                        <MenuItem Header="{loc:Tr SelectedCut}" Command="{Binding CutSelection}" InputGesture="Ctrl+X" />
+                        <MenuItem Header="{loc:Tr SelectedCopy}" Command="{Binding CopySelection}" InputGesture="Ctrl+C" />
+                        <MenuItem Header="{loc:Tr SelectedPaste}" Command="{Binding Paste}" InputGesture="Ctrl+V" />
+                        <MenuItem Header="-" />
+                        <!-- Rebuilt as the menu opens rather than per selection change: it
+                             reads mimeapps.list from disk. -->
+                        <MenuItem Header="{loc:Tr SelectedOpenWith}"
+                                  Name="OpenWithMenu"
+                                  ItemsSource="{Binding OpenWith}"
+                                  IsEnabled="{Binding HasOpenableSelection}">
+                            <!-- The Header, not an ItemTemplate. A generated MenuItem takes
+                                 the item as its Header, and the theme renders a string one
+                                 through AccessText while ignoring HeaderTemplate altogether.
+                                 An ItemTemplate is therefore dropped in silence, and the
+                                 object's ToString is what appears. -->
+                            <MenuItem.ItemContainerTheme>
+                                <ControlTheme TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
+                                    <Setter Property="Header"
+                                            Value="{Binding Label, DataType=vm:HandlerViewModel}" />
+                                </ControlTheme>
+                            </MenuItem.ItemContainerTheme>
+                        </MenuItem>
+                        <!-- The same list, and picking from it also changes what a
+                             double-click does. A separate submenu rather than a modifier on
+                             the one above: a held key is invisible, and the menu popup owns
+                             keyboard focus while it is open so the window cannot read one. -->
+                        <MenuItem Header="{loc:Tr SelectedAlwaysOpenWith}"
+                                  Name="AlwaysOpenWithMenu"
+                                  ItemsSource="{Binding OpenWith}"
+                                  IsEnabled="{Binding HasOpenableSelection}">
+                            <!-- The Header, not an ItemTemplate. A generated MenuItem takes
+                                 the item as its Header, and the theme renders a string one
+                                 through AccessText while ignoring HeaderTemplate altogether.
+                                 An ItemTemplate is therefore dropped in silence, and the
+                                 object's ToString is what appears. -->
+                            <MenuItem.ItemContainerTheme>
+                                <ControlTheme TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
+                                    <Setter Property="Header"
+                                            Value="{Binding Label, DataType=vm:HandlerViewModel}" />
+                                </ControlTheme>
+                            </MenuItem.ItemContainerTheme>
+                        </MenuItem>
+                        <MenuItem Header="-" />
+                        <MenuItem Header="{loc:Tr SelectedRename}" Command="{Binding RenameSelection}" InputGesture="F2" />
+                        <MenuItem Header="{loc:Tr SelectedDuplicate}" Command="{Binding MakeCopy}" />
+                        <MenuItem Header="{loc:Tr SelectedMakeReference}" Command="{Binding MakeReference}" />
+                        <MenuItem Header="-" />
+                        <MenuItem Header="{loc:Tr SelectedTrash}" Command="{Binding TrashSelection}" InputGesture="Delete" />
+                        <MenuItem Header="{loc:Tr SelectedDelete}" Command="{Binding DeleteSelection}" InputGesture="Shift+Delete" />
+                        <MenuItem Header="-" />
+                        <MenuItem Header="{loc:Tr SelectedProperties}" Command="{Binding ShowProperties}"
+                                  InputGesture="Alt+Return" />
+                    </MenuItem>
+                    <MenuItem Header="{loc:Tr MenuSort}">
+                        <MenuItem Header="{loc:Tr SortName}" Click="OnSortName" />
+                        <MenuItem Header="{loc:Tr SortSize}" Click="OnSortSize" />
+                        <MenuItem Header="{loc:Tr SortKind}" Click="OnSortKind" />
+                        <MenuItem Header="{loc:Tr SortDate}" Click="OnSortDate" />
+                        <MenuItem Header="-" />
+                        <MenuItem Header="{loc:Tr SortDescending}"
+                                  ToggleType="CheckBox"
+                                  IsChecked="{Binding Pane.SortDescending, Mode=TwoWay}" />
+                        <MenuItem Header="{loc:Tr SortFoldersFirst}"
+                                  ToggleType="CheckBox"
+                                  IsChecked="{Binding Pane.FoldersFirst, Mode=TwoWay}" />
+                    </MenuItem>
+                    <MenuItem Header="{loc:Tr MenuView}">
+                        <MenuItem Header="{loc:Tr ViewIcons}"
+                                  ToggleType="Radio" GroupName="ViewMode"
+                                  IsChecked="{Binding Pane.IsIconView}"
+                                  Click="OnViewIcons" />
+                        <MenuItem Header="{loc:Tr ViewDetails}"
+                                  ToggleType="Radio" GroupName="ViewMode"
+                                  IsChecked="{Binding Pane.IsDetailsView}"
+                                  Click="OnViewDetails" />
+                        <MenuItem Header="-" />
+                        <MenuItem Header="{loc:Tr ViewShowHidden}"
+                                  ToggleType="CheckBox"
+                                  IsChecked="{Binding Pane.ShowHidden, Mode=TwoWay}" />
+                        <MenuItem Header="{loc:Tr ViewThumbnails}"
+                                  ToggleType="CheckBox"
+                                  IsChecked="{Binding ThumbnailsEnabled, Mode=TwoWay}" />
+                        <MenuItem Header="{loc:Tr ViewSplit}" Command="{Binding ToggleSplit}"
+                                  InputGesture="F3" />
+                        <MenuItem Header="-" />
+                        <MenuItem Header="{loc:Tr ActionRefresh}" Command="{Binding Refresh}" InputGesture="F5" />
+                    </MenuItem>
+                    <MenuItem Header="{loc:Tr MenuInternet}">
+                        <MenuItem Header="{loc:Tr InternetConnect}" Command="{Binding ConnectToServer}" />
+                        <MenuItem Header="-" />
+                        <!-- The saved shares. Each opens its server, prompting for a password
+                             only if the credential store has none for it. -->
+                        <MenuItem Header="{loc:Tr InternetSaved}"
+                                  ItemsSource="{Binding Shares}"
+                                  IsVisible="{Binding HasShares}"
+                                  Name="SavedShares">
+                            <MenuItem.ItemContainerTheme>
+                                <ControlTheme TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
+                                    <Setter Property="Header"
+                                            Value="{Binding Label, DataType=vm:PlaceViewModel}" />
+                                </ControlTheme>
+                            </MenuItem.ItemContainerTheme>
+                        </MenuItem>
+                        <MenuItem Header="{loc:Tr InternetDisconnect}"
+                                  Command="{Binding Disconnect}"
+                                  IsEnabled="{Binding IsRemote}" />
+                    </MenuItem>
+                    <MenuItem Header="{loc:Tr MenuOptions}">
+                        <!-- The one setting that changes what a double-click does. Read
+                             through a delegate rather than captured, so it takes effect on
+                             the next one rather than the next launch. -->
+                        <MenuItem Header="{loc:Tr OptionClassic}"
+                                  ToggleType="Radio" GroupName="NavigationMode"
+                                  IsChecked="{Binding IsClassicMode}"
+                                  Click="OnClassicMode" />
+                        <MenuItem Header="{loc:Tr OptionModern}"
+                                  ToggleType="Radio" GroupName="NavigationMode"
+                                  IsChecked="{Binding IsModernMode}"
+                                  Click="OnModernMode" />
+                        <MenuItem Header="-" />
+                        <MenuItem Header="{loc:Tr OptionSingleClick}"
+                                  ToggleType="CheckBox"
+                                  IsChecked="{Binding SingleClickOpen, Mode=TwoWay}" />
+                        <MenuItem Header="{loc:Tr OptionConfirmDelete}"
+                                  ToggleType="CheckBox"
+                                  IsChecked="{Binding ConfirmDelete, Mode=TwoWay}" />
+                        <MenuItem Header="-" />
+                        <!-- Installing the entry only makes this application eligible to open
+                             a folder; this is the write that makes it the one that does. -->
+                        <MenuItem Header="{loc:Tr OptionDefaultFileManager}"
+                                  ToggleType="CheckBox"
+                                  IsChecked="{Binding IsDefaultFileManager}"
+                                  Command="{Binding ToggleDefaultFileManager}" />
+                    </MenuItem>
+                </Menu>
+            </DockPanel>
+        </wlrix:BevelBorder>
+
+        <!-- Path bar. Root is null for a local path and the authority for a remote one, so
+             smb://host/share is one nub instead of being split at its separators. -->
+        <wlrix:BevelBorder DockPanel.Dock="Top"
+                           Bevel="None"
+                           Background="{DynamicResource WlrixPanel}"
+                           Padding="4">
+            <wlrix:PathBar Name="Path"
+                           Path="{Binding Pane.PathText}"
+                           Root="{Binding Pane.PathRoot}"
+                           PathSelected="OnPathSelected" />
+        </wlrix:BevelBorder>
+
+        <!-- Status bar, hand-rolled: Avalonia has no StatusBar control. -->
+        <wlrix:BevelBorder DockPanel.Dock="Bottom"
+                           Bevel="Sunken"
+                           BevelThickness="1"
+                           Background="{DynamicResource WlrixPanel}"
+                           LightBrush="{DynamicResource WlrixPanelTopShadow}"
+                           DarkBrush="{DynamicResource WlrixPanelBottomShadow}"
+                           Padding="6,3">
+            <DockPanel>
+                <!-- The running operation takes the right-hand end, so the item count stays
+                     where it was rather than being displaced while a copy runs. -->
+                <Button DockPanel.Dock="Right"
+                        Content="{loc:Tr OperationCancel}"
+                        IsVisible="{Binding HasOperation}"
+                        Click="OnCancelOperation"
+                        Padding="8,0"
+                        Margin="6,0,0,0" />
+                <ProgressBar DockPanel.Dock="Right"
+                             Width="140"
+                             Height="14"
+                             Margin="6,0,0,0"
+                             Minimum="0" Maximum="1"
+                             Value="{Binding OperationFraction, FallbackValue=0}"
+                             IsIndeterminate="{Binding !OperationFraction.HasValue}"
+                             IsVisible="{Binding HasOperation}" />
+                <TextBlock DockPanel.Dock="Right"
+                           Text="{Binding OperationStatus}"
+                           IsVisible="{Binding HasOperation}"
+                           VerticalAlignment="Center" />
+                <TextBlock Text="{Binding Pane.Status}" VerticalAlignment="Center" />
+            </DockPanel>
+        </wlrix:BevelBorder>
+
+        <views:BrowserView Margin="4,0,4,4" />
+    </DockPanel>
+</Window>

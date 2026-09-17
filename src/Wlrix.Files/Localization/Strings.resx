@@ -1,0 +1,531 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Files" xml:space="preserve">
+    <value>wlRIX Files</value>
+  </data>
+  <data name="MenuActions" xml:space="preserve">
+    <value>_Actions</value>
+  </data>
+  <data name="MenuSelected" xml:space="preserve">
+    <value>_Selected</value>
+  </data>
+  <data name="OptionClassic" xml:space="preserve">
+    <value>_Classic (window per directory)</value>
+  </data>
+  <data name="OptionModern" xml:space="preserve">
+    <value>_Modern (navigate in place)</value>
+  </data>
+  <data name="OptionDefaultFileManager" xml:space="preserve">
+    <value>Make default _file manager</value>
+  </data>
+  <data name="OptionSingleClick" xml:space="preserve">
+    <value>_Single click opens</value>
+  </data>
+  <data name="OptionConfirmDelete" xml:space="preserve">
+    <value>Confirm _delete</value>
+  </data>
+  <data name="MenuSort" xml:space="preserve">
+    <value>S_ort</value>
+  </data>
+  <data name="MenuView" xml:space="preserve">
+    <value>_View</value>
+  </data>
+  <data name="MenuInternet" xml:space="preserve">
+    <value>_Internet</value>
+  </data>
+  <data name="InternetConnect" xml:space="preserve">
+    <value>_Connect to Server...</value>
+  </data>
+  <data name="InternetSaved" xml:space="preserve">
+    <value>Saved _Shares</value>
+  </data>
+  <data name="InternetDisconnect" xml:space="preserve">
+    <value>_Disconnect</value>
+  </data>
+  <data name="ConnectTitle" xml:space="preserve">
+    <value>Connect to Server</value>
+  </data>
+  <data name="ConnectAuthTitle" xml:space="preserve">
+    <value>Authentication Required</value>
+  </data>
+  <data name="ConnectProtocol" xml:space="preserve">
+    <value>Protocol</value>
+  </data>
+  <data name="ConnectServer" xml:space="preserve">
+    <value>Server</value>
+  </data>
+  <data name="ConnectShare" xml:space="preserve">
+    <value>Share</value>
+  </data>
+  <data name="ConnectPath" xml:space="preserve">
+    <value>Folder</value>
+  </data>
+  <data name="ConnectAnonymous" xml:space="preserve">
+    <value>Connect anonymously</value>
+  </data>
+  <data name="ConnectUser" xml:space="preserve">
+    <value>User name</value>
+  </data>
+  <data name="ConnectPassword" xml:space="preserve">
+    <value>Password</value>
+  </data>
+  <data name="ConnectRemember" xml:space="preserve">
+    <value>Remember this password</value>
+  </data>
+  <data name="ConnectRememberTransient" xml:space="preserve">
+    <value>No keyring is available, so this password is kept only until wlRIX Files exits.</value>
+  </data>
+  <data name="ConnectAccept" xml:space="preserve">
+    <value>Connect</value>
+  </data>
+  <data name="MenuOptions" xml:space="preserve">
+    <value>_Options</value>
+  </data>
+  <data name="MenuHelp" xml:space="preserve">
+    <value>_Help</value>
+  </data>
+  <data name="ActionNewWindow" xml:space="preserve">
+    <value>New _Window</value>
+  </data>
+  <data name="ActionOpen" xml:space="preserve">
+    <value>_Open</value>
+  </data>
+  <data name="ActionUp" xml:space="preserve">
+    <value>Go _Up</value>
+  </data>
+  <data name="ActionBack" xml:space="preserve">
+    <value>_Back</value>
+  </data>
+  <data name="ActionForward" xml:space="preserve">
+    <value>_Forward</value>
+  </data>
+  <data name="ActionHome" xml:space="preserve">
+    <value>_Home</value>
+  </data>
+  <data name="ActionRefresh" xml:space="preserve">
+    <value>_Refresh</value>
+  </data>
+  <data name="ActionNewTab" xml:space="preserve">
+    <value>New _Tab</value>
+  </data>
+  <data name="ActionCloseTab" xml:space="preserve">
+    <value>Close T_ab</value>
+  </data>
+  <data name="ActionClose" xml:space="preserve">
+    <value>_Close</value>
+  </data>
+  <data name="SortName" xml:space="preserve">
+    <value>By _Name</value>
+  </data>
+  <data name="SortSize" xml:space="preserve">
+    <value>By _Size</value>
+  </data>
+  <data name="SortKind" xml:space="preserve">
+    <value>By _Kind</value>
+  </data>
+  <data name="SortDate" xml:space="preserve">
+    <value>By _Date</value>
+  </data>
+  <data name="SortDescending" xml:space="preserve">
+    <value>_Reverse Order</value>
+  </data>
+  <data name="SortFoldersFirst" xml:space="preserve">
+    <value>_Folders First</value>
+  </data>
+  <data name="ViewThumbnails" xml:space="preserve">
+    <value>Thum_bnails</value>
+  </data>
+  <data name="ViewShowHidden" xml:space="preserve">
+    <value>Show _Hidden Files</value>
+  </data>
+  <data name="HelpAbout" xml:space="preserve">
+    <value>_About wlRIX Files</value>
+  </data>
+  <data name="ColumnName" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="ColumnSize" xml:space="preserve">
+    <value>Size</value>
+  </data>
+  <data name="ColumnKind" xml:space="preserve">
+    <value>Kind</value>
+  </data>
+  <data name="ColumnModified" xml:space="preserve">
+    <value>Modified</value>
+  </data>
+  <data name="BookmarksHeading" xml:space="preserve">
+    <value>Bookmarks</value>
+  </data>
+  <data name="ActionBookmark" xml:space="preserve">
+    <value>Add to Book_marks</value>
+  </data>
+  <data name="PlacesHeading" xml:space="preserve">
+    <value>Places</value>
+  </data>
+  <data name="PlaceHome" xml:space="preserve">
+    <value>Home</value>
+  </data>
+  <data name="PlaceFilesystem" xml:space="preserve">
+    <value>Filesystem</value>
+  </data>
+  <data name="PlaceDesktop" xml:space="preserve">
+    <value>Desktop</value>
+  </data>
+  <data name="PlaceDocuments" xml:space="preserve">
+    <value>Documents</value>
+  </data>
+  <data name="PlaceDownloads" xml:space="preserve">
+    <value>Downloads</value>
+  </data>
+  <data name="PlaceMusic" xml:space="preserve">
+    <value>Music</value>
+  </data>
+  <data name="PlacePictures" xml:space="preserve">
+    <value>Pictures</value>
+  </data>
+  <data name="PlaceVideos" xml:space="preserve">
+    <value>Videos</value>
+  </data>
+  <data name="KindFolder" xml:space="preserve">
+    <value>Folder</value>
+  </data>
+  <data name="KindFile" xml:space="preserve">
+    <value>File</value>
+  </data>
+  <data name="KindLink" xml:space="preserve">
+    <value>Link</value>
+  </data>
+  <data name="KindSpecial" xml:space="preserve">
+    <value>Special</value>
+  </data>
+  <data name="StatusLoading" xml:space="preserve">
+    <value>Reading...</value>
+  </data>
+  <data name="StatusItems" xml:space="preserve">
+    <value>{0} items</value>
+  </data>
+  <data name="StatusItemsSelected" xml:space="preserve">
+    <value>{0} items, {1} selected</value>
+  </data>
+  <data name="StatusEmpty" xml:space="preserve">
+    <value>Empty folder</value>
+  </data>
+  <data name="StatusFree" xml:space="preserve">
+    <value>{0} free of {1}</value>
+  </data>
+  <data name="ErrorTitle" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="AboutTitle" xml:space="preserve">
+    <value>About wlRIX Files</value>
+  </data>
+  <data name="AboutText" xml:space="preserve">
+    <value>wlRIX Files\n\nA file manager for the wlRIX desktop.</value>
+  </data>
+  <data name="ViewIcons" xml:space="preserve">
+    <value>_Icons</value>
+  </data>
+  <data name="ViewDetails" xml:space="preserve">
+    <value>_Details</value>
+  </data>
+  <data name="DialogOk" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="DialogCancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="SelectedCopy" xml:space="preserve">
+    <value>_Copy</value>
+  </data>
+  <data name="SelectedCut" xml:space="preserve">
+    <value>Cu_t</value>
+  </data>
+  <data name="SelectedPaste" xml:space="preserve">
+    <value>_Paste</value>
+  </data>
+  <data name="SelectedOpenWith" xml:space="preserve">
+    <value>Open Wit_h</value>
+  </data>
+  <data name="OpenWithAlways" xml:space="preserve">
+    <value>Always open {0} with this</value>
+  </data>
+  <data name="NoHandler" xml:space="preserve">
+    <value>Nothing is registered to open "{0}" ({1}).</value>
+  </data>
+  <data name="SelectedAlwaysOpenWith" xml:space="preserve">
+    <value>Al_ways Open With</value>
+  </data>
+  <data name="SelectedRename" xml:space="preserve">
+    <value>_Rename...</value>
+  </data>
+  <data name="SelectedDuplicate" xml:space="preserve">
+    <value>Ma_ke Copy</value>
+  </data>
+  <data name="SelectedMakeReference" xml:space="preserve">
+    <value>Make Re_ference</value>
+  </data>
+  <data name="SelectedTrash" xml:space="preserve">
+    <value>Mo_ve to Trash</value>
+  </data>
+  <data name="SelectedDelete" xml:space="preserve">
+    <value>_Delete...</value>
+  </data>
+  <data name="ActionNewFolder" xml:space="preserve">
+    <value>New Fol_der...</value>
+  </data>
+  <data name="NewFolderTitle" xml:space="preserve">
+    <value>New Folder</value>
+  </data>
+  <data name="NewFolderPrompt" xml:space="preserve">
+    <value>Name for the new folder:</value>
+  </data>
+  <data name="NewFolderDefault" xml:space="preserve">
+    <value>New Folder</value>
+  </data>
+  <data name="RenameTitle" xml:space="preserve">
+    <value>Rename</value>
+  </data>
+  <data name="RenamePrompt" xml:space="preserve">
+    <value>New name for “{0}”:</value>
+  </data>
+  <data name="ConfirmDeleteTitle" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="ConfirmDeleteOne" xml:space="preserve">
+    <value>Permanently delete “{0}”? This cannot be undone.</value>
+  </data>
+  <data name="ConfirmDeleteMany" xml:space="preserve">
+    <value>Permanently delete {0} items? This cannot be undone.</value>
+  </data>
+  <data name="ConflictTitle" xml:space="preserve">
+    <value>File Exists</value>
+  </data>
+  <data name="ConflictSummary" xml:space="preserve">
+    <value>“{0}” already exists here.</value>
+  </data>
+  <data name="ConflictExisting" xml:space="preserve">
+    <value>Existing:</value>
+  </data>
+  <data name="ConflictReplacement" xml:space="preserve">
+    <value>Replacement:</value>
+  </data>
+  <data name="ConflictApplyToAll" xml:space="preserve">
+    <value>Apply to all remaining conflicts</value>
+  </data>
+  <data name="ConflictOverwrite" xml:space="preserve">
+    <value>Overwrite</value>
+  </data>
+  <data name="ConflictRename" xml:space="preserve">
+    <value>Rename</value>
+  </data>
+  <data name="ConflictSkip" xml:space="preserve">
+    <value>Skip</value>
+  </data>
+  <data name="OperationCopying" xml:space="preserve">
+    <value>Copying...</value>
+  </data>
+  <data name="OperationMoving" xml:space="preserve">
+    <value>Moving...</value>
+  </data>
+  <data name="OperationDeleting" xml:space="preserve">
+    <value>Deleting...</value>
+  </data>
+  <data name="OperationTrashing" xml:space="preserve">
+    <value>Moving to trash...</value>
+  </data>
+  <data name="OperationScanning" xml:space="preserve">
+    <value>Examining {0} items...</value>
+  </data>
+  <data name="OperationCancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="OperationFailed" xml:space="preserve">
+    <value>{0} of the operation could not be completed.</value>
+  </data>
+  <data name="SelectedProperties" xml:space="preserve">
+    <value>Propert_ies...</value>
+  </data>
+  <data name="ActionProperties" xml:space="preserve">
+    <value>Folder P_roperties...</value>
+  </data>
+  <data name="PropertiesTitle" xml:space="preserve">
+    <value>{0} Properties</value>
+  </data>
+  <data name="PropertiesTitleMany" xml:space="preserve">
+    <value>Properties of {0} Items</value>
+  </data>
+  <data name="PropItemCount" xml:space="preserve">
+    <value>{0} items</value>
+  </data>
+  <data name="PropName" xml:space="preserve">
+    <value>Name:</value>
+  </data>
+  <data name="PropKind" xml:space="preserve">
+    <value>Kind:</value>
+  </data>
+  <data name="PropWhere" xml:space="preserve">
+    <value>Where:</value>
+  </data>
+  <data name="PropSize" xml:space="preserve">
+    <value>Size:</value>
+  </data>
+  <data name="PropContentsLabel" xml:space="preserve">
+    <value>Contains:</value>
+  </data>
+  <data name="PropModifiedLabel" xml:space="preserve">
+    <value>Modified:</value>
+  </data>
+  <data name="PropLinkTarget" xml:space="preserve">
+    <value>Links to:</value>
+  </data>
+  <data name="PropFreeSpace" xml:space="preserve">
+    <value>Free space:</value>
+  </data>
+  <data name="PropKindFolder" xml:space="preserve">
+    <value>Folder</value>
+  </data>
+  <data name="PropCalculating" xml:space="preserve">
+    <value>Calculating...</value>
+  </data>
+  <data name="PropCounting" xml:space="preserve">
+    <value>{0}, counting ({1} items so far)</value>
+  </data>
+  <data name="PropSizeExact" xml:space="preserve">
+    <value>{0} ({1:N0} bytes)</value>
+  </data>
+  <data name="PropContents" xml:space="preserve">
+    <value>{0}, {1}</value>
+  </data>
+  <data name="PropContentsPartial" xml:space="preserve">
+    <value>{0}, {1}; {2} could not be read</value>
+  </data>
+  <data name="PropFreeOf" xml:space="preserve">
+    <value>{0} free of {1}</value>
+  </data>
+  <data name="PropPermissions" xml:space="preserve">
+    <value>Permissions</value>
+  </data>
+  <data name="PropOwner" xml:space="preserve">
+    <value>Owner</value>
+  </data>
+  <data name="PropGroup" xml:space="preserve">
+    <value>Group</value>
+  </data>
+  <data name="PropOther" xml:space="preserve">
+    <value>Others</value>
+  </data>
+  <data name="PropRead" xml:space="preserve">
+    <value>Read</value>
+  </data>
+  <data name="PropWrite" xml:space="preserve">
+    <value>Write</value>
+  </data>
+  <data name="PropExecute" xml:space="preserve">
+    <value>Execute</value>
+  </data>
+  <data name="PropSetUserId" xml:space="preserve">
+    <value>Set user ID</value>
+  </data>
+  <data name="PropSetGroupId" xml:space="preserve">
+    <value>Set group ID</value>
+  </data>
+  <data name="PropSticky" xml:space="preserve">
+    <value>Restrict deletion</value>
+  </data>
+  <data name="PropOctal" xml:space="preserve">
+    <value>Octal:</value>
+  </data>
+  <data name="PropPermissionsReadOnly" xml:space="preserve">
+    <value>This filesystem does not accept permission changes.</value>
+  </data>
+  <data name="DialogApply" xml:space="preserve">
+    <value>Apply</value>
+  </data>
+  <data name="DialogClose" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="PropFileCountOne" xml:space="preserve">
+    <value>1 file</value>
+  </data>
+  <data name="PropFileCount" xml:space="preserve">
+    <value>{0} files</value>
+  </data>
+  <data name="PropFolderCountOne" xml:space="preserve">
+    <value>1 folder</value>
+  </data>
+  <data name="PropFolderCount" xml:space="preserve">
+    <value>{0} folders</value>
+  </data>
+  <data name="ActionNextTab" xml:space="preserve">
+    <value>_Next Tab</value>
+  </data>
+  <data name="ActionPreviousTab" xml:space="preserve">
+    <value>_Previous Tab</value>
+  </data>
+  <data name="PropKindEmpty" xml:space="preserve">
+    <value>Empty file</value>
+  </data>
+  <data name="ActionFind" xml:space="preserve">
+    <value>F_ind...</value>
+  </data>
+  <data name="FindTitle" xml:space="preserve">
+    <value>Find</value>
+  </data>
+  <data name="FindPrompt" xml:space="preserve">
+    <value>Find files under "{0}" whose name contains:</value>
+  </data>
+  <data name="StatusSearching" xml:space="preserve">
+    <value>Searching... ({0} found)</value>
+  </data>
+  <data name="StatusFound" xml:space="preserve">
+    <value>{0} found matching "{1}"</value>
+  </data>
+  <data name="StatusFoundPartial" xml:space="preserve">
+    <value>{0} found matching "{1}"; {2} folders could not be read</value>
+  </data>
+  <data name="StatusFoundTruncated" xml:space="preserve">
+    <value>First {0} matching "{1}"; there are more</value>
+  </data>
+  <data name="StatusFoundNothing" xml:space="preserve">
+    <value>Nothing matching "{0}"</value>
+  </data>
+  <data name="ViewSplit" xml:space="preserve">
+    <value>Sp_lit View</value>
+  </data>
+  <data name="DevicesHeading" xml:space="preserve">
+    <value>Devices</value>
+  </data>
+  <data name="DeviceFree" xml:space="preserve">
+    <value>{0} free of {1}</value>
+  </data>
+  <data name="DeviceMount" xml:space="preserve">
+    <value>_Mount</value>
+  </data>
+  <data name="DeviceUnmount" xml:space="preserve">
+    <value>_Unmount</value>
+  </data>
+  <data name="DeviceMountFailed" xml:space="preserve">
+    <value>Could not mount {0}: {1}</value>
+  </data>
+  <data name="DeviceUnmountFailed" xml:space="preserve">
+    <value>Could not unmount {0}: {1}</value>
+  </data>
+  <data name="DeviceUnmounted" xml:space="preserve">
+    <value>{0} has been unmounted.</value>
+  </data>
+  <data name="SettingFailed" xml:space="preserve">
+    <value>That setting could not be saved: {0}</value>
+  </data>
+</root>

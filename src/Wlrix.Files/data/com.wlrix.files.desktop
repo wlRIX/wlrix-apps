@@ -1,0 +1,45 @@
+[Desktop Entry]
+Type=Application
+Name=wlRIX Files
+Name[ja]=wlRIX ファイル
+Comment=Browse and manage files
+Comment[ja]=ファイルを閲覧・管理します
+# One main category (System) plus two additional ones. Two mains would list the application
+# twice in a menu, and the Toolchest classifies by the first main category it finds -- System
+# is where an IRIX user looks for a file manager, and where Dolphin puts itself too.
+Categories=System;FileTools;FileManager;
+
+# %U, not %f -- the opposite of the archiver's choice. This application genuinely takes URIs:
+# every argument is opened, `inode/directory` handlers are commonly invoked with file:// URIs
+# rather than paths, and a second invocation forwards its arguments over
+# org.freedesktop.Application.Open, which is defined in terms of URIs.
+Exec=wlrix-files %U
+TryExec=wlrix-files
+Terminal=false
+
+# Matches the Wayland app id set in Program.BuildAvaloniaApp. `wlrix-desktop` looks a running
+# window up by StartupWMClass first, so without this its running-application state would never
+# find a file manager window.
+StartupWMClass=com.wlrix.files
+StartupNotify=false
+
+# Directories, and only directories. `x-directory/normal` is deliberately absent even though
+# some old callers still send it: shared-mime-info registers it as an *alias* of
+# inode/directory, so a lookup resolves it before it ever reaches this list, and naming it
+# outright only earns a deprecation warning from desktop-file-validate.
+#
+# The three remote schemes are claimed as of M7, which is what makes `xdg-open smb://host/share`
+# land here. Each has a backend behind it; before M7 these lines were deliberately absent,
+# because registering for a scheme the application can only fail on is the same mistake the
+# archiver's entry avoids with `.tar.zst`.
+MimeType=inode/directory;x-scheme-handler/smb;x-scheme-handler/sftp;x-scheme-handler/ftp;
+
+# The application is not DBusActivatable. It does hold com.wlrix.files and serve
+# org.freedesktop.Application, but `wlrix-desktop` launches from Exec= regardless, and
+# declaring it would ask the bus to start a process that the Exec= line starts anyway.
+Actions=NewWindow;
+
+[Desktop Action NewWindow]
+Name=New Window
+Name[ja]=新しいウィンドウ
+Exec=wlrix-files --new-window
