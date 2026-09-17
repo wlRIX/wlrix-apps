@@ -157,9 +157,10 @@ public partial class MainWindow : Window
     /// Whether a saved password would outlive the application.
     /// </summary>
     /// <remarks>
-    /// Set by the application from the credential store it actually built. The dialog says so
-    /// plainly when it would not, which on wlRIX today is always — nothing in the session
-    /// starts a keyring and there is no prompter to unlock one.
+    /// Set by the application from the credential store it actually built, rather than assumed
+    /// either way. True on an ordinary wlRIX session, where wlrix-greeter's PAM stack unlocks
+    /// the login keyring at login; false when there is no keyring or its collection is locked,
+    /// and then the dialog says so plainly rather than quietly forgetting.
     /// </remarks>
     public bool CanRememberPasswords
     {

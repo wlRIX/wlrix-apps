@@ -83,10 +83,16 @@ public class App : Application
         {
             var services = new ServiceCollection();
             services.AddZLogger("files");
-            // The credential store, and the honest one. A Secret Service collection needs a
-            // prompter to unlock and wlRIX ships none, so nothing here pretends a password
-            // will survive a restart -- the connect dialog says so instead.
-            services.AddSingleton<ICredentialStore>(_ => new TransientCredentialStore());
+            // The keyring if there is a usable one, and memory if there is not. Resolved when
+            // the first window asks whether passwords can be remembered, which is the question
+            // the connect dialog's honesty rests on -- so it is answered by looking, not by
+            // assuming. TryOpen never throws and never blocks for long; a session with no
+            // keyring is an ordinary session, and the dialog says the password will be
+            // forgotten rather than pretending otherwise.
+            services.AddSingleton<ICredentialStore>(sp =>
+                SecretServiceCredentialStore.TryOpen(
+                    sp.GetRequiredService<ILogger<SecretServiceCredentialStore>>())
+                ?? new TransientCredentialStore());
             services.AddSingleton<ICredentialPrompt>(_ => new DialogCredentialPrompt(ActiveWindow));
             services.AddSingleton(sp => new FileSystemProvider(
                 RemoteFileSystemFactory.Schemes.Select(scheme => new RemoteFileSystemFactory(

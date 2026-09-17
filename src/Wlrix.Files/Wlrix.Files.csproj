@@ -60,6 +60,11 @@
         <AdditionalFiles Include="DBusXml/org.freedesktop.UDisks2.xml"
                          Namespace="Wlrix.Files.DBus"
                          DBusGeneratorMode="Proxy" />
+        <!-- The Secret Service, for remembering a share password past this run. Its header
+             says how to regenerate it and what was left out. -->
+        <AdditionalFiles Include="DBusXml/org.freedesktop.Secrets.xml"
+                         Namespace="Wlrix.Files.DBus"
+                         DBusGeneratorMode="Proxy" />
     </ItemGroup>
 
 </Project>

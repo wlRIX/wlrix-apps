@@ -47,9 +47,11 @@
         </Grid>
 
         <CheckBox Name="Remember" Content="{loc:Tr ConnectRemember}" />
-        <!-- The honest label. Shown when there is no working keyring, which on wlRIX today is
-             always: nothing in the session starts gnome-keyring and no prompter exists to
-             unlock a collection, so "remember" means "until this application exits". -->
+        <!-- The honest label, shown only when there is no working keyring — a session without
+             gnome-keyring, or a locked collection this application has no way to ask about.
+             Then "remember" means "until this application exits", and saying so is the whole
+             point. Usually hidden: wlrix-greeter's PAM stack unlocks the login keyring with
+             the password the user just typed. -->
         <TextBlock Name="RememberNote" Text="{loc:Tr ConnectRememberTransient}"
                    TextWrapping="Wrap" IsVisible="False" Margin="22,0,0,0" />
 

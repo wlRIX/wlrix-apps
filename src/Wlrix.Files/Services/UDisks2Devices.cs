@@ -89,7 +89,10 @@ public sealed class UDisks2Devices(ILogger<UDisks2Devices> logger) : IStorageDev
 
             await RefreshAsync().ConfigureAwait(false);
         }
-        catch (Exception ex) when (ex is DBusErrorReplyException or SocketException or IOException
+        // DBusExceptionBase, not the error-reply leaf: a system bus that cannot be reached
+        // throws DBusConnectFailedException, which is a connection failure rather than a reply
+        // and would otherwise escape a method whose entire point is degrading gracefully.
+        catch (Exception ex) when (ex is DBusExceptionBase or SocketException or IOException
                                        or InvalidOperationException or ObjectDisposedException)
         {
             logger.ZLogInformation($"udisks2 unavailable ({ex.GetType().Name}); listing mounted disks only");
@@ -128,6 +131,13 @@ public sealed class UDisks2Devices(ILogger<UDisks2Devices> logger) : IStorageDev
             logger.ZLogWarning($"could not mount {device.Device}: {ex.ErrorName}");
             return (null, Describe(ex));
         }
+        catch (Exception ex) when (ex is DBusExceptionBase or SocketException or ObjectDisposedException)
+        {
+            // Not a refusal but the daemon going away mid-call. Nothing to quote back to the
+            // user, and crashing the window over a disk that did not mount would be worse.
+            logger.ZLogWarning($"could not reach udisks2 to mount {device.Device}: {ex.GetType().Name}");
+            return (null, null);
+        }
     }
 
     /// <inheritdoc/>
@@ -147,6 +157,11 @@ public sealed class UDisks2Devices(ILogger<UDisks2Devices> logger) : IStorageDev
         {
             logger.ZLogWarning($"could not unmount {device.Device}: {ex.ErrorName}");
             return Describe(ex);
+        }
+        catch (Exception ex) when (ex is DBusExceptionBase or SocketException or ObjectDisposedException)
+        {
+            logger.ZLogWarning($"could not reach udisks2 to unmount {device.Device}: {ex.GetType().Name}");
+            return null;
         }
     }
 
@@ -199,7 +214,7 @@ public sealed class UDisks2Devices(ILogger<UDisks2Devices> logger) : IStorageDev
             await WatchFilesystemsAsync(managed).ConfigureAwait(false);
             Changed?.Invoke();
         }
-        catch (Exception ex) when (ex is DBusErrorReplyException or SocketException or IOException or ObjectDisposedException)
+        catch (Exception ex) when (ex is DBusExceptionBase or SocketException or IOException or ObjectDisposedException)
         {
             logger.ZLogWarning($"could not read the disks: {ex.Message}");
         }
