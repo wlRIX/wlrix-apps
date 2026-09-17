@@ -1,0 +1,198 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:wlrix="https://vic485.xyz/Wlrix.Avalonia"
+        xmlns:loc="using:Wlrix.Common.Localization"
+        xmlns:vm="using:Wlrix.FilePicker.ViewModels"
+        xmlns:portal="using:Wlrix.Files.Core.Portal"
+        x:Class="Wlrix.FilePicker.Views.PickerWindow"
+        x:DataType="vm:PickerViewModel"
+        Title="{Binding Title}"
+        Width="760" Height="520">
+
+    <!-- The accelerators, and they have to live on the window.
+
+         A MenuItem's InputGesture only draws a shortcut and its HotKey does not fire from a
+         submenu that has never been opened — established with a virtual keyboard under the
+         nested compositor while the file manager's shortcuts were being fixed. There are no
+         menus here, but the same rule governs where a binding has to be to work at all.
+
+         Being on the window is also what makes these yield to a text box: a focused TextBox
+         marks what it uses as handled, and only the rest reaches here. -->
+    <Window.KeyBindings>
+        <KeyBinding Gesture="Alt+Up" Command="{Binding GoUp}" />
+        <KeyBinding Gesture="Ctrl+H" Command="{Binding ToggleHidden}" />
+    </Window.KeyBindings>
+
+    <DockPanel LastChildFill="True">
+
+        <!-- Path bar. No Root: this dialog browses the local filesystem only, because the
+             interface requires file:// URIs and nothing else. -->
+        <wlrix:BevelBorder DockPanel.Dock="Top"
+                           Bevel="None"
+                           Background="{DynamicResource WlrixPanel}"
+                           Padding="4">
+            <DockPanel>
+                <Button DockPanel.Dock="Right"
+                        Content="{loc:Tr ButtonUp}"
+                        Command="{Binding GoUp}"
+                        IsEnabled="{Binding CanGoUp}"
+                        Padding="10,0"
+                        Margin="6,0,0,0" />
+                <wlrix:PathBar Name="Path"
+                               Path="{Binding PathText}"
+                               PathSelected="OnPathSelected" />
+            </DockPanel>
+        </wlrix:BevelBorder>
+
+        <!-- Everything the application asked for that is not a file: the name field, its
+             filter, its extra controls, and the two buttons. One panel at the bottom, so the
+             listing keeps every pixel that is left. -->
+        <wlrix:BevelBorder DockPanel.Dock="Bottom"
+                           Bevel="None"
+                           Background="{DynamicResource WlrixPanel}"
+                           Padding="6">
+            <StackPanel Spacing="6">
+
+                <!-- SaveFiles chooses a folder and the names came with the question, so there
+                     is nothing to type. Said out loud, because a dialog with no name field
+                     otherwise looks like an open dialog with the wrong button on it. -->
+                <TextBlock Name="SaveFilesNote"
+                           IsVisible="False"
+                           TextWrapping="Wrap" />
+
+                <DockPanel IsVisible="{Binding ShowNameField}">
+                    <TextBlock DockPanel.Dock="Left"
+                               Text="{loc:Tr NameLabel}"
+                               VerticalAlignment="Center"
+                               Margin="0,0,6,0" />
+                    <TextBox Name="NameField" Text="{Binding FileName}" />
+                </DockPanel>
+
+                <DockPanel IsVisible="{Binding ShowFilters}">
+                    <TextBlock DockPanel.Dock="Left"
+                               Text="{loc:Tr FilterLabel}"
+                               VerticalAlignment="Center"
+                               Margin="0,0,6,0" />
+                    <ComboBox Name="FilterBox"
+                              HorizontalAlignment="Stretch"
+                              ItemsSource="{Binding Filters}"
+                              SelectedItem="{Binding SelectedFilter}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate x:DataType="portal:FileFilter">
+                                <TextBlock Text="{Binding Name}" />
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                </DockPanel>
+
+                <!-- The application's own extra controls. Built in code rather than with an
+                     ItemsControl and a template selector: each is a combo box or a checkbox,
+                     and Wlrix.Avalonia themes neither an ItemsControl nor a template
+                     selector — an unthemed control renders as an empty rectangle here, with
+                     no error and nothing in the log. -->
+                <StackPanel Name="ChoicesPanel" Spacing="4" IsVisible="{Binding ShowChoices}" />
+
+                <DockPanel>
+                    <CheckBox DockPanel.Dock="Left"
+                              Content="{loc:Tr ShowHidden}"
+                              IsChecked="{Binding ShowHidden}" />
+                    <StackPanel DockPanel.Dock="Right"
+                                Orientation="Horizontal"
+                                Spacing="6"
+                                HorizontalAlignment="Right">
+                        <Button Content="{loc:Tr ButtonCancel}"
+                                Command="{Binding Cancel}"
+                                IsCancel="True"
+                                MinWidth="90" />
+                        <!-- The application's own label when it gave one, so a browser's
+                             "Upload" says Upload rather than Open. -->
+                        <Button Name="AcceptButton"
+                                Content="{Binding AcceptText}"
+                                Command="{Binding Accept}"
+                                IsDefault="True"
+                                IsEnabled="{Binding !IsBusy}"
+                                MinWidth="90" />
+                    </StackPanel>
+                    <TextBlock Text="{Binding Status}"
+                               VerticalAlignment="Center"
+                               Margin="12,0"
+                               TextTrimming="CharacterEllipsis" />
+                </DockPanel>
+            </StackPanel>
+        </wlrix:BevelBorder>
+
+        <!-- The rail beside the listing: the picker shape §6 of the plan described, which is
+             what the file manager's BrowserView was kept close to. -->
+        <Grid ColumnDefinitions="170,Auto,*" Margin="4,0,4,0">
+            <ScrollViewer Grid.Column="0"
+                          HorizontalScrollBarVisibility="Disabled"
+                          VerticalScrollBarVisibility="Auto">
+                <StackPanel>
+                    <wlrix:BevelBorder Bevel="Raised"
+                                       BevelThickness="2"
+                                       OuterLineThickness="1"
+                                       Background="{DynamicResource WlrixFace}"
+                                       LightBrush="{DynamicResource WlrixTopShadow}"
+                                       DarkBrush="{DynamicResource WlrixBottomShadow}"
+                                       OuterLineBrush="{DynamicResource WlrixOuterLine}">
+                        <TextBlock Text="{loc:Tr PlacesHeading}" FontWeight="Bold" Margin="6,3" />
+                    </wlrix:BevelBorder>
+
+                    <ListBox Name="PlacesList"
+                             ItemsSource="{Binding Places}"
+                             SelectionChanged="OnPlaceSelected">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate x:DataType="vm:PlaceViewModel">
+                                <TextBlock Text="{Binding Label}" TextTrimming="CharacterEllipsis" />
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </StackPanel>
+            </ScrollViewer>
+
+            <GridSplitter Grid.Column="1" Width="4" ResizeDirection="Columns" />
+
+            <!-- TableView virtualizes through the VirtualizingStackPanel it inherits from
+                 ListBox, which is what keeps a directory of a hundred thousand files usable.
+                 SelectionMode is set in code from the request's `multiple`. -->
+            <TableView Grid.Column="2"
+                       Name="Listing"
+                       ItemsSource="{Binding Entries}"
+                       CanUserResizeColumns="True">
+                <TableView.Columns>
+                    <TableViewColumn Header="{loc:Tr ColumnName}" Width="*">
+                        <TableViewColumn.CellTemplate>
+                            <DataTemplate x:DataType="vm:EntryViewModel">
+                                <StackPanel Orientation="Horizontal" Spacing="5">
+                                    <Image Source="{Binding Icon}" Width="16" Height="16"
+                                           VerticalAlignment="Center" />
+                                    <!-- Drawn placeholders, shown until the type's icon has
+                                         been rasterized, so a row is never visibly empty. -->
+                                    <Path Width="16" Height="16" Stretch="None"
+                                          VerticalAlignment="Center"
+                                          IsVisible="{Binding ShowDirectoryGlyph}"
+                                          Data="M1,4 L1,3 L6,3 L7,4.5 L15,4.5 L15,13 L1,13 Z"
+                                          Fill="{DynamicResource WlrixFace}"
+                                          Stroke="{DynamicResource WlrixOuterLine}"
+                                          StrokeThickness="1" />
+                                    <Path Width="16" Height="16" Stretch="None"
+                                          VerticalAlignment="Center"
+                                          IsVisible="{Binding ShowFileGlyph}"
+                                          Data="M3,1 L10,1 L13,4 L13,15 L3,15 Z M10,1 L10,4 L13,4"
+                                          Fill="{DynamicResource WlrixTopShadow}"
+                                          Stroke="{DynamicResource WlrixOuterLine}"
+                                          StrokeThickness="1" />
+                                    <TextBlock Text="{Binding Name}" VerticalAlignment="Center" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </TableViewColumn.CellTemplate>
+                    </TableViewColumn>
+                    <TableViewColumn Header="{loc:Tr ColumnSize}" Width="110"
+                                     HorizontalContentAlignment="Right" Binding="{Binding SizeText}" />
+                    <TableViewColumn Header="{loc:Tr ColumnModified}" Width="150"
+                                     Binding="{Binding ModifiedText}" />
+                </TableView.Columns>
+            </TableView>
+        </Grid>
+    </DockPanel>
+</Window>

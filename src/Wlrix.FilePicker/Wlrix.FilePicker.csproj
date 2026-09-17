@@ -1,0 +1,39 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+        <ApplicationManifest>app.manifest</ApplicationManifest>
+        <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+        <AssemblyName>wlrix-file-picker</AssemblyName>
+        <Version>0.0.0</Version>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <InternalsVisibleTo Include="Wlrix.FilePicker.Tests" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Avalonia" />
+        <PackageReference Include="Avalonia.Desktop" />
+        <PackageReference Include="Avalonia.Wayland" />
+        <PackageReference Include="AvaloniaUI.DiagnosticsSupport">
+            <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
+            <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
+        </PackageReference>
+        <PackageReference Include="ReactiveUI.Avalonia" />
+        <PackageReference Include="Wlrix.Avalonia" />
+        <PackageReference Include="Wlrix.Avalonia.Dialogs" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <!-- The whole reason this application is small. Enumeration, icons, the MIME
+             database, bookmarks and the user's own directories are all the file manager's,
+             and Wlrix.Files.Core is the half of it that carries no window. This is the
+             consumer §6 of the plan was written for. -->
+        <ProjectReference Include="..\Wlrix.Files.Core\Wlrix.Files.Core.csproj" />
+        <!-- The localized strings and the {loc:Tr} markup extension. -->
+        <ProjectReference Include="..\Wlrix.Common\Wlrix.Common.csproj" />
+        <!-- Follows the session's color scheme, so this dialog is the same gray as the
+             desktop behind it and stays that way when somebody changes it. -->
+        <ProjectReference Include="..\Wlrix.Theme\Wlrix.Theme.csproj" />
+    </ItemGroup>
+</Project>

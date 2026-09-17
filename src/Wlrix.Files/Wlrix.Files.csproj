@@ -43,7 +43,6 @@
              output through Avalonia.Wayland -> Avalonia.FreeDesktop; referenced explicitly so
              NuGet does not resolve a second, differently-versioned copy. -->
         <PackageReference Include="Tmds.DBus.Protocol" />
-        <PackageReference Include="Tomlyn" />
         <PackageReference Include="Tmds.DBus.Generator" PrivateAssets="all" />
     </ItemGroup>
 

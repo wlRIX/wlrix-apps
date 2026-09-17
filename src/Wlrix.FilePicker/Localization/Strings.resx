@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="TitleOpen" xml:space="preserve">
+    <value>Open File</value>
+  </data>
+  <data name="TitleOpenFolder" xml:space="preserve">
+    <value>Open Folder</value>
+  </data>
+  <data name="TitleSave" xml:space="preserve">
+    <value>Save File</value>
+  </data>
+  <data name="TitleSaveFiles" xml:space="preserve">
+    <value>Save Files</value>
+  </data>
+  <data name="AcceptOpen" xml:space="preserve">
+    <value>_Open</value>
+  </data>
+  <data name="AcceptSave" xml:space="preserve">
+    <value>_Save</value>
+  </data>
+  <data name="ButtonCancel" xml:space="preserve">
+    <value>_Cancel</value>
+  </data>
+  <data name="ButtonUp" xml:space="preserve">
+    <value>_Up</value>
+  </data>
+  <data name="ShowHidden" xml:space="preserve">
+    <value>Show _Hidden Files</value>
+  </data>
+  <data name="PlacesHeading" xml:space="preserve">
+    <value>Places</value>
+  </data>
+  <data name="PlaceHome" xml:space="preserve">
+    <value>Home</value>
+  </data>
+  <data name="PlaceDesktop" xml:space="preserve">
+    <value>Desktop</value>
+  </data>
+  <data name="PlaceDocuments" xml:space="preserve">
+    <value>Documents</value>
+  </data>
+  <data name="PlaceDownloads" xml:space="preserve">
+    <value>Downloads</value>
+  </data>
+  <data name="PlaceMusic" xml:space="preserve">
+    <value>Music</value>
+  </data>
+  <data name="PlacePictures" xml:space="preserve">
+    <value>Pictures</value>
+  </data>
+  <data name="PlaceVideos" xml:space="preserve">
+    <value>Videos</value>
+  </data>
+  <data name="ColumnName" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="ColumnSize" xml:space="preserve">
+    <value>Size</value>
+  </data>
+  <data name="ColumnModified" xml:space="preserve">
+    <value>Modified</value>
+  </data>
+  <data name="NameLabel" xml:space="preserve">
+    <value>Name:</value>
+  </data>
+  <data name="FilterLabel" xml:space="preserve">
+    <value>Show:</value>
+  </data>
+  <data name="StatusLoading" xml:space="preserve">
+    <value>Reading…</value>
+  </data>
+  <data name="StatusEmpty" xml:space="preserve">
+    <value>Empty folder</value>
+  </data>
+  <data name="StatusItems" xml:space="preserve">
+    <value>{0} items</value>
+  </data>
+  <data name="SaveFilesNote" xml:space="preserve">
+    <value>{0} files will be saved in this folder.</value>
+  </data>
+  <data name="ConfirmTitle" xml:space="preserve">
+    <value>Replace File</value>
+  </data>
+  <data name="ConfirmOverwrite" xml:space="preserve">
+    <value>{0} already exists. Replace it?</value>
+  </data>
+  <data name="ErrorTitle" xml:space="preserve">
+    <value>File Chooser</value>
+  </data>
+</root>

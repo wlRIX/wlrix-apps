@@ -36,7 +36,7 @@ internal static class Program
                 Environment.Exit(2);
             }
 
-            if (Services.FilesConfig.Check(args[1]) is { } problem)
+            if (Core.Config.FilesConfig.Check(args[1]) is { } problem)
             {
                 Console.Error.WriteLine(problem);
                 Environment.Exit(1);

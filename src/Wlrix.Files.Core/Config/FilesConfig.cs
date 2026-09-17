@@ -2,7 +2,7 @@ using Tomlyn;
 using Tomlyn.Model;
 using Wlrix.Files.Core.State;
 
-namespace Wlrix.Files.Services;
+namespace Wlrix.Files.Core.Config;
 
 /// <summary>
 /// <c>files.toml</c>: the two settings that belong to the session rather than to a window.

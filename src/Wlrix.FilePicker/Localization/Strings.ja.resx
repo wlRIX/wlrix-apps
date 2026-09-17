@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="TitleOpen" xml:space="preserve">
+    <value>ファイルを開く</value>
+  </data>
+  <data name="TitleOpenFolder" xml:space="preserve">
+    <value>フォルダーを開く</value>
+  </data>
+  <data name="TitleSave" xml:space="preserve">
+    <value>ファイルを保存</value>
+  </data>
+  <data name="TitleSaveFiles" xml:space="preserve">
+    <value>ファイルを保存</value>
+  </data>
+  <data name="AcceptOpen" xml:space="preserve">
+    <value>開く(_O)</value>
+  </data>
+  <data name="AcceptSave" xml:space="preserve">
+    <value>保存(_S)</value>
+  </data>
+  <data name="ButtonCancel" xml:space="preserve">
+    <value>キャンセル(_C)</value>
+  </data>
+  <data name="ButtonUp" xml:space="preserve">
+    <value>上へ(_U)</value>
+  </data>
+  <data name="ShowHidden" xml:space="preserve">
+    <value>隠しファイルを表示(_H)</value>
+  </data>
+  <data name="PlacesHeading" xml:space="preserve">
+    <value>場所</value>
+  </data>
+  <data name="PlaceHome" xml:space="preserve">
+    <value>ホーム</value>
+  </data>
+  <data name="PlaceDesktop" xml:space="preserve">
+    <value>デスクトップ</value>
+  </data>
+  <data name="PlaceDocuments" xml:space="preserve">
+    <value>ドキュメント</value>
+  </data>
+  <data name="PlaceDownloads" xml:space="preserve">
+    <value>ダウンロード</value>
+  </data>
+  <data name="PlaceMusic" xml:space="preserve">
+    <value>音楽</value>
+  </data>
+  <data name="PlacePictures" xml:space="preserve">
+    <value>画像</value>
+  </data>
+  <data name="PlaceVideos" xml:space="preserve">
+    <value>ビデオ</value>
+  </data>
+  <data name="ColumnName" xml:space="preserve">
+    <value>名前</value>
+  </data>
+  <data name="ColumnSize" xml:space="preserve">
+    <value>サイズ</value>
+  </data>
+  <data name="ColumnModified" xml:space="preserve">
+    <value>更新日時</value>
+  </data>
+  <data name="NameLabel" xml:space="preserve">
+    <value>名前:</value>
+  </data>
+  <data name="FilterLabel" xml:space="preserve">
+    <value>表示:</value>
+  </data>
+  <data name="StatusLoading" xml:space="preserve">
+    <value>読み込み中…</value>
+  </data>
+  <data name="StatusEmpty" xml:space="preserve">
+    <value>空のフォルダー</value>
+  </data>
+  <data name="StatusItems" xml:space="preserve">
+    <value>{0} 個の項目</value>
+  </data>
+  <data name="SaveFilesNote" xml:space="preserve">
+    <value>このフォルダーに {0} 個のファイルを保存します。</value>
+  </data>
+  <data name="ConfirmTitle" xml:space="preserve">
+    <value>ファイルの置き換え</value>
+  </data>
+  <data name="ConfirmOverwrite" xml:space="preserve">
+    <value>{0} はすでに存在します。置き換えますか?</value>
+  </data>
+  <data name="ErrorTitle" xml:space="preserve">
+    <value>ファイル選択</value>
+  </data>
+</root>

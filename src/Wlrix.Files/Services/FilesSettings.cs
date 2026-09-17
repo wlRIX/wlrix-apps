@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Logging;
+using Wlrix.Files.Core.Config;
 using Wlrix.Files.Core.State;
 using Wlrix.Settings.Client;
 using ZLogger;

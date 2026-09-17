@@ -1,8 +1,8 @@
 using Wlrix.Files.Core.State;
-using Wlrix.Files.Services;
+using Wlrix.Files.Core.Config;
 using Xunit;
 
-namespace Wlrix.Files.Tests;
+namespace Wlrix.Files.Core.Tests;
 
 /// <summary>
 /// <c>files.toml</c>, which <c>wlrix-settings-daemon</c> writes and this reads.

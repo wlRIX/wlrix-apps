@@ -15,6 +15,7 @@ library. Apps recreate the IRIX Interactive Desktop surface.
 | `Wlrix.Settings.Client`   | lib   | Reads and writes wlRIX settings, through `wlrix-settings-daemon`. |
 | `Wlrix.Theme`             | lib   | Keeps an app drawing in the session's color scheme. One call.     |
 | `Wlrix.Packages`          | lib   | The system package managers behind one interface. No UI.          |
+| `Wlrix.Files.Core`        | lib   | Files, listings, MIME, icons and thumbnails. No Avalonia at all.  |
 | `Wlrix.Packages.Helper`   | exe   | `wlrix-pkg-helper` — the privileged half, run through `pkexec`.   |
 | `Wlrix.Toolchest`         | app   | IRIX-style menu launcher anchored top-left of the desktop.        |
 | `Wlrix.Desks`             | app   | Virtual-desktop (Rooms) overview and switcher.                    |
@@ -26,9 +27,11 @@ library. Apps recreate the IRIX Interactive Desktop surface.
 | `Wlrix.SourcePicker`      | app   | The screen-share picker `xdg-desktop-portal-wlrix` puts up.       |
 | `Wlrix.SoftwareManager`   | app   | Package manager, after IRIX's `swmgr`.                            |
 | `Wlrix.Archiver`          | app   | Archive browser and extractor, after KDE's Ark.                   |
-| `Wlrix.Packages.Tests`    | tests | Parser and validation tests for `Wlrix.Packages`. Under `tests/`. |
+| `Wlrix.Files`             | app   | The file manager, after IRIX's fm and KDE's Dolphin.              |
+| `Wlrix.FilePicker`        | app   | The file dialog `xdg-desktop-portal-wlrix` puts up. On Files.Core. |
 
-More apps (file manager, terminal, etc.) get added as sibling projects.
+Every project with tests has a `<project>.Tests` beside it under `tests/`. More apps (a terminal, among others) get
+added as sibling projects.
 
 ## Installing
 

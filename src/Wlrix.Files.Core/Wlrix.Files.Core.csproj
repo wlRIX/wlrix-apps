@@ -8,11 +8,18 @@
     </ItemGroup>
 
     <ItemGroup>
-        <!-- Deliberately no Avalonia reference of any kind. This library is what a
-             future FileChooser portal backend reuses, and it is the only part of the
-             file manager that CI can exercise with no display — both of which stop
-             being true the moment a UI type leaks in. -->
+        <!-- Deliberately no Avalonia reference of any kind. This library is what
+             Wlrix.FilePicker — the FileChooser portal's dialog — is built on, and it is
+             the only part of the file manager that CI can exercise with no display. Both
+             stop being true the moment a UI type leaks in. -->
         <PackageReference Include="ZLogger" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <!-- files.toml, which this library parses because two programs read it: the file
+             manager and the file chooser. A hand-rolled reader here would repeat the bug that
+             created wlrix-settings-daemon in the first place. -->
+        <PackageReference Include="Tomlyn" />
     </ItemGroup>
 
     <ItemGroup>
