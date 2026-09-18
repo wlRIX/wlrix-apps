@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
@@ -127,6 +128,8 @@ public partial class ListingView : UserControl
         Listing.KeyDown += OnListingKeyDown;
         IconView.KeyDown += OnListingKeyDown;
 
+        ListingMenu.Opening += OnContextMenuOpening;
+
         // Selection lives in the control; the view model is told about it rather than owning
         // a second copy that would have to be kept in step.
         Listing.SelectionChanged += (_, _) => PublishSelection(Listing);
@@ -172,10 +175,17 @@ public partial class ListingView : UserControl
         if (ReferenceEquals(_wired, Model))
             return;
         if (_wired is { } previous)
+        {
             previous.VisualsInvalidated -= RefreshVisuals;
+            previous.SelectAllRequested -= SelectAll;
+        }
+
         _wired = Model;
         if (_wired is { } current)
+        {
             current.VisualsInvalidated += RefreshVisuals;
+            current.SelectAllRequested += SelectAll;
+        }
     }
 
     private void RestoreSelection()
@@ -313,10 +323,67 @@ public partial class ListingView : UserControl
         if (_wired is { } window)
         {
             window.VisualsInvalidated -= RefreshVisuals;
+            window.SelectAllRequested -= SelectAll;
             _wired = null;
         }
         EndDrag();
         base.OnDetachedFromVisualTree(e);
+    }
+
+    /// <summary>Makes the right-clicked row the selection, unless it already is part of one.</summary>
+    /// <remarks>
+    /// A right-click inside an existing multi-selection leaves it alone -- that is how somebody
+    /// picks ten files and then asks for their properties. Empty space clears it, so what the
+    /// menu offers matches what it would act on.
+    /// </remarks>
+    private static void SelectForContextMenu(ListBox view, FileEntryViewModel? row)
+    {
+        if (view.SelectedItems is not { } selected)
+            return;
+
+        if (row is null)
+        {
+            selected.Clear();
+            return;
+        }
+
+        if (selected.Contains(row))
+            return;
+
+        selected.Clear();
+        selected.Add(row);
+    }
+
+    /// <summary>Decides what the menu offers, from what is selected when it opens.</summary>
+    /// <remarks>
+    /// Never canceled, unlike the devices rail's: the lower half of this menu -- New Folder and
+    /// Select All -- is about the directory rather than the selection, so a right-click on empty
+    /// space still has something to say.
+    /// </remarks>
+    private void OnContextMenuOpening(object? sender, CancelEventArgs e)
+    {
+        var selection = Model?.Selection ?? [];
+        var any = selection.Count > 0;
+
+        CtxOpen.IsEnabled = any;
+        CtxTrash.IsEnabled = any;
+        CtxProperties.IsEnabled = any;
+
+        // Only a directory can be in a tab. Hidden rather than disabled, because a greyed
+        // "Open in New Tab" over a text file invites the question of why not.
+        CtxOpenNewTab.IsVisible = selection.Any(row => row.IsDirectory);
+    }
+
+    /// <summary>Selects every row, for the menu item of that name.</summary>
+    /// <remarks>
+    /// The view does it because the control owns the selection; the view model only asks. It
+    /// has to be the *showing* view -- selecting into the hidden one would set a selection
+    /// nobody can see and the other list would keep the old one.
+    /// </remarks>
+    private void SelectAll()
+    {
+        var view = Listing.IsVisible ? (ListBox)Listing : IconView;
+        view.SelectAll();
     }
 
     // --- pointer: rubber band and the start of a drag --------------------
@@ -332,7 +399,20 @@ public partial class ListingView : UserControl
         _pressedIn = null;
         _pressedSelection = [];
 
-        if (sender is not ListBox view || !e.GetCurrentPoint(view).Properties.IsLeftButtonPressed)
+        if (sender is not ListBox view)
+            return;
+
+        // A right-click acts on what is under the pointer, so it has to select it first: a
+        // ListBox changes nothing on the right button, and without this the menu would act on
+        // whatever happened to be selected before -- deleting a file the user was not pointing
+        // at. On the tunnel, so it lands before the menu is opened.
+        if (e.GetCurrentPoint(view).Properties.IsRightButtonPressed)
+        {
+            SelectForContextMenu(view, RowUnder(e.Source));
+            return;
+        }
+
+        if (!e.GetCurrentPoint(view).Properties.IsLeftButtonPressed)
             return;
 
         if (RowUnder(e.Source) is { } row)

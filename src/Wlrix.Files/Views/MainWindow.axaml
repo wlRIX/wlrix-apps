@@ -32,6 +32,7 @@
         <KeyBinding Gesture="Ctrl+Tab" Command="{Binding NextTab}" />
         <KeyBinding Gesture="Ctrl+Shift+Tab" Command="{Binding PreviousTab}" />
         <KeyBinding Gesture="Ctrl+Shift+W" Command="{Binding Close}" />
+        <KeyBinding Gesture="Ctrl+A" Command="{Binding SelectAll}" />
         <KeyBinding Gesture="Ctrl+X" Command="{Binding CutSelection}" />
         <KeyBinding Gesture="Ctrl+C" Command="{Binding CopySelection}" />
         <KeyBinding Gesture="Ctrl+V" Command="{Binding Paste}" />
@@ -83,6 +84,8 @@
                 <MenuItem Header="{loc:Tr SelectedCut}" Command="{Binding CutSelection}" InputGesture="Ctrl+X" />
                 <MenuItem Header="{loc:Tr SelectedCopy}" Command="{Binding CopySelection}" InputGesture="Ctrl+C" />
                 <MenuItem Header="{loc:Tr SelectedPaste}" Command="{Binding Paste}" InputGesture="Ctrl+V" />
+                <MenuItem Header="{loc:Tr ContextSelectAll}" Command="{Binding SelectAll}"
+                          InputGesture="Ctrl+A" />
                 <MenuItem Header="-" />
                 <!-- Rebuilt as the menu opens rather than per selection change: it
                      reads mimeapps.list from disk. -->

@@ -528,4 +528,10 @@
   <data name="SettingFailed" xml:space="preserve">
     <value>設定を保存できませんでした: {0}</value>
   </data>
+  <data name="ContextOpenNewTab" xml:space="preserve">
+    <value>新しいタブで開く(_T)</value>
+  </data>
+  <data name="ContextSelectAll" xml:space="preserve">
+    <value>すべて選択(_A)</value>
+  </data>
 </root>

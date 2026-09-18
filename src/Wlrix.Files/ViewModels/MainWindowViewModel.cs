@@ -127,6 +127,9 @@ public sealed class MainWindowViewModel : ReactiveObject, IDisposable
         TrashSelection = Command(TrashAsync);
         DeleteSelection = Command(DeleteAsync);
         NewTab = ReactiveCommand.Create(() => { AddTab(Pane.Location); });
+        OpenSelection = Command(() => OpenSelectionAsync(OpenIntent.Default));
+        OpenSelectionInNewTab = Command(() => OpenSelectionAsync(OpenIntent.NewTab));
+        SelectAll = ReactiveCommand.Create(() => SelectAllRequested?.Invoke());
         ToggleBookmark = ReactiveCommand.Create(ToggleBookmarkHere);
         ToggleDefaultFileManager = ReactiveCommand.Create(SetOrClearDefaultFileManager);
         ConnectToServer = Command(ConnectAsync);
@@ -499,6 +502,16 @@ public sealed class MainWindowViewModel : ReactiveObject, IDisposable
     /// </remarks>
     public event Action? VisualsInvalidated;
 
+    /// <summary>
+    /// Asks the listing to select everything.
+    /// </summary>
+    /// <remarks>
+    /// An event rather than something this could do itself: selection lives in the control, and
+    /// the view model is told what it is rather than owning it -- see <see cref="Selection"/>.
+    /// Setting it from here would be the second truth that comment exists to prevent.
+    /// </remarks>
+    public event Action? SelectAllRequested;
+
     /// <summary>The application's operation queue. Shared, so a copy outlives this window.</summary>
     public OperationQueue Operations { get; }
 
@@ -555,6 +568,22 @@ public sealed class MainWindowViewModel : ReactiveObject, IDisposable
     public ReactiveCommand<Unit, Unit> TrashSelection { get; }
     public ReactiveCommand<Unit, Unit> DeleteSelection { get; }
     public ReactiveCommand<Unit, Unit> NewTab { get; }
+
+    /// <summary>Opens what is selected, as a double-click would.</summary>
+    public ReactiveCommand<Unit, Unit> OpenSelection { get; }
+
+    /// <summary>
+    /// Opens what is selected in tabs of its own.
+    /// </summary>
+    /// <remarks>
+    /// Only a directory can be in a tab, and <see cref="OpenAsync"/> already ignores the intent
+    /// for anything else -- a file goes to its handler however it was asked for. So a mixed
+    /// selection does the sensible thing without this having to sort it out.
+    /// </remarks>
+    public ReactiveCommand<Unit, Unit> OpenSelectionInNewTab { get; }
+
+    /// <summary>Selects every row of the listing.</summary>
+    public ReactiveCommand<Unit, Unit> SelectAll { get; }
     public ReactiveCommand<Unit, Unit> ToggleBookmark { get; }
     public ReactiveCommand<Unit, Unit> ToggleDefaultFileManager { get; }
     public ReactiveCommand<Unit, Unit> ConnectToServer { get; }
@@ -815,6 +844,27 @@ public sealed class MainWindowViewModel : ReactiveObject, IDisposable
         // nothing whatever, which is what this did before.
         ErrorRaised?.Invoke(Strings.NoHandler(row.Name, mimeType));
     }
+
+    /// <summary>Opens every selected row.</summary>
+    /// <remarks>
+    /// Sequentially rather than all at once: each one may sniff a file's type and start a
+    /// handler, and a dozen processes launching in parallel is how a right-click on a whole
+    /// directory becomes a fork bomb of image viewers.
+    /// </remarks>
+    private async Task OpenSelectionAsync(OpenIntent intent)
+    {
+        // Copied first. Opening a directory in place replaces the listing, which replaces the
+        // selection this is walking.
+        foreach (var row in Selection.ToList())
+            await OpenAsync(row, intent).ConfigureAwait(true);
+    }
+
+    /// <summary>Opens a location the rail names, in a tab of its own.</summary>
+    /// <remarks>
+    /// Through the router like every other navigation, so Classic mode still answers "that
+    /// directory already has a window" rather than opening a second one.
+    /// </remarks>
+    public void OpenInNewTab(Location location) => _routing.Open(location, OpenIntent.NewTab, this);
 
     /// <summary>Navigates to a path typed or clicked in the path bar.</summary>
     public Task NavigateToPathAsync(string text) =>

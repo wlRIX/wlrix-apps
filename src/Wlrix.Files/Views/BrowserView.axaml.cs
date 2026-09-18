@@ -37,6 +37,31 @@ public partial class BrowserView : UserControl
         MountItem.Click += (_, _) => Open(DevicesList.SelectedItem as DeviceViewModel);
         UnmountItem.Click += (_, _) => Unmount(DevicesList.SelectedItem as DeviceViewModel);
         DevicesList.ContextMenu!.Opening += OnDeviceMenuOpening;
+        DeviceNewTabItem.Click += (_, _) => OpenInNewTab((DevicesList.SelectedItem as DeviceViewModel)?.Location);
+
+        // The rail's right-click acts on the entry under the pointer, and deliberately does
+        // *not* select it: selecting a place navigates to it, so a right-click meaning "open
+        // this somewhere else" would have gone there first and then opened a second tab.
+        // Recorded on the way down instead, and the menu is refused when the pointer was over
+        // the rail's background rather than an entry.
+        foreach (var (list, item) in new[]
+                 {
+                     ((Control)PlacesList, PlaceNewTabItem),
+                     (BookmarksList, BookmarkNewTabItem),
+                 })
+        {
+            list.AddHandler(PointerPressedEvent, OnRailPointerPressed, RoutingStrategies.Tunnel);
+            var owner = list;
+            list.ContextMenu!.Opening += (_, e) =>
+            {
+                // A pointer names its own target; the Menu key has none, so fall back to the
+                // entry that has focus. Without this the menu opened from the keyboard would
+                // be cancelled and the item would look broken rather than unavailable.
+                _contextPlace ??= PlaceUnder(TopLevel.GetTopLevel(owner)?.FocusManager?.GetFocusedElement());
+                e.Cancel = _contextPlace is null;
+            };
+            item.Click += (_, _) => OpenInNewTab(_contextPlace?.Location);
+        }
 
         // The rail takes drops: dragging onto Home files something away without navigating
         // there first, which is most of the point of having the rail. Dropping on the rail
@@ -50,6 +75,24 @@ public partial class BrowserView : UserControl
     }
 
     private MainWindowViewModel? Model => DataContext as MainWindowViewModel;
+
+    /// <summary>The rail entry the context menu was opened over. See where it is recorded.</summary>
+    private PlaceViewModel? _contextPlace;
+
+    private void OnRailPointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        if (sender is Control control && e.GetCurrentPoint(control).Properties.IsRightButtonPressed)
+            _contextPlace = PlaceUnder(e.Source);
+        else
+            _contextPlace = null;   // so the next keyboard invocation does not reuse a stale one
+    }
+
+    /// <summary>Opens a rail entry in a tab of its own.</summary>
+    private void OpenInNewTab(Location? location)
+    {
+        if (Model is { } model && location is not null)
+            model.OpenInNewTab(location);
+    }
 
     /// <summary>Applies the remembered rail width once the window has a view model.</summary>
     protected override void OnDataContextChanged(EventArgs e)
@@ -159,6 +202,9 @@ public partial class BrowserView : UserControl
 
         MountItem.IsVisible = !device.IsMounted;
         UnmountItem.IsVisible = device.IsMounted;
+        // An unmounted disk has no location to open. Mount is the entry that applies to it,
+        // and it is directly above.
+        DeviceNewTabItem.IsVisible = device.IsMounted;
     }
 
     private void OnPlaceSelected(object? sender, SelectionChangedEventArgs e)

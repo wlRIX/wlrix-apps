@@ -30,6 +30,29 @@
     </UserControl.Styles>
 
     <Panel>
+        <!-- One menu for both views, on the panel that holds them: a right-click anywhere in
+             the listing finds it, including the empty space below the last row, which is where
+             New Folder and Select All are wanted. What it can act on is decided when it opens,
+             in OnContextMenuOpening. -->
+        <Panel.ContextMenu>
+            <ContextMenu Name="ListingMenu">
+                <MenuItem Name="CtxOpen" Header="{loc:Tr ActionOpen}"
+                          Command="{Binding Tab.Window.OpenSelection}" />
+                <MenuItem Name="CtxOpenNewTab" Header="{loc:Tr ContextOpenNewTab}"
+                          Command="{Binding Tab.Window.OpenSelectionInNewTab}" />
+                <MenuItem Header="-" />
+                <MenuItem Name="CtxTrash" Header="{loc:Tr SelectedTrash}"
+                          Command="{Binding Tab.Window.TrashSelection}" />
+                <MenuItem Name="CtxProperties" Header="{loc:Tr SelectedProperties}"
+                          Command="{Binding Tab.Window.ShowProperties}" />
+                <MenuItem Header="-" />
+                <MenuItem Header="{loc:Tr ActionNewFolder}"
+                          Command="{Binding Tab.Window.NewFolder}" />
+                <MenuItem Header="{loc:Tr ContextSelectAll}"
+                          Command="{Binding Tab.Window.SelectAll}" />
+            </ContextMenu>
+        </Panel.ContextMenu>
+
         <!-- The icon view, with the rubber-band overlay above it. The band is drawn in a
              Canvas rather than by the panel so it floats over the cells and does not take
              part in layout. -->

@@ -60,6 +60,13 @@
                 <ListBox Name="PlacesList"
                          ItemsSource="{Binding Places}"
                          SelectionMode="Single">
+                    <!-- One entry, because a rail entry is a place to go and the only question
+                         is whether to go there in this tab or another. -->
+                    <ListBox.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="{loc:Tr ContextOpenNewTab}" Name="PlaceNewTabItem" />
+                        </ContextMenu>
+                    </ListBox.ContextMenu>
                     <ListBox.ItemTemplate>
                         <DataTemplate x:DataType="vm:PlaceViewModel">
                             <TextBlock Text="{Binding Label}" />
@@ -84,6 +91,13 @@
                          IsVisible="{Binding HasBookmarks}"
                          ItemsSource="{Binding Bookmarks}"
                          SelectionMode="Single">
+                    <!-- One entry, because a rail entry is a place to go and the only question
+                         is whether to go there in this tab or another. -->
+                    <ListBox.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="{loc:Tr ContextOpenNewTab}" Name="BookmarkNewTabItem" />
+                        </ContextMenu>
+                    </ListBox.ContextMenu>
                     <ListBox.ItemTemplate>
                         <DataTemplate x:DataType="vm:PlaceViewModel">
                             <TextBlock Text="{Binding Label}" />
@@ -112,6 +126,8 @@
                          SelectionMode="Single">
                     <ListBox.ContextMenu>
                         <ContextMenu>
+                            <MenuItem Header="{loc:Tr ContextOpenNewTab}" Name="DeviceNewTabItem" />
+                            <MenuItem Header="-" />
                             <MenuItem Header="{loc:Tr DeviceMount}" Name="MountItem" />
                             <MenuItem Header="{loc:Tr DeviceUnmount}" Name="UnmountItem" />
                         </ContextMenu>

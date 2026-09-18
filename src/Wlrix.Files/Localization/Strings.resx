@@ -528,4 +528,10 @@
   <data name="SettingFailed" xml:space="preserve">
     <value>That setting could not be saved: {0}</value>
   </data>
+  <data name="ContextOpenNewTab" xml:space="preserve">
+    <value>Open in New _Tab</value>
+  </data>
+  <data name="ContextSelectAll" xml:space="preserve">
+    <value>Select _All</value>
+  </data>
 </root>
