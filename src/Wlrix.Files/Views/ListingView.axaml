@@ -16,6 +16,22 @@
          tab, and the file picker wants the rail beside a listing with no tabs at all. -->
 
     <UserControl.Styles>
+        <!-- What "selected" looks like in the icon view, and it has to be said here.
+
+             The theme paints a selected ListBoxItem by filling `Border#Root` in its template,
+             and the ItemContainerTheme below replaces that template with a bare Border so the
+             cell itself paints nothing — the highlight belongs to the label, as IRIX drew it.
+             So the theme's fill lands on an element that no longer exists, while its companion
+             rule, `ListBoxItem:selected TextBlock` in WlrixTheme.axaml, still repaints the text
+             in the selection foreground. The result was a selected label rendered in the
+             colour meant to sit *on* the highlight, with no highlight behind it: selection read
+             as dimmer than the rows around it, which looks like disabled rather than chosen.
+
+             One setter fixes it, because the foreground half is already right. -->
+        <Style Selector="ListBoxItem:selected Border#Label">
+            <Setter Property="Background" Value="{DynamicResource WlrixSelection}" />
+        </Style>
+
         <!-- The folder a drag is aimed at. Kept visually distinct from selection, because a
              drop usually lands on something that is not selected and both are on screen at
              once. The border is always there and only changes color, so a row does not
