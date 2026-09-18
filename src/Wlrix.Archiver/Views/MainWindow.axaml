@@ -42,16 +42,8 @@
     </Window.Resources>
 
     <DockPanel LastChildFill="True">
-        <Menu DockPanel.Dock="Top">
-            <!-- A DockPanel rather than the default wrapping row, so Help sits on the right
-                 edge the way every IRIX application put it. -->
-            <Menu.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <DockPanel LastChildFill="False" />
-                </ItemsPanelTemplate>
-            </Menu.ItemsPanel>
-
-            <MenuItem Header="{loc:Tr MenuFile}" DockPanel.Dock="Left">
+        <wlrix:MenuBar DockPanel.Dock="Top">
+            <MenuItem Header="{loc:Tr MenuFile}">
                 <MenuItem Header="{loc:Tr FileNew}" InputGesture="Ctrl+N"
                           Command="{Binding New}" />
                 <MenuItem Header="{loc:Tr FileOpen}" InputGesture="Ctrl+O"
@@ -63,7 +55,7 @@
                           Command="{Binding Exit}" />
             </MenuItem>
 
-            <MenuItem Header="{loc:Tr MenuEdit}" DockPanel.Dock="Left">
+            <MenuItem Header="{loc:Tr MenuEdit}">
                 <MenuItem Header="{loc:Tr EditRemove}" InputGesture="Delete"
                           Command="{Binding Remove}" />
             </MenuItem>
@@ -71,7 +63,7 @@
             <!-- Not in the original specification, and here because it has to be somewhere: an
                  archive with no encoding recorded is guessed at, and a guess needs an override.
                  A radio group, because exactly one is in force at a time. -->
-            <MenuItem Header="{loc:Tr MenuView}" DockPanel.Dock="Left">
+            <MenuItem Header="{loc:Tr MenuView}">
                 <MenuItem Header="{loc:Tr ViewEncoding}" ItemsSource="{Binding Encodings}">
                     <MenuItem.ItemContainerTheme>
                         <ControlTheme TargetType="MenuItem" x:DataType="vm:EncodingChoiceViewModel"
@@ -88,7 +80,7 @@
             <MenuItem Header="{loc:Tr MenuHelp}" DockPanel.Dock="Right">
                 <MenuItem Header="{loc:Tr HelpAbout}" Command="{Binding ShowAbout}" />
             </MenuItem>
-        </Menu>
+        </wlrix:MenuBar>
 
         <!-- The status line. Says why the listing is empty when it is, what the last command
              did when it is not, and how far along the current one is while it runs.

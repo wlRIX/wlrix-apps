@@ -1,5 +1,6 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:wlrix="https://vic485.xyz/Wlrix.Avalonia"
         xmlns:vm="using:Wlrix.SoftwareManager.ViewModels"
         xmlns:panes="using:Wlrix.SoftwareManager.Views.Panes"
         xmlns:loc="using:Wlrix.Common.Localization"
@@ -30,38 +31,30 @@
 
     <DockPanel>
 
-        <Menu DockPanel.Dock="Top">
-            <!-- A DockPanel rather than the default wrapping row, so Help sits on the right
-                 edge the way every IRIX application put it. -->
-            <Menu.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <DockPanel LastChildFill="False" />
-                </ItemsPanelTemplate>
-            </Menu.ItemsPanel>
-
-            <MenuItem Header="{loc:Tr MenuFile}" DockPanel.Dock="Left">
+        <wlrix:MenuBar DockPanel.Dock="Top">
+            <MenuItem Header="{loc:Tr MenuFile}">
                 <MenuItem Header="{loc:Tr FileClose}" Click="OnCloseClick" />
             </MenuItem>
-            <MenuItem Header="{loc:Tr MenuInstall}" DockPanel.Dock="Left">
+            <MenuItem Header="{loc:Tr MenuInstall}">
                 <MenuItem Header="{loc:Tr InstallFromFile}" Command="{Binding Lookup}" />
                 <Separator />
                 <MenuItem Header="{loc:Tr InstallStart}" Command="{Binding Start}" />
                 <MenuItem Header="{loc:Tr InstallStop}" Command="{Binding Stop}" />
             </MenuItem>
-            <MenuItem Header="{loc:Tr MenuSelected}" DockPanel.Dock="Left">
+            <MenuItem Header="{loc:Tr MenuSelected}">
                 <MenuItem Header="{loc:Tr SelectedInstall}" Command="{Binding MarkForInstall}" />
                 <MenuItem Header="{loc:Tr SelectedRemove}" Command="{Binding MarkForRemoval}" />
                 <Separator />
                 <MenuItem Header="{loc:Tr SelectedAll}" Command="{Binding SelectAll}" />
                 <MenuItem Header="{loc:Tr SelectedNone}" Command="{Binding DeselectAll}" />
             </MenuItem>
-            <MenuItem Header="{loc:Tr MenuSoftware}" DockPanel.Dock="Left">
+            <MenuItem Header="{loc:Tr MenuSoftware}">
                 <MenuItem Header="{loc:Tr SoftwareRefresh}" Command="{Binding Refresh}" />
                 <MenuItem Header="{loc:Tr SoftwareRepositories}" Command="{Binding ShowRepositories}" />
                 <MenuItem Header="{loc:Tr SoftwareUserSoftware}" Command="{Binding ShowUserSoftware}" />
             </MenuItem>
             <!-- Each item toggles one region of the window, as on the IRIX original. -->
-            <MenuItem Header="{loc:Tr MenuPanes}" DockPanel.Dock="Left">
+            <MenuItem Header="{loc:Tr MenuPanes}">
                 <MenuItem Header="{loc:Tr PaneAvailableSoftware}" ToggleType="CheckBox"
                           IsChecked="{Binding Panes.AvailableSoftware}" />
                 <MenuItem Header="{loc:Tr PaneSoftwareInventory}" ToggleType="CheckBox"
@@ -76,7 +69,7 @@
             <MenuItem Header="{loc:Tr MenuHelp}" DockPanel.Dock="Right">
                 <MenuItem Header="{loc:Tr HelpAbout}" Command="{Binding ShowAbout}" />
             </MenuItem>
-        </Menu>
+        </wlrix:MenuBar>
 
         <panes:AvailableSoftwarePane DockPanel.Dock="Top"
                                      IsVisible="{Binding Panes.AvailableSoftware}" />

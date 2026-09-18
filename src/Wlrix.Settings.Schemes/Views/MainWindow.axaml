@@ -23,14 +23,14 @@
 
         <!-- The original also had a Sample Image menu, which chose between several samples.
              There is one, so the menu is left out rather than stubbed. -->
-        <Menu DockPanel.Dock="Top">
+        <wlrix:MenuBar DockPanel.Dock="Top">
             <MenuItem Header="{loc:Tr MenuApplication}">
                 <MenuItem Header="{loc:Tr MenuClose}" Click="OnCancel" />
             </MenuItem>
-            <MenuItem Header="{loc:Tr MenuHelp}">
+            <MenuItem Header="{loc:Tr MenuHelp}" DockPanel.Dock="Right">
                 <MenuItem Header="{loc:Tr MenuClickForHelp}" Click="OnHelp" />
             </MenuItem>
-        </Menu>
+        </wlrix:MenuBar>
 
         <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="12"
                     Margin="12,12,12,10">
