@@ -7,6 +7,8 @@ using Avalonia.Threading;
 using Avalonia.VisualTree;
 using Wlrix.Avalonia.Dialogs;
 using Wlrix.Desks.Localization;
+using Wlrix.Desks.Models;
+using Wlrix.Desks.Services;
 using Wlrix.Desks.ViewModels;
 
 namespace Wlrix.Desks.Views;
@@ -18,6 +20,17 @@ public partial class MainWindow : Window
         InitializeComponent();
     }
 
+    /// <summary>
+    /// Where what the overview remembers is written, or null when this process must not write
+    /// it.
+    /// </summary>
+    /// <remarks>
+    /// Null for an overview started with <c>--new</c>, which is a second copy that did not get
+    /// the bus name: it is a throwaway view of the desks, and it should not be able to
+    /// overwrite the settings the real one keeps.
+    /// </remarks>
+    public IDesksSettingsStore? Settings { get; init; }
+
     protected override void OnOpened(EventArgs e)
     {
         base.OnOpened(e);
@@ -26,6 +39,7 @@ public partial class MainWindow : Window
 
         vm.FeedUnavailable += OnFeedUnavailable;
         vm.CommandFailed += OnCommandFailed;
+        vm.UiStateChanged += SaveState;
         // The previews are scaled against the screen layout, which the compositor owns and
         // Avalonia already knows; keep it in step with the desks feed.
         UpdateWorld();
@@ -43,8 +57,44 @@ public partial class MainWindow : Window
         {
             vm.FeedUnavailable -= OnFeedUnavailable;
             vm.CommandFailed -= OnCommandFailed;
+            vm.UiStateChanged -= SaveState;
+            // Before Dispose, and the only point at which the window's size can still be read.
+            SaveState();
             vm.Dispose();
         }
+    }
+
+    /// <summary>
+    /// Writes what this window is showing, so the next run opens looking the same.
+    /// </summary>
+    /// <remarks>
+    /// Called on close, which is what "remember the state" means, and again whenever a menu
+    /// item changes one of the toggles. The second path is not belt and braces: the session
+    /// signals its children at logout and Avalonia installs no handler for that, so neither
+    /// this window's Closed nor the lifetime's ShutdownRequested runs on the way out of a
+    /// session. A toggle picked and then logged out of would otherwise be lost, which is the
+    /// ordinary way this application ends rather than an edge case. The store ignores a save
+    /// that would rewrite what is already on disk, so the overlap costs nothing.
+    ///
+    /// <para>
+    /// The window's size is read from <see cref="Layoutable.Width"/> and
+    /// <see cref="Layoutable.Height"/>, which Avalonia assigns from the platform's client size
+    /// whenever the window is resized, so they follow the user rather than the markup.
+    /// </para>
+    /// </remarks>
+    private void SaveState()
+    {
+        if (Settings is not { } store || DataContext is not MainWindowViewModel vm)
+            return;
+
+        store.Save(new DesksSettings
+        {
+            ShowSnapshots = vm.ShowSnapshots,
+            ShowGlobalDesk = vm.ShowGlobalDesk,
+            WindowLabel = vm.WindowLabel,
+            WindowWidth = Width,
+            WindowHeight = Height,
+        });
     }
 
     private void OnScreensChanged(object? sender, EventArgs e) => UpdateWorld();
@@ -85,6 +135,18 @@ public partial class MainWindow : Window
     {
         if (DataContext is MainWindowViewModel vm)
             vm.ShowSnapshots = !vm.ShowSnapshots;
+    }
+
+    private void OnShowWindowNames(object? sender, RoutedEventArgs e) => SetWindowLabel(WindowLabel.Title);
+
+    private void OnShowApplicationIds(object? sender, RoutedEventArgs e) => SetWindowLabel(WindowLabel.AppId);
+
+    private void OnShowNoNames(object? sender, RoutedEventArgs e) => SetWindowLabel(WindowLabel.None);
+
+    private void SetWindowLabel(WindowLabel label)
+    {
+        if (DataContext is MainWindowViewModel vm)
+            vm.WindowLabel = label;
     }
 
     private void OnExit(object? sender, RoutedEventArgs e) => Close();

@@ -88,4 +88,13 @@ The compositor may not be running.</value>
   <data name="CommandRejected" xml:space="preserve">
     <value>The compositor rejected the request: {0}</value>
   </data>
+    <data name="ShowWindowNames" xml:space="preserve">
+        <value>Show Window Names</value>
+    </data>
+    <data name="ShowApplicationIds" xml:space="preserve">
+        <value>Show Application IDs</value>
+    </data>
+    <data name="ShowNoNames" xml:space="preserve">
+        <value>Show No Names</value>
+    </data>
 </root>

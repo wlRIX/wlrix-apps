@@ -36,12 +36,25 @@
         <vm:MainWindowViewModel />
     </Design.DataContext>
 
+    <Window.Styles>
+        <!-- With the snapshot hidden the tile is a name and a lamp, and the padding the
+             preview needed is just empty face. The man page calls what is left a "small
+             space-saving button", and reclaiming the padding is what makes it one; the
+             collapsed preview already takes its own height and the StackPanel's spacing with
+             it. -->
+        <Style Selector="wlrix|BevelBorder.compact">
+            <Setter Property="Padding" Value="4,1" />
+            <Setter Property="Margin" Value="2" />
+        </Style>
+    </Window.Styles>
+
     <Window.Resources>
         <!-- A desk tile: an IRIX LED-button face (lamp lit when the desk is active) above an
              opaque geometry preview of the desk's windows. Shared by the pinned Global tile
              and the scrollable desk list. -->
         <DataTemplate x:Key="DeskTile" x:DataType="vm:DeskViewModel">
             <wlrix:BevelBorder Bevel="Raised" BevelThickness="2" OuterLineThickness="1" Margin="3"
+                             Classes.compact="{Binding !$parent[Window].((vm:MainWindowViewModel)DataContext).ShowSnapshots}"
                              Background="{DynamicResource WlrixFace}"
                              LightBrush="{DynamicResource WlrixTopShadow}"
                              DarkBrush="{DynamicResource WlrixBottomShadow}"
@@ -93,7 +106,8 @@
                                               HoverBorderBrush="White"
                                               SelectionBorderBrush="{DynamicResource WlrixSelectFill}"
                                               HoveredWindowId="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).HoveredWindowId, Mode=TwoWay}"
-                                              SelectedWindowId="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).SelectedWindowId, Mode=TwoWay}" />
+                                              SelectedWindowId="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).SelectedWindowId, Mode=TwoWay}"
+                                              LabelMode="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).WindowLabel}" />
                     </wlrix:BevelBorder>
                 </StackPanel>
             </wlrix:BevelBorder>
@@ -106,6 +120,18 @@
             <MenuItem Header="{loc:Tr MenuOverview}">
                 <MenuItem Header="{Binding GlobalDeskMenuHeader}" Click="OnToggleGlobalDesk" />
                 <MenuItem Header="{Binding SnapshotsMenuHeader}" Click="OnToggleSnapshots" />
+                <MenuItem Header="-" />
+                <!-- What the miniature windows say under the pointer. `ov` had one switch
+                     here, noWindowName, and no way to change it once the program was up; the
+                     third state and the menu are so a flag somebody passed once is not a thing
+                     they have to relaunch to undo. The check marks are one-way: the handlers
+                     own the change, and a radio group writing back would fight them. -->
+                <MenuItem Header="{loc:Tr ShowWindowNames}" ToggleType="Radio" GroupName="WindowLabel"
+                          IsChecked="{Binding ShowsWindowNames, Mode=OneWay}" Click="OnShowWindowNames" />
+                <MenuItem Header="{loc:Tr ShowApplicationIds}" ToggleType="Radio" GroupName="WindowLabel"
+                          IsChecked="{Binding ShowsApplicationIds, Mode=OneWay}" Click="OnShowApplicationIds" />
+                <MenuItem Header="{loc:Tr ShowNoNames}" ToggleType="Radio" GroupName="WindowLabel"
+                          IsChecked="{Binding ShowsNoNames, Mode=OneWay}" Click="OnShowNoNames" />
                 <MenuItem Header="-" />
                 <MenuItem Header="{loc:Tr Exit}" Click="OnExit" />
             </MenuItem>

@@ -17,6 +17,7 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
     private DeskViewModel? _globalDesk;
     private bool _showGlobalDesk = true;
     private bool _showSnapshots = true;
+    private WindowLabel _windowLabel = WindowLabel.Title;
     private DeskSnapshot? _lastSnapshot;
     private long? _hoveredWindowId;
     private long? _selectedWindowId;
@@ -29,8 +30,18 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
             Start();
     }
 
-    public MainWindowViewModel(IDeskFeed feed)
+    /// <param name="initial">What the overview looked like when it was last closed, as
+    /// amended by this run's command line. Null takes the defaults, which is what the
+    /// previewer wants and what keeps it off the user's own settings file.</param>
+    public MainWindowViewModel(IDeskFeed feed, DesksSettings? initial = null)
     {
+        if (initial is { } settings)
+        {
+            _showGlobalDesk = settings.ShowGlobalDesk;
+            _showSnapshots = settings.ShowSnapshots;
+            _windowLabel = settings.WindowLabel;
+        }
+
         _feed = feed;
         _feed.SnapshotReceived += OnSnapshot;
         _feed.Unavailable += OnUnavailable;
@@ -53,6 +64,16 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
 
     /// <summary>Raised (on the UI thread) when a command is rejected or fails, with a message.</summary>
     public event Action<string>? CommandFailed;
+
+    /// <summary>
+    /// Raised when something the overview remembers between runs has changed.
+    /// </summary>
+    /// <remarks>
+    /// An event rather than a <c>WhenAnyValue</c> subscription, to match the two above: this
+    /// class is otherwise plain properties, and a reactive pipeline here would bring a
+    /// subscription lifetime with it for three setters.
+    /// </remarks>
+    public event Action? UiStateChanged;
 
     /// <summary>The scrollable, selectable desks (excludes the Global desk).</summary>
     public ObservableCollection<DeskViewModel> Desks { get; } = [];
@@ -115,8 +136,11 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
         get => _showGlobalDesk;
         set
         {
+            var changed = value != _showGlobalDesk;
             this.RaiseAndSetIfChanged(ref _showGlobalDesk, value);
             this.RaisePropertyChanged(nameof(GlobalDeskMenuHeader));
+            if (changed)
+                UiStateChanged?.Invoke();
         }
     }
 
@@ -125,10 +149,46 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
         get => _showSnapshots;
         set
         {
+            var changed = value != _showSnapshots;
             this.RaiseAndSetIfChanged(ref _showSnapshots, value);
             this.RaisePropertyChanged(nameof(SnapshotsMenuHeader));
+
+            // With no previews there is nothing left to click, so a selection made before they
+            // were hidden would sit there invisibly and the Window menu would keep acting on
+            // it.
+            if (!value)
+            {
+                SelectedWindowId = null;
+                HoveredWindowId = null;
+            }
+
+            if (changed)
+                UiStateChanged?.Invoke();
         }
     }
+
+    /// <summary>What a miniature window says when the pointer passes over it.</summary>
+    public WindowLabel WindowLabel
+    {
+        get => _windowLabel;
+        set
+        {
+            var changed = value != _windowLabel;
+            this.RaiseAndSetIfChanged(ref _windowLabel, value);
+            this.RaisePropertyChanged(nameof(ShowsWindowNames));
+            this.RaisePropertyChanged(nameof(ShowsApplicationIds));
+            this.RaisePropertyChanged(nameof(ShowsNoNames));
+            if (changed)
+                UiStateChanged?.Invoke();
+        }
+    }
+
+    // The Overview menu's three radio items, which need a bool each to draw their check mark.
+    public bool ShowsWindowNames => WindowLabel == WindowLabel.Title;
+
+    public bool ShowsApplicationIds => WindowLabel == WindowLabel.AppId;
+
+    public bool ShowsNoNames => WindowLabel == WindowLabel.None;
 
     /// <summary>
     /// The virtual-screen bounds the window rectangles are scaled from, set by the view from
@@ -257,6 +317,21 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
 
     public Task LowerSelectedAsync() =>
         SelectedWindow is { } w ? Guard(() => _feed.LowerWindowAsync(w.Id)) : Task.CompletedTask;
+
+    /// <summary>
+    /// Unminimizes this application's own window, if the last snapshot says it is minimized.
+    /// </summary>
+    /// <remarks>
+    /// For the second launch that asks the overview to come forward. Raising a window through
+    /// <c>xdg_activation_v1</c> does exactly that and no more — the compositor's handler raises
+    /// the surface without clearing the minimized flag — so an overview the user had minimized
+    /// would be brought to the top of a stack it is not in. This is the one application that
+    /// can read its own window's state out of its own feed, so it restores itself first.
+    /// </remarks>
+    public Task RestoreOwnWindowIfMinimizedAsync() =>
+        _lastSnapshot?.Windows.FirstOrDefault(w => w.Minimized && w.AppId == Program.AppId) is { } own
+            ? Guard(() => _feed.RestoreWindowAsync(own.Id))
+            : Task.CompletedTask;
 
     public void Dispose()
     {

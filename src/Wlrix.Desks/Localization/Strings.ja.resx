@@ -80,4 +80,13 @@
     <data name="ShowSnapshots" xml:space="preserve">
         <value>スナップショットを表示する</value>
     </data>
+    <data name="ShowWindowNames" xml:space="preserve">
+        <value>ウィンドウ名を表示する</value>
+    </data>
+    <data name="ShowApplicationIds" xml:space="preserve">
+        <value>アプリケーション ID を表示する</value>
+    </data>
+    <data name="ShowNoNames" xml:space="preserve">
+        <value>名前を表示しない</value>
+    </data>
 </root>

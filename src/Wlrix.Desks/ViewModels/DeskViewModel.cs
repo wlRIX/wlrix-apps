@@ -7,7 +7,14 @@ namespace Wlrix.Desks.ViewModels;
 /// <summary>A window rectangle already scaled into a desk's preview box. <paramref name="Id"/>
 /// is the snapshot's window id, which the preview hit-tests against and reports as hovered or
 /// selected — the same window drawn on several desks keeps the same id.</summary>
-public sealed record PreviewWindow(long Id, double X, double Y, double W, double H);
+/// <remarks>
+/// <paramref name="Title"/> and <paramref name="AppId"/> come through untouched from
+/// <see cref="WindowInfo"/> and are what the preview shows in a tooltip. Both are carried
+/// rather than one being chosen here, so that the Overview menu's choice between them stays a
+/// live toggle instead of something only a relaunch can change.
+/// </remarks>
+public sealed record PreviewWindow(
+    long Id, double X, double Y, double W, double H, string Title, string AppId);
 
 /// <summary>
 /// One desk tile: its name, whether it is the active desk (drives the LED lamp), and the
@@ -132,7 +139,9 @@ public sealed class DeskViewModel(int id) : ViewModelBase
                 (w.X - world.X) * scale,
                 (w.Y - world.Y) * scale,
                 Math.Max(1, w.W * scale),
-                Math.Max(1, w.H * scale)));
+                Math.Max(1, w.H * scale),
+                w.Title,
+                w.AppId));
         }
 
         return result;

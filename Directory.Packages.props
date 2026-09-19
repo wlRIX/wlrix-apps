@@ -34,6 +34,14 @@
              Avalonia.FreeDesktop uses for its own eleven interfaces. -->
         <PackageVersion Include="Tmds.DBus.Generator" Version="0.94.1" />
     </ItemGroup>
+    <ItemGroup Label="Command line">
+        <!-- Parsing wlrix-desks' options, which follow the IRIX `ov` man page. MIT and
+             dependency-free (both verified in the 2.9.1 nuspec), so GPL-3 compatible. It binds
+             options by reflection, which is safe here because nothing in this repo trims or
+             AOTs: the Justfile publishes framework-dependent linux-x64. -->
+        <PackageVersion Include="CommandLineParser" Version="2.9.1" />
+    </ItemGroup>
+
     <ItemGroup Label="Testing">
         <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
         <PackageVersion Include="xunit" Version="2.9.3" />

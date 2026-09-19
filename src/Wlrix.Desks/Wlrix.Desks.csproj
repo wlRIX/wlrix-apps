@@ -41,6 +41,21 @@
         <!-- NWayland runtime (WlDisplay/WlRegistry + core protocols), pinned in
              Directory.Packages.props to the version Avalonia.Wayland binds to. -->
         <PackageReference Include="NWayland" />
+        <!-- The options in CommandLine/, which follow the IRIX `ov` man page. -->
+        <PackageReference Include="CommandLineParser" />
+        <!-- The session-bus half of the single-instance guard. Avalonia.FreeDesktop already
+             drags this assembly into the output through Avalonia.Wayland, so referencing it
+             adds nothing to what ships — the reference only stops NuGet resolving a second,
+             differently-versioned copy. Its readers and writers are `unsafe`, which this
+             project already allows for NWayland. -->
+        <PackageReference Include="Tmds.DBus.Protocol" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <!-- The argument parsing and the settings store are `internal`: they are this
+             application's own plumbing, not API, and the test project is the only other
+             thing that has any business calling them. -->
+        <InternalsVisibleTo Include="Wlrix.Desks.Tests" />
     </ItemGroup>
 
     <!-- Wires the wlRIX NWayland fork's source generator as an analyzer (the fork carries codegen
