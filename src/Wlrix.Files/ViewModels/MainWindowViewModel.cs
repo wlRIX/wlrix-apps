@@ -617,6 +617,17 @@ public sealed class MainWindowViewModel : ReactiveObject, IDisposable
     /// <summary>Asks the view for a yes or no.</summary>
     public event Func<string, string, Task<bool>>? ConfirmRequested;
 
+    /// <summary>
+    /// Asks the view for a yes or no, where the wording and the weight of the question matter.
+    /// </summary>
+    /// <remarks>
+    /// Separate from <see cref="ConfirmRequested"/>, which is a plain OK/Cancel question. The
+    /// confirmations that stand between a double-click and running a program need their own
+    /// verb on the button — "Execute", then "Continue" — and the second needs to look like a
+    /// warning rather than a question, because agreeing to it also changes the file.
+    /// </remarks>
+    public event Func<ConfirmRequest, Task<bool>>? StrongConfirmRequested;
+
     /// <summary>Asks the view what to do about a conflict.</summary>
     public event Func<ConflictContext, Task<ConflictDecision>>? ConflictRequested;
 
@@ -840,9 +851,101 @@ public sealed class MainWindowViewModel : ReactiveObject, IDisposable
             return;
         }
 
-        // Nothing claims the type. Saying so is better than a double-click that appears to do
+        // Nothing claims the type, so the file may be the program. An AppImage is the case that
+        // prompted this: nothing registers for it, and reporting that was all this did.
+        if (ExecutablePolicy.IsProgram(_mime, row.Entry, mimeType, hasHandler: false))
+        {
+            await LaunchExecutableAsync(row, mimeType).ConfigureAwait(true);
+            return;
+        }
+
+        // Not a program either. Saying so is better than a double-click that appears to do
         // nothing whatever, which is what this did before.
         ErrorRaised?.Invoke(Strings.NoHandler(row.Name, mimeType));
+    }
+
+    /// <summary>
+    /// Runs a file as a program, once the user has said so — twice, if the file is not
+    /// executable yet.
+    /// </summary>
+    /// <remarks>
+    /// The two questions are not one question asked twice. The first is whether to run this at
+    /// all; the second appears only when agreeing would also change the file, and says so,
+    /// because marking something executable outlives the double-click that prompted it. Either
+    /// one being declined runs nothing, and — unlike a handler that fails — leaves no error
+    /// behind, because the user deciding not to do something is not a failure.
+    /// </remarks>
+    private async Task LaunchExecutableAsync(FileEntryViewModel row, string mimeType)
+    {
+        if (StrongConfirmRequested is not { } ask)
+            return;
+
+        // Stat before asking anything, because the mode decides how many questions there are and
+        // the listing does not carry one. See ExecutablePolicy.IsProgram.
+        int? mode;
+        try
+        {
+            var filesystem = await _provider.GetAsync(row.Location, CancellationToken.None)
+                .ConfigureAwait(true);
+            var stat = await filesystem.StatAsync(row.Location, CancellationToken.None)
+                .ConfigureAwait(true);
+            mode = stat.UnixMode;
+        }
+        catch (FileOperationException ex)
+        {
+            ErrorRaised?.Invoke(ex.Message);
+            return;
+        }
+
+        var description = _mime.DescriptionFor(mimeType) ?? mimeType;
+        var confirmed = await ask(new ConfirmRequest(
+            Strings.ExecuteTitle,
+            Strings.ExecuteQuestion(row.Name, description),
+            Strings.ExecuteButton,
+            Severe: false)).ConfigureAwait(true);
+        if (!confirmed)
+            return;
+
+        if (ExecutablePolicy.Stage(mode) == ExecutableAction.GrantThenRun)
+        {
+            var trusted = await ask(new ConfirmRequest(
+                Strings.ExecuteTrustTitle,
+                Strings.ExecuteTrustMessage(row.Name),
+                Strings.ExecuteContinueButton,
+                Severe: true)).ConfigureAwait(true);
+            if (!trusted)
+                return;
+
+            if (!await GrantExecuteAsync(row, mode!.Value).ConfigureAwait(true))
+                return;
+        }
+
+        if (row.Location.TryGetLocalPath(out var path))
+            _launcher.Run(path);
+    }
+
+    /// <summary>Sets the owner's execute bit, reporting rather than throwing if it cannot.</summary>
+    /// <remarks>
+    /// A read-only mount and a file owned by somebody else both land here, and both are
+    /// ordinary. Nothing is run if this fails: a program that could not be marked executable
+    /// would fail to start anyway, with a worse message.
+    /// </remarks>
+    private async Task<bool> GrantExecuteAsync(FileEntryViewModel row, int mode)
+    {
+        try
+        {
+            var filesystem = await _provider.GetAsync(row.Location, CancellationToken.None)
+                .ConfigureAwait(true);
+            await filesystem
+                .SetUnixModeAsync(row.Location, ExecutablePolicy.WithOwnerExecute(mode), CancellationToken.None)
+                .ConfigureAwait(true);
+            return true;
+        }
+        catch (FileOperationException ex)
+        {
+            ErrorRaised?.Invoke(Strings.ExecuteGrantFailed(row.Name, ex.Message));
+            return false;
+        }
     }
 
     /// <summary>Opens every selected row.</summary>

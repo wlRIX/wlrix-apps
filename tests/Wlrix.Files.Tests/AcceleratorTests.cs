@@ -67,6 +67,18 @@ public class AcceleratorTests
                 binding => Bound(binding)!,
                 StringComparer.OrdinalIgnoreCase);
 
+    /// <summary>
+    /// Return, which the listing handles itself rather than registering on the window.
+    /// </summary>
+    /// <remarks>
+    /// The one gesture that cannot live in <c>KeyBindings</c>. A window-level Return would fire
+    /// wherever the key went unhandled — the path bar above all, where Return means "go to this
+    /// path" and must not also open whatever happens to be selected behind it. So the listing
+    /// owns it, which also means the key only opens something when the listing is what the user
+    /// is looking at. Menus still advertise it, because it is real.
+    /// </remarks>
+    private static readonly string[] HandledByTheListing = ["Return"];
+
     [Fact]
     public void EveryShortcutAMenuAdvertisesIsRegisteredOnTheWindow()
     {
@@ -74,6 +86,8 @@ public class AcceleratorTests
 
         var broken = Elements("MenuItem")
             .Where(item => Attribute(item, "InputGesture") is not null && Bound(item) is not null)
+            .Where(item => !HandledByTheListing.Contains(Attribute(item, "InputGesture")!,
+                       StringComparer.OrdinalIgnoreCase))
             .Where(item => !registered.ContainsKey(Attribute(item, "InputGesture")!))
             .Select(item => $"{Describe(item)} shows {Attribute(item, "InputGesture")} and nothing registers it")
             .ToList();

@@ -2,6 +2,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.Threading;
 using Wlrix.Avalonia.Controls;
 using Wlrix.Avalonia.Dialogs;
 using Wlrix.Files.Core.Operations;
@@ -71,6 +72,7 @@ public partial class MainWindow : Window
         model.CloseRequested += Close;
         model.PromptRequested += OnPrompt;
         model.ConfirmRequested += OnConfirm;
+        model.StrongConfirmRequested += OnStrongConfirm;
         model.ConflictRequested += OnConflict;
         model.ConnectRequested += OnConnectRequested;
         model.PropertiesRequested += OnPropertiesRequested;
@@ -110,6 +112,7 @@ public partial class MainWindow : Window
             model.CloseRequested -= Close;
             model.PromptRequested -= OnPrompt;
             model.ConfirmRequested -= OnConfirm;
+            model.StrongConfirmRequested -= OnStrongConfirm;
             model.ConflictRequested -= OnConflict;
             model.ConnectRequested -= OnConnectRequested;
         model.PropertiesRequested -= OnPropertiesRequested;
@@ -134,6 +137,31 @@ public partial class MainWindow : Window
     private async Task<bool> OnConfirm(string title, string message) =>
         await MessageDialog.ShowAsync(this, DialogType.Question, message,
             buttons: DialogButtons.OkCancel, title: title) == DialogResult.Ok;
+
+    /// <summary>A confirmation that names what it will do, and looks like what it is.</summary>
+    /// <remarks>
+    /// The severe one is a warning rather than a question because it also changes the file:
+    /// running an unexecutable program means marking it executable, and that outlasts the
+    /// double-click. Same two-step Dolphin uses, and for the same reason.
+    /// </remarks>
+    private async Task<bool> OnStrongConfirm(ConfirmRequest request)
+    {
+        // Yield first. These come in pairs, and the second is asked from the continuation of
+        // the first, while that dialog's window is still being torn down -- open another on top
+        // of it in the same turn and it never maps: the call awaits a window nobody can see.
+        await Dispatcher.UIThread.InvokeAsync(() => { }, DispatcherPriority.Background);
+        var answer = await MessageDialog.ShowAsync(this,
+            request.Severe ? DialogType.Warning : DialogType.Question,
+            request.Message,
+            width: 420,
+            buttons: DialogButtons.OkCancel,
+            title: request.Title,
+            okText: request.OkText,
+            // Passed explicitly because the dialog's default is the English literal "Cancel",
+            // which reads badly next to a translated question and a translated verb.
+            cancelText: Strings.DialogCancel);
+        return answer == DialogResult.Ok;
+    }
 
     private Task<ConflictDecision> OnConflict(ConflictContext context) =>
         ConflictDialog.ShowAsync(this, context);

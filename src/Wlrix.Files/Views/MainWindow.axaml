@@ -53,7 +53,11 @@
              its Dock; everything else docks left in order. -->
         <wlrix:MenuBar DockPanel.Dock="Top">
             <MenuItem Header="{loc:Tr MenuActions}">
-                <MenuItem Header="{loc:Tr ActionOpen}" InputGesture="Return" />
+                <!-- Bound, unlike every other menu item's gesture: InputGesture only draws, and
+                     this item had no Command at all, so Actions > Open has been inert since M3.
+                     Return itself works because the listing handles the key. -->
+                <MenuItem Header="{loc:Tr ActionOpen}" Command="{Binding OpenSelection}"
+                          InputGesture="Return" />
                 <MenuItem Header="-" />
                 <MenuItem Header="{loc:Tr ActionBack}" Command="{Binding GoBack}" InputGesture="Alt+Left" />
                 <MenuItem Header="{loc:Tr ActionForward}" Command="{Binding GoForward}" InputGesture="Alt+Right" />

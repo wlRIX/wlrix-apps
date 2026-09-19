@@ -71,6 +71,36 @@ public static class Strings
     public static string OperationScanning(int count) => Catalog.Format("OperationScanning", count);
     public static string OperationFailed(int count) => Catalog.Format("OperationFailed", count);
 
+    /// <summary>The dismissing verb on a dialog. Not OperationCancel, which is "abort a job".</summary>
+    public static string DialogCancel => Catalog.Get("DialogCancel");
+
+    /// <summary>The title of both confirmations that stand between a double-click and a program.</summary>
+    public static string ExecuteTitle => Catalog.Get("ExecuteTitle");
+
+    /// <summary>The first confirmation: what the file is, and whether to run it at all.</summary>
+    public static string ExecuteQuestion(string name, string description) =>
+        string.Format(System.Globalization.CultureInfo.CurrentCulture,
+            Catalog.Get("ExecuteQuestion"), name, description);
+
+    public static string ExecuteButton => Catalog.Get("ExecuteButton");
+
+    public static string ExecuteTrustTitle => Catalog.Get("ExecuteTrustTitle");
+
+    /// <summary>
+    /// The second confirmation, shown only when the file is not executable yet, because
+    /// agreeing to it is also agreeing to change the file.
+    /// </summary>
+    public static string ExecuteTrustMessage(string name) =>
+        string.Format(System.Globalization.CultureInfo.CurrentCulture,
+            Catalog.Get("ExecuteTrustMessage"), name);
+
+    public static string ExecuteContinueButton => Catalog.Get("ExecuteContinueButton");
+
+    /// <summary>Shown when the execute bit could not be set, so nothing was run.</summary>
+    public static string ExecuteGrantFailed(string name, string problem) =>
+        string.Format(System.Globalization.CultureInfo.CurrentCulture,
+            Catalog.Get("ExecuteGrantFailed"), name, problem);
+
     /// <summary>Shown when a double-click has nothing to run.</summary>
     public static string NoHandler(string name, string mimeType) =>
         string.Format(System.Globalization.CultureInfo.CurrentCulture,

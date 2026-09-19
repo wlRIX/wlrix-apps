@@ -261,6 +261,34 @@
   <data name="OpenWithAlways" xml:space="preserve">
     <value>{0} を常にこれで開く</value>
   </data>
+  <data name="ExecuteTitle" xml:space="preserve">
+    <value>ファイルの実行</value>
+  </data>
+  <data name="ExecuteQuestion" xml:space="preserve">
+    <value>このファイルを実行しますか?
+
+{0}
+{1}</value>
+  </data>
+  <data name="ExecuteButton" xml:space="preserve">
+    <value>実行</value>
+  </data>
+  <data name="ExecuteTrustTitle" xml:space="preserve">
+    <value>警告</value>
+  </data>
+  <data name="ExecuteTrustMessage" xml:space="preserve">
+    <value>これは以下のプログラムを開始します:
+
+{0}
+
+このプログラムを信頼しない場合は「キャンセル」をクリックしてください。続行すると、このファイルに実行権限が付きます。</value>
+  </data>
+  <data name="ExecuteContinueButton" xml:space="preserve">
+    <value>続行</value>
+  </data>
+  <data name="ExecuteGrantFailed" xml:space="preserve">
+    <value>「{0}」に実行権限を付けられませんでした: {1}</value>
+  </data>
   <data name="NoHandler" xml:space="preserve">
     <value>「{0}」({1}) を開けるアプリが登録されていません。</value>
   </data>

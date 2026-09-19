@@ -2,3 +2,5 @@ text/markdown text/plain
 text/x-csrc text/plain
 application/x-compressed-tar application/gzip
 text/html text/plain
+application/vnd.appimage application/x-executable
+text/x-shellscript application/x-executable

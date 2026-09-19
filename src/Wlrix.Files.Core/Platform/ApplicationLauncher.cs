@@ -3,7 +3,7 @@ using Wlrix.Common.Desktop;
 
 namespace Wlrix.Files.Core.Platform;
 
-/// <summary>Runs a desktop entry against a set of files.</summary>
+/// <summary>Starts applications: a desktop entry against a set of files, or a program itself.</summary>
 /// <remarks>
 /// The Toolchest has a launcher of its own, and this is deliberately not it: that one launches
 /// an application with no arguments from a menu, where this one has to substitute field codes
@@ -92,6 +92,44 @@ public sealed class ApplicationLauncher
                                        or IOException or UnauthorizedAccessException)
         {
             Failed?.Invoke($"could not start {Label(entry)}: {ex.Message}");
+            return false;
+        }
+    }
+
+    /// <summary>Runs a program directly, rather than through a desktop entry.</summary>
+    /// <remarks>
+    /// For the case a desktop entry cannot describe: a file that is itself the program, an
+    /// AppImage or a bare binary. There is no <c>Exec</c> line to parse and no field codes to
+    /// substitute, so none of the machinery above applies — but the working directory does, and
+    /// it is the file's own, which is what a program dropped in a project directory expects.
+    ///
+    /// <para>
+    /// The caller is responsible for having asked the user first. See
+    /// <see cref="ExecutablePolicy"/>: nothing here judges whether running this is a good idea.
+    /// </para>
+    /// </remarks>
+    public bool Run(string path)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(path);
+        try
+        {
+            var info = new ProcessStartInfo
+            {
+                FileName = path,
+                // As above: false, so the program is executed rather than handed back to the
+                // desktop's opener, which is this application.
+                UseShellExecute = false,
+                WorkingDirectory = Path.GetDirectoryName(path) is { Length: > 0 } directory
+                    ? directory
+                    : Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)
+            };
+            using var process = Process.Start(info);
+            return process is not null;
+        }
+        catch (Exception ex) when (ex is System.ComponentModel.Win32Exception or InvalidOperationException
+                                       or IOException or UnauthorizedAccessException)
+        {
+            Failed?.Invoke($"could not start {Path.GetFileName(path)}: {ex.Message}");
             return false;
         }
     }

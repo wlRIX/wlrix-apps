@@ -261,6 +261,34 @@
   <data name="OpenWithAlways" xml:space="preserve">
     <value>Always open {0} with this</value>
   </data>
+  <data name="ExecuteTitle" xml:space="preserve">
+    <value>Execute File</value>
+  </data>
+  <data name="ExecuteQuestion" xml:space="preserve">
+    <value>Do you want to execute this file?
+
+{0}
+{1}</value>
+  </data>
+  <data name="ExecuteButton" xml:space="preserve">
+    <value>Execute</value>
+  </data>
+  <data name="ExecuteTrustTitle" xml:space="preserve">
+    <value>Warning</value>
+  </data>
+  <data name="ExecuteTrustMessage" xml:space="preserve">
+    <value>This will start the following program:
+
+{0}
+
+If you do not trust this program, click Cancel. Continuing also marks the file executable.</value>
+  </data>
+  <data name="ExecuteContinueButton" xml:space="preserve">
+    <value>Continue</value>
+  </data>
+  <data name="ExecuteGrantFailed" xml:space="preserve">
+    <value>"{0}" could not be marked executable: {1}</value>
+  </data>
   <data name="NoHandler" xml:space="preserve">
     <value>Nothing is registered to open "{0}" ({1}).</value>
   </data>
