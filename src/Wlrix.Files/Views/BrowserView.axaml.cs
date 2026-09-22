@@ -44,13 +44,18 @@ public partial class BrowserView : UserControl
         // this somewhere else" would have gone there first and then opened a second tab.
         // Recorded on the way down instead, and the menu is refused when the pointer was over
         // the rail's background rather than an entry.
+        // Devices are in this too, though they have no context place: the flag it records is
+        // what stops a right-click acting on the row, and a disk's row acts harder than a
+        // bookmark's -- selecting an unmounted one mounts it.
+        foreach (var list in new Control[] { PlacesList, BookmarksList, DevicesList })
+            list.AddHandler(PointerPressedEvent, OnRailPointerPressed, RoutingStrategies.Tunnel);
+
         foreach (var (list, item) in new[]
                  {
                      ((Control)PlacesList, PlaceNewTabItem),
                      (BookmarksList, BookmarkNewTabItem),
                  })
         {
-            list.AddHandler(PointerPressedEvent, OnRailPointerPressed, RoutingStrategies.Tunnel);
             var owner = list;
             list.ContextMenu!.Opening += (_, e) =>
             {
@@ -62,6 +67,12 @@ public partial class BrowserView : UserControl
             };
             item.Click += (_, _) => OpenInNewTab(_contextPlace?.Location);
         }
+
+        // Middle-click closes a tab, as it does in every browser and in Dolphin. On the tunnel
+        // and marked handled, so the press never reaches the TabItem: otherwise the tab would
+        // be selected on the way to being closed, which for a tab that is not the active one
+        // means switching to it and then away again.
+        TabStrip.AddHandler(PointerPressedEvent, OnTabPointerPressed, RoutingStrategies.Tunnel);
 
         // The rail takes drops: dragging onto Home files something away without navigating
         // there first, which is most of the point of having the rail. Dropping on the rail
@@ -79,12 +90,27 @@ public partial class BrowserView : UserControl
     /// <summary>The rail entry the context menu was opened over. See where it is recorded.</summary>
     private PlaceViewModel? _contextPlace;
 
+    /// <summary>
+    /// True while a right-press is being handled, so the selection it causes does not act.
+    /// </summary>
+    /// <remarks>
+    /// A ListBox selects on any button, including the right one, and both rails act on
+    /// SelectionChanged -- so a right-click navigated away, or mounted a disk, before its own
+    /// context menu had finished opening. Read and cleared by whichever handler the selection
+    /// reaches; set again by the next press either way, so it cannot stay true for long.
+    /// </remarks>
+    private bool _railRightPress;
+
     private void OnRailPointerPressed(object? sender, PointerPressedEventArgs e)
     {
-        if (sender is Control control && e.GetCurrentPoint(control).Properties.IsRightButtonPressed)
-            _contextPlace = PlaceUnder(e.Source);
-        else
-            _contextPlace = null;   // so the next keyboard invocation does not reuse a stale one
+        _railRightPress = sender is Control control
+            && e.GetCurrentPoint(control).Properties.IsRightButtonPressed;
+
+        // The place the menu will act on, which is the entry under the pointer rather than the
+        // selected one. Null for a device row, which has no PlaceViewModel and does not use it.
+        _contextPlace = _railRightPress
+            ? PlaceUnder(e.Source)
+            : null;   // so the next keyboard invocation does not reuse a stale one
     }
 
     /// <summary>Opens a rail entry in a tab of its own.</summary>
@@ -165,6 +191,31 @@ public partial class BrowserView : UserControl
     private static bool IsDirectory(Location location) =>
         location.TryGetLocalPath(out var path) && Directory.Exists(path);
 
+    private void OnTabPointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        if (!e.GetCurrentPoint(TabStrip).Properties.IsMiddleButtonPressed)
+            return;
+        if (Model is not { } model || TabUnder(e.Source) is not { } tab)
+            return;
+
+        e.Handled = true;
+        model.CloseTabAt(tab);
+    }
+
+    /// <summary>The tab a press landed on, or null if it landed anywhere else.</summary>
+    /// <remarks>
+    /// Anchored on the TabItem rather than on the first TabViewModel in the ancestry, which
+    /// would be wrong in a way that only shows up in use: a tab's *content* carries the same
+    /// view model as its header, so any middle-click inside the listing would have closed the
+    /// tab it was in. The containers are the strip; the content presenter is not one of them.
+    /// </remarks>
+    private static TabViewModel? TabUnder(object? source) =>
+        (source as Visual)?.GetSelfAndVisualAncestors()
+            .OfType<TabItem>()
+            .Select(item => item.DataContext)
+            .OfType<TabViewModel>()
+            .FirstOrDefault();
+
     private static PlaceViewModel? PlaceUnder(object? source) =>
         (source as Visual)?.GetSelfAndVisualAncestors()
             .OfType<Control>()
@@ -175,6 +226,16 @@ public partial class BrowserView : UserControl
     /// <summary>Clicking a disk opens it, mounting it first if it is not mounted.</summary>
     private void OnDeviceSelected(object? sender, SelectionChangedEventArgs e)
     {
+        // Unlike a place, the selection stays: OnDeviceMenuOpening reads SelectedItem to decide
+        // which verb applies. Only the opening is skipped -- and it is the more important of
+        // the two to skip, because opening an unmounted disk mounts it first, so a right-click
+        // meant to reach Unmount could mount something instead.
+        if (_railRightPress)
+        {
+            _railRightPress = false;
+            return;
+        }
+
         if (sender is ListBox { SelectedItem: DeviceViewModel device })
             Open(device);
     }
@@ -216,6 +277,16 @@ public partial class BrowserView : UserControl
         // Home, browsing away and clicking Home once more does nothing. It also keeps the two
         // sections from both showing a highlighted row.
         list.SelectedItem = null;
+
+        // A right-press selects as any press does, and that is all it may do here: the menu it
+        // is opening acts on _contextPlace, and navigating first would take the window
+        // somewhere the user was pointing at rather than asking about.
+        if (_railRightPress)
+        {
+            _railRightPress = false;
+            return;
+        }
+
         _ = model.NavigateActiveTabAsync(place.Location);
     }
 }

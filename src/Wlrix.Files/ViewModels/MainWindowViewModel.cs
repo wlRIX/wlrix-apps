@@ -1154,12 +1154,25 @@ public sealed class MainWindowViewModel : ReactiveObject, IDisposable
     // --- tabs -------------------------------------------------------------
 
     /// <summary>Opens a tab at <paramref name="location"/> and switches to it.</summary>
+    /// <remarks>
+    /// Beside the tab it was opened from, not at the far end of the row. "Open in a new tab"
+    /// means "beside this one" everywhere else, and with eight tabs open the difference is
+    /// between the new one being where the eye already is and being somewhere it has to be
+    /// looked for.
+    ///
+    /// <para>
+    /// Session restore appends regardless, and not by accident: it calls this once per saved
+    /// tab and each call makes its tab the active one, so "after the active tab" is always the
+    /// end while a restore is running. The restore loop depends on that order.
+    /// </para>
+    /// </remarks>
     public TabViewModel AddTab(Location location)
     {
         var tab = new TabViewModel(this, _newPane(location));
         tab.Moved += RaiseSessionChanged;
         tab.ActivePaneChanged += OnActivePaneChanged;
-        Tabs.Add(tab);
+        var after = Tabs.IndexOf(_activeTab);
+        Tabs.Insert(after < 0 ? Tabs.Count : after + 1, tab);
         this.RaisePropertyChanged(nameof(HasMultipleTabs));
         ActiveTab = tab;
         SessionChanged?.Invoke();
