@@ -140,12 +140,26 @@ public sealed class WindowManager(IServiceProvider services, FilesStateStore sta
             model.BookmarksChanged -= RelayBookmarks;
             model.SharesChanged -= RelayShares;
             model.SessionChanged -= ScheduleSave;
+            // The last window in Modern mode is the application: closing it is quitting, and
+            // quitting is not a reason to lose the tabs. Written while this window is still in
+            // `_open`, because a moment later there is nothing left to describe -- which is
+            // exactly what used to be saved, so only a kill preserved a session and a
+            // deliberate close discarded one.
+            //
+            // Classic keeps the older rule. There a window is a directory rather than the
+            // application, several are open at once by design, and closing the last one on
+            // purpose says the desk is meant to be found clear.
+            var quitting = Count == 1 && !model.IsClassicMode;
+            if (quitting)
+                SaveSession();
+
             _open.RemoveAll(entry => ReferenceEquals(entry.Model, model));
             Router.Forget(model);
-            // Written before the model is disposed and now rather than on the debounce: the
-            // last window closing is also the application closing, and the timer would not
-            // get another chance to fire.
-            SaveSession();
+            // Written now rather than on the debounce, and before the model is disposed: a
+            // closing window is often the application closing, and the timer would not get
+            // another chance to fire.
+            if (!quitting)
+                SaveSession();
             model.Dispose();
             if (Count == 0)
                 AllWindowsClosed?.Invoke();
