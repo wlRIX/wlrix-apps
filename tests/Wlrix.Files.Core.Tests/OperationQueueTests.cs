@@ -89,6 +89,42 @@ public class OperationQueueTests
         Assert.Equal(1, peak);
     }
 
+    /// <summary>
+    /// A progress report delivered after the operation finished does not revive it.
+    /// </summary>
+    /// <remarks>
+    /// Not a hypothetical. Progress&lt;T&gt; hands its callbacks to the thread pool, so a report
+    /// posted while the job was still working can arrive after Complete has run. Until this was
+    /// guarded, that put the operation back into Working with nothing left to move it out again:
+    /// a finished copy showed as running for ever in the progress strip, and it is what made
+    /// OperationsOnOneDeviceRunOneAtATime fail about one run in six -- the queue was serializing
+    /// correctly and the finished operation was simply still being counted.
+    ///
+    /// <para>
+    /// Driven directly rather than through the queue, because reproducing the race by timing is
+    /// exactly the flakiness this replaces.
+    /// </para>
+    /// </remarks>
+    [Fact]
+    public async Task AProgressReportArrivingAfterTheEndIsIgnored()
+    {
+        using var cancellation = new CancellationTokenSource();
+        var queued = new QueuedOperation(
+            FileOperation.Copy([Location.Parse("/src/a.txt")], Location.Parse("/dst")), cancellation);
+
+        var seen = new List<OperationPhase>();
+        queued.Changed += q => seen.Add(q.Progress.Phase);
+
+        queued.Report(new OperationProgress(OperationPhase.Working));
+        queued.Complete(new OperationResult(OperationPhase.Completed, 1, 1, []));
+        queued.Report(new OperationProgress(OperationPhase.Working));
+
+        Assert.Equal(OperationPhase.Completed, queued.Progress.Phase);
+        Assert.Equal(OperationPhase.Completed, (await queued.Completion).Phase);
+        // The late report raises nothing either, so an observer counting events is not fooled.
+        Assert.Equal([OperationPhase.Working, OperationPhase.Completed], seen);
+    }
+
     [Fact]
     public async Task CancellingAQueuedOperationStopsIt()
     {

@@ -35,15 +35,35 @@ public sealed class QueuedOperation
     /// <summary>Asks the operation to stop at the next item boundary.</summary>
     public void Cancel() => _cancellation.Cancel();
 
+    /// <summary>Guards <see cref="Progress"/> against a report that outlives the operation.</summary>
+    private readonly Lock _phase = new();
+    private bool _completed;
+
     internal void Report(OperationProgress progress)
     {
-        Progress = progress;
+        lock (_phase)
+        {
+            // A report arriving after the end is stale rather than news. Progress&lt;T&gt; hands
+            // its callbacks to the thread pool, so one posted while the job was still working
+            // can be delivered after Complete has already run -- and taking it would put the
+            // operation back into Working with nothing left to move it out again, which is what
+            // the progress strip would then show for ever.
+            if (_completed)
+                return;
+            Progress = progress;
+        }
         Changed?.Invoke(this);
     }
 
     internal void Complete(OperationResult result)
     {
-        Progress = Progress with { Phase = result.Phase };
+        lock (_phase)
+        {
+            if (_completed)
+                return;
+            _completed = true;
+            Progress = Progress with { Phase = result.Phase };
+        }
         Changed?.Invoke(this);
         _completion.TrySetResult(result);
     }
