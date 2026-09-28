@@ -80,8 +80,13 @@ public interface IArchiveBackend
     /// clear beside the encrypted ones, which is worse than refusing. A backend that cannot write
     /// encryption at all withholds <see cref="ArchiveCapabilities.Add"/> instead.
     /// </param>
+    /// <param name="encryptNames">
+    /// Whether the entry names are encrypted as well as the contents, which for 7z means the
+    /// archive cannot be listed at all without the password. Only meaningful alongside one, and
+    /// only where <see cref="ArchiveCapabilities.Encrypt"/> is claimed.
+    /// </param>
     Task AddAsync(string path, ArchiveFormat format, IReadOnlyList<string> sourcePaths,
-        string destinationPrefix = "", string? password = null,
+        string destinationPrefix = "", string? password = null, bool encryptNames = false,
         CancellationToken cancellationToken = default);
 
     /// <summary>Deletes <paramref name="entryPaths"/>, and everything under any directory named.</summary>

@@ -114,8 +114,8 @@ public class ArchiveBackendRegistryTests
             Task.CompletedTask;
 
         public Task AddAsync(string path, ArchiveFormat f, IReadOnlyList<string> sources,
-            string prefix = "", string? supplied = null, CancellationToken ct = default) =>
-            Task.CompletedTask;
+            string prefix = "", string? supplied = null, bool encryptNames = false,
+            CancellationToken ct = default) => Task.CompletedTask;
 
         public Task RemoveAsync(string path, ArchiveFormat f, IReadOnlyList<string> entries,
             string? supplied = null, CancellationToken ct = default) => Task.CompletedTask;

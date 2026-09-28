@@ -92,7 +92,8 @@ public sealed class SevenZipCliBackend : IArchiveBackend
 
     public async Task AddAsync(string path, ArchiveFormat format,
         IReadOnlyList<string> sourcePaths, string destinationPrefix = "",
-        string? password = null, CancellationToken cancellationToken = default)
+        string? password = null, bool encryptNames = false,
+        CancellationToken cancellationToken = default)
     {
         if (sourcePaths.Count == 0)
             return;
@@ -109,6 +110,13 @@ public sealed class SevenZipCliBackend : IArchiveBackend
         var arguments = new List<string> { "a" };
         arguments.AddRange(CommonSwitches);
         AddWritePassword(arguments, password);
+        // Header encryption, which only means anything alongside a password: -mhe with none is
+        // nothing to encrypt the headers with. Passing it on a later add is harmless -- an
+        // archive written with it keeps encrypted headers either way, measured -- but passing it
+        // to an archive that does not have them would convert one, so the caller says when.
+        if (encryptNames && !string.IsNullOrEmpty(password))
+            arguments.Add("-mhe=on");
+
         arguments.Add("--");
         arguments.Add(path);
         arguments.AddRange(sourcePaths);

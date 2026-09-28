@@ -283,7 +283,7 @@ public class EncryptedArchiveTests
         model.NewPasswordRequested += _ =>
         {
             asked = true;
-            return Task.FromResult<string?>(Password);
+            return Task.FromResult<NewArchiveEncryption?>(new NewArchiveEncryption(Password, false));
         };
 
         await model.New.Execute().FirstAsync();
@@ -309,12 +309,62 @@ public class EncryptedArchiveTests
             new DragStaging(registry), NullLogger<MainWindowViewModel>.Instance);
 
         model.NewArchiveRequested += () => Task.FromResult<string?>("/tmp/new.7z");
-        model.NewPasswordRequested += _ => Task.FromResult<string?>(Password);
+        model.NewPasswordRequested += _ =>
+            Task.FromResult<NewArchiveEncryption?>(new NewArchiveEncryption(Password, false));
 
         await model.New.Execute().FirstAsync();
         await model.AddAsync(["/tmp/a.txt"]);
 
         Assert.Equal(Password, backend.AddedWith);
+    }
+
+    /// <summary>
+    /// Choosing to encrypt the names carries through to the write that creates the archive.
+    /// </summary>
+    /// <remarks>
+    /// And is refused without a password to do it with, which is not a detail: -mhe on its own
+    /// has nothing to encrypt the headers with, so a choice that cannot be honored must not be
+    /// carried as though it had been.
+    /// </remarks>
+    [Theory]
+    [InlineData("hunter2", true, "True")]
+    [InlineData("hunter2", false, "False")]
+    [InlineData("", true, "False")]
+    public async Task EncryptingTheNamesReachesTheWriteOnlyWithAPassword(
+        string password, bool chosen, string expected)
+    {
+        var backend = new CreatingBackend(ArchiveFormat.SevenZip, encrypts: true);
+        var registry = new ArchiveBackendRegistry([backend]);
+        var model = new MainWindowViewModel(registry, new FilenameDecoder(),
+            new DragStaging(registry), NullLogger<MainWindowViewModel>.Instance);
+
+        model.NewArchiveRequested += () => Task.FromResult<string?>("/tmp/new.7z");
+        model.NewPasswordRequested += _ =>
+            Task.FromResult<NewArchiveEncryption?>(new NewArchiveEncryption(password, chosen));
+
+        await model.New.Execute().FirstAsync();
+        await model.AddAsync(["/tmp/a.txt"]);
+
+        Assert.Equal(expected, backend.AddedNamesEncrypted);
+    }
+
+    /// <summary>
+    /// 7z is given -mhe only when it has a password, because alone it converts an archive.
+    /// </summary>
+    [Theory]
+    [InlineData(Password, true, true)]
+    [InlineData(Password, false, false)]
+    [InlineData(null, true, false)]
+    public async Task SevenZipAsksForHeaderEncryptionOnlyWhenItCan(
+        string? password, bool encryptNames, bool expected)
+    {
+        var runner = new RecordingRunner();
+        var backend = new SevenZipCliBackend(runner);
+
+        await backend.AddAsync("/archives/new.7z", ArchiveFormat.SevenZip, ["/tmp/a.txt"],
+            password: password, encryptNames: encryptNames);
+
+        Assert.Equal(expected, runner.Arguments.Contains("-mhe=on"));
     }
 
     /// <summary>Accepting the prompt with nothing typed creates an unencrypted archive.</summary>
@@ -331,7 +381,8 @@ public class EncryptedArchiveTests
             new DragStaging(registry), NullLogger<MainWindowViewModel>.Instance);
 
         model.NewArchiveRequested += () => Task.FromResult<string?>("/tmp/new.7z");
-        model.NewPasswordRequested += _ => Task.FromResult<string?>("");
+        model.NewPasswordRequested += _ =>
+            Task.FromResult<NewArchiveEncryption?>(new NewArchiveEncryption("", false));
 
         await model.New.Execute().FirstAsync();
         await model.AddAsync(["/tmp/a.txt"]);
@@ -349,7 +400,7 @@ public class EncryptedArchiveTests
             new DragStaging(registry), NullLogger<MainWindowViewModel>.Instance);
 
         model.NewArchiveRequested += () => Task.FromResult<string?>("/tmp/new.7z");
-        model.NewPasswordRequested += _ => Task.FromResult<string?>(null);
+        model.NewPasswordRequested += _ => Task.FromResult<NewArchiveEncryption?>(null);
 
         await model.New.Execute().FirstAsync();
 
@@ -380,10 +431,14 @@ public class EncryptedArchiveTests
             IProgress<ArchiveProgress>? progress = null, CancellationToken ct = default) =>
             Task.CompletedTask;
 
+        public string? AddedNamesEncrypted { get; private set; }
+
         public Task AddAsync(string path, ArchiveFormat format, IReadOnlyList<string> sources,
-            string prefix = "", string? password = null, CancellationToken ct = default)
+            string prefix = "", string? password = null, bool encryptNames = false,
+            CancellationToken ct = default)
         {
             AddedWith = password;
+            AddedNamesEncrypted = encryptNames.ToString();
             return Task.CompletedTask;
         }
 
@@ -440,8 +495,8 @@ public class EncryptedArchiveTests
             Task.CompletedTask;
 
         public Task AddAsync(string path, ArchiveFormat format, IReadOnlyList<string> sources,
-            string prefix = "", string? supplied = null, CancellationToken ct = default) =>
-            Task.CompletedTask;
+            string prefix = "", string? supplied = null, bool encryptNames = false,
+            CancellationToken ct = default) => Task.CompletedTask;
 
         public Task RemoveAsync(string path, ArchiveFormat format, IReadOnlyList<string> entries,
             string? supplied = null, CancellationToken ct = default) => Task.CompletedTask;

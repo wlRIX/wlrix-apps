@@ -174,8 +174,9 @@ public partial class MainWindow : Window
     /// <summary>
     /// Offers a password for a new archive. Null cancels; empty means no encryption.
     /// </summary>
-    private Task<string?> OnNewPasswordRequested(string name) =>
-        PasswordDialog.ShowAsync(this, Strings.NewPasswordTitle, Strings.NewPasswordPrompt(name));
+    private Task<NewArchiveEncryption?> OnNewPasswordRequested(string name) =>
+        PasswordDialog.ShowForNewAsync(this, Strings.NewPasswordTitle,
+            Strings.NewPasswordPrompt(name));
 
     private Task<string?> OnPasswordRequested(string name, bool retry) =>
         PasswordDialog.ShowAsync(this, Strings.PasswordTitle, Strings.PasswordPrompt(name, retry));

@@ -161,13 +161,17 @@ Works with tar, zip, 7z, rar and the common compressed formats.
   <data name="NewTitle" xml:space="preserve">
     <value>New Archive</value>
   </data>
+  <data name="NewEncryptNames" xml:space="preserve">
+    <value>Encrypt the file names too</value>
+  </data>
+  <data name="NewEncryptNamesHint" xml:space="preserve">
+    <value>Without this, the names of the files inside can be read without the password. With it, the archive cannot be listed at all until the password is given.</value>
+  </data>
   <data name="NewPasswordTitle" xml:space="preserve">
     <value>Encrypt Archive</value>
   </data>
   <data name="NewPasswordPrompt" xml:space="preserve">
-    <value>Choose a password for "{0}", or leave this empty to create it unencrypted.
-
-Only the contents are encrypted. The names of the files inside stay readable.</value>
+    <value>Choose a password for "{0}", or leave this empty to create it unencrypted.</value>
   </data>
   <data name="Created" xml:space="preserve">
     <value>Created {0}.</value>

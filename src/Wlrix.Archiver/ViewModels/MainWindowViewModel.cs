@@ -119,7 +119,7 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
     /// <remarks>
     /// Raised only for a format the backend can actually encrypt, so a zip never asks.
     /// </remarks>
-    public event Func<string, Task<string?>>? NewPasswordRequested;
+    public event Func<string, Task<NewArchiveEncryption?>>? NewPasswordRequested;
 
     /// <summary>Asks the view for the archive's password. Null if the user declined.</summary>
     /// <remarks>
@@ -237,6 +237,7 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
         }
 
         string? password = null;
+        var encryptNames = false;
         if (backend.Supports(format).HasFlag(ArchiveCapabilities.Encrypt)
             && NewPasswordRequested is not null)
         {
@@ -244,13 +245,15 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
             // the dialog is worded so they are different actions.
             if (await NewPasswordRequested(name).ConfigureAwait(true) is not { } chosen)
                 return;
-            password = chosen.Length == 0 ? null : chosen;
+            password = chosen.Password.Length == 0 ? null : chosen.Password;
+            encryptNames = password is not null && chosen.EncryptNames;
         }
 
         await RunAsync(Strings.CreateFailed(name), async token =>
         {
             await backend.CreateAsync(path, format, token).ConfigureAwait(true);
             _password = password;
+            _encryptNames = encryptNames;
             Load(new OpenArchive(path, format, backend.Supports(format), []));
             Status = password is null ? Strings.Created(name) : Strings.CreatedEncrypted(name);
         }).ConfigureAwait(true);
@@ -268,9 +271,13 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
             return;
         }
 
-        // A different archive knows nothing of the last one's password.
+        // A different archive knows nothing of the last one's password, or of how much of it
+        // that password was meant to cover.
         if (!string.Equals(path, Archive?.Path, StringComparison.Ordinal))
+        {
             _password = null;
+            _encryptNames = false;
+        }
 
         await RunAsync(Strings.OpenFailed(name), async token =>
         {
@@ -309,7 +316,8 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
         {
             Status = Strings.Saving(name);
             await WithPasswordAsync(name, (password, inner) =>
-                    backend.AddAsync(archive.Path, archive.Format, sourcePaths, "", password, inner),
+                    backend.AddAsync(archive.Path, archive.Format, sourcePaths, "", password,
+                        _encryptNames, inner),
                 token).ConfigureAwait(true);
             await ReloadAsync(archive, token).ConfigureAwait(true);
         }).ConfigureAwait(true);
@@ -470,6 +478,18 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
     /// worth keeping, and an archive password is not obviously one of them.
     /// </remarks>
     private string? _password;
+
+    /// <summary>
+    /// Whether this archive's entry names are encrypted too, chosen when it was created.
+    /// </summary>
+    /// <remarks>
+    /// Carried alongside the password for the same reason and with the same life: a 7z is not
+    /// written until the first add, so both have to survive from the dialog to that write. It
+    /// stays false for an archive that was opened rather than created, which is right — the
+    /// switch converts an archive that does not have encrypted headers into one that does, and
+    /// adding a file is no occasion to change what an archive is.
+    /// </remarks>
+    private bool _encryptNames;
 
     /// <summary>
     /// Runs work that may turn out to need a password, asking for one and trying again.

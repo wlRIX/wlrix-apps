@@ -160,7 +160,7 @@ public sealed class SharpCompressBackend : IArchiveBackend
         }, cancellationToken);
 
     public Task AddAsync(string path, ArchiveFormat format, IReadOnlyList<string> sourcePaths,
-        string destinationPrefix = "", string? password = null,
+        string destinationPrefix = "", string? password = null, bool encryptNames = false,
         CancellationToken cancellationToken = default) =>
         Rewrite(path, format, cancellationToken, archive =>
         {
