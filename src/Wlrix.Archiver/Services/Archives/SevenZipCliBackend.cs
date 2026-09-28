@@ -47,7 +47,9 @@ public sealed class SevenZipCliBackend : IArchiveBackend
 
     public ArchiveCapabilities Supports(ArchiveFormat format) =>
         _sevenZip is not null && format == ArchiveFormat.SevenZip
-            ? ArchiveCapabilities.All
+            // Encrypt as well, which no other backend here claims: `7z a -p` encrypts what it
+            // writes, so an archive created through this one can actually be protected.
+            ? ArchiveCapabilities.All | ArchiveCapabilities.Encrypt
             : ArchiveCapabilities.None;
 
     public async Task<OpenArchive> OpenAsync(string path, ArchiveFormat format,

@@ -137,9 +137,6 @@ Works with tar, zip, 7z, rar and the common compressed formats.
   <data name="EncodingAutomaticDetected" xml:space="preserve">
     <value>Automatic ({0})</value>
   </data>
-  <data name="NewNotImplemented" xml:space="preserve">
-    <value>Creating a new archive is not built yet.</value>
-  </data>
   <data name="StatusDecompressing" xml:space="preserve">
     <value>Decompressing {0}...</value>
   </data>
@@ -160,6 +157,29 @@ Works with tar, zip, 7z, rar and the common compressed formats.
   </data>
   <data name="StatusCanceled" xml:space="preserve">
     <value>Canceled.</value>
+  </data>
+  <data name="NewTitle" xml:space="preserve">
+    <value>New Archive</value>
+  </data>
+  <data name="NewPasswordTitle" xml:space="preserve">
+    <value>Encrypt Archive</value>
+  </data>
+  <data name="NewPasswordPrompt" xml:space="preserve">
+    <value>Choose a password for "{0}", or leave this empty to create it unencrypted.
+
+Only the contents are encrypted. The names of the files inside stay readable.</value>
+  </data>
+  <data name="Created" xml:space="preserve">
+    <value>Created {0}.</value>
+  </data>
+  <data name="CreatedEncrypted" xml:space="preserve">
+    <value>Created {0}. Its contents will be encrypted as they are added.</value>
+  </data>
+  <data name="ErrorCreateFailed" xml:space="preserve">
+    <value>Could not create {0}.</value>
+  </data>
+  <data name="ErrorCannotCreate" xml:space="preserve">
+    <value>Nothing here can create "{0}". Try .zip, .tar or .7z.</value>
   </data>
   <data name="CannotWriteEncrypted" xml:space="preserve">
     <value>"{0}" is encrypted, and its encryption cannot be written back. Changing it would leave the contents readable by anyone, so it is open for reading only.</value>

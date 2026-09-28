@@ -62,9 +62,7 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
         Open = ReactiveCommand.CreateFromTask(() => OpenRequestedAsync());
         Extract = ReactiveCommand.CreateFromTask(() => ExtractRequestedAsync(), hasArchive);
         Remove = ReactiveCommand.CreateFromTask(() => RemoveRequestedAsync(), canRemove);
-        // Wired but disabled: the new-archive dialog is the next piece of work, and a menu item
-        // that opens nothing is worse than one that is visibly not ready yet.
-        New = ReactiveCommand.Create(() => { }, Observable.Return(false));
+        New = ReactiveCommand.CreateFromTask(() => NewRequestedAsync());
         Exit = ReactiveCommand.Create(() => ExitRequested?.Invoke());
         Cancel = ReactiveCommand.Create(
             () => _running?.Cancel(), this.WhenAnyValue(model => model.IsBusy));
@@ -112,6 +110,17 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
     public event Func<string, Task<bool>>? ConfirmRequested;
 
     /// <summary>Raised (UI thread) to put an error in front of the user.</summary>
+    /// <summary>Asks the view where to put a new archive. Null if the user canceled.</summary>
+    public event Func<Task<string?>>? NewArchiveRequested;
+
+    /// <summary>
+    /// Asks the view for a password for a new archive. Null if canceled, empty for none.
+    /// </summary>
+    /// <remarks>
+    /// Raised only for a format the backend can actually encrypt, so a zip never asks.
+    /// </remarks>
+    public event Func<string, Task<string?>>? NewPasswordRequested;
+
     /// <summary>Asks the view for the archive's password. Null if the user declined.</summary>
     /// <remarks>
     /// Two arguments because there are two questions. With nothing tried yet the archive is
@@ -197,6 +206,54 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
             Selection.Add(node);
 
         this.RaisePropertyChanged(nameof(HasSelection));
+    }
+
+    /// <summary>Creates an archive and opens it, optionally encrypted.</summary>
+    /// <remarks>
+    /// Two questions, and the second is only asked when it can be honored: where to put it, then
+    /// — if the backend that will write the format can encrypt at all — a password. Offering
+    /// encryption for a format this application cannot encrypt would be the worst kind of wrong,
+    /// so a zip is created without ever raising the question.
+    ///
+    /// <para>
+    /// A 7z does not exist on disk until something is put in it: the tool will not write an empty
+    /// archive and has no switch that makes it. So the window opens on an archive with no entries
+    /// and no file behind it yet, and the password is held until the first add, which is what
+    /// creates the file and encrypts what goes into it.
+    /// </para>
+    /// </remarks>
+    private async Task NewRequestedAsync()
+    {
+        if (NewArchiveRequested is null || await NewArchiveRequested().ConfigureAwait(true) is not { } path)
+            return;
+
+        var format = _registry.Identify(path);
+        var backend = _registry.For(format);
+        var name = System.IO.Path.GetFileName(path);
+        if (backend is null || !backend.Supports(format).HasFlag(ArchiveCapabilities.Create))
+        {
+            ErrorRaised?.Invoke(Strings.CannotCreate(name));
+            return;
+        }
+
+        string? password = null;
+        if (backend.Supports(format).HasFlag(ArchiveCapabilities.Encrypt)
+            && NewPasswordRequested is not null)
+        {
+            // Null is "changed my mind", empty is "no encryption". They are different answers and
+            // the dialog is worded so they are different actions.
+            if (await NewPasswordRequested(name).ConfigureAwait(true) is not { } chosen)
+                return;
+            password = chosen.Length == 0 ? null : chosen;
+        }
+
+        await RunAsync(Strings.CreateFailed(name), async token =>
+        {
+            await backend.CreateAsync(path, format, token).ConfigureAwait(true);
+            _password = password;
+            Load(new OpenArchive(path, format, backend.Supports(format), []));
+            Status = password is null ? Strings.Created(name) : Strings.CreatedEncrypted(name);
+        }).ConfigureAwait(true);
     }
 
     /// <summary>Opens <paramref name="path"/>, replacing whatever is open.</summary>

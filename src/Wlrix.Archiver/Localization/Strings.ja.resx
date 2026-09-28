@@ -137,9 +137,6 @@ tar、zip、7z、rar などの一般的な圧縮形式に対応しています�
   <data name="EncodingAutomaticDetected" xml:space="preserve">
     <value>自動検出（{0}）</value>
   </data>
-  <data name="NewNotImplemented" xml:space="preserve">
-    <value>新規アーカイブの作成はまだ実装されていません。</value>
-  </data>
   <data name="StatusDecompressing" xml:space="preserve">
     <value>{0} を展開しています...</value>
   </data>
@@ -160,6 +157,29 @@ tar、zip、7z、rar などの一般的な圧縮形式に対応しています�
   </data>
   <data name="StatusCanceled" xml:space="preserve">
     <value>中止しました。</value>
+  </data>
+  <data name="NewTitle" xml:space="preserve">
+    <value>新規アーカイブ</value>
+  </data>
+  <data name="NewPasswordTitle" xml:space="preserve">
+    <value>アーカイブの暗号化</value>
+  </data>
+  <data name="NewPasswordPrompt" xml:space="preserve">
+    <value>「{0}」のパスワードを入力してください。暗号化しない場合は空のままにします。
+
+暗号化されるのは内容だけです。中のファイル名は読み取れる状態のままになります。</value>
+  </data>
+  <data name="Created" xml:space="preserve">
+    <value>{0} を作成しました。</value>
+  </data>
+  <data name="CreatedEncrypted" xml:space="preserve">
+    <value>{0} を作成しました。追加した内容は暗号化されます。</value>
+  </data>
+  <data name="ErrorCreateFailed" xml:space="preserve">
+    <value>{0} を作成できませんでした。</value>
+  </data>
+  <data name="ErrorCannotCreate" xml:space="preserve">
+    <value>「{0}」を作成できる方法がありません。.zip、.tar、.7z をお試しください。</value>
   </data>
   <data name="CannotWriteEncrypted" xml:space="preserve">
     <value>「{0}」は暗号化されていますが、暗号化したまま書き戻すことができません。変更すると内容が誰でも読める状態になるため、読み取り専用で開いています。</value>

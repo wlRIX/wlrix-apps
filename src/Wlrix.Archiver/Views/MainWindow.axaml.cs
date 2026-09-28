@@ -71,6 +71,8 @@ public partial class MainWindow : Window
         model.DestinationRequested += OnDestinationRequested;
         model.ConfirmRequested += OnConfirmRequested;
         model.PasswordRequested += OnPasswordRequested;
+        model.NewArchiveRequested += OnNewArchiveRequested;
+        model.NewPasswordRequested += OnNewPasswordRequested;
         model.ErrorRaised += OnErrorRaised;
         model.AboutRequested += OnAboutRequested;
         model.ExitRequested += Close;
@@ -90,6 +92,8 @@ public partial class MainWindow : Window
             model.DestinationRequested -= OnDestinationRequested;
             model.ConfirmRequested -= OnConfirmRequested;
             model.PasswordRequested -= OnPasswordRequested;
+            model.NewArchiveRequested -= OnNewArchiveRequested;
+            model.NewPasswordRequested -= OnNewPasswordRequested;
             model.ErrorRaised -= OnErrorRaised;
             model.AboutRequested -= OnAboutRequested;
             model.ExitRequested -= Close;
@@ -139,6 +143,39 @@ public partial class MainWindow : Window
 
         return folders.Count == 0 ? null : folders[0].TryGetLocalPath();
     }
+
+    /// <summary>Asks where a new archive should go, and what kind it should be.</summary>
+    /// <remarks>
+    /// The type list is what decides the format: the archiver identifies a format from the name,
+    /// so picking "7z archive" and getting <c>.7z</c> appended is the whole mechanism. Zip is
+    /// first because it is the one every other system can open.
+    /// </remarks>
+    private async Task<string?> OnNewArchiveRequested()
+    {
+        var file = await StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
+        {
+            Title = Strings.NewTitle,
+            DefaultExtension = "zip",
+            ShowOverwritePrompt = true,
+            FileTypeChoices =
+            [
+                new FilePickerFileType("Zip") { Patterns = ["*.zip"] },
+                new FilePickerFileType("7z") { Patterns = ["*.7z"] },
+                new FilePickerFileType("Tar") { Patterns = ["*.tar"] },
+                new FilePickerFileType("Tar + gzip") { Patterns = ["*.tar.gz"] },
+                new FilePickerFileType("Tar + xz") { Patterns = ["*.tar.xz"] },
+                new FilePickerFileType("Tar + zstd") { Patterns = ["*.tar.zst"] },
+            ],
+        });
+
+        return file?.TryGetLocalPath();
+    }
+
+    /// <summary>
+    /// Offers a password for a new archive. Null cancels; empty means no encryption.
+    /// </summary>
+    private Task<string?> OnNewPasswordRequested(string name) =>
+        PasswordDialog.ShowAsync(this, Strings.NewPasswordTitle, Strings.NewPasswordPrompt(name));
 
     private Task<string?> OnPasswordRequested(string name, bool retry) =>
         PasswordDialog.ShowAsync(this, Strings.PasswordTitle, Strings.PasswordPrompt(name, retry));

@@ -27,10 +27,26 @@ public static class Strings
     public static string ErrorTitle => Catalog.Get("ErrorTitle");
     public static string EmptyNoArchive => Catalog.Get("EmptyNoArchive");
     public static string EmptyArchive => Catalog.Get("EmptyArchive");
-    public static string NewNotImplemented => Catalog.Get("NewNotImplemented");
 
     public static string About(string version, bool hasSevenZip) => Catalog.Format(
         hasSevenZip ? "AboutMessage" : "AboutMessageWithoutSevenZip", version);
+
+    /// <summary>The save dialog's title when creating an archive.</summary>
+    public static string NewTitle => Catalog.Get("NewTitle");
+
+    public static string NewPasswordTitle => Catalog.Get("NewPasswordTitle");
+
+    /// <summary>
+    /// The optional-password prompt. Says what encryption does and does not cover, because
+    /// "encrypted" is easy to read as more than it is.
+    /// </summary>
+    public static string NewPasswordPrompt(string name) =>
+        Catalog.Format("NewPasswordPrompt", name);
+
+    public static string Created(string name) => Catalog.Format("Created", name);
+    public static string CreatedEncrypted(string name) => Catalog.Format("CreatedEncrypted", name);
+    public static string CreateFailed(string name) => Catalog.Format("ErrorCreateFailed", name);
+    public static string CannotCreate(string name) => Catalog.Format("ErrorCannotCreate", name);
 
     /// <summary>Why an encrypted archive this application can read is not one it will change.</summary>
     public static string CannotWriteEncrypted(string name) =>

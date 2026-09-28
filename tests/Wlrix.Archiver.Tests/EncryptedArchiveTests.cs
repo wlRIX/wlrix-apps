@@ -1,3 +1,4 @@
+using System.Reactive.Linq;
 using Microsoft.Extensions.Logging.Abstractions;
 using Wlrix.Archiver.Models;
 using Wlrix.Archiver.Services;
@@ -254,6 +255,146 @@ public class EncryptedArchiveTests
         Assert.Equal([false, true], asked);
         Assert.NotNull(model.Archive);
         Assert.Equal(3, backend.Attempts);
+    }
+
+    /// <summary>
+    /// Creating offers encryption only where the backend can deliver it.
+    /// </summary>
+    /// <remarks>
+    /// The important half is the negative one. An archive somebody believes is encrypted and is
+    /// not is worse than one they know is not, so a backend that cannot write encryption must
+    /// never be asked for a password — and this asserts the question is not even raised.
+    /// </remarks>
+    [Theory]
+    [InlineData("/tmp/new.7z", true)]
+    [InlineData("/tmp/new.zip", false)]
+    [InlineData("/tmp/new.tar", false)]
+    public async Task OnlyAFormatThatCanBeEncryptedIsOfferedAPassword(string path, bool expected)
+    {
+        var registry = new ArchiveBackendRegistry(
+            [new CreatingBackend(ArchiveFormat.SevenZip, encrypts: true),
+             new CreatingBackend(ArchiveFormat.Zip, encrypts: false),
+             new CreatingBackend(ArchiveFormat.Tar, encrypts: false)]);
+        var model = new MainWindowViewModel(registry, new FilenameDecoder(),
+            new DragStaging(registry), NullLogger<MainWindowViewModel>.Instance);
+
+        var asked = false;
+        model.NewArchiveRequested += () => Task.FromResult<string?>(path);
+        model.NewPasswordRequested += _ =>
+        {
+            asked = true;
+            return Task.FromResult<string?>(Password);
+        };
+
+        await model.New.Execute().FirstAsync();
+
+        Assert.Equal(expected, asked);
+        Assert.NotNull(model.Archive);
+    }
+
+    /// <summary>
+    /// A password chosen at creation is the one the first add uses.
+    /// </summary>
+    /// <remarks>
+    /// This is the whole of what "create an encrypted archive" means for 7z, which will not write
+    /// an empty archive: nothing exists on disk until something is added, so the password has to
+    /// survive from the dialog to that first write or the archive is created in the clear.
+    /// </remarks>
+    [Fact]
+    public async Task APasswordChosenAtCreationReachesTheFirstAdd()
+    {
+        var backend = new CreatingBackend(ArchiveFormat.SevenZip, encrypts: true);
+        var registry = new ArchiveBackendRegistry([backend]);
+        var model = new MainWindowViewModel(registry, new FilenameDecoder(),
+            new DragStaging(registry), NullLogger<MainWindowViewModel>.Instance);
+
+        model.NewArchiveRequested += () => Task.FromResult<string?>("/tmp/new.7z");
+        model.NewPasswordRequested += _ => Task.FromResult<string?>(Password);
+
+        await model.New.Execute().FirstAsync();
+        await model.AddAsync(["/tmp/a.txt"]);
+
+        Assert.Equal(Password, backend.AddedWith);
+    }
+
+    /// <summary>Accepting the prompt with nothing typed creates an unencrypted archive.</summary>
+    /// <remarks>
+    /// Distinct from canceling, which calls the creation off entirely. An empty TextBox has a
+    /// null Text, so the dialog has to coalesce or these two become the same answer.
+    /// </remarks>
+    [Fact]
+    public async Task AnEmptyPasswordMeansNoEncryptionRatherThanNoArchive()
+    {
+        var backend = new CreatingBackend(ArchiveFormat.SevenZip, encrypts: true);
+        var registry = new ArchiveBackendRegistry([backend]);
+        var model = new MainWindowViewModel(registry, new FilenameDecoder(),
+            new DragStaging(registry), NullLogger<MainWindowViewModel>.Instance);
+
+        model.NewArchiveRequested += () => Task.FromResult<string?>("/tmp/new.7z");
+        model.NewPasswordRequested += _ => Task.FromResult<string?>("");
+
+        await model.New.Execute().FirstAsync();
+        await model.AddAsync(["/tmp/a.txt"]);
+
+        Assert.NotNull(model.Archive);
+        Assert.Null(backend.AddedWith);
+    }
+
+    [Fact]
+    public async Task CancelingThePasswordPromptCreatesNothing()
+    {
+        var backend = new CreatingBackend(ArchiveFormat.SevenZip, encrypts: true);
+        var registry = new ArchiveBackendRegistry([backend]);
+        var model = new MainWindowViewModel(registry, new FilenameDecoder(),
+            new DragStaging(registry), NullLogger<MainWindowViewModel>.Instance);
+
+        model.NewArchiveRequested += () => Task.FromResult<string?>("/tmp/new.7z");
+        model.NewPasswordRequested += _ => Task.FromResult<string?>(null);
+
+        await model.New.Execute().FirstAsync();
+
+        Assert.Null(model.Archive);
+        Assert.False(backend.Created);
+    }
+
+    /// <summary>A backend that can create, and records what it was told to encrypt with.</summary>
+    private sealed class CreatingBackend(ArchiveFormat mine, bool encrypts) : IArchiveBackend
+    {
+        public bool Created { get; private set; }
+
+        public string? AddedWith { get; private set; }
+
+        public string Name => "creating";
+
+        public ArchiveCapabilities Supports(ArchiveFormat format) =>
+            format != mine ? ArchiveCapabilities.None
+                : encrypts ? ArchiveCapabilities.All | ArchiveCapabilities.Encrypt
+                : ArchiveCapabilities.All;
+
+        public Task<OpenArchive> OpenAsync(string path, ArchiveFormat format, string? password = null,
+            IProgress<ArchiveProgress>? progress = null, CancellationToken ct = default) =>
+            Task.FromResult(new OpenArchive(path, format, Supports(format), []));
+
+        public Task ExtractAsync(string path, ArchiveFormat format, IReadOnlyList<string> entries,
+            string destination, bool flatten = false, string? password = null,
+            IProgress<ArchiveProgress>? progress = null, CancellationToken ct = default) =>
+            Task.CompletedTask;
+
+        public Task AddAsync(string path, ArchiveFormat format, IReadOnlyList<string> sources,
+            string prefix = "", string? password = null, CancellationToken ct = default)
+        {
+            AddedWith = password;
+            return Task.CompletedTask;
+        }
+
+        public Task RemoveAsync(string path, ArchiveFormat format, IReadOnlyList<string> entries,
+            string? password = null, CancellationToken ct = default) => Task.CompletedTask;
+
+        public Task CreateAsync(string path, ArchiveFormat format, CancellationToken ct = default)
+        {
+            Created = true;
+            return Task.CompletedTask;
+        }
     }
 
     /// <summary>Declining the prompt cancels rather than failing.</summary>

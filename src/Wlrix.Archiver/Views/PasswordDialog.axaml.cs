@@ -21,11 +21,22 @@ public partial class PasswordDialog : Window
     public PasswordDialog()
     {
         InitializeComponent();
-        Accept.Click += (_, _) => Close(Input.Text);
+        // Coalesced, and it matters: an empty TextBox has a *null* Text, so closing with it
+        // straight would make "OK with nothing typed" indistinguishable from Cancel. Creating an
+        // archive needs those to be different answers -- empty means "do not encrypt it".
+        Accept.Click += (_, _) => Close(Input.Text ?? string.Empty);
         Reject.Click += (_, _) => Close(null);
     }
 
-    /// <summary>Asks for a password, returning null if the user declined.</summary>
+    /// <summary>
+    /// Asks for a password. Null if the user canceled, empty if they accepted without typing one.
+    /// </summary>
+    /// <remarks>
+    /// Both answers exist because both are meaningful when creating an archive: canceling calls
+    /// the whole thing off, while accepting an empty box asks for an unencrypted archive. A
+    /// caller that requires a password treats the two alike, which is why this does not have to
+    /// know which kind of caller it has.
+    /// </remarks>
     public static async Task<string?> ShowAsync(Window owner, string title, string prompt)
     {
         var dialog = new PasswordDialog { Title = title };
