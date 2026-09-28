@@ -65,6 +65,7 @@ public sealed class SharpCompressBackend : IArchiveBackend
     };
 
     public Task<OpenArchive> OpenAsync(string path, ArchiveFormat format,
+        string? password = null,
         IProgress<ArchiveProgress>? progress = null,
         CancellationToken cancellationToken = default) =>
         Task.Run(() =>
@@ -76,7 +77,7 @@ public sealed class SharpCompressBackend : IArchiveBackend
             if (format.IsSingleStream())
                 return new OpenArchive(path, format, Supports(format), [SingleStreamEntry(path)]);
 
-            using var session = OpenSession(path, format, progress, cancellationToken);
+            using var session = OpenSession(path, format, password, progress, cancellationToken);
             var entries = new List<ArchiveEntry>();
             var throttle = new ProgressThrottle<ArchiveProgress>(progress);
             foreach (var entry in session.Archive.Entries)
@@ -90,11 +91,19 @@ public sealed class SharpCompressBackend : IArchiveBackend
                 throttle.Report(new ArchiveProgress(ArchivePhase.Reading, Count: entries.Count));
             }
 
-            return new OpenArchive(path, format, Supports(format), entries);
+            // Encryption takes the writing capabilities away, whatever the format could do
+            // otherwise. See WouldStripEncryption: this library reads encryption and cannot
+            // write it, so the menus have to stop offering what would quietly undo it.
+            var capabilities = Supports(format);
+            if (entries.Any(entry => entry.IsEncrypted))
+                capabilities &= ~(ArchiveCapabilities.Add | ArchiveCapabilities.Remove);
+
+            return new OpenArchive(path, format, capabilities, entries);
         }, cancellationToken);
 
     public Task ExtractAsync(string path, ArchiveFormat format, IReadOnlyList<string> entryPaths,
         string destinationDirectory, bool flatten = false,
+        string? password = null,
         IProgress<ArchiveProgress>? progress = null,
         CancellationToken cancellationToken = default) =>
         Task.Run(() =>
@@ -114,7 +123,7 @@ public sealed class SharpCompressBackend : IArchiveBackend
                 return;
             }
 
-            using var session = OpenSession(path, format, progress, cancellationToken);
+            using var session = OpenSession(path, format, password, progress, cancellationToken);
             var throttle = new ProgressThrottle<ArchiveProgress>(progress);
             var written = 0;
             foreach (var entry in session.Archive.Entries)
@@ -130,13 +139,29 @@ public sealed class SharpCompressBackend : IArchiveBackend
                 // the oldest trick against an extractor, and SharpCompress does not check.
                 var target = ResolveTarget(destinationDirectory, Normalize(entry.Key), flatten);
                 Directory.CreateDirectory(Path.GetDirectoryName(target)!);
-                entry.WriteToFile(target, options);
+                try
+                {
+                    entry.WriteToFile(target, options);
+                }
+                // Per entry, not per archive: an archive may hold both encrypted and plain
+                // members, and the question only arises on reaching one of the former. Which
+                // exception that is depends on how the entry was encrypted, and only the second
+                // needs the guard -- an InvalidFormatException from a *plain* entry is a corrupt
+                // archive, and calling that a password problem would send the user hunting for
+                // one that does not exist.
+                catch (Exception ex) when (ex is CryptographicException
+                                               || (entry.IsEncrypted && ex is InvalidFormatException))
+                {
+                    throw PasswordProblem(ex, password);
+                }
+
                 throttle.Report(new ArchiveProgress(ArchivePhase.Extracting, Count: ++written));
             }
         }, cancellationToken);
 
     public Task AddAsync(string path, ArchiveFormat format, IReadOnlyList<string> sourcePaths,
-        string destinationPrefix = "", CancellationToken cancellationToken = default) =>
+        string destinationPrefix = "", string? password = null,
+        CancellationToken cancellationToken = default) =>
         Rewrite(path, format, cancellationToken, archive =>
         {
             foreach (var source in sourcePaths)
@@ -151,7 +176,7 @@ public sealed class SharpCompressBackend : IArchiveBackend
         });
 
     public Task RemoveAsync(string path, ArchiveFormat format, IReadOnlyList<string> entryPaths,
-        CancellationToken cancellationToken = default) =>
+        string? password = null, CancellationToken cancellationToken = default) =>
         Rewrite(path, format, cancellationToken, archive =>
         {
             var doomed = new EntrySelection(entryPaths);
@@ -174,6 +199,53 @@ public sealed class SharpCompressBackend : IArchiveBackend
             using var stream = File.Create(path);
             archive.SaveTo(stream, WriterFor(format));
         }, cancellationToken);
+
+    /// <summary>Refuses to rewrite an archive that holds anything encrypted.</summary>
+    /// <remarks>
+    /// <b>This library reads encryption and cannot write it.</b> <c>Password</c> is a property of
+    /// <c>ReaderOptions</c> and of nothing on the writing side, so <c>SaveTo</c> re-serializes
+    /// every entry in the clear. Adding one file to an encrypted zip would therefore decrypt the
+    /// whole archive in place, and it would look like it had worked — which is the worst possible
+    /// way for this to go wrong, because the archive is encrypted precisely so that it is not
+    /// readable and nothing would say it had stopped being so.
+    ///
+    /// <para>
+    /// The capabilities reported by <see cref="OpenAsync"/> already withhold Add and Remove for
+    /// such an archive, so the menus do not offer it. This is the second line, for a caller that
+    /// reached the backend without asking — and for the day somebody adds a third.
+    /// </para>
+    ///
+    /// <para>
+    /// 7z has no such limit: the command line re-encrypts what it writes, so an encrypted 7z is
+    /// editable through <see cref="SevenZipCliBackend"/> and only these formats are refused.
+    /// </para>
+    /// </remarks>
+    private static void WouldStripEncryption(Session session)
+    {
+        if (session.Archive.Entries.Any(entry => entry.IsEncrypted))
+        {
+            throw new ArchiveException(
+                "This archive is encrypted, and encryption cannot be written back; "
+                + "changing it would leave its contents readable by anyone.");
+        }
+    }
+
+    /// <summary>Turns SharpCompress's one encryption failure into the question it really is.</summary>
+    /// <remarks>
+    /// Which exception SharpCompress raises depends on how the entry was encrypted, not on what
+    /// went wrong: ZipCrypto gives <c>CryptographicException</c> ("No password supplied for
+    /// encrypted zip.", or "The password did not match."), while AES gives
+    /// <c>InvalidFormatException</c> — the password-verify value fails to match before any
+    /// decryption is attempted, so to the reader it looks like a malformed entry. Neither says
+    /// which half it is, so that is taken from whether we had a password at all.
+    ///
+    /// <para>
+    /// The message the user saw before any of this existed was the library's "The password did
+    /// not match", for an archive they had never been asked about.
+    /// </para>
+    /// </remarks>
+    private static ArchivePasswordException PasswordProblem(Exception ex, string? password) =>
+        new(ex.Message, passwordSupplied: !string.IsNullOrEmpty(password), ex);
 
     /// <summary>An open archive, plus any scratch file it took to get at one.</summary>
     private sealed class Session(IArchive archive, Stream? stream, string? scratch) : IDisposable
@@ -217,18 +289,22 @@ public sealed class SharpCompressBackend : IArchiveBackend
     /// that does not fit in memory, and random access is the whole point — a forward-only
     /// reader would do for listing but not for editing.
     /// </remarks>
-    private Session OpenSession(string path, ArchiveFormat format,
+    private Session OpenSession(string path, ArchiveFormat format, string? password,
         IProgress<ArchiveProgress>? progress = null,
         CancellationToken cancellationToken = default)
     {
         try
         {
             if (!format.IsTar() || format == ArchiveFormat.Tar)
-                return new Session(ArchiveFactory.Open(path, ReaderOptions()), null, null);
+                return new Session(ArchiveFactory.Open(path, ReaderOptions(password)), null, null);
 
             var scratch = Decompress(path, format, progress, cancellationToken);
             var stream = File.OpenRead(scratch);
-            return new Session(TarArchive.Open(stream, ReaderOptions()), stream, scratch);
+            return new Session(TarArchive.Open(stream, ReaderOptions(password)), stream, scratch);
+        }
+        catch (CryptographicException ex)
+        {
+            throw PasswordProblem(ex, password);
         }
         catch (Exception ex) when (ex is IOException or InvalidOperationException
                                        or ArchiveException or NotSupportedException)
@@ -373,9 +449,10 @@ public sealed class SharpCompressBackend : IArchiveBackend
     /// the hook that lets a Shift-JIS name be read as Japanese instead of mojibake. Built fresh
     /// each time so a change from the View menu takes effect on the next read.
     /// </remarks>
-    private ReaderOptions ReaderOptions() => new()
+    private ReaderOptions ReaderOptions(string? password = null) => new()
     {
         ArchiveEncoding = new ArchiveEncoding { CustomDecoder = _decoder.CustomDecoder },
+        Password = password,
     };
 
     /// <summary>
@@ -394,8 +471,9 @@ public sealed class SharpCompressBackend : IArchiveBackend
             var temporary = path + ".wlrix-new";
             try
             {
-                using (var session = OpenSession(path, format))
+                using (var session = OpenSession(path, format, password: null))
                 {
+                    WouldStripEncryption(session);
                     edit(session.Writable);
                     cancellationToken.ThrowIfCancellationRequested();
                     using var stream = File.Create(temporary);

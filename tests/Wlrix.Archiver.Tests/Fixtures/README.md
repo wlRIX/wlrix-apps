@@ -14,6 +14,8 @@ quietly turn the regression tests into tests of nothing.
 | `special-bits.tar`   | A plain, a sticky and a setgid directory plus a setuid file. SharpCompress reports the first two identically. |
 | `modes.tar`          | Modes, uid/gid and a symlink, for the Mode/Owner/Group columns.                                               |
 | `modes.tar.gz`       | The same tar gzipped, for compound-extension format detection.                                                |
+| `encrypted.zip`      | AES-256, password `hunter2`. A wrong password reads as a *malformed entry*, not a crypto failure.              |
+| `encrypted-zipcrypto.zip` | The same, ZipCrypto. A wrong password raises `CryptographicException` instead. Both halves matter.        |
 
 The generator lives in this repository's history alongside the commit that added them; the archives themselves are the
 fixture.

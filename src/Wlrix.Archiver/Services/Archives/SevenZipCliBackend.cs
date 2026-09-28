@@ -51,6 +51,7 @@ public sealed class SevenZipCliBackend : IArchiveBackend
             : ArchiveCapabilities.None;
 
     public async Task<OpenArchive> OpenAsync(string path, ArchiveFormat format,
+        string? password = null,
         IProgress<ArchiveProgress>? progress = null,
         CancellationToken cancellationToken = default)
     {
@@ -58,12 +59,13 @@ public sealed class SevenZipCliBackend : IArchiveBackend
         // that the read has started. A phase with no fraction is what the status line shows as
         // an indeterminate "Reading archive...".
         progress?.Report(new ArchiveProgress(ArchivePhase.Reading));
-        var entries = await ListAsync(path, cancellationToken).ConfigureAwait(false);
+        var entries = await ListAsync(path, password, cancellationToken).ConfigureAwait(false);
         return new OpenArchive(path, format, Supports(format), entries);
     }
 
     public async Task ExtractAsync(string path, ArchiveFormat format,
         IReadOnlyList<string> entryPaths, string destinationDirectory, bool flatten = false,
+        string? password = null,
         IProgress<ArchiveProgress>? progress = null,
         CancellationToken cancellationToken = default)
     {
@@ -74,12 +76,13 @@ public sealed class SevenZipCliBackend : IArchiveBackend
         // moving files afterwards keeps the two backends' `flatten` meaning identical.
         var arguments = new List<string> { flatten ? "e" : "x" };
         arguments.AddRange(CommonSwitches);
+        arguments.Add(PasswordSwitch(password));
         arguments.Add("-o" + destinationDirectory);
         arguments.Add("--");
         arguments.Add(path);
         // Directories are expanded to their contents here rather than left to 7z, so that
         // selecting a folder means the same thing it means in the managed backend.
-        arguments.AddRange(await ExpandAsync(path, entryPaths, cancellationToken)
+        arguments.AddRange(await ExpandAsync(path, entryPaths, password, cancellationToken)
             .ConfigureAwait(false));
 
         await RunAsync(arguments, path, cancellationToken).ConfigureAwait(false);
@@ -87,7 +90,7 @@ public sealed class SevenZipCliBackend : IArchiveBackend
 
     public async Task AddAsync(string path, ArchiveFormat format,
         IReadOnlyList<string> sourcePaths, string destinationPrefix = "",
-        CancellationToken cancellationToken = default)
+        string? password = null, CancellationToken cancellationToken = default)
     {
         if (sourcePaths.Count == 0)
             return;
@@ -103,6 +106,7 @@ public sealed class SevenZipCliBackend : IArchiveBackend
 
         var arguments = new List<string> { "a" };
         arguments.AddRange(CommonSwitches);
+        AddWritePassword(arguments, password);
         arguments.Add("--");
         arguments.Add(path);
         arguments.AddRange(sourcePaths);
@@ -111,16 +115,18 @@ public sealed class SevenZipCliBackend : IArchiveBackend
     }
 
     public async Task RemoveAsync(string path, ArchiveFormat format,
-        IReadOnlyList<string> entryPaths, CancellationToken cancellationToken = default)
+        IReadOnlyList<string> entryPaths, string? password = null,
+        CancellationToken cancellationToken = default)
     {
         if (entryPaths.Count == 0)
             return;
 
         var arguments = new List<string> { "d" };
         arguments.AddRange(CommonSwitches);
+        AddWritePassword(arguments, password);
         arguments.Add("--");
         arguments.Add(path);
-        arguments.AddRange(await ExpandAsync(path, entryPaths, cancellationToken)
+        arguments.AddRange(await ExpandAsync(path, entryPaths, password, cancellationToken)
             .ConfigureAwait(false));
 
         await RunAsync(arguments, path, cancellationToken).ConfigureAwait(false);
@@ -135,13 +141,13 @@ public sealed class SevenZipCliBackend : IArchiveBackend
 
     /// <summary>Resolves a selection to the concrete entry paths it covers.</summary>
     private async Task<IReadOnlyList<string>> ExpandAsync(string path,
-        IReadOnlyList<string> entryPaths, CancellationToken cancellationToken)
+        IReadOnlyList<string> entryPaths, string? password, CancellationToken cancellationToken)
     {
         if (entryPaths.Count == 0)
             return [];
 
         var selection = new EntrySelection(entryPaths);
-        var entries = await ListAsync(path, cancellationToken).ConfigureAwait(false);
+        var entries = await ListAsync(path, password, cancellationToken).ConfigureAwait(false);
         return entries
             .Where(entry => !entry.IsDirectory && selection.Contains(entry.Path))
             .Select(entry => entry.Path)
@@ -149,11 +155,12 @@ public sealed class SevenZipCliBackend : IArchiveBackend
     }
 
     /// <summary>Reads the entry list out of <c>7z l -slt</c>.</summary>
-    private async Task<IReadOnlyList<ArchiveEntry>> ListAsync(string path,
+    private async Task<IReadOnlyList<ArchiveEntry>> ListAsync(string path, string? password,
         CancellationToken cancellationToken)
     {
         var arguments = new List<string> { "l", "-slt" };
         arguments.AddRange(CommonSwitches);
+        arguments.Add(PasswordSwitch(password));
         arguments.Add("--");
         arguments.Add(path);
 
@@ -287,11 +294,64 @@ public sealed class SevenZipCliBackend : IArchiveBackend
             // and the last non-blank one is the message rather than the banner.
             var message = LastLine(result.StandardError) ?? LastLine(result.StandardOutput)
                 ?? $"7z exited with {result.ExitCode}";
+
+            // 7z says the same thing whichever half it is -- "Cannot open encrypted archive.
+            // Wrong password?" for a header-encrypted archive, "Data Error in encrypted file.
+            // Wrong password?" for an encrypted member -- and says it whether a password was
+            // wrong or simply absent. The phrase is the signal; which question to ask is decided
+            // from whether we supplied one.
+            if (result.StandardOutput.Contains("Wrong password", StringComparison.OrdinalIgnoreCase)
+                || result.StandardError.Contains("Wrong password", StringComparison.OrdinalIgnoreCase))
+            {
+                throw new ArchivePasswordException(message, passwordSupplied: WasGivenAPassword(arguments));
+            }
+
             throw new ArchiveException($"{System.IO.Path.GetFileName(path)}: {message}");
         }
 
         return result;
     }
+
+    /// <summary>Adds <c>-p</c> to a write, but only when there is a real password.</summary>
+    /// <remarks>
+    /// The opposite rule to a read, and both halves are measured rather than assumed.
+    ///
+    /// <para>
+    /// It has to be passed when there is one: <c>7z a</c> without <c>-p</c> against an encrypted
+    /// archive succeeds and writes the new member <em>in the clear</em>, sitting beside encrypted
+    /// ones. Nothing reports it. With <c>-p</c>, the new entry is encrypted like the rest and an
+    /// archive written with <c>-mhe=on</c> keeps its encrypted headers.
+    /// </para>
+    ///
+    /// <para>
+    /// And it must not be passed when there is not: <c>7z a -p""</c> prints "Enter password:" and
+    /// waits on a terminal this process does not have, which is a hang rather than an error. A
+    /// read takes the empty one happily, which is why that path always passes it.
+    /// </para>
+    /// </remarks>
+    private static void AddWritePassword(List<string> arguments, string? password)
+    {
+        if (!string.IsNullOrEmpty(password))
+            arguments.Add("-p" + password);
+    }
+
+    /// <summary>Whether the invocation carried a password rather than the empty one.</summary>
+    private static bool WasGivenAPassword(IReadOnlyList<string> arguments) =>
+        arguments.Any(argument => argument.Length > 2 && argument.StartsWith("-p", StringComparison.Ordinal));
+
+    /// <summary>The <c>-p</c> switch, always passed on a read.</summary>
+    /// <remarks>
+    /// Even with no password, and that is the point: given no <c>-p</c> at all, 7z asks for one
+    /// on a terminal this process does not have. An empty one fails immediately instead, which
+    /// is an answer rather than a hang.
+    ///
+    /// <para>
+    /// Reads only. <c>a</c> and <c>d</c> never get it, because <c>-p</c> on a write is an
+    /// instruction to encrypt, and quietly encrypting somebody's archive with the empty string
+    /// would be a far worse bug than the one this fixes.
+    /// </para>
+    /// </remarks>
+    private static string PasswordSwitch(string? password) => "-p" + password;
 
     private static string? LastLine(string text) => text
         .Split('\n')

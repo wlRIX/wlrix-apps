@@ -161,6 +161,24 @@ Works with tar, zip, 7z, rar and the common compressed formats.
   <data name="StatusCanceled" xml:space="preserve">
     <value>Canceled.</value>
   </data>
+  <data name="CannotWriteEncrypted" xml:space="preserve">
+    <value>"{0}" is encrypted, and its encryption cannot be written back. Changing it would leave the contents readable by anyone, so it is open for reading only.</value>
+  </data>
+  <data name="DialogOk" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="DialogCancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="PasswordTitle" xml:space="preserve">
+    <value>Password Required</value>
+  </data>
+  <data name="PasswordPrompt" xml:space="preserve">
+    <value>"{0}" is encrypted. Enter its password to read it.</value>
+  </data>
+  <data name="PasswordWrong" xml:space="preserve">
+    <value>That password does not open "{0}". Try another.</value>
+  </data>
   <data name="Cancel" xml:space="preserve">
     <value>Cancel</value>
   </data>

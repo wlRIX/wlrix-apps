@@ -161,6 +161,24 @@ tar、zip、7z、rar などの一般的な圧縮形式に対応しています�
   <data name="StatusCanceled" xml:space="preserve">
     <value>中止しました。</value>
   </data>
+  <data name="CannotWriteEncrypted" xml:space="preserve">
+    <value>「{0}」は暗号化されていますが、暗号化したまま書き戻すことができません。変更すると内容が誰でも読める状態になるため、読み取り専用で開いています。</value>
+  </data>
+  <data name="DialogOk" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="DialogCancel" xml:space="preserve">
+    <value>キャンセル</value>
+  </data>
+  <data name="PasswordTitle" xml:space="preserve">
+    <value>パスワードが必要です</value>
+  </data>
+  <data name="PasswordPrompt" xml:space="preserve">
+    <value>「{0}」は暗号化されています。読み取るにはパスワードを入力してください。</value>
+  </data>
+  <data name="PasswordWrong" xml:space="preserve">
+    <value>そのパスワードでは「{0}」を開けません。別のパスワードを入力してください。</value>
+  </data>
   <data name="Cancel" xml:space="preserve">
     <value>中止</value>
   </data>

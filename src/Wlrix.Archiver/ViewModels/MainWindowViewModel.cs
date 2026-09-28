@@ -112,6 +112,14 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
     public event Func<string, Task<bool>>? ConfirmRequested;
 
     /// <summary>Raised (UI thread) to put an error in front of the user.</summary>
+    /// <summary>Asks the view for the archive's password. Null if the user declined.</summary>
+    /// <remarks>
+    /// Two arguments because there are two questions. With nothing tried yet the archive is
+    /// simply locked; once something has been tried and refused, saying so is the difference
+    /// between a dialog that looks broken and one that has news.
+    /// </remarks>
+    public event Func<string, bool, Task<string?>>? PasswordRequested;
+
     public event Action<string>? ErrorRaised;
 
     /// <summary>Raised (UI thread) when the About item is chosen.</summary>
@@ -203,13 +211,20 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
             return;
         }
 
+        // A different archive knows nothing of the last one's password.
+        if (!string.Equals(path, Archive?.Path, StringComparison.Ordinal))
+            _password = null;
+
         await RunAsync(Strings.OpenFailed(name), async token =>
         {
-            var archive = await backend.OpenAsync(path, format, ProgressFor(name), token)
-                .ConfigureAwait(true);
-            _logger.ZLogInformation(
-                $"opened {name} as {format} with {archive.Entries.Count} entries");
-            Load(archive);
+            await WithPasswordAsync(name, async (password, inner) =>
+            {
+                var archive = await backend.OpenAsync(path, format, password, ProgressFor(name), inner)
+                    .ConfigureAwait(true);
+                _logger.ZLogInformation(
+                    $"opened {name} as {format} with {archive.Entries.Count} entries");
+                Load(archive);
+            }, token).ConfigureAwait(true);
         }).ConfigureAwait(true);
     }
 
@@ -221,7 +236,13 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
 
         if (!archive.Capabilities.HasFlag(ArchiveCapabilities.Add))
         {
-            ErrorRaised?.Invoke(Strings.ReadOnly(archive.Format.ToString()));
+            // Two different refusals wearing the same shape. "Rar archives are read-only" is
+            // true of the format; an encrypted zip is a format this application writes happily
+            // and an archive it must not, because the library that writes zip cannot write
+            // encryption and would save the contents in the clear.
+            ErrorRaised?.Invoke(archive.Entries.Any(entry => entry.IsEncrypted)
+                ? Strings.CannotWriteEncrypted(System.IO.Path.GetFileName(archive.Path))
+                : Strings.ReadOnly(archive.Format.ToString()));
             return;
         }
 
@@ -230,8 +251,9 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
         await RunAsync(Strings.AddFailed(name), async token =>
         {
             Status = Strings.Saving(name);
-            await backend.AddAsync(archive.Path, archive.Format, sourcePaths, "", token)
-                .ConfigureAwait(true);
+            await WithPasswordAsync(name, (password, inner) =>
+                    backend.AddAsync(archive.Path, archive.Format, sourcePaths, "", password, inner),
+                token).ConfigureAwait(true);
             await ReloadAsync(archive, token).ConfigureAwait(true);
         }).ConfigureAwait(true);
     }
@@ -248,7 +270,7 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
         try
         {
             return await _staging
-                .StageAsync(archive, Selection.Select(node => node.Path).ToList())
+                .StageAsync(archive, Selection.Select(node => node.Path).ToList(), _password)
                 .ConfigureAwait(true);
         }
         catch (Exception ex) when (ex is ArchiveException or IOException
@@ -311,8 +333,9 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
 
         await RunAsync(Strings.ExtractFailed(name), async token =>
         {
-            await backend.ExtractAsync(archive.Path, archive.Format, wanted, destination,
-                    flatten: false, ProgressFor(name), token)
+            await WithPasswordAsync(name, (password, inner) =>
+                    backend.ExtractAsync(archive.Path, archive.Format, wanted, destination,
+                        flatten: false, password, ProgressFor(name), inner), token)
                 .ConfigureAwait(true);
             // Two sentences rather than one with a substituted subject: "Extracted 3 to /tmp"
             // is not a sentence, and neither is its Japanese.
@@ -340,8 +363,9 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
         await RunAsync(Strings.RemoveFailed(name), async token =>
         {
             Status = Strings.Saving(name);
-            await backend.RemoveAsync(archive.Path, archive.Format, doomed, token)
-                .ConfigureAwait(true);
+            await WithPasswordAsync(name, (password, inner) =>
+                    backend.RemoveAsync(archive.Path, archive.Format, doomed, password, inner),
+                token).ConfigureAwait(true);
             await ReloadAsync(archive, token).ConfigureAwait(true);
         }).ConfigureAwait(true);
     }
@@ -350,7 +374,7 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
     {
         var backend = _registry.For(archive.Format)!;
         var name = System.IO.Path.GetFileName(archive.Path);
-        Load(await backend.OpenAsync(archive.Path, archive.Format, ProgressFor(name),
+        Load(await backend.OpenAsync(archive.Path, archive.Format, _password, ProgressFor(name),
             cancellationToken).ConfigureAwait(true));
     }
 
@@ -381,6 +405,53 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
     /// takes the better part of a minute and the user has to be able to stop it, so every
     /// operation runs under a source this owns and cancels on the next one.
     /// </remarks>
+    /// <summary>The password that opened the archive currently loaded, if it needed one.</summary>
+    /// <remarks>
+    /// Kept for as long as that archive is the open one, so extracting after opening does not ask
+    /// again -- and dropped the moment a different file is opened, because it is that archive's
+    /// secret and not this window's. Never written anywhere: there is a keyring for passwords
+    /// worth keeping, and an archive password is not obviously one of them.
+    /// </remarks>
+    private string? _password;
+
+    /// <summary>
+    /// Runs work that may turn out to need a password, asking for one and trying again.
+    /// </summary>
+    /// <remarks>
+    /// The loop is here rather than in the backends because only this layer can ask. A backend
+    /// hits the encrypted entry and says so; what to do about it -- prompt, retry, give up -- is
+    /// a decision about the user, and <see cref="ArchivePasswordException"/> is what carries the
+    /// question up to where that decision lives.
+    ///
+    /// <para>
+    /// Declining is a cancellation rather than a failure, so the status line says so and no error
+    /// dialog appears: choosing not to type a password is not something that went wrong.
+    /// </para>
+    /// </remarks>
+    private async Task WithPasswordAsync(
+        string name, Func<string?, CancellationToken, Task> work, CancellationToken cancellationToken)
+    {
+        var password = _password;
+        while (true)
+        {
+            try
+            {
+                await work(password, cancellationToken).ConfigureAwait(true);
+                _password = password;
+                return;
+            }
+            catch (ArchivePasswordException ex)
+            {
+                if (PasswordRequested is null)
+                    throw;
+
+                password = await PasswordRequested(name, ex.PasswordSupplied).ConfigureAwait(true);
+                if (string.IsNullOrEmpty(password))
+                    throw new OperationCanceledException();
+            }
+        }
+    }
+
     private async Task RunAsync(string failureMessage, Func<CancellationToken, Task> work)
     {
         // Starting a second operation abandons the first rather than queueing behind it: the

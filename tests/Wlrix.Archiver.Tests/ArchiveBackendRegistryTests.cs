@@ -104,20 +104,21 @@ public class ArchiveBackendRegistryTests
         public ArchiveCapabilities Supports(ArchiveFormat other) =>
             other == format ? capabilities : ArchiveCapabilities.None;
 
-        public Task<OpenArchive> OpenAsync(string path, ArchiveFormat f,
+        public Task<OpenArchive> OpenAsync(string path, ArchiveFormat f, string? password = null,
             IProgress<ArchiveProgress>? progress = null, CancellationToken ct = default) =>
             Task.FromResult(new OpenArchive(path, f, capabilities, []));
 
         public Task ExtractAsync(string path, ArchiveFormat f, IReadOnlyList<string> entries,
-            string destination, bool flatten = false,
+            string destination, bool flatten = false, string? password = null,
             IProgress<ArchiveProgress>? progress = null, CancellationToken ct = default) =>
             Task.CompletedTask;
 
         public Task AddAsync(string path, ArchiveFormat f, IReadOnlyList<string> sources,
-            string prefix = "", CancellationToken ct = default) => Task.CompletedTask;
+            string prefix = "", string? supplied = null, CancellationToken ct = default) =>
+            Task.CompletedTask;
 
         public Task RemoveAsync(string path, ArchiveFormat f, IReadOnlyList<string> entries,
-            CancellationToken ct = default) => Task.CompletedTask;
+            string? supplied = null, CancellationToken ct = default) => Task.CompletedTask;
 
         public Task CreateAsync(string path, ArchiveFormat f, CancellationToken ct = default) =>
             Task.CompletedTask;

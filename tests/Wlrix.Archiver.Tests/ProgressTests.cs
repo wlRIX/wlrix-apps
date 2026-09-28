@@ -26,7 +26,7 @@ public class ProgressTests
         // first rather than an unexplained pause before the counting starts.
         var recorder = new Recorder();
 
-        await Backend().OpenAsync(Fixture.Path("modes.tar.gz"), ArchiveFormat.TarGz, recorder);
+        await Backend().OpenAsync(Fixture.Path("modes.tar.gz"), ArchiveFormat.TarGz, progress: recorder);
 
         var phases = recorder.Reports.Select(report => report.Phase).ToList();
         Assert.Contains(ArchivePhase.Decompressing, phases);
@@ -40,7 +40,7 @@ public class ProgressTests
     {
         var recorder = new Recorder();
 
-        await Backend().OpenAsync(Fixture.Path("modes.tar.gz"), ArchiveFormat.TarGz, recorder);
+        await Backend().OpenAsync(Fixture.Path("modes.tar.gz"), ArchiveFormat.TarGz, progress: recorder);
 
         // Bytes read against the file's length is a number that exists up front. How many
         // entries an archive holds is not, so a fraction there would be invented.
@@ -57,7 +57,7 @@ public class ProgressTests
         var recorder = new Recorder();
 
         await Backend().ExtractAsync(Fixture.Path("no-dir-entries.zip"), ArchiveFormat.Zip,
-            [], destination.Path, flatten: false, recorder);
+            [], destination.Path, flatten: false, password: null, recorder);
 
         var counts = recorder.Reports
             .Where(report => report.Phase == ArchivePhase.Extracting)
@@ -86,8 +86,8 @@ public class ProgressTests
         await source.CancelAsync();
 
         await Assert.ThrowsAnyAsync<OperationCanceledException>(() =>
-            Backend().OpenAsync(Fixture.Path("modes.tar.gz"), ArchiveFormat.TarGz, null,
-                source.Token));
+            Backend().OpenAsync(Fixture.Path("modes.tar.gz"), ArchiveFormat.TarGz,
+                cancellationToken: source.Token));
     }
 
     [Fact]
@@ -104,8 +104,8 @@ public class ProgressTests
         await source.CancelAsync();
         try
         {
-            await Backend().OpenAsync(Fixture.Path("modes.tar.gz"), ArchiveFormat.TarGz, null,
-                source.Token);
+            await Backend().OpenAsync(Fixture.Path("modes.tar.gz"), ArchiveFormat.TarGz,
+                cancellationToken: source.Token);
         }
         catch (OperationCanceledException)
         {

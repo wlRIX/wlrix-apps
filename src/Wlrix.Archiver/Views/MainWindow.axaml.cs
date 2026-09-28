@@ -70,6 +70,7 @@ public partial class MainWindow : Window
         model.OpenFileRequested += OnOpenFileRequested;
         model.DestinationRequested += OnDestinationRequested;
         model.ConfirmRequested += OnConfirmRequested;
+        model.PasswordRequested += OnPasswordRequested;
         model.ErrorRaised += OnErrorRaised;
         model.AboutRequested += OnAboutRequested;
         model.ExitRequested += Close;
@@ -88,6 +89,7 @@ public partial class MainWindow : Window
             model.OpenFileRequested -= OnOpenFileRequested;
             model.DestinationRequested -= OnDestinationRequested;
             model.ConfirmRequested -= OnConfirmRequested;
+            model.PasswordRequested -= OnPasswordRequested;
             model.ErrorRaised -= OnErrorRaised;
             model.AboutRequested -= OnAboutRequested;
             model.ExitRequested -= Close;
@@ -137,6 +139,9 @@ public partial class MainWindow : Window
 
         return folders.Count == 0 ? null : folders[0].TryGetLocalPath();
     }
+
+    private Task<string?> OnPasswordRequested(string name, bool retry) =>
+        PasswordDialog.ShowAsync(this, Strings.PasswordTitle, Strings.PasswordPrompt(name, retry));
 
     private async Task<bool> OnConfirmRequested(string message)
     {

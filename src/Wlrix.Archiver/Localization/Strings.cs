@@ -32,6 +32,20 @@ public static class Strings
     public static string About(string version, bool hasSevenZip) => Catalog.Format(
         hasSevenZip ? "AboutMessage" : "AboutMessageWithoutSevenZip", version);
 
+    /// <summary>Why an encrypted archive this application can read is not one it will change.</summary>
+    public static string CannotWriteEncrypted(string name) =>
+        Catalog.Format("CannotWriteEncrypted", name);
+
+    /// <summary>The title of the password prompt, for both of its wordings.</summary>
+    public static string PasswordTitle => Catalog.Get("PasswordTitle");
+
+    /// <summary>
+    /// What to ask, which depends on whether anything has been tried: a locked archive is not
+    /// news, a refused password is.
+    /// </summary>
+    public static string PasswordPrompt(string name, bool retry) =>
+        Catalog.Format(retry ? "PasswordWrong" : "PasswordPrompt", name);
+
     public static string ConfirmRemove(string what) => Catalog.Format("ConfirmRemove", what);
     public static string Unsupported(string name) => Catalog.Format("ErrorUnsupported", name);
     public static string ReadOnly(string format) => Catalog.Format("ErrorReadOnly", format);

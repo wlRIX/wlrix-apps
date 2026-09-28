@@ -40,8 +40,15 @@ public sealed class DragStaging : IDisposable
     /// directory containing it rather than a bare <c>main.c</c> — which is what the receiving
     /// side would have got by extracting the archive itself.
     /// </remarks>
+    /// <param name="password">
+    /// Whatever the window already knows, if the archive is encrypted. A drag cannot stop to ask
+    /// -- the compositor needs the drop handler back before the transfer finishes -- so an
+    /// encrypted archive that has not been unlocked yet fails the drag rather than prompting
+    /// mid-gesture. Opening or extracting it first is what gets the password known.
+    /// </param>
     public async Task<IReadOnlyList<string>> StageAsync(OpenArchive archive,
-        IReadOnlyList<string> entryPaths, CancellationToken cancellationToken = default)
+        IReadOnlyList<string> entryPaths, string? password = null,
+        CancellationToken cancellationToken = default)
     {
         if (entryPaths.Count == 0)
             return [];
@@ -56,7 +63,7 @@ public sealed class DragStaging : IDisposable
         Directory.CreateDirectory(directory);
 
         await backend.ExtractAsync(archive.Path, archive.Format, entryPaths, directory,
-            flatten: false, progress: null, cancellationToken).ConfigureAwait(false);
+            flatten: false, password, progress: null, cancellationToken).ConfigureAwait(false);
 
         // Offer the topmost thing each selected entry produced, not every file underneath it:
         // dragging a directory should drop one directory, not a flat pile of its contents.
