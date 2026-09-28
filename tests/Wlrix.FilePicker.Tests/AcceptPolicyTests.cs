@@ -103,6 +103,30 @@ public class AcceptPolicyTests
         Assert.Equal(Folder.Child("Pictures"), Assert.Single(decision.Chosen!));
     }
 
+    /// <summary>
+    /// A directory dialog must not pre-select, or its empty-selection answer cannot be given.
+    /// </summary>
+    /// <remarks>
+    /// The listing selected its first row after every rebuild so the arrows had something to
+    /// move from. In a directory dialog that made
+    /// <see cref="ChoosingAFolderWithNothingSelectedAnswersWithTheOneOnScreen"/> unreachable
+    /// through the UI: clicking Home and pressing the button extracted into the first
+    /// subdirectory of home, and nothing in the dialog clears a selection. The policy was right
+    /// the whole time and the listing never let it be asked.
+    /// </remarks>
+    [Theory]
+    [InlineData(FileChooserMode.Open, false, true)]
+    [InlineData(FileChooserMode.Open, true, false)]
+    [InlineData(FileChooserMode.Save, false, false)]
+    [InlineData(FileChooserMode.SaveFiles, false, false)]
+    public void OnlyADialogWhereASelectionIsRequiredPreselectsARow(
+        FileChooserMode mode, bool directory, bool expected)
+    {
+        var request = new FileChooserRequest { Mode = mode, Directory = directory };
+
+        Assert.Equal(expected, AcceptPolicy.PreselectsFirstRow(request));
+    }
+
     /// <summary>What somebody who navigated into a folder and pressed the button meant.</summary>
     [Fact]
     public void ChoosingAFolderWithNothingSelectedAnswersWithTheOneOnScreen()

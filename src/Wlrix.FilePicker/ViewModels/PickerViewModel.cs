@@ -134,6 +134,19 @@ public sealed class PickerViewModel : ViewModelBase, IDisposable
     /// <summary>Whether the name field is shown, which is what makes this a save dialog.</summary>
     public bool ShowNameField => _request.Mode == FileChooserMode.Save;
 
+    /// <summary>
+    /// Whether folders are what is being chosen, in which case choosing nothing is an answer.
+    /// </summary>
+    /// <remarks>
+    /// The one mode where an empty selection means something rather than nothing: it means the
+    /// folder being looked at, which is the usual thing somebody wants. See
+    /// <c>AcceptPolicy.Open</c>, and the listing's refusal to pre-select a row.
+    /// </remarks>
+    public bool ChoosingDirectory => _request.Directory;
+
+    /// <summary>Whether the listing should select its first row when it is rebuilt.</summary>
+    public bool PreselectsFirstRow => AcceptPolicy.PreselectsFirstRow(_request);
+
     public bool ShowFilters => Filters.Count > 0;
 
     public bool ShowChoices => Choices.Count > 0;

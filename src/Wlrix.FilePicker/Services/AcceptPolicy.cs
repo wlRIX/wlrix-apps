@@ -124,6 +124,37 @@ internal static class AcceptPolicy
         };
     }
 
+    /// <summary>
+    /// Whether a rebuilt listing should put the selection on its first row.
+    /// </summary>
+    /// <remarks>
+    /// It should, so that the arrows and the button have something to act on — except in the two
+    /// dialogs where a selection means something the user has not said.
+    ///
+    /// <para>
+    /// In a save dialog, selecting a row copies its name into the name field, overwriting the one
+    /// the application asked for before anybody has seen it. A <c>SaveFiles</c> dialog does not
+    /// read the selection at all — the folder is the answer and the names came with the question
+    /// — so a highlighted row there is a claim about nothing.
+    /// </para>
+    ///
+    /// <para>
+    /// When folders are being chosen, an empty selection is an <em>answer</em> — see
+    /// <see cref="Open"/>, which reads it as the folder on screen. Pre-selecting made that answer
+    /// impossible to give: clicking Home and pressing the button chose the first subdirectory of
+    /// home, with no way to say otherwise, because nothing in this dialog clears a selection.
+    /// The listing is still focused either way; focus is what the arrows need and it claims
+    /// nothing about what was chosen.
+    /// </para>
+    /// </remarks>
+    public static bool PreselectsFirstRow(FileChooserRequest request)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+        // Only the dialog whose answer is built from the selection: opening a file. Everything
+        // else either reads the folder instead or fills a field from it.
+        return request is { Mode: FileChooserMode.Open, Directory: false };
+    }
+
     private static AcceptDecision Open(
         FileChooserRequest request,
         Location folder,

@@ -118,13 +118,21 @@ public partial class PickerWindow : Window
         foreach (var row in keep)
             Listing.SelectedItems?.Add(row);
 
-        // Nothing survived, so start at the top -- but never in a save dialog, where selecting
-        // a row puts its name in the field and would overwrite the name the application asked
-        // for before the user had seen it.
-        if (Listing.SelectedIndex < 0 && !model.ShowNameField && Listing.ItemCount > 0)
+        // Nothing survived, so start at the top -- but not in a save dialog, where selecting a
+        // row puts its name in the field and would overwrite the name the application asked for
+        // before the user had seen it, and not when folders are what is being chosen.
+        //
+        // That second exception is the whole of a bug worth remembering. In a directory dialog
+        // an empty selection is an *answer*: it means the folder being looked at, which is what
+        // somebody who navigated into it and pressed the button meant, and AcceptPolicy has read
+        // it that way from the start. Pre-selecting the first row made that answer impossible to
+        // give -- clicking Home and pressing the button extracted into the first subdirectory of
+        // home instead of into home, with no way to say otherwise, because there is no gesture
+        // here that clears a selection.
+        if (Listing.SelectedIndex < 0 && model.PreselectsFirstRow && Listing.ItemCount > 0)
             Listing.SelectedIndex = 0;
 
-        if (Listing.SelectedIndex < 0)
+        if (Listing.ItemCount == 0)
             return;
 
         // The **container**, not the list. Focusing the list itself leaves the focus outside
@@ -132,8 +140,12 @@ public partial class PickerWindow : Window
         // focused -- so the dialog opened with Up and Down walking the button row instead of
         // the listing, and Space pressing the Up button. Posted at Loaded priority because the
         // row does not exist until the panel has laid the new rows out.
+        //
+        // The first row when nothing is selected, which is the directory case: focus is what
+        // makes the arrows work, and it carries none of the meaning that selection does.
+        var focus = Math.Max(0, Listing.SelectedIndex);
         Dispatcher.UIThread.Post(
-            () => Listing.ContainerFromIndex(Listing.SelectedIndex)?.Focus(),
+            () => Listing.ContainerFromIndex(focus)?.Focus(),
             DispatcherPriority.Loaded);
     }
 
