@@ -9,26 +9,27 @@ library. Apps recreate the IRIX Interactive Desktop surface.
 
 ## Projects
 
-| Project                   | Type  | Purpose                                                           |
-|---------------------------|-------|-------------------------------------------------------------------|
-| `Wlrix.Common`            | lib   | Shared branding, constants, localization, and helpers.            |
-| `Wlrix.Settings.Client`   | lib   | Reads and writes wlRIX settings, through `wlrix-settings-daemon`. |
-| `Wlrix.Theme`             | lib   | Keeps an app drawing in the session's color scheme. One call.     |
-| `Wlrix.Packages`          | lib   | The system package managers behind one interface. No UI.          |
-| `Wlrix.Files.Core`        | lib   | Files, listings, MIME, icons and thumbnails. No Avalonia at all.  |
-| `Wlrix.Packages.Helper`   | exe   | `wlrix-pkg-helper` — the privileged half, run through `pkexec`.   |
-| `Wlrix.Toolchest`         | app   | IRIX-style menu launcher anchored top-left of the desktop.        |
-| `Wlrix.Desks`             | app   | Virtual-desktop (Rooms) overview and switcher.                    |
-| `Wlrix.Console`           | app   | Tails the wlRIX component logs, one tab each.                     |
-| `Wlrix.Settings.Keyboard` | app   | Keyboard settings panel.                                          |
-| `Wlrix.Settings.Windows`  | app   | Window settings panel: focus policy and the 4Dwm flags.           |
-| `Wlrix.Settings.Schemes`  | app   | Color scheme browser, after IRIX's. One Apply, whole desktop.     |
-| `Wlrix.Shutdown`          | app   | The Shut Down System dialog, behind the Toolchest's two items.    |
-| `Wlrix.SourcePicker`      | app   | The screen-share picker `xdg-desktop-portal-wlrix` puts up.       |
-| `Wlrix.SoftwareManager`   | app   | Package manager, after IRIX's `swmgr`.                            |
-| `Wlrix.Archiver`          | app   | Archive browser and extractor, after KDE's Ark.                   |
-| `Wlrix.Files`             | app   | The file manager, after IRIX's fm and KDE's Dolphin.              |
-| `Wlrix.FilePicker`        | app   | The file dialog `xdg-desktop-portal-wlrix` puts up. On Files.Core. |
+| Project                   | Type | Purpose                                                             |
+|---------------------------|------|---------------------------------------------------------------------|
+| `Wlrix.Common`            | lib  | Shared branding, constants, localization, and helpers.              |
+| `Wlrix.Settings.Client`   | lib  | Reads and writes wlRIX settings, through `wlrix-settings-daemon`.   |
+| `Wlrix.Theme`             | lib  | Keeps an app drawing in the session's color scheme. One call.       |
+| `Wlrix.Packages`          | lib  | The system package managers behind one interface. No UI.            |
+| `Wlrix.Files.Core`        | lib  | Files, listings, MIME, icons and thumbnails. No Avalonia at all.    |
+| `Wlrix.Packages.Helper`   | exe  | `wlrix-pkg-helper` — the privileged half, run through `pkexec`.     |
+| `Wlrix.Toolchest`         | app  | IRIX-style menu launcher anchored top-left of the desktop.          |
+| `Wlrix.Desks`             | app  | Virtual-desktop (Rooms) overview and switcher.                      |
+| `Wlrix.Console`           | app  | Tails the wlRIX component logs, one tab each.                       |
+| `Wlrix.Settings.Keyboard` | app  | Keyboard settings panel.                                            |
+| `Wlrix.Settings.Windows`  | app  | Window settings panel: focus policy and the 4Dwm flags.             |
+| `Wlrix.Settings.Schemes`  | app  | Color scheme browser, after IRIX's. One Apply, whole desktop.       |
+| `Wlrix.Shutdown`          | app  | The Shut Down System dialog, behind the Toolchest's two items.      |
+| `Wlrix.SourcePicker`      | app  | The screen-share picker `xdg-desktop-portal-wlrix` puts up.         |
+| `Wlrix.SoftwareManager`   | app  | Package manager, after IRIX's `swmgr`.                              |
+| `Wlrix.Archiver`          | app  | Archive browser and extractor, after KDE's Ark.                     |
+| `Wlrix.Files`             | app  | The file manager, after IRIX's fm and KDE's Dolphin.                |
+| `Wlrix.FilePicker`        | app  | The file dialog `xdg-desktop-portal-wlrix` puts up. On Files.Core.  |
+| `Wlrix.Clock`             | app  | The desktop clock, after IRIX's: an analog face with a border only. |
 
 Every project with tests has a `<project>.Tests` beside it under `tests/`. More apps (a terminal, among others) get
 added as sibling projects.

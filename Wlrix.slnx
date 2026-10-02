@@ -18,6 +18,7 @@
         <Project Path="src/Wlrix.Files.Core/Wlrix.Files.Core.csproj" />
         <Project Path="src/Wlrix.Files/Wlrix.Files.csproj" />
         <Project Path="src/Wlrix.FilePicker/Wlrix.FilePicker.csproj" />
+        <Project Path="src/Wlrix.Clock/Wlrix.Clock.csproj" />
     </Folder>
     <Folder Name="/tests/">
         <Project Path="tests/Wlrix.Packages.Tests/Wlrix.Packages.Tests.csproj" />
@@ -29,5 +30,6 @@
         <Project Path="tests/Wlrix.Files.Tests/Wlrix.Files.Tests.csproj" />
         <Project Path="tests/Wlrix.Desks.Tests/Wlrix.Desks.Tests.csproj" />
         <Project Path="tests/Wlrix.FilePicker.Tests/Wlrix.FilePicker.Tests.csproj" />
+        <Project Path="tests/Wlrix.Clock.Tests/Wlrix.Clock.Tests.csproj" />
     </Folder>
 </Solution>

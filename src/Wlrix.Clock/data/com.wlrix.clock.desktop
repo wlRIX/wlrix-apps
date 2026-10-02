@@ -1,0 +1,15 @@
+[Desktop Entry]
+Type=Application
+Name=wlRIX Clock
+Name[ja]=wlRIX 時計
+Comment=An analog clock for the desktop
+Comment[ja]=デスクトップ用のアナログ時計
+Categories=Utility;Clock;
+Exec=wlrix-clock
+TryExec=wlrix-clock
+Terminal=false
+
+# Matches the Wayland app id set in Program.BuildAvaloniaApp. `wlrix-desktop` looks a running
+# window up by StartupWMClass first, and wlrix-compositor frames the window by the same id.
+StartupWMClass=com.wlrix.clock
+StartupNotify=false

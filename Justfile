@@ -1,11 +1,12 @@
 #!/usr/bin/env just --justfile
 #
-# Packaging for the wlRIX applications that own a file type.
+# Packaging for the wlRIX applications that own a file type, or belong in the Applications menu.
 #
 # Most of the C# applications are launched by name from the Toolchest and the session, and the
 # epoch's `install-cs` installs those. The ones here additionally register a `.desktop` entry,
-# because something on the system opens files with them -- and adding one is a line in `apps`
-# and a `data/*.desktop` beside the project.
+# because something on the system opens files with them or because the Toolchest's Applications
+# menu is built from desktop entries -- the clock is only reachable there. Adding one is a line in
+# `apps` and a `data/*.desktop` beside the project.
 #
 # The epoch installs the payloads for every C# application, including these; `install-desktop`
 # is the half it delegates back here, so the entries have one source of truth. `install` does
@@ -28,7 +29,8 @@ appsdir := usrdir / 'share' / 'applications'
 # the two install the same payload to the same place, and disagreeing would leave whichever ran
 # second shadowing a stale copy of the other.
 apps := "Wlrix.Archiver:wlrix-archiver:com.wlrix.archiver.desktop \
-         Wlrix.Files:wlrix-files:com.wlrix.files.desktop"
+         Wlrix.Files:wlrix-files:com.wlrix.files.desktop \
+         Wlrix.Clock:wlrix-clock:com.wlrix.clock.desktop"
 
 # List available recipes.
 default:
