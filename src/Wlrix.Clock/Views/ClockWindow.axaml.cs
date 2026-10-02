@@ -37,6 +37,10 @@ public partial class ClockWindow : Window
 
         _timer = new DispatcherTimer(DispatcherPriority.Render);
         _timer.Tick += (_, _) => Tick();
+
+        // Avalonia closes a tooltip when the pointer leaves, not when the window loses focus,
+        // so one shown before an Alt+Tab would stay over whatever came forward.
+        Deactivated += (_, _) => ToolTip.SetIsOpen(_face, false);
     }
 
     protected override void OnOpened(EventArgs e)
