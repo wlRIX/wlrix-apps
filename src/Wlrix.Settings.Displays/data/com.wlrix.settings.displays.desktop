@@ -1,0 +1,15 @@
+[Desktop Entry]
+Type=Application
+Name=Displays
+Comment=Arrange displays and set their resolution, scale, orientation and HDR
+Icon=preferences-desktop-display
+Categories=Settings;HardwareSettings;
+Keywords=monitor;screen;resolution;refresh;scale;rotation;HDR;VRR;
+Exec=wlrix-settings-displays
+TryExec=wlrix-settings-displays
+Terminal=false
+
+# Matches the Wayland app id set in Program.BuildAvaloniaApp. `wlrix-desktop` looks a running
+# window up by StartupWMClass first, and wlrix-compositor frames the window by the same id.
+StartupWMClass=com.wlrix.settings.displays
+StartupNotify=false

@@ -1,0 +1,22 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Wlrix.Settings.Displays.ViewModels"
+        xmlns:loc="using:Wlrix.Common.Localization"
+        x:Class="Wlrix.Settings.Displays.Views.ConfirmWindow"
+        x:DataType="vm:ConfirmViewModel"
+        Width="360" SizeToContent="Height" CanResize="False"
+        WindowStartupLocation="CenterOwner"
+        Title="{loc:Tr ConfirmTitle}">
+
+    <!-- Revert is the default: Enter or Escape on a screen nobody can read puts it back, and so
+         does doing nothing at all. -->
+    <StackPanel Margin="16" Spacing="12">
+        <TextBlock Text="{loc:Tr ConfirmQuestion}" FontWeight="Bold" TextWrapping="Wrap" />
+        <TextBlock Text="{Binding Countdown}" TextWrapping="Wrap" />
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="8">
+            <Button Content="{loc:Tr Keep}" Click="OnKeep" />
+            <Button Content="{loc:Tr Revert}" Click="OnRevert" IsDefault="True" IsCancel="True" />
+        </StackPanel>
+    </StackPanel>
+
+</Window>

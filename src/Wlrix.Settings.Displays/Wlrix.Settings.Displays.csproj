@@ -1,0 +1,74 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+        <ApplicationManifest>app.manifest</ApplicationManifest>
+        <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+        <AssemblyName>wlrix-settings-displays</AssemblyName>
+        <Version>0.0.0</Version>
+        <!-- NWayland's generated bindings and runtime interop are unsafe. -->
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    </PropertyGroup>
+
+    <!-- Monitors are configured live through wlr-output-management, not through the settings
+         daemon: the daemon deliberately does not handle `[[output]]` (see its README), and the
+         compositor already applies and saves a layout atomically through the protocol. HDR is
+         not part of that protocol, so wlrix-output-color extends its heads. Both sets of
+         bindings are generated at build time by the NWayland fork's source generator, as in
+         Wlrix.Desks; the wlrix-output-color copy must stay in step with the compositor's
+         `src/protocols/wlrix-output-color.xml`. -->
+    <!-- The protocol files go through a copy with their `error` enums removed. The fork's
+         generator turns those into AddError calls and typed PostError overloads, which need a
+         newer NWayland runtime than the 0.11.0 Avalonia.Wayland pins. A client never sends a
+         protocol error, so nothing is lost; drop this step once the runtime catches up. -->
+    <ItemGroup>
+        <WaylandProtocol Include="../../../NWayland/external/wlr-protocols/unstable/wlr-output-management-unstable-v1.xml" />
+        <WaylandProtocol Include="../../../NWayland/external/wlrix-protocols/wlrix-output-color.xml" />
+        <AdditionalFiles Include="@(WaylandProtocol->'$(IntermediateOutputPath)protocols/%(Filename)%(Extension)')"
+                         NWaylandNamespace="NWayland.Protocols" />
+    </ItemGroup>
+    <Target Name="StripProtocolErrors" BeforeTargets="GenerateMSBuildEditorConfigFileCore;CoreCompile"
+            Inputs="@(WaylandProtocol)" Outputs="@(WaylandProtocol->'$(IntermediateOutputPath)protocols/%(Filename)%(Extension)')">
+        <MakeDir Directories="$(IntermediateOutputPath)protocols" />
+        <WriteLinesToFile File="$(IntermediateOutputPath)protocols/%(WaylandProtocol.Filename)%(WaylandProtocol.Extension)"
+                          Lines="$([MSBuild]::Escape($([System.Text.RegularExpressions.Regex]::Replace($([System.IO.File]::ReadAllText(%(WaylandProtocol.FullPath))), '\s*&lt;enum name=&quot;error&quot;.*?&lt;/enum&gt;', '', System.Text.RegularExpressions.RegexOptions.Singleline))))"
+                          Overwrite="true" WriteOnlyWhenDifferent="true" />
+    </Target>
+    <PropertyGroup>
+        <WarningsNotAsErrors>$(WarningsNotAsErrors);CS1591;CS1573;CS1572;CS1570;CS1571;CS1574;CS1580;CS1581;CS1584</WarningsNotAsErrors>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Avalonia" />
+        <PackageReference Include="Avalonia.Desktop" />
+        <PackageReference Include="Avalonia.Wayland" />
+        <PackageReference Include="AvaloniaUI.DiagnosticsSupport">
+            <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
+            <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
+        </PackageReference>
+        <PackageReference Include="ReactiveUI.Avalonia" />
+        <PackageReference Include="Wlrix.Avalonia" />
+        <!-- NWayland runtime (WlDisplay/WlRegistry + core protocols), pinned in
+             Directory.Packages.props to the version Avalonia.Wayland binds to. -->
+        <PackageReference Include="NWayland" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <!-- The arrangement math and the view models are `internal`; the tests are the only
+             other thing with any business calling them. -->
+        <InternalsVisibleTo Include="Wlrix.Settings.Displays.Tests" />
+    </ItemGroup>
+
+    <!-- The NWayland fork's source generator, as an analyzer. See Wlrix.Desks.csproj. -->
+    <Import Project="../../../NWayland/src/NWayland.Generator/NWayland.Generator.Use.targets" />
+
+    <ItemGroup>
+        <!-- The localized strings and the {loc:Tr} markup extension. -->
+        <ProjectReference Include="../Wlrix.Common/Wlrix.Common.csproj" />
+    </ItemGroup>
+    <ItemGroup>
+        <!-- Follows the session's color scheme, so this window is the same gray as the desktop
+             behind it and stays that way when somebody changes it. One call in App.axaml.cs. -->
+        <ProjectReference Include="../Wlrix.Theme/Wlrix.Theme.csproj" />
+    </ItemGroup>
+
+</Project>

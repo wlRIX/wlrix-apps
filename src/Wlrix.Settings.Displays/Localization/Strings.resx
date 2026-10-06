@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="WindowTitle" xml:space="preserve">
+    <value>Displays</value>
+  </data>
+  <data name="PanelTitle" xml:space="preserve">
+    <value>Displays</value>
+  </data>
+  <data name="Apply" xml:space="preserve">
+    <value>Apply</value>
+  </data>
+  <data name="Reset" xml:space="preserve">
+    <value>Reset</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="Help" xml:space="preserve">
+    <value>Help</value>
+  </data>
+  <data name="HelpText" xml:space="preserve">
+    <value>Choose a display from the list, or click it in the arrangement, to change its settings. Drag a display to move it; it snaps against the others, so there are never gaps between screens. Nothing changes until you click Apply. After applying you have 15 seconds to keep the new settings; if you do nothing, the old ones come back, so a mode that leaves the screen blank undoes itself.</value>
+  </data>
+  <data name="Waiting" xml:space="preserve">
+    <value>Waiting for the window system to describe the displays...</value>
+  </data>
+  <data name="DragHint" xml:space="preserve">
+    <value>Drag displays to rearrange them</value>
+  </data>
+  <data name="Display" xml:space="preserve">
+    <value>Display:</value>
+  </data>
+  <data name="Enabled" xml:space="preserve">
+    <value>Enabled</value>
+  </data>
+  <data name="ResolutionLabel" xml:space="preserve">
+    <value>Resolution:</value>
+  </data>
+  <data name="RefreshLabel" xml:space="preserve">
+    <value>Refresh rate:</value>
+  </data>
+  <data name="ScaleLabel" xml:space="preserve">
+    <value>Scale:</value>
+  </data>
+  <data name="OrientationLabel" xml:space="preserve">
+    <value>Orientation:</value>
+  </data>
+  <data name="OrientationNormal" xml:space="preserve">
+    <value>Landscape</value>
+  </data>
+  <data name="Orientation90" xml:space="preserve">
+    <value>Portrait, turned right</value>
+  </data>
+  <data name="Orientation180" xml:space="preserve">
+    <value>Landscape, upside down</value>
+  </data>
+  <data name="Orientation270" xml:space="preserve">
+    <value>Portrait, turned left</value>
+  </data>
+  <data name="AdaptiveSyncLabel" xml:space="preserve">
+    <value>Adaptive sync:</value>
+  </data>
+  <data name="AdaptiveSync" xml:space="preserve">
+    <value>Variable refresh rate</value>
+  </data>
+  <data name="AdaptiveSyncUnsupported" xml:space="preserve">
+    <value>This display does not support adaptive sync.</value>
+  </data>
+  <data name="HdrLabel" xml:space="preserve">
+    <value>High dynamic range:</value>
+  </data>
+  <data name="Hdr" xml:space="preserve">
+    <value>Enable HDR</value>
+  </data>
+  <data name="HdrUnsupported" xml:space="preserve">
+    <value>This display does not support HDR.</value>
+  </data>
+  <data name="SdrWhiteLabel" xml:space="preserve">
+    <value>SDR brightness:</value>
+  </data>
+  <data name="SdrWhiteTip" xml:space="preserve">
+    <value>How bright ordinary (SDR) white is while the display is in HDR. Lower it if the desktop looks brighter than the screens beside it.</value>
+  </data>
+  <data name="Nits" xml:space="preserve">
+    <value>cd/m²</value>
+  </data>
+  <data name="Resolution" xml:space="preserve">
+    <value>{0} × {1}</value>
+  </data>
+  <data name="ResolutionAspect" xml:space="preserve">
+    <value>{0} × {1} ({2})</value>
+  </data>
+  <data name="PreferredResolution" xml:space="preserve">
+    <value>{0}, recommended</value>
+  </data>
+  <data name="RefreshRate" xml:space="preserve">
+    <value>{0:F2} Hz</value>
+  </data>
+  <data name="NoCompositor" xml:space="preserve">
+    <value>The window system does not offer display configuration, or is not running.</value>
+  </data>
+  <data name="ApplyFailed" xml:space="preserve">
+    <value>The window system refused these settings. Nothing was changed.</value>
+  </data>
+  <data name="ApplyCancelled" xml:space="preserve">
+    <value>The displays changed while these settings were being applied. Nothing was changed; check the settings and apply again.</value>
+  </data>
+  <data name="Reverted" xml:space="preserve">
+    <value>The previous settings were restored.</value>
+  </data>
+  <data name="RevertFailed" xml:space="preserve">
+    <value>The previous settings could not be restored.</value>
+  </data>
+  <data name="DisplaysChanged" xml:space="preserve">
+    <value>A display was connected or disconnected, so the settings were reloaded.</value>
+  </data>
+  <data name="ConfirmTitle" xml:space="preserve">
+    <value>Keep Display Settings</value>
+  </data>
+  <data name="ConfirmQuestion" xml:space="preserve">
+    <value>Keep these display settings?</value>
+  </data>
+  <data name="RevertingIn" xml:space="preserve">
+    <value>The previous settings come back in {0} seconds.</value>
+  </data>
+  <data name="Keep" xml:space="preserve">
+    <value>Keep</value>
+  </data>
+  <data name="Revert" xml:space="preserve">
+    <value>Revert</value>
+  </data>
+</root>

@@ -30,7 +30,8 @@ appsdir := usrdir / 'share' / 'applications'
 # second shadowing a stale copy of the other.
 apps := "Wlrix.Archiver:wlrix-archiver:com.wlrix.archiver.desktop \
          Wlrix.Files:wlrix-files:com.wlrix.files.desktop \
-         Wlrix.Clock:wlrix-clock:com.wlrix.clock.desktop"
+         Wlrix.Clock:wlrix-clock:com.wlrix.clock.desktop \
+         Wlrix.Settings.Displays:wlrix-settings-displays:com.wlrix.settings.displays.desktop"
 
 # List available recipes.
 default:

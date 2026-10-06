@@ -1,0 +1,224 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Wlrix.Settings.Displays.ViewModels"
+        xmlns:views="using:Wlrix.Settings.Displays.Views"
+        xmlns:controls="using:Wlrix.Settings.Displays.Controls"
+        xmlns:loc="using:Wlrix.Common.Localization"
+        xmlns:wlrix="https://vic485.xyz/Wlrix.Avalonia"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="560" d:DesignHeight="660"
+        Width="560" Height="660" MinWidth="480" MinHeight="460"
+        x:Class="Wlrix.Settings.Displays.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Title="{loc:Tr WindowTitle}">
+
+    <Design.DataContext>
+        <vm:MainWindowViewModel />
+    </Design.DataContext>
+
+    <Window.Styles>
+        <!-- The labels down the left of the form, right-aligned against their controls. -->
+        <Style Selector="Grid.form > TextBlock">
+            <Setter Property="HorizontalAlignment" Value="Right" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+        <!-- The four drawn monitors on the orientation buttons. -->
+        <Style Selector="Path.monitor">
+            <Setter Property="Stroke" Value="{DynamicResource WlrixForeground}" />
+            <Setter Property="StrokeThickness" Value="1.5" />
+            <Setter Property="Width" Value="28" />
+            <Setter Property="Height" Value="24" />
+        </Style>
+    </Window.Styles>
+
+    <!-- The layout follows KDE's Display Configuration, in the IRIX panel frame the other
+         wlRIX panels use: a title banner, the arrangement (when there is anything to arrange),
+         a form for the selected display, and the buttons along the bottom. -->
+    <DockPanel Margin="12" LastChildFill="True">
+
+        <!-- Title banner: icon slot plus the panel name, as on the IRIX original. -->
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="12" Margin="0,0,0,12">
+            <Border Width="48" Height="48"
+                    BorderThickness="1"
+                    BorderBrush="{DynamicResource WlrixOuterLine}"
+                    Background="{DynamicResource WlrixSelect}">
+                <!-- Placeholder for the window icon (a real asset comes from wlrix-assets). -->
+                <TextBlock Text="&#x25AD;" FontSize="30"
+                           HorizontalAlignment="Center" VerticalAlignment="Center" />
+            </Border>
+            <TextBlock Text="{loc:Tr PanelTitle}" FontWeight="Bold" FontSize="16"
+                       VerticalAlignment="Center" />
+        </StackPanel>
+
+        <!-- Apply / Reset / Close / Help. Apply and Reset only mean something once a change is
+             staged. -->
+        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal"
+                    HorizontalAlignment="Center" Spacing="8" Margin="0,12,0,0">
+            <Button Content="{loc:Tr Apply}" Click="OnApply" IsEnabled="{Binding CanApply}" />
+            <Button Content="{loc:Tr Reset}" Click="OnReset" IsEnabled="{Binding CanReset}" />
+            <Button Content="{loc:Tr Close}" Click="OnClose" />
+            <Button Content="{loc:Tr Help}">
+                <Button.Flyout>
+                    <Flyout>
+                        <TextBlock MaxWidth="300" TextWrapping="Wrap" Text="{loc:Tr HelpText}" />
+                    </Flyout>
+                </Button.Flyout>
+            </Button>
+        </StackPanel>
+
+        <!-- What became of the last Apply, when it is worth saying. -->
+        <TextBlock DockPanel.Dock="Bottom" Text="{Binding Status}" TextWrapping="Wrap" Margin="0,8,0,0"
+                   IsVisible="{Binding Status, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+
+        <!-- Until the compositor has described the displays there is nothing to show. -->
+        <TextBlock DockPanel.Dock="Top" Text="{loc:Tr Waiting}" Margin="0,0,0,8"
+                   IsVisible="{Binding !IsReady}" />
+
+        <!-- With one display there is nothing to arrange: the arrangement goes, and the form
+             moves up into its row. -->
+        <Grid RowDefinitions="*,Auto" IsVisible="{Binding IsReady}">
+
+            <DockPanel Grid.Row="0" IsVisible="{Binding HasMultiple}" Margin="0,0,0,12">
+                <TextBlock DockPanel.Dock="Top" Text="{loc:Tr DragHint}"
+                           HorizontalAlignment="Center" Margin="0,0,0,4" />
+                <wlrix:BevelBorder Bevel="Sunken" BevelThickness="2" OuterLineThickness="1"
+                                   Background="{DynamicResource WlrixPanel}"
+                                   LightBrush="{DynamicResource WlrixTopShadow}"
+                                   DarkBrush="{DynamicResource WlrixBottomShadow}"
+                                   OuterLineBrush="{DynamicResource WlrixOuterLine}"
+                                   MinHeight="180">
+                    <controls:DisplayArrangement x:Name="Arrangement"
+                                                 Displays="{Binding Displays}"
+                                                 SelectedDisplay="{Binding SelectedDisplay}"
+                                                 LayoutVersion="{Binding LayoutVersion}"
+                                                 TileBrush="{DynamicResource WlrixFace}"
+                                                 LightBrush="{DynamicResource WlrixTopShadow}"
+                                                 DarkBrush="{DynamicResource WlrixBottomShadow}"
+                                                 OuterLineBrush="{DynamicResource WlrixOuterLine}"
+                                                 Foreground="{DynamicResource WlrixForeground}"
+                                                 BarBrush="{DynamicResource WlrixBottomShadow}"
+                                                 SelectionBrush="{DynamicResource WlrixSelection}" />
+                </wlrix:BevelBorder>
+            </DockPanel>
+
+            <StackPanel Grid.Row="{Binding HasMultiple, Converter={x:Static views:MainWindow.FormRow}}"
+                        VerticalAlignment="Top" Spacing="6" Grid.IsSharedSizeScope="True">
+
+                <!-- Which display, and whether it is on. -->
+                <Grid Classes="form" RowDefinitions="Auto,Auto" RowSpacing="6" ColumnSpacing="8">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="Label" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="{loc:Tr Display}"
+                               IsVisible="{Binding HasMultiple}" />
+                    <ComboBox Grid.Row="0" Grid.Column="1" MinWidth="280" HorizontalAlignment="Left"
+                              ItemsSource="{Binding Displays}"
+                              SelectedItem="{Binding SelectedDisplay}"
+                              IsVisible="{Binding HasMultiple}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate x:DataType="vm:DisplayViewModel">
+                                <TextBlock Text="{Binding Label}" />
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+
+                    <CheckBox Grid.Row="1" Grid.Column="1" Content="{loc:Tr Enabled}"
+                              IsChecked="{Binding SelectedDisplay.Enabled}"
+                              IsEnabled="{Binding SelectedDisplay.CanToggleEnabled}" />
+                </Grid>
+
+                <!-- Everything about the display itself, grayed out while it is switched off. -->
+                <Grid Classes="form" DataContext="{Binding SelectedDisplay}" x:DataType="vm:DisplayViewModel"
+                      IsEnabled="{Binding Enabled}"
+                      RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto" RowSpacing="6" ColumnSpacing="8">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="Label" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="{loc:Tr ResolutionLabel}" />
+                    <ComboBox Grid.Row="0" Grid.Column="1" MinWidth="220" HorizontalAlignment="Left"
+                              ItemsSource="{Binding Resolutions}"
+                              SelectedItem="{Binding Resolution}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate x:DataType="vm:ResolutionChoice">
+                                <TextBlock Text="{Binding Label}" />
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="{loc:Tr RefreshLabel}" />
+                    <ComboBox Grid.Row="1" Grid.Column="1" MinWidth="220" HorizontalAlignment="Left"
+                              ItemsSource="{Binding RefreshRates}"
+                              SelectedItem="{Binding Refresh}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate x:DataType="vm:RefreshChoice">
+                                <TextBlock Text="{Binding Label}" />
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="{loc:Tr ScaleLabel}" />
+                    <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal" Spacing="6">
+                        <Slider Width="220" VerticalAlignment="Center"
+                                Minimum="50" Maximum="300" TickFrequency="5" IsSnapToTickEnabled="True"
+                                SmallChange="5" LargeChange="25"
+                                Value="{Binding ScalePercent}" />
+                        <NumericUpDown Width="96" Minimum="50" Maximum="300" Increment="5" FormatString="0"
+                                       Value="{Binding ScalePercentValue}" />
+                        <TextBlock Text="%" VerticalAlignment="Center" />
+                    </StackPanel>
+
+                    <TextBlock Grid.Row="3" Grid.Column="0" Text="{loc:Tr OrientationLabel}" />
+                    <StackPanel Grid.Row="3" Grid.Column="1" Orientation="Horizontal" Spacing="4">
+                        <RadioButton GroupName="Orientation" Theme="{StaticResource {x:Type ToggleButton}}"
+                                     IsChecked="{Binding IsRotation0}" ToolTip.Tip="{loc:Tr OrientationNormal}">
+                            <Path Classes="monitor" Data="M3,2 H25 V15 H3 Z M14,15 V20 M9,20 H19" />
+                        </RadioButton>
+                        <RadioButton GroupName="Orientation" Theme="{StaticResource {x:Type ToggleButton}}"
+                                     IsChecked="{Binding IsRotation90}" ToolTip.Tip="{loc:Tr Orientation90}">
+                            <Path Classes="monitor" Data="M9,1 H21 V23 H9 Z M9,12 H4 M4,7 V17" />
+                        </RadioButton>
+                        <RadioButton GroupName="Orientation" Theme="{StaticResource {x:Type ToggleButton}}"
+                                     IsChecked="{Binding IsRotation180}" ToolTip.Tip="{loc:Tr Orientation180}">
+                            <Path Classes="monitor" Data="M3,9 H25 V22 H3 Z M14,9 V4 M9,4 H19" />
+                        </RadioButton>
+                        <RadioButton GroupName="Orientation" Theme="{StaticResource {x:Type ToggleButton}}"
+                                     IsChecked="{Binding IsRotation270}" ToolTip.Tip="{loc:Tr Orientation270}">
+                            <Path Classes="monitor" Data="M7,1 H19 V23 H7 Z M19,12 H24 M24,7 V17" />
+                        </RadioButton>
+                    </StackPanel>
+
+                    <TextBlock Grid.Row="4" Grid.Column="0" Text="{loc:Tr AdaptiveSyncLabel}" />
+                    <CheckBox Grid.Row="4" Grid.Column="1" Content="{loc:Tr AdaptiveSync}"
+                              IsChecked="{Binding AdaptiveSync}"
+                              IsEnabled="{Binding AdaptiveSyncSupported}"
+                              ToolTip.Tip="{Binding AdaptiveSyncTip}" ToolTip.ShowOnDisabled="True" />
+
+                    <TextBlock Grid.Row="5" Grid.Column="0" Text="{loc:Tr HdrLabel}" />
+                    <CheckBox Grid.Row="5" Grid.Column="1" Content="{loc:Tr Hdr}"
+                              IsChecked="{Binding Hdr}"
+                              IsEnabled="{Binding HdrSupported}"
+                              ToolTip.Tip="{Binding HdrTip}" ToolTip.ShowOnDisabled="True" />
+
+                    <TextBlock Grid.Row="6" Grid.Column="0" Text="{loc:Tr SdrWhiteLabel}" />
+                    <StackPanel Grid.Row="6" Grid.Column="1" Orientation="Horizontal" Spacing="6"
+                                IsEnabled="{Binding Hdr}" ToolTip.Tip="{loc:Tr SdrWhiteTip}">
+                        <Slider Width="220" VerticalAlignment="Center"
+                                Minimum="80" Maximum="500" SmallChange="5" LargeChange="50"
+                                Value="{Binding SdrWhite}" />
+                        <NumericUpDown Width="96" Minimum="80" Maximum="500" Increment="5" FormatString="0"
+                                       Value="{Binding SdrWhiteValue}" />
+                        <TextBlock Text="{loc:Tr Nits}" VerticalAlignment="Center" />
+                    </StackPanel>
+                </Grid>
+
+            </StackPanel>
+        </Grid>
+
+    </DockPanel>
+
+</Window>
