@@ -21,9 +21,9 @@ jobs:
       # ReferenceOutputAssembly="false", so it contributes no assembly: the NWayland runtime the
       # apps bind against is the pinned nuget package (see Directory.Packages.props).
       #
-      # Submodules are deliberately not fetched. NWayland.Generator builds from Roslyn packages
-      # alone; the protocol XML under external/ is only needed by the fork's own protocol
-      # projects, which this build never touches.
+      # Submodules are not fetched wholesale: NWayland.Generator builds from Roslyn packages
+      # alone, and most of the protocol XML under external/ is only needed by the fork's own
+      # protocol projects. The one exception is fetched in the next step.
       #
       # If wlRIX/NWayland is private, the default GITHUB_TOKEN cannot read it and a PAT with
       # repo scope has to be supplied here as `token: ${{ secrets.NWAYLAND_TOKEN }}`.
@@ -32,6 +32,13 @@ jobs:
           repository: wlRIX/NWayland
           ref: master
           path: NWayland
+
+      # Wlrix.Settings.Displays generates bindings for wlr-output-management, which lives in the
+      # wlr-protocols submodule. Only that one is fetched; it is a few hundred kilobytes, where
+      # the wayland and wayland-protocols submodules are whole projects.
+      - name: Fetch wlr-protocols
+        working-directory: NWayland
+        run: git submodule update --init external/wlr-protocols
 
       - uses: actions/setup-dotnet@v4
         with:

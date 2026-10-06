@@ -28,6 +28,9 @@
     </ItemGroup>
     <Target Name="StripProtocolErrors" BeforeTargets="GenerateMSBuildEditorConfigFileCore;CoreCompile"
             Inputs="@(WaylandProtocol)" Outputs="@(WaylandProtocol->'$(IntermediateOutputPath)protocols/%(Filename)%(Extension)')">
+        <!-- Said plainly, rather than as the MSB4184 that ReadAllText below fails with. -->
+        <Error Condition="!Exists('%(WaylandProtocol.FullPath)')"
+               Text="Missing Wayland protocol %(WaylandProtocol.FullPath). wlr-output-management comes from NWayland's wlr-protocols submodule: run `git submodule update --init external/wlr-protocols` in NWayland." />
         <MakeDir Directories="$(IntermediateOutputPath)protocols" />
         <WriteLinesToFile File="$(IntermediateOutputPath)protocols/%(WaylandProtocol.Filename)%(WaylandProtocol.Extension)"
                           Lines="$([MSBuild]::Escape($([System.Text.RegularExpressions.Regex]::Replace($([System.IO.File]::ReadAllText(%(WaylandProtocol.FullPath))), '\s*&lt;enum name=&quot;error&quot;.*?&lt;/enum&gt;', '', System.Text.RegularExpressions.RegexOptions.Singleline))))"
