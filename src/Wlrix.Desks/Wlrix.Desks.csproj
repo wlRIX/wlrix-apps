@@ -14,11 +14,11 @@
     </ItemGroup>
 
     <!-- The wlrix-desks C# bindings are generated at build time by NWayland's source generator
-         (wired below as an analyzer) from the protocol XML kept alongside the other Wayland
-         protocol sets in the wlRIX NWayland fork. That copy must stay in step with the
-         compositor's `wlrix-compositor/src/protocols/wlrix-desks.xml`, which is what the
-         compositor itself compiles. The generated code carries incomplete XML doc comments, so
-         those doc warnings are kept warnings rather than errors here. -->
+         (wired below as an analyzer) from wlrix-protocols, which the wlRIX NWayland fork carries
+         as a submodule beside the other Wayland protocol sets. The compositor builds from the
+         same repo, so the two cannot drift apart except by pinning different commits. The
+         generated code carries incomplete XML doc comments, so those doc warnings are kept
+         warnings rather than errors here. -->
     <ItemGroup>
         <AdditionalFiles Include="../../../NWayland/external/wlrix-protocols/wlrix-desks.xml"
                          NWaylandNamespace="NWayland.Protocols" />

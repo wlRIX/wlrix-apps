@@ -14,8 +14,7 @@
          compositor already applies and saves a layout atomically through the protocol. HDR is
          not part of that protocol, so wlrix-output-color extends its heads. Both sets of
          bindings are generated at build time by the NWayland fork's source generator, as in
-         Wlrix.Desks; the wlrix-output-color copy must stay in step with the compositor's
-         `src/protocols/wlrix-output-color.xml`. -->
+         Wlrix.Desks, from submodules of the fork: wlr-protocols and wlrix-protocols. -->
     <!-- The protocol files go through a copy with their `error` enums removed. The fork's
          generator turns those into AddError calls and typed PostError overloads, which need a
          newer NWayland runtime than the 0.11.0 Avalonia.Wayland pins. A client never sends a
@@ -30,7 +29,7 @@
             Inputs="@(WaylandProtocol)" Outputs="@(WaylandProtocol->'$(IntermediateOutputPath)protocols/%(Filename)%(Extension)')">
         <!-- Said plainly, rather than as the MSB4184 that ReadAllText below fails with. -->
         <Error Condition="!Exists('%(WaylandProtocol.FullPath)')"
-               Text="Missing Wayland protocol %(WaylandProtocol.FullPath). wlr-output-management comes from NWayland's wlr-protocols submodule: run `git submodule update --init external/wlr-protocols` in NWayland." />
+               Text="Missing Wayland protocol %(WaylandProtocol.FullPath). It comes from a submodule of NWayland: run `git submodule update --init external/wlr-protocols external/wlrix-protocols` there." />
         <MakeDir Directories="$(IntermediateOutputPath)protocols" />
         <WriteLinesToFile File="$(IntermediateOutputPath)protocols/%(WaylandProtocol.Filename)%(WaylandProtocol.Extension)"
                           Lines="$([MSBuild]::Escape($([System.Text.RegularExpressions.Regex]::Replace($([System.IO.File]::ReadAllText(%(WaylandProtocol.FullPath))), '\s*&lt;enum name=&quot;error&quot;.*?&lt;/enum&gt;', '', System.Text.RegularExpressions.RegexOptions.Singleline))))"

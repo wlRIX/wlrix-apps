@@ -23,7 +23,7 @@ jobs:
       #
       # Submodules are not fetched wholesale: NWayland.Generator builds from Roslyn packages
       # alone, and most of the protocol XML under external/ is only needed by the fork's own
-      # protocol projects. The one exception is fetched in the next step.
+      # protocol projects. The exceptions are fetched in the next step.
       #
       # If wlRIX/NWayland is private, the default GITHUB_TOKEN cannot read it and a PAT with
       # repo scope has to be supplied here as `token: ${{ secrets.NWAYLAND_TOKEN }}`.
@@ -33,12 +33,13 @@ jobs:
           ref: master
           path: NWayland
 
-      # Wlrix.Settings.Displays generates bindings for wlr-output-management, which lives in the
-      # wlr-protocols submodule. Only that one is fetched; it is a few hundred kilobytes, where
+      # The protocol sets the apps generate bindings from: wlr-protocols for
+      # wlr-output-management, and wlrix-protocols for wlRIX's own (wlrix-desks,
+      # wlrix-output-color). Only these two are fetched; each is a few hundred kilobytes, where
       # the wayland and wayland-protocols submodules are whole projects.
-      - name: Fetch wlr-protocols
+      - name: Fetch protocols
         working-directory: NWayland
-        run: git submodule update --init external/wlr-protocols
+        run: git submodule update --init external/wlr-protocols external/wlrix-protocols
 
       - uses: actions/setup-dotnet@v4
         with:
