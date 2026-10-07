@@ -40,6 +40,7 @@ public sealed class DeviceColumnViewModel : ViewModelBase
     private double _right;
     private bool _grouped;
     private bool _metering;
+    private bool _visible;
     private bool _isSelected;
     private float _leftPeak;
     private float _rightPeak;
@@ -55,6 +56,7 @@ public sealed class DeviceColumnViewModel : ViewModelBase
         var remembered = state.Get(device.Key);
         _grouped = remembered.Grouped;
         _metering = remembered.Metering && device.Kind == DeviceKind.Input;
+        _visible = remembered.Visible;
         TakeVolumes(force: true);
         if (_metering && !device.IsPlaceholder)
             _feed.SetMetering(device.Key, true);
@@ -136,6 +138,23 @@ public sealed class DeviceColumnViewModel : ViewModelBase
         {
             if (_device.Muted != value && !_updating)
                 _feed.SetMute(Key, value);
+        }
+    }
+
+    /// <summary>
+    /// The device's own View menu toggle. A default device can be shown even with this off,
+    /// through View → Default Input or Default Output; <see cref="MainWindowViewModel"/>
+    /// decides that.
+    /// </summary>
+    public bool Visible
+    {
+        get => _visible;
+        internal set
+        {
+            if (_visible == value)
+                return;
+            this.RaiseAndSetIfChanged(ref _visible, value);
+            Remember();
         }
     }
 
@@ -357,5 +376,5 @@ public sealed class DeviceColumnViewModel : ViewModelBase
         _feed.SetVolume(Key, volumes);
     }
 
-    private void Remember() => _state.Set(Key, new ColumnState(_grouped, _metering));
+    private void Remember() => _state.Set(Key, new ColumnState(_grouped, _metering, _visible));
 }

@@ -58,6 +58,8 @@ public class LocalizationTests
             "HintUnavailable", "HintSwitchedOff", "HintRateAutomatic", "HintRateUnavailable",
             "HintRateNotPipeWire", "HintRateGlobal", "HintPort", "HintPortUnavailable", "HintGroup",
             "HintMakeDefaultOutput", "HintMakeDefaultInput", "HintEnableDevice", "HintPreferences",
+            "NoDeviceSelected", "NoDevicesOfKind", "MenuViewDefaultInput", "MenuViewDefaultOutput",
+            "HintViewDefaultInput", "HintViewDefaultOutput", "HintViewDevice",
             .. new[] { 8000, 11025, 16000, 22050, 32000, 44100, 48000, 96000, 192000 }
                 .Select(rate => "HintRate" + rate),
         ];

@@ -45,9 +45,9 @@
   <data name="HelpText" xml:space="preserve">
     <value>Each column is one audio device: inputs such as microphones on the left, outputs such as speakers and headphones on the right. The sliders set each channel's gain from 0 to 10; with Group Sliders on, the left and right sliders move together. The light in a column's header is lit while the device is playing or recording.
 
-Click a column to select it; the selected device is outlined in red. Right-click a column for its settings: the sample rate, which jack it uses, grouping its sliders, making it the default, and its card's profile. A greyed column is a device that is unplugged or switched off; if it is switched off, right-click it and choose Enable Device.
+Click a column to select it; the selected device is outlined in red. Right-click a column, or use the Selected menu, for its settings: the sample rate, which jack it uses, grouping its sliders, making it the default, and its card's profile. The View menu chooses which devices are shown; with Default Input or Default Output on, the current default is always shown wherever it moves. The Default menu chooses the devices applications use. A greyed column is a device that is unplugged or switched off; if it is switched off, right-click it and choose Enable Device.
 
-On an input, Meter shows the level coming in, and Monitor plays it through the default output so you can hear it. The line along the bottom of the window describes whatever is under the pointer.</value>
+On an input, Meter shows the level coming in, and Monitor plays it through the default output so you can hear it. The line along the bottom of the window describes whatever is under the pointer; Options → Show Quick Help (Ctrl+H) turns it off.</value>
   </data>
   <data name="AboutTitle" xml:space="preserve">
     <value>Product Information</value>
@@ -263,5 +263,44 @@ Controls the volume and devices of PulseAudio or PipeWire, after the IRIX Audio 
   </data>
   <data name="PrefsNoCard" xml:space="preserve">
     <value>This device does not belong to a sound card, so it has no profiles.</value>
+  </data>
+  <data name="MenuExit" xml:space="preserve">
+    <value>E_xit</value>
+  </data>
+  <data name="MenuShowQuickHelp" xml:space="preserve">
+    <value>Show _Quick Help</value>
+  </data>
+  <data name="MenuInput" xml:space="preserve">
+    <value>_Input</value>
+  </data>
+  <data name="MenuOutput" xml:space="preserve">
+    <value>_Output</value>
+  </data>
+  <data name="MenuViewDefaultInput" xml:space="preserve">
+    <value>Default Input</value>
+  </data>
+  <data name="MenuViewDefaultOutput" xml:space="preserve">
+    <value>Default Output</value>
+  </data>
+  <data name="NoDeviceSelected" xml:space="preserve">
+    <value>No device selected</value>
+  </data>
+  <data name="NoDevicesOfKind" xml:space="preserve">
+    <value>None</value>
+  </data>
+  <data name="HintExit" xml:space="preserve">
+    <value>Close the Audio Panel; the devices keep their settings</value>
+  </data>
+  <data name="HintShowQuickHelp" xml:space="preserve">
+    <value>Show this line, which describes whatever is under the pointer</value>
+  </data>
+  <data name="HintViewDefaultInput" xml:space="preserve">
+    <value>Always show the input applications record from, whichever it is</value>
+  </data>
+  <data name="HintViewDefaultOutput" xml:space="preserve">
+    <value>Always show the output applications play to, whichever it is</value>
+  </data>
+  <data name="HintViewDevice" xml:space="preserve">
+    <value>Show or hide the {0} column</value>
   </data>
 </root>

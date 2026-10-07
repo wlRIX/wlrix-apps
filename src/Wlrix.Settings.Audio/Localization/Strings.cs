@@ -105,4 +105,12 @@ public static class Strings
     public static string HintMakeDefaultInput => Catalog.Get("HintMakeDefaultInput");
     public static string HintEnableDevice => Catalog.Get("HintEnableDevice");
     public static string HintPreferences => Catalog.Get("HintPreferences");
+
+    public static string NoDeviceSelected => Catalog.Get("NoDeviceSelected");
+    public static string NoDevicesOfKind => Catalog.Get("NoDevicesOfKind");
+    public static string MenuViewDefaultInput => Catalog.Get("MenuViewDefaultInput");
+    public static string MenuViewDefaultOutput => Catalog.Get("MenuViewDefaultOutput");
+    public static string HintViewDefaultInput => Catalog.Get("HintViewDefaultInput");
+    public static string HintViewDefaultOutput => Catalog.Get("HintViewDefaultOutput");
+    public static string ViewDeviceHint(string device) => Catalog.Format("HintViewDevice", device);
 }

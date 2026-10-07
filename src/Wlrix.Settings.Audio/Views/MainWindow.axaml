@@ -2,6 +2,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:Wlrix.Settings.Audio.ViewModels"
         xmlns:views="using:Wlrix.Settings.Audio.Views"
+        xmlns:controls="using:Wlrix.Settings.Audio.Controls"
         xmlns:loc="using:Wlrix.Common.Localization"
         xmlns:wlrix="https://vic485.xyz/Wlrix.Avalonia"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -20,22 +21,36 @@
     <!-- After IRIX's apanel: the menu bar, a row of device columns, and a status line along
          the bottom that says what the pointer is over. -->
     <DockPanel>
-        <!-- Only Help has entries so far. The others are IRIX's menus, and they get filled in
-             as the panel grows: Selected acts on the outlined device, as its context menu
-             does. -->
+        <!-- IRIX's menus. Selected, View and Default list the devices, so they are filled in
+             from MainWindow.axaml.cs, each time they open; Selected is the outlined device's
+             right-click menu. The Ctrl shortcuts are window key bindings, set there too: a
+             menu item's InputGesture only prints the keys. -->
         <wlrix:MenuBar DockPanel.Dock="Top">
-            <MenuItem Header="{loc:Tr MenuFile}" />
-            <MenuItem Header="{loc:Tr MenuSelected}" />
-            <MenuItem Header="{loc:Tr MenuView}" />
-            <MenuItem Header="{loc:Tr MenuOptions}" />
-            <MenuItem Header="{loc:Tr MenuDefault}" />
+            <MenuItem Header="{loc:Tr MenuFile}">
+                <MenuItem Header="{loc:Tr MenuExit}" InputGesture="Ctrl+Q" Click="OnExit"
+                          controls:Hint.Text="{loc:Tr HintExit}" />
+            </MenuItem>
+            <MenuItem Name="SelectedMenu" Header="{loc:Tr MenuSelected}" />
+            <MenuItem Name="ViewMenu" Header="{loc:Tr MenuView}" />
+            <MenuItem Header="{loc:Tr MenuOptions}">
+                <MenuItem Header="{loc:Tr MenuShowQuickHelp}" InputGesture="Ctrl+H"
+                          ToggleType="CheckBox"
+                          IsChecked="{Binding ShowQuickHelp, Mode=TwoWay}"
+                          controls:Hint.Text="{loc:Tr HintShowQuickHelp}" />
+            </MenuItem>
+            <MenuItem Name="DefaultMenu" Header="{loc:Tr MenuDefault}">
+                <MenuItem Name="DefaultInputMenu" Header="{loc:Tr MenuInput}" />
+                <MenuItem Name="DefaultOutputMenu" Header="{loc:Tr MenuOutput}" />
+            </MenuItem>
             <MenuItem Header="{loc:Tr MenuHelp}" DockPanel.Dock="Right">
                 <MenuItem Header="{loc:Tr MenuClickForHelp}" Click="OnHelp" />
                 <MenuItem Header="{loc:Tr MenuProductInfo}" Click="OnAbout" />
             </MenuItem>
         </wlrix:MenuBar>
 
+        <!-- Quick Help: Options → Show Quick Help puts it away. -->
         <wlrix:BevelBorder DockPanel.Dock="Bottom"
+                           IsVisible="{Binding ShowQuickHelp}"
                            Bevel="Sunken" BevelThickness="1"
                            LightBrush="{DynamicResource WlrixTopShadow}"
                            DarkBrush="{DynamicResource WlrixBottomShadow}"
@@ -46,7 +61,7 @@
         </wlrix:BevelBorder>
 
         <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
-            <ItemsControl ItemsSource="{Binding Columns}" Margin="4">
+            <ItemsControl ItemsSource="{Binding ShownColumns}" Margin="4">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <StackPanel Orientation="Horizontal" Spacing="2" />
