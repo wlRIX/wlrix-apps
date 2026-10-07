@@ -1,0 +1,15 @@
+[Desktop Entry]
+Type=Application
+Name=Audio Panel
+Comment=Set the volume of speakers, headphones and microphones, and choose which to use
+Icon=multimedia-volume-control
+Categories=Settings;HardwareSettings;
+Keywords=sound;volume;mixer;speakers;headphones;microphone;PulseAudio;PipeWire;
+Exec=wlrix-settings-audio
+TryExec=wlrix-settings-audio
+Terminal=false
+
+# Matches the Wayland app id set in Program.BuildAvaloniaApp. `wlrix-desktop` looks a running
+# window up by StartupWMClass first, and wlrix-compositor frames the window by the same id.
+StartupWMClass=com.wlrix.settings.audio
+StartupNotify=false

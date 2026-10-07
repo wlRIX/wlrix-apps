@@ -1,0 +1,155 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Wlrix.Settings.Audio.ViewModels"
+             xmlns:controls="using:Wlrix.Settings.Audio.Controls"
+             xmlns:loc="using:Wlrix.Common.Localization"
+             xmlns:wlrix="https://vic485.xyz/Wlrix.Avalonia"
+             x:Class="Wlrix.Settings.Audio.Views.DeviceColumn"
+             x:DataType="vm:DeviceColumnViewModel">
+
+    <UserControl.Styles>
+        <!-- The selected device, which the Selected menu acts on, is outlined in red. The
+             unselected brush is a style too: a local value would outrank the selected one. -->
+        <Style Selector="Border#Outline">
+            <Setter Property="BorderBrush" Value="Transparent" />
+        </Style>
+        <Style Selector="Border#Outline.selected">
+            <Setter Property="BorderBrush" Value="{DynamicResource WlrixAccent}" />
+        </Style>
+        <!-- A device that is unplugged or switched off is drawn greyed, all of it. The outline
+             stays live so it can still be selected and right-clicked. -->
+        <Style Selector="DockPanel#Body:disabled TextBlock">
+            <Setter Property="Foreground" Value="{DynamicResource WlrixDisabledForeground}" />
+        </Style>
+        <Style Selector="DockPanel#Body:disabled controls|SliderScale">
+            <Setter Property="Foreground" Value="{DynamicResource WlrixDisabledForeground}" />
+        </Style>
+        <Style Selector="TextBlock.note">
+            <Setter Property="FontStyle" Value="Italic" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="Margin" Value="0,1" />
+        </Style>
+        <Style Selector="TextBlock.channel">
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="Margin" Value="0,0,0,2" />
+        </Style>
+        <Style Selector="Slider.gain">
+            <Setter Property="Orientation" Value="Vertical" />
+            <Setter Property="Minimum" Value="0" />
+            <Setter Property="Maximum" Value="10" />
+            <Setter Property="SmallChange" Value="0.1" />
+            <Setter Property="LargeChange" Value="1" />
+            <Setter Property="Height" Value="150" />
+            <Setter Property="Margin" Value="2,0" />
+        </Style>
+        <Style Selector="controls|LevelMeter">
+            <Setter Property="Height" Value="150" />
+            <Setter Property="Margin" Value="1,0" />
+        </Style>
+        <Style Selector="controls|SliderScale">
+            <Setter Property="Height" Value="150" />
+            <Setter Property="Foreground" Value="{DynamicResource WlrixForeground}" />
+        </Style>
+    </UserControl.Styles>
+
+    <Border Name="Outline"
+            BorderThickness="2"
+            Background="Transparent"
+            Padding="2"
+            Classes.selected="{Binding IsSelected}"
+            controls:Hint.Text="{Binding ColumnHint}">
+        <DockPanel Name="Body" IsEnabled="{Binding IsAvailable}" MinWidth="128">
+
+            <!-- Header: the activity lamp and the device's name, on a raised bar. -->
+            <wlrix:BevelBorder DockPanel.Dock="Top"
+                               Bevel="Raised" BevelThickness="2"
+                               Background="{DynamicResource WlrixFace}"
+                               LightBrush="{DynamicResource WlrixTopShadow}"
+                               DarkBrush="{DynamicResource WlrixBottomShadow}"
+                               Padding="4,3">
+                <DockPanel>
+                    <!-- The same sunken well as wlRIX's LED buttons, lit while sound flows. -->
+                    <wlrix:BevelBorder DockPanel.Dock="Left"
+                                       Bevel="Sunken" BevelThickness="1" OuterLineThickness="1"
+                                       Width="10" Height="16" Margin="0,0,6,0"
+                                       VerticalAlignment="Center"
+                                       Background="{DynamicResource WlrixOuterLine}"
+                                       LightBrush="{DynamicResource WlrixTopShadow}"
+                                       DarkBrush="{DynamicResource WlrixBottomShadow}"
+                                       OuterLineBrush="{DynamicResource WlrixOuterLine}"
+                                       controls:Hint.Text="{loc:Tr HintLamp}">
+                        <Border Margin="1"
+                                Background="{DynamicResource WlrixIndicatorLight}"
+                                IsVisible="{Binding IsActive}" />
+                    </wlrix:BevelBorder>
+                    <TextBlock Text="{Binding Title}"
+                               ToolTip.Tip="{Binding Title}"
+                               FontWeight="Bold"
+                               MaxWidth="150"
+                               TextTrimming="CharacterEllipsis"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center" />
+                </DockPanel>
+            </wlrix:BevelBorder>
+
+            <TextBlock DockPanel.Dock="Top" Classes="note" Text="{Binding Subtitle}"
+                       MaxWidth="160" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding Subtitle}" />
+
+            <!-- Under the sliders: the rate, where it is connected, and the toggles. -->
+            <StackPanel DockPanel.Dock="Bottom" Margin="0,4,0,2">
+                <TextBlock Classes="note" Text="{Binding RateText}" />
+                <TextBlock Classes="note" Text="{Binding BusText}" />
+                <Grid ColumnDefinitions="*,*" Margin="2,6,2,0" IsVisible="{Binding IsInput}">
+                    <CheckBox Grid.Column="0" Content="{loc:Tr Meter}"
+                              IsChecked="{Binding Metering}"
+                              controls:Hint.Text="{loc:Tr HintMeter}" />
+                    <CheckBox Grid.Column="1" Content="{loc:Tr Monitor}"
+                              HorizontalAlignment="Right"
+                              IsChecked="{Binding Monitoring}"
+                              controls:Hint.Text="{loc:Tr HintMonitor}" />
+                </Grid>
+                <CheckBox Content="{loc:Tr Mute}" Margin="0,6,0,0"
+                          HorizontalAlignment="Center"
+                          IsVisible="{Binding IsOutput}"
+                          IsChecked="{Binding Muted}"
+                          controls:Hint.Text="{loc:Tr HintMute}" />
+            </StackPanel>
+
+            <!-- An input: gain slider, meter, decibel scale, meter, gain slider, gain scale. -->
+            <Grid IsVisible="{Binding IsInput}" HorizontalAlignment="Center" Margin="0,6,0,0"
+                  ColumnDefinitions="Auto,Auto,Auto,Auto,Auto,Auto" RowDefinitions="Auto,Auto">
+                <TextBlock Grid.Column="0" Classes="channel" Text="{loc:Tr ChannelLeft}" />
+                <TextBlock Grid.Column="4" Classes="channel" Text="{loc:Tr ChannelRight}"
+                           IsVisible="{Binding IsStereo}" />
+                <Slider Grid.Row="1" Grid.Column="0" Classes="gain" Value="{Binding Left}"
+                        controls:Hint.Text="{Binding LeftHint}" />
+                <controls:LevelMeter Grid.Row="1" Grid.Column="1"
+                                     Peak="{Binding LeftPeak}" IsActive="{Binding Metering}"
+                                     controls:Hint.Text="{Binding LeftMeterHint}" />
+                <controls:SliderScale Grid.Row="1" Grid.Column="2" Kind="Meter" />
+                <controls:LevelMeter Grid.Row="1" Grid.Column="3"
+                                     Peak="{Binding RightPeak}" IsActive="{Binding Metering}"
+                                     IsVisible="{Binding IsStereo}"
+                                     controls:Hint.Text="{Binding RightMeterHint}" />
+                <Slider Grid.Row="1" Grid.Column="4" Classes="gain" Value="{Binding Right}"
+                        IsVisible="{Binding IsStereo}"
+                        controls:Hint.Text="{Binding RightHint}" />
+                <controls:SliderScale Grid.Row="1" Grid.Column="5" Kind="Gain" />
+            </Grid>
+
+            <!-- An output: gain scale, then the two gain sliders. -->
+            <Grid IsVisible="{Binding IsOutput}" HorizontalAlignment="Center" Margin="0,6,0,0"
+                  ColumnDefinitions="Auto,Auto,Auto" RowDefinitions="Auto,Auto">
+                <TextBlock Grid.Column="1" Classes="channel" Text="{loc:Tr ChannelLeft}" />
+                <TextBlock Grid.Column="2" Classes="channel" Text="{loc:Tr ChannelRight}"
+                           IsVisible="{Binding IsStereo}" />
+                <controls:SliderScale Grid.Row="1" Grid.Column="0" Kind="Gain" TicksRight="True" />
+                <Slider Grid.Row="1" Grid.Column="1" Classes="gain" Value="{Binding Left}"
+                        controls:Hint.Text="{Binding LeftHint}" />
+                <Slider Grid.Row="1" Grid.Column="2" Classes="gain" Value="{Binding Right}"
+                        IsVisible="{Binding IsStereo}"
+                        controls:Hint.Text="{Binding RightHint}" />
+            </Grid>
+        </DockPanel>
+    </Border>
+</UserControl>

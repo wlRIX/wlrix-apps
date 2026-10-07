@@ -1,0 +1,63 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Wlrix.Settings.Audio.ViewModels"
+        xmlns:views="using:Wlrix.Settings.Audio.Views"
+        xmlns:loc="using:Wlrix.Common.Localization"
+        xmlns:wlrix="https://vic485.xyz/Wlrix.Avalonia"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="460" d:DesignHeight="380"
+        x:Class="Wlrix.Settings.Audio.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Title="{loc:Tr WindowTitle}"
+        SizeToContent="WidthAndHeight"
+        MinWidth="300" MinHeight="320">
+
+    <Design.DataContext>
+        <vm:MainWindowViewModel />
+    </Design.DataContext>
+
+    <!-- After IRIX's apanel: the menu bar, a row of device columns, and a status line along
+         the bottom that says what the pointer is over. -->
+    <DockPanel>
+        <!-- Only Help has entries so far. The others are IRIX's menus, and they get filled in
+             as the panel grows: Selected acts on the outlined device, as its context menu
+             does. -->
+        <wlrix:MenuBar DockPanel.Dock="Top">
+            <MenuItem Header="{loc:Tr MenuFile}" />
+            <MenuItem Header="{loc:Tr MenuSelected}" />
+            <MenuItem Header="{loc:Tr MenuView}" />
+            <MenuItem Header="{loc:Tr MenuOptions}" />
+            <MenuItem Header="{loc:Tr MenuDefault}" />
+            <MenuItem Header="{loc:Tr MenuHelp}" DockPanel.Dock="Right">
+                <MenuItem Header="{loc:Tr MenuClickForHelp}" Click="OnHelp" />
+                <MenuItem Header="{loc:Tr MenuProductInfo}" Click="OnAbout" />
+            </MenuItem>
+        </wlrix:MenuBar>
+
+        <wlrix:BevelBorder DockPanel.Dock="Bottom"
+                           Bevel="Sunken" BevelThickness="1"
+                           LightBrush="{DynamicResource WlrixTopShadow}"
+                           DarkBrush="{DynamicResource WlrixBottomShadow}"
+                           Margin="2" Padding="4,2">
+            <!-- A space when empty, so the line keeps its height. -->
+            <TextBlock Text="{Binding StatusText, FallbackValue=' ', TargetNullValue=' '}"
+                       TextTrimming="CharacterEllipsis" MinHeight="16" />
+        </wlrix:BevelBorder>
+
+        <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+            <ItemsControl ItemsSource="{Binding Columns}" Margin="4">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal" Spacing="2" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="vm:DeviceColumnViewModel">
+                        <views:DeviceColumn />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+    </DockPanel>
+</Window>

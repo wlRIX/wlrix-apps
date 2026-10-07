@@ -1,0 +1,42 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+        <ApplicationManifest>app.manifest</ApplicationManifest>
+        <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+        <AssemblyName>wlrix-settings-audio</AssemblyName>
+        <Version>0.0.0</Version>
+        <!-- The libpulse interop in Pulse/ hands raw pointers and unmanaged function pointers
+             back and forth; see Pulse/Native.cs. -->
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Avalonia" />
+        <PackageReference Include="Avalonia.Desktop" />
+        <PackageReference Include="Avalonia.Wayland" />
+        <PackageReference Include="AvaloniaUI.DiagnosticsSupport">
+            <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
+            <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
+        </PackageReference>
+        <PackageReference Include="ReactiveUI.Avalonia" />
+        <PackageReference Include="Wlrix.Avalonia" />
+        <!-- The IRIX message window, for the Help menu. -->
+        <PackageReference Include="Wlrix.Avalonia.Dialogs" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <!-- The volume math and the view models are `internal`; the tests are the only other
+             thing with any business calling them. -->
+        <InternalsVisibleTo Include="Wlrix.Settings.Audio.Tests" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <!-- The localized strings, the {loc:Tr} markup extension and ApplicationPaths. -->
+        <ProjectReference Include="../Wlrix.Common/Wlrix.Common.csproj" />
+    </ItemGroup>
+    <ItemGroup>
+        <!-- Follows the session's color scheme. One call in App.axaml.cs. -->
+        <ProjectReference Include="../Wlrix.Theme/Wlrix.Theme.csproj" />
+    </ItemGroup>
+
+</Project>

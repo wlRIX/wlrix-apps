@@ -1,0 +1,24 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- `Wlrix.Avalonia` is a standalone theme with no base theme underneath, and it has no
+         `ItemsControl` (only `ListBox`): without this the row of device columns would render
+         nothing at all. The columns are a layout, not a list to pick from, so `ListBox` would
+         be wrong: the red outline already shows which device is selected. The same plain
+         default as `Wlrix.Settings.Windows`. -->
+    <ControlTheme x:Key="{x:Type ItemsControl}" TargetType="ItemsControl">
+        <Setter Property="Template">
+            <ControlTemplate>
+                <ItemsPresenter ItemsPanel="{TemplateBinding ItemsPanel}" />
+            </ControlTemplate>
+        </Setter>
+    </ControlTheme>
+
+    <!-- The level meter's lamps. They are not scheme colors, since no IRIX scheme ever
+         recolored a meter, but they are resources so a scheme can still override them. -->
+    <SolidColorBrush x:Key="AudioMeterLow" Color="#00c000" />
+    <SolidColorBrush x:Key="AudioMeterHigh" Color="#e0e000" />
+    <SolidColorBrush x:Key="AudioMeterClip" Color="#ff0000" />
+    <SolidColorBrush x:Key="AudioMeterOff" Color="#304030" />
+
+</ResourceDictionary>

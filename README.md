@@ -23,6 +23,7 @@ library. Apps recreate the IRIX Interactive Desktop surface.
 | `Wlrix.Settings.Keyboard` | app  | Keyboard settings panel.                                            |
 | `Wlrix.Settings.Windows`  | app  | Window settings panel: focus policy and the 4Dwm flags.             |
 | `Wlrix.Settings.Displays` | app  | Displays panel, after KDE's: arrangement, modes, scale, HDR.        |
+| `Wlrix.Settings.Audio`    | app  | Audio Panel, after IRIX's apanel. Replaces pavucontrol.             |
 | `Wlrix.Settings.Schemes`  | app  | Color scheme browser, after IRIX's. One Apply, whole desktop.       |
 | `Wlrix.Shutdown`          | app  | The Shut Down System dialog, behind the Toolchest's two items.      |
 | `Wlrix.SourcePicker`      | app  | The screen-share picker `xdg-desktop-portal-wlrix` puts up.         |
@@ -130,6 +131,18 @@ and every one of them reads and writes through `Wlrix.Settings.Client`
 compositor to reload" signal, and the schema the panel renders from, so a new panel is a window and a list of keys
 rather than another copy of all three. See that project's README, and `wlrix-settings-daemon/README.md` for what it
 guarantees about the file.
+
+## Audio
+
+`Wlrix.Settings.Audio` is the Audio Panel, after IRIX's `apanel`, and wlRIX's replacement for pavucontrol. It is the
+exception to the rule above: volume and devices belong to the sound server, not to a config file, so the panel talks to
+it directly through **libpulse** (`libpulse.so.0`, P/Invoke, no binding package). That is the client side of
+PulseAudio and of PipeWire's pipewire-pulse alike, so it needs `libpulse` installed at runtime either way. The one
+PipeWire-only setting, the graph's sample rate, goes through `pw-metadata`; on PulseAudio that menu is disabled.
+
+```sh
+dotnet run --project src/Wlrix.Settings.Audio -- --demo   # the IRIX screenshot's devices; touches nothing
+```
 
 ## Build
 

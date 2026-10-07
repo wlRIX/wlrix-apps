@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <IsPackable>false</IsPackable>
+        <IsTestProject>true</IsTestProject>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\src\Wlrix.Settings.Audio\Wlrix.Settings.Audio.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" />
+        <PackageReference Include="xunit" />
+        <PackageReference Include="xunit.runner.visualstudio" />
+    </ItemGroup>
+
+    <!-- The markup and the catalog as data, for LocalizationTests. Copied by hand rather than as
+         None items, because Avalonia's build claims every *.axaml as AvaloniaXaml and removes it
+         from None again. -->
+    <Target Name="CopyLocalizationData" BeforeTargets="Build">
+        <ItemGroup>
+            <LocalizationData Include="$(MSBuildThisFileDirectory)..\..\src\Wlrix.Settings.Audio\Views\*.axaml" />
+            <LocalizationData Include="$(MSBuildThisFileDirectory)..\..\src\Wlrix.Settings.Audio\Localization\*.resx" />
+        </ItemGroup>
+        <Copy SourceFiles="@(LocalizationData)"
+              DestinationFolder="$(OutDir)Localization"
+              SkipUnchangedFiles="true" />
+    </Target>
+
+</Project>

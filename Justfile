@@ -31,7 +31,8 @@ appsdir := usrdir / 'share' / 'applications'
 apps := "Wlrix.Archiver:wlrix-archiver:com.wlrix.archiver.desktop \
          Wlrix.Files:wlrix-files:com.wlrix.files.desktop \
          Wlrix.Clock:wlrix-clock:com.wlrix.clock.desktop \
-         Wlrix.Settings.Displays:wlrix-settings-displays:com.wlrix.settings.displays.desktop"
+         Wlrix.Settings.Displays:wlrix-settings-displays:com.wlrix.settings.displays.desktop \
+         Wlrix.Settings.Audio:wlrix-settings-audio:com.wlrix.settings.audio.desktop"
 
 # List available recipes.
 default:

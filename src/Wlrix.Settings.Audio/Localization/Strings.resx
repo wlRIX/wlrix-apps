@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="WindowTitle" xml:space="preserve">
+    <value>Audio Panel</value>
+  </data>
+  <data name="MenuFile" xml:space="preserve">
+    <value>_File</value>
+  </data>
+  <data name="MenuSelected" xml:space="preserve">
+    <value>_Selected</value>
+  </data>
+  <data name="MenuView" xml:space="preserve">
+    <value>_View</value>
+  </data>
+  <data name="MenuOptions" xml:space="preserve">
+    <value>_Options</value>
+  </data>
+  <data name="MenuDefault" xml:space="preserve">
+    <value>_Default</value>
+  </data>
+  <data name="MenuHelp" xml:space="preserve">
+    <value>_Help</value>
+  </data>
+  <data name="MenuClickForHelp" xml:space="preserve">
+    <value>_Click for Help</value>
+  </data>
+  <data name="MenuProductInfo" xml:space="preserve">
+    <value>_Product Information</value>
+  </data>
+  <data name="HelpTitle" xml:space="preserve">
+    <value>Audio Panel Help</value>
+  </data>
+  <data name="HelpText" xml:space="preserve">
+    <value>Each column is one audio device: inputs such as microphones on the left, outputs such as speakers and headphones on the right. The sliders set each channel's gain from 0 to 10; with Group Sliders on, the left and right sliders move together. The light in a column's header is lit while the device is playing or recording.
+
+Click a column to select it; the selected device is outlined in red. Right-click a column for its settings: the sample rate, which jack it uses, grouping its sliders, making it the default, and its card's profile. A greyed column is a device that is unplugged or switched off; if it is switched off, right-click it and choose Enable Device.
+
+On an input, Meter shows the level coming in, and Monitor plays it through the default output so you can hear it. The line along the bottom of the window describes whatever is under the pointer.</value>
+  </data>
+  <data name="AboutTitle" xml:space="preserve">
+    <value>Product Information</value>
+  </data>
+  <data name="About" xml:space="preserve">
+    <value>Audio Panel {0}
+
+Controls the volume and devices of PulseAudio or PipeWire, after the IRIX Audio Panel.</value>
+  </data>
+  <data name="Connecting" xml:space="preserve">
+    <value>Waiting for the sound server...</value>
+  </data>
+  <data name="NoSoundServer" xml:space="preserve">
+    <value>Could not reach a sound server. Is PulseAudio or PipeWire running?</value>
+  </data>
+  <data name="ServerLost" xml:space="preserve">
+    <value>Lost the connection to the sound server; reconnecting...</value>
+  </data>
+  <data name="MeterStreamName" xml:space="preserve">
+    <value>Level meter</value>
+  </data>
+  <data name="NoDevices" xml:space="preserve">
+    <value>No audio devices were found.</value>
+  </data>
+  <data name="Meter" xml:space="preserve">
+    <value>Meter</value>
+  </data>
+  <data name="Monitor" xml:space="preserve">
+    <value>Monitor</value>
+  </data>
+  <data name="Mute" xml:space="preserve">
+    <value>Mute</value>
+  </data>
+  <data name="ChannelLeft" xml:space="preserve">
+    <value>L</value>
+  </data>
+  <data name="ChannelRight" xml:space="preserve">
+    <value>R</value>
+  </data>
+  <data name="Clip" xml:space="preserve">
+    <value>C</value>
+  </data>
+  <data name="RateKHz" xml:space="preserve">
+    <value>{0} kHz</value>
+  </data>
+  <data name="BusInternal" xml:space="preserve">
+    <value>Internal</value>
+  </data>
+  <data name="BusUsb" xml:space="preserve">
+    <value>USB</value>
+  </data>
+  <data name="BusBluetooth" xml:space="preserve">
+    <value>Bluetooth</value>
+  </data>
+  <data name="BusHdmi" xml:space="preserve">
+    <value>HDMI</value>
+  </data>
+  <data name="BusNetwork" xml:space="preserve">
+    <value>Network</value>
+  </data>
+  <data name="BusVirtual" xml:space="preserve">
+    <value>Virtual</value>
+  </data>
+  <data name="Off" xml:space="preserve">
+    <value>Off</value>
+  </data>
+  <data name="MenuSampleRate" xml:space="preserve">
+    <value>Sample Rate</value>
+  </data>
+  <data name="RateAutomatic" xml:space="preserve">
+    <value>Automatic</value>
+  </data>
+  <data name="MenuOutputDestination" xml:space="preserve">
+    <value>Output Destination</value>
+  </data>
+  <data name="MenuInputSource" xml:space="preserve">
+    <value>Input Source</value>
+  </data>
+  <data name="MenuGroupSliders" xml:space="preserve">
+    <value>Group Sliders</value>
+  </data>
+  <data name="MenuMakeDefaultOutput" xml:space="preserve">
+    <value>Make Default Output</value>
+  </data>
+  <data name="MenuMakeDefaultInput" xml:space="preserve">
+    <value>Make Default Input</value>
+  </data>
+  <data name="MenuEnableDevice" xml:space="preserve">
+    <value>Enable Device</value>
+  </data>
+  <data name="MenuPreferences" xml:space="preserve">
+    <value>Preferences...</value>
+  </data>
+  <data name="Left" xml:space="preserve">
+    <value>Left</value>
+  </data>
+  <data name="Right" xml:space="preserve">
+    <value>Right</value>
+  </data>
+  <data name="HintOutputGain" xml:space="preserve">
+    <value>{0} {1} channel output gain (output volume)</value>
+  </data>
+  <data name="HintOutputGainMono" xml:space="preserve">
+    <value>{0} output gain (output volume)</value>
+  </data>
+  <data name="HintInputGain" xml:space="preserve">
+    <value>{0} {1} channel input gain (recording level)</value>
+  </data>
+  <data name="HintInputGainMono" xml:space="preserve">
+    <value>{0} input gain (recording level)</value>
+  </data>
+  <data name="HintMeterLevel" xml:space="preserve">
+    <value>{0} channel input level; the top row lights when the input clips</value>
+  </data>
+  <data name="HintMeter" xml:space="preserve">
+    <value>Show the level coming in on the meters</value>
+  </data>
+  <data name="HintMonitor" xml:space="preserve">
+    <value>Play this input through the default output, to hear what it records</value>
+  </data>
+  <data name="HintMute" xml:space="preserve">
+    <value>Silence this output without moving its sliders</value>
+  </data>
+  <data name="HintLamp" xml:space="preserve">
+    <value>Lit while the device is playing or recording</value>
+  </data>
+  <data name="HintColumn" xml:space="preserve">
+    <value>{0}. Right-click for its settings</value>
+  </data>
+  <data name="HintUnavailable" xml:space="preserve">
+    <value>{0} has nothing plugged in. Right-click to choose another jack</value>
+  </data>
+  <data name="HintSwitchedOff" xml:space="preserve">
+    <value>{0} is switched off by its card's profile. Right-click and choose Enable Device</value>
+  </data>
+  <data name="HintRateAutomatic" xml:space="preserve">
+    <value>Let the sound server pick the rate its streams ask for</value>
+  </data>
+  <data name="HintRate8000" xml:space="preserve">
+    <value>Low bandwidth sample rate good for capturing speech</value>
+  </data>
+  <data name="HintRate11025" xml:space="preserve">
+    <value>Low quality sample rate, a quarter of CD quality</value>
+  </data>
+  <data name="HintRate16000" xml:space="preserve">
+    <value>Wideband speech, as used for voice calls</value>
+  </data>
+  <data name="HintRate22050" xml:space="preserve">
+    <value>Medium quality sample rate, half of CD quality</value>
+  </data>
+  <data name="HintRate32000" xml:space="preserve">
+    <value>Broadcast quality sample rate</value>
+  </data>
+  <data name="HintRate44100" xml:space="preserve">
+    <value>CD quality sample rate</value>
+  </data>
+  <data name="HintRate48000" xml:space="preserve">
+    <value>Standard sample rate for digital audio and video</value>
+  </data>
+  <data name="HintRate96000" xml:space="preserve">
+    <value>High resolution sample rate for studio work</value>
+  </data>
+  <data name="HintRate192000" xml:space="preserve">
+    <value>Highest resolution sample rate for studio work</value>
+  </data>
+  <data name="HintRateUnavailable" xml:space="preserve">
+    <value>Not allowed by the sound server's clock.allowed-rates setting</value>
+  </data>
+  <data name="HintRateNotPipeWire" xml:space="preserve">
+    <value>The sample rate can only be changed when the sound server is PipeWire</value>
+  </data>
+  <data name="HintRateGlobal" xml:space="preserve">
+    <value>Sets the sample rate of every device at once</value>
+  </data>
+  <data name="HintPort" xml:space="preserve">
+    <value>Use {0}</value>
+  </data>
+  <data name="HintPortUnavailable" xml:space="preserve">
+    <value>{0} has nothing plugged in</value>
+  </data>
+  <data name="HintGroup" xml:space="preserve">
+    <value>Move the left and right sliders together</value>
+  </data>
+  <data name="HintMakeDefaultOutput" xml:space="preserve">
+    <value>Send sound from applications to this output</value>
+  </data>
+  <data name="HintMakeDefaultInput" xml:space="preserve">
+    <value>Record from this input in applications</value>
+  </data>
+  <data name="HintEnableDevice" xml:space="preserve">
+    <value>Switch the card's profile so this device is available</value>
+  </data>
+  <data name="HintPreferences" xml:space="preserve">
+    <value>The device's details and its card's profile</value>
+  </data>
+  <data name="PrefsTitle" xml:space="preserve">
+    <value>Device Preferences</value>
+  </data>
+  <data name="PrefsDevice" xml:space="preserve">
+    <value>Device:</value>
+  </data>
+  <data name="PrefsDriver" xml:space="preserve">
+    <value>Driver:</value>
+  </data>
+  <data name="PrefsConnection" xml:space="preserve">
+    <value>Connection:</value>
+  </data>
+  <data name="PrefsProfile" xml:space="preserve">
+    <value>Profile:</value>
+  </data>
+  <data name="PrefsClose" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="PrefsNoCard" xml:space="preserve">
+    <value>This device does not belong to a sound card, so it has no profiles.</value>
+  </data>
+</root>
