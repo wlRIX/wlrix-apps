@@ -18,6 +18,7 @@ public static class Strings
     public static string Applications => Catalog.Get("Applications");
     public static string Help => Catalog.Get("Help");
     public static string ExtraDesks => Catalog.Get("ExtraDesks");
+    public static string ControlAudio => Catalog.Get("ControlAudio");
     public static string OpenTerminal => Catalog.Get("OpenTerminal");
     public static string LogOut => Catalog.Get("LogOut");
     public static string LogOutPrompt => Catalog.Get("LogOutPrompt");

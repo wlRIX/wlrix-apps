@@ -30,6 +30,9 @@
   <data name="ExtraDesks" xml:space="preserve">
     <value>Extra Desks</value>
   </data>
+  <data name="ControlAudio" xml:space="preserve">
+    <value>Control Audio</value>
+  </data>
   <data name="OpenTerminal" xml:space="preserve">
     <value>Open Terminal</value>
   </data>

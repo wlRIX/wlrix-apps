@@ -29,16 +29,17 @@ public class MenuTests
     }
 
     [Fact]
-    public void TheDesktopMenuIsExtraDesksThenTerminalThenLogOut() =>
-        Assert.Equal([Strings.ExtraDesks, Strings.OpenTerminal, Strings.LogOut],
+    public void TheDesktopMenuIsExtraDesksAndAudioThenTerminalThenLogOut() =>
+        Assert.Equal([Strings.ExtraDesks, Strings.ControlAudio, Strings.OpenTerminal, Strings.LogOut],
             HeadersUnder(Strings.Desktop));
 
     [Fact]
-    public void EachDesktopItemStandsInItsOwnGroup()
+    public void TheDesktopMenuIsInThreeGroups()
     {
-        // A rule between every pair, and none at either end: the three do unrelated things, and
-        // Log Out in particular should not sit flush against the item above it.
-        Assert.Equal([false, true, false, true, false],
+        // The desktop's own panels together, then the terminal, then Log Out, with a rule between
+        // the groups and none at either end: Log Out in particular should not sit flush against
+        // the item above it.
+        Assert.Equal([false, false, true, false, true, false],
             ItemsUnder(Strings.Desktop).Select(item => item.IsSeparator));
     }
 

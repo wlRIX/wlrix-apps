@@ -30,6 +30,9 @@
   <data name="ExtraDesks" xml:space="preserve">
     <value>デスクの追加</value>
   </data>
+  <data name="ControlAudio" xml:space="preserve">
+    <value>オーディオの制御</value>
+  </data>
   <data name="OpenTerminal" xml:space="preserve">
     <value>ターミナルを開く</value>
   </data>

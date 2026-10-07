@@ -13,6 +13,9 @@ public sealed class MainWindowViewModel : ViewModelBase
     /// <summary>The installed name of the Desks Overview, launched by Desktop → Extra Desks.</summary>
     private const string DesksProgram = "wlrix-desks";
 
+    /// <summary>The installed name of the Audio Panel, launched by Desktop → Control Audio.</summary>
+    private const string AudioProgram = "wlrix-settings-audio";
+
     /// <summary>The installed name of the Software Manager, launched by System → Software Manager.</summary>
     private const string SoftwareManagerProgram = "wlrix-software-manager";
 
@@ -97,6 +100,8 @@ public sealed class MainWindowViewModel : ViewModelBase
         [
             new MenuNode(Strings.ExtraDesks,
                 command: new RelayCommand(() => _launcher.Run(Strings.ExtraDesks, DesksProgram))),
+            new MenuNode(Strings.ControlAudio,
+                command: new RelayCommand(() => _launcher.Run(Strings.ControlAudio, AudioProgram))),
             MenuNode.Separator(),
             new MenuNode(Strings.OpenTerminal, command: new RelayCommand(() => _launcher.OpenTerminal())),
             MenuNode.Separator(),
