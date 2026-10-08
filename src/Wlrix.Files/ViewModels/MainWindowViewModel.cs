@@ -97,6 +97,14 @@ public sealed class MainWindowViewModel : ReactiveObject, IDisposable
             var pane = new PaneViewModel(
                 provider, loggerFactory.CreateLogger<PaneViewModel>(), start, state.Preferences.ShowHidden);
             pane.ErrorRaised += message => ErrorRaised?.Invoke(message);
+            // Only the pane the window acts on speaks for it. Otherwise merely rebuilding the
+            // other listing's selection would redirect Cut, Delete and Paste to a directory
+            // nobody clicked on.
+            pane.SelectionChanged += () =>
+            {
+                if (_activeTab is { } tab && ReferenceEquals(pane, tab.Pane))
+                    Selection = pane.Selection;
+            };
             // A queue full of previews for the directory just left is a queue of work that
             // delays the previews for the one just arrived at.
             pane.Invalidated += Thumbnails.Invalidate;

@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Presenters;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
@@ -220,14 +221,8 @@ public partial class ListingView : UserControl
         if (Pane is not { } pane)
             return;
 
-        var selection = source.SelectedItems?.OfType<FileEntryViewModel>().ToArray() ?? [];
-        pane.Selection = selection;
-
-        // Only the active pane speaks for the window. Without this, merely rebuilding the
-        // other listing's selection would redirect Cut, Delete and Paste to a directory
-        // nobody clicked on.
-        if (pane.IsActive && pane.Tab?.Window is { } model)
-            model.Selection = selection;
+        // The window hears about it from the pane, and only when this is the pane it acts on.
+        pane.Selection = source.SelectedItems?.OfType<FileEntryViewModel>().ToArray() ?? [];
     }
 
     /// <summary>Asks for a realized row's type icon and, if it can have one, its preview.</summary>
@@ -427,6 +422,14 @@ public partial class ListingView : UserControl
                 _pressedSelection = [row];
             return;
         }
+
+        // A plain click on nothing means "nothing". The ListBox leaves its selection alone when
+        // the press misses every row, which kept files picked out that the user had clearly
+        // clicked away from. Control and Shift are left alone, as they are about adding to a
+        // selection rather than replacing it.
+        if (IsEmptySpace(view, e.Source)
+            && (e.KeyModifiers & (KeyModifiers.Control | KeyModifiers.Shift)) == 0)
+            view.SelectedItems?.Clear();
 
         if (!ReferenceEquals(view, IconView) || Grid is not { } grid)
             return;
@@ -738,6 +741,19 @@ public partial class ListingView : UserControl
     /// details view's rows and the icon view's cells are different controls, and everything
     /// inside an item template inherits the row it is showing.
     /// </remarks>
+    /// <summary>Whether a press landed in the listing's scrolling area but on no row.</summary>
+    /// <remarks>
+    /// Bounded by the scroll content rather than by "not a row", because the details view's
+    /// column headers and either view's scroll bars are not rows either, and resizing a column
+    /// or dragging the scroll thumb must not throw the selection away.
+    /// </remarks>
+    private static bool IsEmptySpace(ListBox view, object? source) =>
+        RowUnder(source) is null
+        && (source as Visual)?.GetSelfAndVisualAncestors()
+            .TakeWhile(visual => !ReferenceEquals(visual, view))
+            .OfType<ScrollContentPresenter>()
+            .Any() == true;
+
     private static FileEntryViewModel? RowUnder(object? source) =>
         (source as Visual)?.GetSelfAndVisualAncestors()
             .OfType<Control>()

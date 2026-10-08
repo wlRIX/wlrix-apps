@@ -1,3 +1,4 @@
+using System.Collections.Specialized;
 using Avalonia.Collections;
 using Avalonia.Threading;
 using Microsoft.Extensions.Logging;
@@ -41,6 +42,7 @@ public sealed class PaneViewModel : ReactiveObject
     private bool _foldersFirst = true;
     private bool _showHidden;
     private ViewMode _viewMode = ViewMode.Icons;
+    private IReadOnlyList<FileEntryViewModel> _selection = [];
 
     /// <summary>The search being shown, or null when this is an ordinary directory listing.</summary>
     private SearchQuery? _search;
@@ -55,6 +57,7 @@ public sealed class PaneViewModel : ReactiveObject
         _logger = logger;
         _location = start;
         _showHidden = showHidden;
+        Entries.CollectionChanged += OnEntriesChanged;
     }
 
     /// <summary>The tab this pane sits in, once it has been put in one.</summary>
@@ -74,8 +77,51 @@ public sealed class PaneViewModel : ReactiveObject
     /// switch, so the controls are gone by the time you come back; holding the selection here
     /// means switching away and back does not silently drop what you had picked out, which with
     /// Cut and Delete a menu away is worth more than the code costs.
+    ///
+    /// <para>
+    /// Rows that leave the listing leave this too, whether or not a listing is on screen to
+    /// notice. A tab in the background has no control to update it, so a file moved out from
+    /// under it would otherwise come back selected and the next Cut would name a path that no
+    /// longer exists.
+    /// </para>
     /// </remarks>
-    public IReadOnlyList<FileEntryViewModel> Selection { get; set; } = [];
+    public IReadOnlyList<FileEntryViewModel> Selection
+    {
+        get => _selection;
+        set
+        {
+            // By reference, which is also what stops the window and the pane setting each
+            // other forever: each passes the other the list it was just given.
+            if (ReferenceEquals(_selection, value))
+                return;
+            _selection = value;
+            SelectionChanged?.Invoke();
+        }
+    }
+
+    /// <summary>Raised when <see cref="Selection"/> is replaced, by the listing or by a row leaving.</summary>
+    public event Action? SelectionChanged;
+
+    /// <summary>Drops rows that are no longer listed from the remembered selection.</summary>
+    private void OnEntriesChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        if (_selection.Count == 0)
+            return;
+
+        switch (e.Action)
+        {
+            case NotifyCollectionChangedAction.Reset:
+                Selection = [];
+                break;
+
+            case NotifyCollectionChangedAction.Remove or NotifyCollectionChangedAction.Replace
+                when e.OldItems is { } removed:
+                var gone = removed.OfType<FileEntryViewModel>().ToHashSet();
+                if (_selection.Any(gone.Contains))
+                    Selection = [.. _selection.Where(row => !gone.Contains(row))];
+                break;
+        }
+    }
 
     /// <summary>Whether this is the pane the window's commands act on.</summary>
     /// <remarks>
