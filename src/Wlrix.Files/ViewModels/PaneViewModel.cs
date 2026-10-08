@@ -45,11 +45,16 @@ public sealed class PaneViewModel : ReactiveObject
     /// <summary>The search being shown, or null when this is an ordinary directory listing.</summary>
     private SearchQuery? _search;
 
-    public PaneViewModel(FileSystemProvider provider, ILogger<PaneViewModel> logger, Location start)
+    /// <param name="showHidden">
+    /// Whether dotfiles start out shown. Passed in rather than set afterwards, because the
+    /// property re-reads the listing and a pane that has not loaded yet has nothing to re-read.
+    /// </param>
+    public PaneViewModel(FileSystemProvider provider, ILogger<PaneViewModel> logger, Location start, bool showHidden = false)
     {
         _provider = provider;
         _logger = logger;
         _location = start;
+        _showHidden = showHidden;
     }
 
     /// <summary>The tab this pane sits in, once it has been put in one.</summary>
@@ -310,6 +315,10 @@ public sealed class PaneViewModel : ReactiveObject
     /// Whether dotfiles are shown. Toggling re-reads rather than filtering in place, which is
     /// simpler and imperceptible next to the cost of the directory read itself.
     /// </summary>
+    /// <remarks>
+    /// Set by the window rather than by the menu: it is an application preference, so every
+    /// pane in every tab follows <see cref="MainWindowViewModel.ShowHidden"/>.
+    /// </remarks>
     public bool ShowHidden
     {
         get => _showHidden;

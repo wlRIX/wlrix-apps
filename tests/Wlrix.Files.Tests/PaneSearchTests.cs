@@ -124,6 +124,20 @@ public sealed class PaneSearchTests : IDisposable
     }
 
     [Fact]
+    public async Task APaneStartedWithShowHiddenListsDotfilesOnItsFirstRead()
+    {
+        // How a new tab, a split, or a window opened after a restart picks up the saved
+        // preference: it is handed in, not toggled on after the listing is already up.
+        var pane = new PaneViewModel(
+            _provider, NullLogger<PaneViewModel>.Instance, Location.FromLocalPath(_root), showHidden: true);
+        await pane.ReloadAsync();
+
+        Assert.True(pane.ShowHidden);
+        Assert.Contains(".hidden.txt", pane.Entries.Select(row => row.Name));
+        await pane.CloseAsync();
+    }
+
+    [Fact]
     public async Task TheStatusSaysWhatWasFoundAndWhatWasNot()
     {
         var pane = Pane();

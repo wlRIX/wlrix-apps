@@ -165,7 +165,7 @@
                 <MenuItem Header="-" />
                 <MenuItem Header="{loc:Tr ViewShowHidden}"
                           ToggleType="CheckBox"
-                          IsChecked="{Binding Pane.ShowHidden, Mode=TwoWay}" />
+                          IsChecked="{Binding ShowHidden, Mode=TwoWay}" />
                 <MenuItem Header="{loc:Tr ViewThumbnails}"
                           ToggleType="CheckBox"
                           IsChecked="{Binding ThumbnailsEnabled, Mode=TwoWay}" />

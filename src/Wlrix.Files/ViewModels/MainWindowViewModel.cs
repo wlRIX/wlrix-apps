@@ -49,6 +49,9 @@ public sealed class MainWindowViewModel : ReactiveObject, IDisposable
     private string? _operationStatus;
     private double? _operationFraction;
 
+    /// <summary>Whether this window's listings were last told to show previews.</summary>
+    private bool _thumbnailsShown;
+
     public MainWindowViewModel(
         FileSystemProvider provider,
         ILoggerFactory loggerFactory,
@@ -85,12 +88,14 @@ public sealed class MainWindowViewModel : ReactiveObject, IDisposable
         _launcher = launcher;
         launcher.Failed += message => ErrorRaised?.Invoke(message);
         thumbnails.Enabled = state.Preferences.ThumbnailsEnabled;
+        _thumbnailsShown = state.Preferences.ThumbnailsEnabled;
         Operations = operations;
         Clipboard = clipboard;
 
         _newPane = start =>
         {
-            var pane = new PaneViewModel(provider, loggerFactory.CreateLogger<PaneViewModel>(), start);
+            var pane = new PaneViewModel(
+                provider, loggerFactory.CreateLogger<PaneViewModel>(), start, state.Preferences.ShowHidden);
             pane.ErrorRaised += message => ErrorRaised?.Invoke(message);
             // A queue full of previews for the directory just left is a queue of work that
             // delays the previews for the one just arrived at.
@@ -332,6 +337,36 @@ public sealed class MainWindowViewModel : ReactiveObject, IDisposable
         }
     }
 
+    /// <summary>Whether dotfiles are listed.</summary>
+    /// <remarks>
+    /// Application-wide rather than per pane, so it applies to every tab and split at once and
+    /// survives a restart. A per-pane switch reset itself on every new tab, which read as the
+    /// setting not having been kept.
+    /// </remarks>
+    public bool ShowHidden
+    {
+        get => _state.Preferences.ShowHidden;
+        set
+        {
+            if (_state.Preferences.ShowHidden == value)
+                return;
+            _state.Preferences = _state.Preferences with { ShowHidden = value };
+            ApplyShowHidden();
+            PreferencesChanged?.Invoke();
+        }
+    }
+
+    /// <summary>Hands the preference to every pane, each of which re-reads if it changed.</summary>
+    private void ApplyShowHidden()
+    {
+        this.RaisePropertyChanged(nameof(ShowHidden));
+        foreach (var tab in Tabs)
+        {
+            foreach (var pane in tab.Panes)
+                pane.ShowHidden = _state.Preferences.ShowHidden;
+        }
+    }
+
     /// <summary>Raised on this window when a preference changes anywhere.</summary>
     /// <remarks>
     /// The preferences are one record shared by every window, so a checkbox ticked in one has
@@ -346,8 +381,8 @@ public sealed class MainWindowViewModel : ReactiveObject, IDisposable
         this.RaisePropertyChanged(nameof(IsModernMode));
         this.RaisePropertyChanged(nameof(SingleClickOpen));
         this.RaisePropertyChanged(nameof(ConfirmDelete));
-        this.RaisePropertyChanged(nameof(ThumbnailsEnabled));
-        Thumbnails.Enabled = _state.Preferences.ThumbnailsEnabled;
+        ApplyThumbnails();
+        ApplyShowHidden();
     }
 
     /// <summary>Points a freshly built window at a directory, before it is shown.</summary>
@@ -481,18 +516,42 @@ public sealed class MainWindowViewModel : ReactiveObject, IDisposable
             if (_state.Preferences.ThumbnailsEnabled == value)
                 return;
             _state.Preferences = _state.Preferences with { ThumbnailsEnabled = value };
-            Thumbnails.Enabled = value;
-            if (!value)
+            ApplyThumbnails();
+            PreferencesChanged?.Invoke();
+        }
+    }
+
+    /// <summary>
+    /// Brings this window's listings in line with the preference, in every tab and both halves
+    /// of a split.
+    /// </summary>
+    /// <remarks>
+    /// Compared against what this window last applied rather than run unconditionally, because
+    /// it is also reached through <see cref="RefreshPreferences"/> whenever any preference
+    /// changes, and re-requesting every preview because Confirm Delete was ticked is work for
+    /// nothing.
+    /// </remarks>
+    private void ApplyThumbnails()
+    {
+        var enabled = _state.Preferences.ThumbnailsEnabled;
+        Thumbnails.Enabled = enabled;
+        this.RaisePropertyChanged(nameof(ThumbnailsEnabled));
+        if (enabled == _thumbnailsShown)
+            return;
+
+        _thumbnailsShown = enabled;
+        if (!enabled)
+        {
+            foreach (var tab in Tabs)
             {
-                foreach (var tab in Tabs)
+                foreach (var pane in tab.Panes)
                 {
-                    foreach (var row in tab.Pane.Entries)
+                    foreach (var row in pane.Entries)
                         row.ClearThumbnail();
                 }
             }
-            PreferencesChanged?.Invoke();
-            VisualsInvalidated?.Invoke();
         }
+        VisualsInvalidated?.Invoke();
     }
 
     /// <summary>Asks the view to re-request icons and previews for the rows it has realized.</summary>
