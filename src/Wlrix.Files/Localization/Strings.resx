@@ -550,6 +550,9 @@ If you do not trust this program, click Cancel. Continuing also marks the file e
   <data name="DeviceUnmountFailed" xml:space="preserve">
     <value>Could not unmount {0}: {1}</value>
   </data>
+  <data name="DeviceMounted" xml:space="preserve">
+    <value>{0} has been mounted.</value>
+  </data>
   <data name="DeviceUnmounted" xml:space="preserve">
     <value>{0} has been unmounted.</value>
   </data>

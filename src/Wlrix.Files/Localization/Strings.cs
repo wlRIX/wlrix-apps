@@ -170,6 +170,8 @@ public static class Strings
     public static string DeviceUnmountFailed(string label, string why) =>
         Catalog.Format("DeviceUnmountFailed", label, why);
 
+    public static string DeviceMounted(string label) => Catalog.Format("DeviceMounted", label);
+
     public static string DeviceUnmounted(string label) => Catalog.Format("DeviceUnmounted", label);
 
     public static string PropCalculating => Catalog.Get("PropCalculating");

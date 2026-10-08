@@ -550,6 +550,9 @@
   <data name="DeviceUnmountFailed" xml:space="preserve">
     <value>{0} をアンマウントできませんでした: {1}</value>
   </data>
+  <data name="DeviceMounted" xml:space="preserve">
+    <value>{0} をマウントしました。</value>
+  </data>
   <data name="DeviceUnmounted" xml:space="preserve">
     <value>{0} をアンマウントしました。</value>
   </data>

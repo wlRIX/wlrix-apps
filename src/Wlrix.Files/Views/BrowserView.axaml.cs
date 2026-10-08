@@ -34,10 +34,10 @@ public partial class BrowserView : UserControl
         // The two verbs are one item each rather than one item that changes its word, because
         // a menu whose entries move under the pointer is how somebody unmounts a disk they
         // meant to open.
-        MountItem.Click += (_, _) => Open(DevicesList.SelectedItem as DeviceViewModel);
+        MountItem.Click += (_, _) => Mount(DevicesList.SelectedItem as DeviceViewModel);
         UnmountItem.Click += (_, _) => Unmount(DevicesList.SelectedItem as DeviceViewModel);
         DevicesList.ContextMenu!.Opening += OnDeviceMenuOpening;
-        DeviceNewTabItem.Click += (_, _) => OpenInNewTab((DevicesList.SelectedItem as DeviceViewModel)?.Location);
+        DeviceNewTabItem.Click += (_, _) => OpenInNewTab(DevicesList.SelectedItem as DeviceViewModel);
 
         // The rail's right-click acts on the entry under the pointer, and deliberately does
         // *not* select it: selecting a place navigates to it, so a right-click meaning "open
@@ -246,6 +246,18 @@ public partial class BrowserView : UserControl
             _ = model.OpenDeviceAsync(device);
     }
 
+    private void Mount(DeviceViewModel? device)
+    {
+        if (Model is { } model && device is not null)
+            _ = model.MountDeviceAsync(device);
+    }
+
+    private void OpenInNewTab(DeviceViewModel? device)
+    {
+        if (Model is { } model && device is not null)
+            _ = model.OpenDeviceInNewTabAsync(device);
+    }
+
     private void Unmount(DeviceViewModel? device)
     {
         if (Model is { } model && device is not null)
@@ -263,9 +275,6 @@ public partial class BrowserView : UserControl
 
         MountItem.IsVisible = !device.IsMounted;
         UnmountItem.IsVisible = device.IsMounted;
-        // An unmounted disk has no location to open. Mount is the entry that applies to it,
-        // and it is directly above.
-        DeviceNewTabItem.IsVisible = device.IsMounted;
     }
 
     private void OnPlaceSelected(object? sender, SelectionChangedEventArgs e)

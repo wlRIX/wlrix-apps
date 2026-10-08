@@ -1109,21 +1109,48 @@ public sealed class MainWindowViewModel : ReactiveObject, IDisposable
     /// </remarks>
     public async Task OpenDeviceAsync(DeviceViewModel device)
     {
-        if (device.Location is { } mounted)
-        {
-            await NavigateActiveTabAsync(mounted).ConfigureAwait(true);
+        if (await EnsureMountedAsync(device).ConfigureAwait(true) is { } location)
+            await NavigateActiveTabAsync(location).ConfigureAwait(true);
+    }
+
+    /// <summary>Opens a disk in a tab of its own, mounting it first if it is not mounted.</summary>
+    public async Task OpenDeviceInNewTabAsync(DeviceViewModel device)
+    {
+        if (await EnsureMountedAsync(device).ConfigureAwait(true) is { } location)
+            OpenInNewTab(location);
+    }
+
+    /// <summary>
+    /// Mounts a disk and stays where it is.
+    /// </summary>
+    /// <remarks>
+    /// What the context menu's Mount means. Clicking the row is already "mount and go there";
+    /// a separate verb that did the same would have no reason to exist, and somebody mounting a
+    /// stick to copy onto it from the directory they are in does not want to be taken away
+    /// from it.
+    /// </remarks>
+    public async Task MountDeviceAsync(DeviceViewModel device)
+    {
+        if (device.IsMounted)
             return;
-        }
+        if (await EnsureMountedAsync(device).ConfigureAwait(true) is not null)
+            StatusRaised?.Invoke(Strings.DeviceMounted(device.Label));
+    }
+
+    /// <summary>Where a disk is mounted, mounting it if it is not. Null if that failed.</summary>
+    private async Task<Location?> EnsureMountedAsync(DeviceViewModel device)
+    {
+        if (device.Location is { } mounted)
+            return mounted;
 
         var (mountPoint, problem) = await _devices.MountAsync(device.Device).ConfigureAwait(true);
         if (problem is not null)
         {
             ErrorRaised?.Invoke(Strings.DeviceMountFailed(device.Label, problem));
-            return;
+            return null;
         }
 
-        if (mountPoint is not null)
-            await NavigateActiveTabAsync(Location.FromLocalPath(mountPoint)).ConfigureAwait(true);
+        return mountPoint is null ? null : Location.FromLocalPath(mountPoint);
     }
 
     /// <summary>
