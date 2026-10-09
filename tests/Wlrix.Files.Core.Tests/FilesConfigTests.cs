@@ -33,7 +33,7 @@ public class FilesConfigTests
     {
         var config = Parse("");
         Assert.Equal(NavigationMode.Modern, config.NavigationMode);
-        Assert.Equal("Adwaita", config.IconTheme);
+        Assert.Equal("wlrix", config.IconTheme);
     }
 
     [Fact]
@@ -56,7 +56,7 @@ public class FilesConfigTests
     {
         // The daemon's Reset deletes a key rather than writing the default, so a file with one
         // section in it is the normal shape rather than an odd one.
-        Assert.Equal("Adwaita", Parse("[navigation]\nmode = \"classic\"").IconTheme);
+        Assert.Equal("wlrix", Parse("[navigation]\nmode = \"classic\"").IconTheme);
         Assert.Equal(NavigationMode.Modern, Parse("[appearance]\nicon_theme = \"Papirus\"").NavigationMode);
     }
 

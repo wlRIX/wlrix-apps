@@ -13,7 +13,12 @@ namespace Wlrix.Files.Core.Icons;
 /// <c>/usr/share/pixmaps</c> finds almost nothing a file manager wants — the mimetype and
 /// place icons all live in an installed theme. That is the bug that made
 /// <c>wlrix-desktop</c> draw bare magic carpets and the tray draw nothing, and the reason
-/// the default here is Adwaita rather than empty.
+/// the default here is a named theme rather than empty.
+/// </para>
+///
+/// <para>
+/// The default is <c>wlrix</c>, the IRIX icon set <c>wlrix-assets</c> installs. It inherits
+/// Adwaita, so every name it does not draw yet still resolves to Adwaita's.
 /// </para>
 ///
 /// <para>
@@ -34,7 +39,7 @@ public sealed class XdgIconTheme
     public const string Hicolor = "hicolor";
 
     /// <summary>What the file manager asks for when nothing is configured.</summary>
-    public const string DefaultTheme = "Adwaita";
+    public const string DefaultTheme = "wlrix";
 
     // Order matters: png before svg means a hand-tuned raster icon wins over the scalable
     // one at the sizes where the raster exists, which is what the theme author intended.

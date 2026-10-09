@@ -1,5 +1,6 @@
 using Tomlyn;
 using Tomlyn.Model;
+using Wlrix.Files.Core.Icons;
 using Wlrix.Files.Core.State;
 
 namespace Wlrix.Files.Core.Config;
@@ -35,7 +36,7 @@ public sealed record FilesConfig
     public NavigationMode NavigationMode { get; init; } = NavigationMode.Modern;
 
     /// <summary>The icon theme the listing draws from. Empty means no named theme.</summary>
-    public string IconTheme { get; init; } = "Adwaita";
+    public string IconTheme { get; init; } = XdgIconTheme.DefaultTheme;
 
     /// <summary>The file's name, under the wlRIX config directory.</summary>
     public const string FileName = "files.toml";
@@ -120,7 +121,7 @@ public sealed record FilesConfig
         }
 
         var mode = NavigationMode.Modern;
-        var theme = "Adwaita";
+        var theme = XdgIconTheme.DefaultTheme;
 
         foreach (var pair in document)
         {

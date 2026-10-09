@@ -188,8 +188,9 @@ public class XdgIconThemeTests
     public void AdwaitaOnThisMachineResolvesAFolderIcon()
     {
         // A smoke test against the installed theme: the fixture cannot notice Adwaita
-        // changing its layout, and this will.
-        var theme = new XdgIconTheme();
+        // changing its layout, and this will. Named rather than left to the default, which is
+        // wlrix and would find its own folder before Adwaita was ever asked.
+        var theme = new XdgIconTheme { Theme = "Adwaita" };
         Assert.NotNull(theme.Lookup("folder", 48));
     }
 }
