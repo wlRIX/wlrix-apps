@@ -1,0 +1,34 @@
+<!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN"
+ "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
+<!-- From wlrix-clipboard's own introspection (busctl introspect, with the xml-interface
+     option, against com.wlrix.Clipboard at /com/wlrix/Clipboard), trimmed to the one
+     interface. The daemon's src/dbus.rs documents what each member means. No double hyphens
+     in here: they end an XML comment, and the generator would fail on the file. -->
+<node>
+  <interface name="com.wlrix.Clipboard1">
+    <method name="GetHistory">
+      <arg name="history" type="a(tsssbx)" direction="out"/>
+    </method>
+    <method name="GetActive">
+      <arg name="id" type="t" direction="out"/>
+    </method>
+    <method name="Activate">
+      <arg name="id" type="t" direction="in"/>
+    </method>
+    <method name="SetText">
+      <arg name="id" type="t" direction="in"/>
+      <arg name="text" type="s" direction="in"/>
+    </method>
+    <method name="Remove">
+      <arg name="id" type="t" direction="in"/>
+    </method>
+    <method name="SetStarred">
+      <arg name="id" type="t" direction="in"/>
+      <arg name="starred" type="b" direction="in"/>
+    </method>
+    <method name="Clear">
+    </method>
+    <signal name="HistoryChanged">
+    </signal>
+  </interface>
+</node>

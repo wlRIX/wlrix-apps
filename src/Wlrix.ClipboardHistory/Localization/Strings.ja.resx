@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="WindowTitle" xml:space="preserve">
+    <value>クリップボード履歴</value>
+  </data>
+  <data name="SearchWatermark" xml:space="preserve">
+    <value>検索…</value>
+  </data>
+  <data name="ClearHistory" xml:space="preserve">
+    <value>履歴を消去</value>
+  </data>
+  <data name="ClearConfirm" xml:space="preserve">
+    <value>クリップボード履歴の項目をすべて削除しますか？スターつきの項目は残ります。</value>
+  </data>
+  <data name="ClearOk" xml:space="preserve">
+    <value>消去</value>
+  </data>
+  <data name="AllTab" xml:space="preserve">
+    <value>全履歴</value>
+  </data>
+  <data name="StarredTab" xml:space="preserve">
+    <value>スターつき</value>
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>編集</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>削除</value>
+  </data>
+  <data name="Star" xml:space="preserve">
+    <value>スター</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>保存</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>キャンセル</value>
+  </data>
+  <data name="Empty" xml:space="preserve">
+    <value>まだ何もコピーされていません。</value>
+  </data>
+  <data name="EmptyStarred" xml:space="preserve">
+    <value>スターつきの項目はありません。スターをつけた項目はここに残ります。</value>
+  </data>
+  <data name="NoMatches" xml:space="preserve">
+    <value>検索に一致する項目はありません。</value>
+  </data>
+  <data name="NotRunning" xml:space="preserve">
+    <value>クリップボード履歴サービス (wlrix-clipboard) が動作していないため、表示する履歴がありません。</value>
+  </data>
+  <data name="ImageCaption" xml:space="preserve">
+    <value>{0} × {1} の画像</value>
+  </data>
+  <data name="Image" xml:space="preserve">
+    <value>画像</value>
+  </data>
+  <data name="ErrorTitle" xml:space="preserve">
+    <value>クリップボード履歴</value>
+  </data>
+  <data name="Failed" xml:space="preserve">
+    <value>クリップボード履歴の操作に失敗しました: {0}</value>
+  </data>
+</root>

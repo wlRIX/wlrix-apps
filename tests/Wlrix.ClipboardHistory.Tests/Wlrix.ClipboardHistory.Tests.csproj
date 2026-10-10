@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <IsPackable>false</IsPackable>
+        <IsTestProject>true</IsTestProject>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <!-- The row preview, the search, and what the two tabs show for a given history are all
+             plain functions of the history; none of them needs a display or a bus. -->
+        <ProjectReference Include="..\..\src\Wlrix.ClipboardHistory\Wlrix.ClipboardHistory.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" />
+        <PackageReference Include="xunit" />
+        <PackageReference Include="xunit.runner.visualstudio" />
+    </ItemGroup>
+
+</Project>

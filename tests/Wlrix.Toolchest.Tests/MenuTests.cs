@@ -29,8 +29,9 @@ public class MenuTests
     }
 
     [Fact]
-    public void TheDesktopMenuIsExtraDesksAndAudioThenTerminalThenLogOut() =>
-        Assert.Equal([Strings.ExtraDesks, Strings.ControlAudio, Strings.OpenTerminal, Strings.LogOut],
+    public void TheDesktopMenuIsExtraDesksAudioAndClipboardThenTerminalThenLogOut() =>
+        Assert.Equal(
+            [Strings.ExtraDesks, Strings.ControlAudio, Strings.ClipboardHistory, Strings.OpenTerminal, Strings.LogOut],
             HeadersUnder(Strings.Desktop));
 
     [Fact]
@@ -39,7 +40,7 @@ public class MenuTests
         // The desktop's own panels together, then the terminal, then Log Out, with a rule between
         // the groups and none at either end: Log Out in particular should not sit flush against
         // the item above it.
-        Assert.Equal([false, false, true, false, true, false],
+        Assert.Equal([false, false, false, true, false, true, false],
             ItemsUnder(Strings.Desktop).Select(item => item.IsSeparator));
     }
 

@@ -1,0 +1,200 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Wlrix.ClipboardHistory.ViewModels"
+        xmlns:loc="using:Wlrix.Common.Localization"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="440" d:DesignHeight="480"
+        x:Class="Wlrix.ClipboardHistory.Views.HistoryWindow"
+        x:DataType="vm:HistoryViewModel"
+        Width="440" Height="480"
+        CanResize="False"
+        Title="{loc:Tr WindowTitle}">
+
+    <!-- No SystemDecorations: the compositor draws the frame, a titlebar and nothing else, and
+         opens the window under the pointer. Both are keyed on the app id; see placement.rs.
+         CanResize="False" because a popup has no business being resized, and because the
+         compositor reads it to drop the resize border. -->
+
+    <Design.DataContext>
+        <vm:HistoryViewModel />
+    </Design.DataContext>
+
+    <Window.Resources>
+        <!-- Drawn on a 16-pixel grid, stroked in the button's own foreground, so they follow
+             the scheme and the disabled state like a label would. -->
+        <StreamGeometry x:Key="PencilIcon">M11,1.5 L14.5,5 L5,14.5 L1.5,14.5 L1.5,11 Z M9.5,3 L13,6.5</StreamGeometry>
+        <StreamGeometry x:Key="TrashIcon">M2,3.5 L14,3.5 M6,3.5 L6,1.5 L10,1.5 L10,3.5 M3.5,3.5 L4.5,14.5 L11.5,14.5 L12.5,3.5 M6.5,6 L6.5,12 M9.5,6 L9.5,12</StreamGeometry>
+        <StreamGeometry x:Key="StarIcon">M8,1.4 L9.7,6.25 L14.85,6.38 L10.76,9.5 L12.23,14.42 L8,11.5 L3.77,14.42 L5.24,9.5 L1.15,6.38 L6.3,6.25 Z</StreamGeometry>
+        <StreamGeometry x:Key="BroomIcon">M14.5,1.5 L8.5,7.5 M6,6.5 L9.5,10 L7,14.5 L1.5,14.5 L1.5,9 Z M3.5,14.5 L5.5,11 M5.5,14.5 L7.5,11.5</StreamGeometry>
+
+        <DataTemplate x:Key="EntryTemplate" x:DataType="vm:EntryViewModel">
+            <!-- Transparent rather than unset, so the whole row takes the tap, not just its
+                 text. -->
+            <Grid ColumnDefinitions="Auto,*,Auto" MinHeight="30" Background="Transparent"
+                  Tapped="OnEntryTapped">
+
+                <!-- What the clipboard holds now. A bar rather than bold text, so it reads the
+                     same on a text row and an image row. -->
+                <Border Grid.Column="0" Classes="marker" Classes.active="{Binding IsActive}"
+                        Width="3" Margin="0,3,6,3"
+                        Background="{DynamicResource WlrixAccent}" />
+
+                <!-- Text: the first line, and ↵ straight after it when there is more. One
+                     TextBlock of two runs, so a long line is trimmed before the marker rather
+                     than pushing it out of sight. -->
+                <TextBlock Grid.Column="1" VerticalAlignment="Center"
+                           TextTrimming="CharacterEllipsis">
+                    <TextBlock.IsVisible>
+                        <MultiBinding Converter="{x:Static BoolConverters.And}">
+                            <Binding Path="IsText" />
+                            <Binding Path="!IsEditing" />
+                        </MultiBinding>
+                    </TextBlock.IsVisible>
+                    <Run Text="{Binding Line}" />
+                    <Run Text="{Binding MoreMarker}" Foreground="{DynamicResource WlrixAccent}" />
+                </TextBlock>
+
+                <!-- Image: a thumbnail, and what it is. -->
+                <StackPanel Grid.Column="1" Spacing="2" Margin="0,4"
+                            IsVisible="{Binding IsImage}">
+                    <Border HorizontalAlignment="Left" BorderThickness="1"
+                            BorderBrush="{DynamicResource WlrixOuterLine}">
+                        <Image Source="{Binding Thumbnail}" MaxHeight="64" MaxWidth="200"
+                               Stretch="Uniform" StretchDirection="DownOnly" />
+                    </Border>
+                    <TextBlock Text="{Binding ImageCaption}" FontSize="11" />
+                </StackPanel>
+
+                <!-- The editor, in place of the preview and the buttons. -->
+                <StackPanel Grid.Column="1" Grid.ColumnSpan="2" Spacing="4" Margin="0,4"
+                            IsVisible="{Binding IsEditing}">
+                    <TextBox Text="{Binding EditText}" AcceptsReturn="True" TextWrapping="Wrap"
+                             MinHeight="48" MaxHeight="160"
+                             KeyDown="OnEditorKeyDown"
+                             Loaded="OnEditorLoaded" />
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="6">
+                        <Button Content="{loc:Tr Save}" MinWidth="70" Command="{Binding SaveCommand}" />
+                        <Button Content="{loc:Tr Cancel}" MinWidth="70" Command="{Binding CancelEditCommand}" />
+                    </StackPanel>
+                </StackPanel>
+
+                <!-- The row's buttons. Edit and Delete appear on a hovered or selected row; the
+                     star does too, and stays when the entry is starred, as KDE's does. -->
+                <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="2"
+                            VerticalAlignment="Center" Margin="6,0,0,0"
+                            IsVisible="{Binding !IsEditing}">
+                    <StackPanel Classes="actions" Orientation="Horizontal" Spacing="2">
+                        <Button Classes="icon" IsVisible="{Binding IsText}"
+                                Command="{Binding EditCommand}" ToolTip.Tip="{loc:Tr Edit}">
+                            <Path Data="{StaticResource PencilIcon}" StrokeThickness="1"
+                                  Stroke="{Binding $parent[Button].Foreground}" />
+                        </Button>
+                        <Button Classes="icon"
+                                Command="{Binding RemoveCommand}" ToolTip.Tip="{loc:Tr Delete}">
+                            <Path Data="{StaticResource TrashIcon}" StrokeThickness="1"
+                                  Stroke="{Binding $parent[Button].Foreground}" />
+                        </Button>
+                    </StackPanel>
+                    <Button Classes="icon star" Classes.starred="{Binding Starred}"
+                            Command="{Binding StarCommand}" ToolTip.Tip="{loc:Tr Star}">
+                        <Panel>
+                            <Path Data="{StaticResource StarIcon}" StrokeThickness="1"
+                                  Stroke="{Binding $parent[Button].Foreground}"
+                                  IsVisible="{Binding !Starred}" />
+                            <Path Data="{StaticResource StarIcon}" StrokeThickness="1"
+                                  Stroke="{Binding $parent[Button].Foreground}"
+                                  Fill="{Binding $parent[Button].Foreground}"
+                                  IsVisible="{Binding Starred}" />
+                        </Panel>
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </DataTemplate>
+    </Window.Resources>
+
+    <Window.Styles>
+        <Style Selector="Button.icon">
+            <Setter Property="Width" Value="24" />
+            <Setter Property="Height" Value="24" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="MinWidth" Value="0" />
+            <Setter Property="MinHeight" Value="0" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <!-- The list is driven from the keyboard; the buttons are for the pointer. Tab
+                 stepping through three invisible buttons per row would be a maze. -->
+            <Setter Property="Focusable" Value="False" />
+        </Style>
+        <!-- Faded rather than hidden, so every row's text starts at the same place. -->
+        <Style Selector="Border.marker">
+            <Setter Property="Opacity" Value="0" />
+        </Style>
+        <Style Selector="Border.marker.active">
+            <Setter Property="Opacity" Value="1" />
+        </Style>
+        <!-- The theme lays a row's content out at its natural width, on the left; these rows
+             want the whole width, so their buttons line up down the right-hand side. -->
+        <Style Selector="ListBoxItem">
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        </Style>
+
+        <!-- Shown on the row under the pointer and the selected row only. Faded rather than
+             removed, so the text column does not change width as the pointer moves. -->
+        <Style Selector="StackPanel.actions, Button.star">
+            <Setter Property="Opacity" Value="0" />
+        </Style>
+        <Style Selector="ListBoxItem:pointerover StackPanel.actions, ListBoxItem:selected StackPanel.actions">
+            <Setter Property="Opacity" Value="1" />
+        </Style>
+        <Style Selector="Button.star.starred, ListBoxItem:pointerover Button.star, ListBoxItem:selected Button.star">
+            <Setter Property="Opacity" Value="1" />
+        </Style>
+
+        <Style Selector="TextBlock.placeholder">
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="TextAlignment" Value="Center" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="Margin" Value="24" />
+        </Style>
+    </Window.Styles>
+
+    <DockPanel Margin="8">
+        <Grid DockPanel.Dock="Top" ColumnDefinitions="*,Auto" ColumnSpacing="6">
+            <TextBox Name="SearchBox" Grid.Column="0"
+                     PlaceholderText="{loc:Tr SearchWatermark}"
+                     Text="{Binding Search}" />
+            <Button Grid.Column="1" Classes="icon" Width="28" Height="28"
+                    IsEnabled="{Binding CanClear}"
+                    ToolTip.Tip="{loc:Tr ClearHistory}" Click="OnClear">
+                <Path Data="{StaticResource BroomIcon}" StrokeThickness="1"
+                      Stroke="{Binding $parent[Button].Foreground}" />
+            </Button>
+        </Grid>
+
+        <TabControl Margin="0,8,0,0" SelectedIndex="{Binding SelectedTab}">
+            <TabItem Header="{loc:Tr AllTab}">
+                <Panel>
+                    <ListBox Name="AllList"
+                             ItemsSource="{Binding All}"
+                             SelectedItem="{Binding SelectedAll}"
+                             ItemTemplate="{StaticResource EntryTemplate}" />
+                    <TextBlock Classes="placeholder" Text="{Binding AllMessage}"
+                               IsVisible="{Binding AllMessage, Converter={x:Static ObjectConverters.IsNotNull}}" />
+                </Panel>
+            </TabItem>
+            <TabItem Header="{loc:Tr StarredTab}">
+                <Panel>
+                    <ListBox Name="StarredList"
+                             ItemsSource="{Binding Starred}"
+                             SelectedItem="{Binding SelectedStarred}"
+                             ItemTemplate="{StaticResource EntryTemplate}" />
+                    <TextBlock Classes="placeholder" Text="{Binding StarredMessage}"
+                               IsVisible="{Binding StarredMessage, Converter={x:Static ObjectConverters.IsNotNull}}" />
+                </Panel>
+            </TabItem>
+        </TabControl>
+    </DockPanel>
+
+</Window>

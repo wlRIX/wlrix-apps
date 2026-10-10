@@ -16,6 +16,12 @@ public sealed class MainWindowViewModel : ViewModelBase
     /// <summary>The installed name of the Audio Panel, launched by Desktop → Control Audio.</summary>
     private const string AudioProgram = "wlrix-settings-audio";
 
+    /// <summary>
+    /// The installed name of the clipboard history popup, launched by Desktop → Clipboard
+    /// History. The same program <c>Super+V</c> starts.
+    /// </summary>
+    private const string ClipboardHistoryProgram = "wlrix-clipboard-history";
+
     /// <summary>The installed name of the Software Manager, launched by System → Software Manager.</summary>
     private const string SoftwareManagerProgram = "wlrix-software-manager";
 
@@ -102,6 +108,8 @@ public sealed class MainWindowViewModel : ViewModelBase
                 command: new RelayCommand(() => _launcher.Run(Strings.ExtraDesks, DesksProgram))),
             new MenuNode(Strings.ControlAudio,
                 command: new RelayCommand(() => _launcher.Run(Strings.ControlAudio, AudioProgram))),
+            new MenuNode(Strings.ClipboardHistory,
+                command: new RelayCommand(() => _launcher.Run(Strings.ClipboardHistory, ClipboardHistoryProgram))),
             MenuNode.Separator(),
             new MenuNode(Strings.OpenTerminal, command: new RelayCommand(() => _launcher.OpenTerminal())),
             MenuNode.Separator(),

@@ -32,6 +32,7 @@ library. Apps recreate the IRIX Interactive Desktop surface.
 | `Wlrix.Files`             | app  | The file manager, after IRIX's fm and KDE's Dolphin.                |
 | `Wlrix.FilePicker`        | app  | The file dialog `xdg-desktop-portal-wlrix` puts up. On Files.Core.  |
 | `Wlrix.Clock`             | app  | The desktop clock, after IRIX's: an analog face with a border only. |
+| `Wlrix.ClipboardHistory`  | app  | The clipboard history popup, after KDE's. `Super+V` opens it.       |
 
 Every project with tests has a `<project>.Tests` beside it under `tests/`. More apps (a terminal, among others) get
 added as sibling projects.

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="WindowTitle" xml:space="preserve">
+    <value>Clipboard History</value>
+  </data>
+  <data name="SearchWatermark" xml:space="preserve">
+    <value>Search…</value>
+  </data>
+  <data name="ClearHistory" xml:space="preserve">
+    <value>Clear history</value>
+  </data>
+  <data name="ClearConfirm" xml:space="preserve">
+    <value>Delete every entry in the clipboard history? Starred entries are kept.</value>
+  </data>
+  <data name="ClearOk" xml:space="preserve">
+    <value>Clear</value>
+  </data>
+  <data name="AllTab" xml:space="preserve">
+    <value>All</value>
+  </data>
+  <data name="StarredTab" xml:space="preserve">
+    <value>Starred</value>
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>Edit</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="Star" xml:space="preserve">
+    <value>Star</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Empty" xml:space="preserve">
+    <value>Nothing has been copied yet.</value>
+  </data>
+  <data name="EmptyStarred" xml:space="preserve">
+    <value>Nothing is starred. Star an entry to keep it here for good.</value>
+  </data>
+  <data name="NoMatches" xml:space="preserve">
+    <value>Nothing matches the search.</value>
+  </data>
+  <data name="NotRunning" xml:space="preserve">
+    <value>The clipboard history service, wlrix-clipboard, is not running, so there is no history to show.</value>
+  </data>
+  <data name="ImageCaption" xml:space="preserve">
+    <value>{0} × {1} image</value>
+  </data>
+  <data name="Image" xml:space="preserve">
+    <value>Image</value>
+  </data>
+  <data name="ErrorTitle" xml:space="preserve">
+    <value>Clipboard History</value>
+  </data>
+  <data name="Failed" xml:space="preserve">
+    <value>The clipboard history did not do that: {0}</value>
+  </data>
+</root>
