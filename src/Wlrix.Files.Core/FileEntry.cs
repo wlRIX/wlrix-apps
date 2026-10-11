@@ -51,7 +51,20 @@ public sealed class FileEntry
     public int? UnixMode { get; init; }
 
     /// <summary>Where a symlink points, unresolved, or null if this is not one.</summary>
+    /// <remarks>
+    /// Null in a listing even for a link: reading the target is a syscall per entry, which
+    /// enumeration does not pay. <see cref="IsSymlink"/> is what says an entry is a link.
+    /// </remarks>
     public string? SymlinkTarget { get; init; }
+
+    /// <summary>True if the entry itself is a symlink, whatever it points at.</summary>
+    /// <remarks>
+    /// Separate from <see cref="Kind"/>, which follows the link: a link to a directory is a
+    /// <see cref="FileKind.Directory"/>, so it sorts and opens as one, which is what a user means
+    /// by it. This is what still lets the listing show it as a link, in italics the way IRIX's
+    /// file manager did.
+    /// </remarks>
+    public bool IsSymlink { get; init; }
 
     /// <summary>
     /// True for a dotfile. A property rather than a computation at the call site so

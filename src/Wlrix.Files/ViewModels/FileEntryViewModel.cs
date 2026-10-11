@@ -90,6 +90,9 @@ public sealed class FileEntryViewModel : INotifyPropertyChanged
 
     public bool IsDirectory => Entry.IsDirectory;
 
+    /// <summary>Whether the entry is a symlink, which the name shows in italics as IRIX did.</summary>
+    public bool IsSymlink => Entry.IsSymlink;
+
     public string SizeText { get; }
 
     public string KindText { get; }

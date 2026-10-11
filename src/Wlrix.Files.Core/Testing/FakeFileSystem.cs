@@ -224,6 +224,7 @@ public sealed class FakeFileSystem : IFileSystem
                 Modified = child.Modified,
                 UnixMode = child.Mode,
                 SymlinkTarget = child.LinkTarget,
+                IsSymlink = child.LinkTarget is not null,
                 IsHidden = child.Name.StartsWith('.')
             };
         }

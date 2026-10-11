@@ -147,8 +147,9 @@ public sealed class LocalFileSystem : IFileSystem
                 Name = name,
                 // entry.IsDirectory already follows the link for us, so a symlink to a
                 // directory sorts and opens as a directory -- which is what a user
-                // means by it. SymlinkTarget is what marks it as a link.
+                // means by it. IsSymlink is what marks it as a link.
                 Kind = entry.IsDirectory ? FileKind.Directory : isLink ? FileKind.Symlink : FileKind.File,
+                IsSymlink = isLink,
                 Size = entry.IsDirectory ? 0 : entry.Length,
                 Modified = entry.LastWriteTimeUtc,
                 // Mode is deliberately not read here: it needs a syscall per entry, and

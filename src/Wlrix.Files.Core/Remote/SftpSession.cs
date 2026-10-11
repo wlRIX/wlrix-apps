@@ -223,6 +223,7 @@ public sealed class SftpSession(string host, int port, ShareCredentials credenti
         Location = location,
         Name = file.Name,
         Kind = KindOf(file),
+        IsSymlink = file.IsSymbolicLink,
         Size = file.IsDirectory ? 0 : file.Length,
         Modified = new DateTimeOffset(file.LastWriteTimeUtc, TimeSpan.Zero),
         UnixMode = Mode(file),

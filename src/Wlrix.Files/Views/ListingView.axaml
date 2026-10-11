@@ -16,6 +16,13 @@
          tab, and the file picker wants the rail beside a listing with no tabs at all. -->
 
     <UserControl.Styles>
+        <!-- A symlink's name is in italics, in both views, as IRIX's file manager set it. The
+             entry still sorts and opens as what it points at; this is the only sign it is a
+             link. -->
+        <Style Selector="TextBlock.symlink">
+            <Setter Property="FontStyle" Value="Italic" />
+        </Style>
+
         <!-- What hover and selection look like in the icon view: IRIX's file manager showed both
              on the icon, not the label, by the rule the desktop and the login screen follow
              (IconStatePainter). A type icon's light body is stippled at rest, white under the
@@ -190,6 +197,7 @@
                                 BorderBrush="Transparent"
                                 Classes.dropTarget="{Binding IsDropTarget}">
                             <TextBlock Text="{Binding DisplayName}"
+                                       Classes.symlink="{Binding IsSymlink}"
                                        TextAlignment="Center"
                                        TextWrapping="Wrap"
                                        TextTrimming="CharacterEllipsis"
@@ -249,7 +257,8 @@
                                       Stroke="{DynamicResource WlrixOuterLine}"
                                       StrokeThickness="1"
                                       IsVisible="{Binding ShowFileGlyph}" />
-                                <TextBlock Text="{Binding DisplayName}" VerticalAlignment="Center" />
+                                <TextBlock Text="{Binding DisplayName}" VerticalAlignment="Center"
+                                           Classes.symlink="{Binding IsSymlink}" />
                             </StackPanel>
                           </Border>
                         </DataTemplate>

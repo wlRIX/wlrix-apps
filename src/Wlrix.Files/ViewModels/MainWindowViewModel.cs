@@ -1409,6 +1409,7 @@ public sealed class MainWindowViewModel : ReactiveObject, IDisposable
             Modified = stat.Modified,
             UnixMode = stat.UnixMode,
             SymlinkTarget = stat.SymlinkTarget,
+            IsSymlink = stat.SymlinkTarget is not null,
             IsHidden = name.StartsWith('.')
         };
     }

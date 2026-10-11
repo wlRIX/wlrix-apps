@@ -39,6 +39,9 @@ public sealed class EntryViewModel : INotifyPropertyChanged
 
     public bool IsDirectory => Entry.IsDirectory;
 
+    /// <summary>Whether the entry is a symlink, which the name shows in italics, as the file manager does.</summary>
+    public bool IsSymlink => Entry.IsSymlink;
+
     public string SizeText { get; }
 
     public string ModifiedText { get; }

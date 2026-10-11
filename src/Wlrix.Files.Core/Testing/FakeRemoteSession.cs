@@ -90,6 +90,7 @@ public sealed class FakeRemoteSession : IRemoteSession
                 Size = entry.Size,
                 Modified = entry.Modified,
                 UnixMode = entry.UnixMode,
+                IsSymlink = entry.IsSymlink,
                 IsHidden = entry.IsHidden
             };
         }

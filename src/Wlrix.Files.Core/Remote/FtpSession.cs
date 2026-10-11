@@ -113,6 +113,7 @@ public sealed class FtpSession(string host, int port, ShareCredentials credentia
                 Location = location.Child(item.Name),
                 Name = item.Name,
                 Kind = KindOf(item),
+                IsSymlink = item.Type == FtpObjectType.Link,
                 Size = item.Type == FtpObjectType.Directory ? 0 : Math.Max(0, item.Size),
                 Modified = Timestamp(item.Modified),
                 IsHidden = item.Name.StartsWith('.')

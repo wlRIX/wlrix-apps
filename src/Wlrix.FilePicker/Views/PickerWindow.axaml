@@ -19,6 +19,13 @@
 
          Being on the window is also what makes these yield to a text box: a focused TextBox
          marks what it uses as handled, and only the rest reaches here. -->
+    <!-- A symlink's name is in italics, as it is in the file manager. -->
+    <Window.Styles>
+        <Style Selector="TextBlock.symlink">
+            <Setter Property="FontStyle" Value="Italic" />
+        </Style>
+    </Window.Styles>
+
     <Window.KeyBindings>
         <KeyBinding Gesture="Alt+Up" Command="{Binding GoUp}" />
         <KeyBinding Gesture="Ctrl+H" Command="{Binding ToggleHidden}" />
@@ -185,7 +192,8 @@
                                           Fill="{DynamicResource WlrixTopShadow}"
                                           Stroke="{DynamicResource WlrixOuterLine}"
                                           StrokeThickness="1" />
-                                    <TextBlock Text="{Binding Name}" VerticalAlignment="Center" />
+                                    <TextBlock Text="{Binding Name}" VerticalAlignment="Center"
+                                               Classes.symlink="{Binding IsSymlink}" />
                                 </StackPanel>
                             </DataTemplate>
                         </TableViewColumn.CellTemplate>

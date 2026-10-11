@@ -57,6 +57,29 @@ public class LocalFileSystemTests
     }
 
     [Fact]
+    public async Task ALinkIsMarkedAsOneWhateverItPointsAt()
+    {
+        // The listing sets a link's name in italics, so a link to a directory -- which is a
+        // Directory by Kind -- still has to say it is a link. The real things beside them must
+        // not.
+        using var dir = new TemporaryDirectory();
+        dir.Directory_("real-dir");
+        dir.File("real-file", "x");
+        File.CreateSymbolicLink(Path.Combine(dir.Path, "dir-link"), Path.Combine(dir.Path, "real-dir"));
+        File.CreateSymbolicLink(Path.Combine(dir.Path, "file-link"), Path.Combine(dir.Path, "real-file"));
+        File.CreateSymbolicLink(Path.Combine(dir.Path, "dangling"), Path.Combine(dir.Path, "nowhere"));
+
+        var entries = await Collect(new LocalFileSystem().EnumerateAsync(dir.Location, None));
+        bool Link(string name) => entries.Single(e => e.Name == name).IsSymlink;
+
+        Assert.True(Link("dir-link"));
+        Assert.True(Link("file-link"));
+        Assert.True(Link("dangling"));
+        Assert.False(Link("real-dir"));
+        Assert.False(Link("real-file"));
+    }
+
+    [Fact]
     public async Task EnumeratingSomethingThatIsNotThereSaysNotFoundBeforeYieldingAnything()
     {
         // The enumerable is lazy, so without an explicit check this would surface on
