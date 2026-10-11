@@ -2,6 +2,7 @@ using System.ComponentModel;
 using System.Globalization;
 using Avalonia.Media.Imaging;
 using Wlrix.Files.Core;
+using Wlrix.Files.Core.Icons;
 using Wlrix.Files.Core.Thumbnails;
 using Wlrix.Files.Localization;
 using Wlrix.Files.Services;
@@ -36,8 +37,16 @@ public sealed class FileEntryViewModel : INotifyPropertyChanged
     private static readonly PropertyChangedEventArgs PreviewChanged = new(nameof(Preview));
     private static readonly PropertyChangedEventArgs DirectoryGlyphChanged = new(nameof(ShowDirectoryGlyph));
     private static readonly PropertyChangedEventArgs FileGlyphChanged = new(nameof(ShowFileGlyph));
+    private static readonly PropertyChangedEventArgs RestChanged = new(nameof(IconRest));
+    private static readonly PropertyChangedEventArgs HoverChanged = new(nameof(IconHover));
+    private static readonly PropertyChangedEventArgs SelectedChanged = new(nameof(IconSelected));
+    private static readonly PropertyChangedEventArgs HasThumbnailChanged = new(nameof(HasThumbnail));
+    private static readonly PropertyChangedEventArgs ShowsIconChanged = new(nameof(ShowsIcon));
 
     private Bitmap? _icon;
+    private Bitmap? _rest;
+    private Bitmap? _hover;
+    private Bitmap? _selected;
     private Bitmap? _thumbnail;
     private bool _isDropTarget;
 
@@ -129,6 +138,8 @@ public sealed class FileEntryViewModel : INotifyPropertyChanged
                 return;
             _thumbnail = value;
             PropertyChanged?.Invoke(this, PreviewChanged);
+            PropertyChanged?.Invoke(this, HasThumbnailChanged);
+            PropertyChanged?.Invoke(this, ShowsIconChanged);
             PropertyChanged?.Invoke(this, DirectoryGlyphChanged);
             PropertyChanged?.Invoke(this, FileGlyphChanged);
         }
@@ -136,6 +147,39 @@ public sealed class FileEntryViewModel : INotifyPropertyChanged
 
     /// <summary>What the row actually shows: the file itself if we have it, else its type.</summary>
     public Bitmap? Preview => _thumbnail ?? _icon;
+
+    /// <summary>The icon in the icon view at rest: its body stippled with the rest gray.</summary>
+    /// <remarks>
+    /// This and the two below are the icon view's, which shows state the way IRIX's file manager
+    /// did -- by recoloring the icon's body -- rather than by highlighting the label. The template
+    /// picks among the three by whether the cell is under the pointer or selected, so a hover
+    /// costs no render and no property change. See <see cref="IconStatePainter"/>.
+    /// </remarks>
+    public Bitmap? IconRest
+    {
+        get => _rest;
+        private set => Set(ref _rest, value, RestChanged);
+    }
+
+    /// <summary>The icon under the pointer: its body white.</summary>
+    public Bitmap? IconHover
+    {
+        get => _hover;
+        private set => Set(ref _hover, value, HoverChanged);
+    }
+
+    /// <summary>The icon selected: its body yellow.</summary>
+    public Bitmap? IconSelected
+    {
+        get => _selected;
+        private set => Set(ref _selected, value, SelectedChanged);
+    }
+
+    /// <summary>Whether a thumbnail is showing, which the icon view frames rather than recolors.</summary>
+    public bool HasThumbnail => _thumbnail is not null;
+
+    /// <summary>Whether the type icon is showing: there is no thumbnail in front of it.</summary>
+    public bool ShowsIcon => _thumbnail is null;
 
     /// <summary>Whether to draw the folder placeholder: a directory with nothing to show yet.</summary>
     public bool ShowDirectoryGlyph => Preview is null && IsDirectory;
@@ -177,6 +221,24 @@ public sealed class FileEntryViewModel : INotifyPropertyChanged
         icons.Request(Entry, size, bitmap => Icon = bitmap, () => _icon is null);
     }
 
+    /// <summary>
+    /// Asks for this row's icon in each of the icon view's three states, as well as as drawn.
+    /// </summary>
+    /// <remarks>
+    /// The plain icon too, because it is what decides whether the drawn placeholder still
+    /// shows; it costs nothing extra, since the three states are recolored from the same render.
+    /// </remarks>
+    public void EnsureStateIcons(IconService icons, int size)
+    {
+        EnsureIcon(icons, size);
+        if (_rest is null)
+            icons.Request(Entry, size, IconState.Normal, bitmap => IconRest = bitmap, () => _rest is null);
+        if (_hover is null)
+            icons.Request(Entry, size, IconState.Hover, bitmap => IconHover = bitmap, () => _hover is null);
+        if (_selected is null)
+            icons.Request(Entry, size, IconState.Selected, bitmap => IconSelected = bitmap, () => _selected is null);
+    }
+
     /// <summary>Asks for this row's thumbnail, if the file is one that can have a picture.</summary>
     /// <remarks>
     /// Called alongside the icon rather than instead of it: the type icon arrives in
@@ -203,7 +265,21 @@ public sealed class FileEntryViewModel : INotifyPropertyChanged
     /// drawn yet, and the visible ones keep the old theme's icons until the directory is
     /// re-read. It looks exactly like the setting not working.
     /// </remarks>
-    public void ClearIcon() => Icon = null;
+    public void ClearIcon()
+    {
+        Icon = null;
+        IconRest = null;
+        IconHover = null;
+        IconSelected = null;
+    }
+
+    private void Set(ref Bitmap? field, Bitmap? value, PropertyChangedEventArgs changed)
+    {
+        if (ReferenceEquals(field, value))
+            return;
+        field = value;
+        PropertyChanged?.Invoke(this, changed);
+    }
 
     /// <summary>The size column's text. See <see cref="FileSizes.Binary"/> for the policy.</summary>
     /// <remarks>

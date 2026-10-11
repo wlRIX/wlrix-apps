@@ -16,20 +16,55 @@
          tab, and the file picker wants the rail beside a listing with no tabs at all. -->
 
     <UserControl.Styles>
-        <!-- What "selected" looks like in the icon view, and it has to be said here.
+        <!-- What hover and selection look like in the icon view: IRIX's file manager showed both
+             on the icon, not the label, by the rule the desktop and the login screen follow
+             (IconStatePainter). A type icon's light body is stippled at rest, white under the
+             pointer and yellow when selected; the row carries all three renders and these pick
+             one, so moving the pointer costs no render at all.
 
-             The theme paints a selected ListBoxItem by filling `Border#Root` in its template,
-             and the ItemContainerTheme below replaces that template with a bare Border so the
-             cell itself paints nothing — the highlight belongs to the label, as IRIX drew it.
-             So the theme's fill lands on an element that no longer exists, while its companion
-             rule, `ListBoxItem:selected TextBlock` in WlrixTheme.axaml, still repaints the text
-             in the selection foreground. The result was a selected label rendered in the
-             colour meant to sit *on* the highlight, with no highlight behind it: selection read
-             as dimmer than the rows around it, which looks like disabled rather than chosen.
+             Selection wins over hover by coming later: a selected cell under the pointer stays
+             yellow rather than flicking to white. Every visibility here is set by a style and
+             none in the template, because a local value would beat all of them. -->
+        <Style Selector="Image.state.hover, Image.state.selected">
+            <Setter Property="IsVisible" Value="False" />
+        </Style>
+        <Style Selector="ListBoxItem:pointerover Image.state.rest">
+            <Setter Property="IsVisible" Value="False" />
+        </Style>
+        <Style Selector="ListBoxItem:pointerover Image.state.hover">
+            <Setter Property="IsVisible" Value="True" />
+        </Style>
+        <Style Selector="ListBoxItem:selected Image.state.rest, ListBoxItem:selected Image.state.hover">
+            <Setter Property="IsVisible" Value="False" />
+        </Style>
+        <Style Selector="ListBoxItem:selected Image.state.selected">
+            <Setter Property="IsVisible" Value="True" />
+        </Style>
 
-             One setter fixes it, because the foreground half is already right. -->
-        <Style Selector="ListBoxItem:selected Border#Label">
-            <Setter Property="Background" Value="{DynamicResource WlrixSelection}" />
+        <!-- A thumbnail is a picture of the file, not an icon, so it is never recolored: it is
+             framed, as the login screen frames a user's own picture. One black pixel around it
+             at rest; under the pointer or selected, two — that pixel and the picture's own
+             outermost row — in white or yellow. The outer border is the first, the inner one
+             overlaid on the picture's edge is the second. -->
+        <Style Selector="Border#ThumbFrame">
+            <Setter Property="BorderBrush" Value="{DynamicResource WlrixOuterLine}" />
+        </Style>
+        <Style Selector="Border#ThumbEdge">
+            <Setter Property="BorderBrush" Value="Transparent" />
+        </Style>
+        <Style Selector="ListBoxItem:pointerover Border#ThumbFrame, ListBoxItem:pointerover Border#ThumbEdge">
+            <Setter Property="BorderBrush" Value="{DynamicResource WlrixIconTintHover}" />
+        </Style>
+        <Style Selector="ListBoxItem:selected Border#ThumbFrame, ListBoxItem:selected Border#ThumbEdge">
+            <Setter Property="BorderBrush" Value="{DynamicResource WlrixIconTintSelected}" />
+        </Style>
+
+        <!-- So the label is not highlighted, as it was not in IRIX's file manager. The theme's
+             `ListBoxItem:selected TextBlock` (WlrixTheme.axaml) still repaints selected text in
+             the color meant to sit *on* a highlight, and with no highlight behind it a chosen
+             name would read as dimmed. This puts it back in the view's own color. -->
+        <Style Selector="ListBoxItem:selected Border#Label TextBlock">
+            <Setter Property="Foreground" Value="{DynamicResource WlrixViewForeground}" />
         </Style>
 
         <!-- The folder a drag is aimed at. Kept visually distinct from selection, because a
@@ -86,7 +121,7 @@
             <ListBox.ItemContainerTheme>
                 <ControlTheme TargetType="ListBoxItem" BasedOn="{StaticResource {x:Type ListBoxItem}}">
                     <!-- The container fills its cell so the whole cell is a hit target, but
-                         paints nothing: the highlight belongs to the label below. -->
+                         paints nothing: state shows on the icon itself. -->
                     <Setter Property="Padding" Value="0" />
                     <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                     <Setter Property="VerticalContentAlignment" Value="Stretch" />
@@ -105,10 +140,39 @@
                 <DataTemplate x:DataType="vm:FileEntryViewModel">
                     <StackPanel Margin="0,6,0,0" Spacing="3">
                         <Panel Height="52">
-                            <Image Source="{Binding Preview}"
-                                   Width="48" Height="48"
+                            <!-- The type icon, in whichever state the styles above pick.
+
+                                 The three images are invisible to hit-testing and the panel
+                                 around them takes the press, and that is load-bearing: Avalonia
+                                 raises DoubleTapped only when both presses land on the *same*
+                                 element. The first press on an unselected icon selects it, which
+                                 swaps the hover image for the selected one, so with the images
+                                 taking presses the second landed on a different element and a
+                                 double-click on anything not already selected did nothing. -->
+                            <Panel Width="48" Height="48"
+                                   Background="Transparent"
                                    HorizontalAlignment="Center"
-                                   VerticalAlignment="Center" />
+                                   VerticalAlignment="Center"
+                                   IsVisible="{Binding ShowsIcon}">
+                                <Image Classes="state rest" Source="{Binding IconRest}" IsHitTestVisible="False" />
+                                <Image Classes="state hover" Source="{Binding IconHover}" IsHitTestVisible="False" />
+                                <Image Classes="state selected" Source="{Binding IconSelected}" IsHitTestVisible="False" />
+                            </Panel>
+                            <!-- Or the file's own picture, framed. The frame hugs the picture
+                                 rather than the 48px square, so a wide photograph is framed
+                                 where it is drawn. -->
+                            <Border Name="ThumbFrame"
+                                    BorderThickness="1"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    IsVisible="{Binding HasThumbnail}">
+                                <Panel>
+                                    <Image Source="{Binding Thumbnail}"
+                                           MaxWidth="48" MaxHeight="48"
+                                           Stretch="Uniform" />
+                                    <Border Name="ThumbEdge" BorderThickness="1" />
+                                </Panel>
+                            </Border>
                             <!-- Shown until the type's icon has been rendered, so a cell is
                                  never visibly empty while resvg works. -->
                             <Path Width="48" Height="40" Stretch="Uniform"

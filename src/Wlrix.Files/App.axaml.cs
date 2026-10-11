@@ -158,6 +158,17 @@ public class App : Application
             services.AddTransient<MainWindowViewModel>();
             _services = services.BuildServiceProvider();
 
+            // The icon view recolors icons by the scheme's three icon colors, so they have to be
+            // read before the first listing renders and again whenever the scheme moves --
+            // SessionScheme swaps the scheme dictionary, which is a resource change here.
+            var icons = _services.GetRequiredService<IconService>();
+            icons.SetColors(IconStateColorsFromTheme());
+            ResourcesChanged += (_, _) =>
+            {
+                if (icons.SetColors(IconStateColorsFromTheme()))
+                    _services.GetRequiredService<WindowManager>().ConfigurationChanged();
+            };
+
             var windows = _services.GetRequiredService<WindowManager>();
             windows.Start();
             windows.AllWindowsClosed += () => desktop.Shutdown();
@@ -254,5 +265,20 @@ public class App : Application
         }
 
         base.OnFrameworkInitializationCompleted();
+    }
+
+    /// <summary>The current scheme's icon colors, or the classic scheme's if it has none.</summary>
+    private IconStateColors IconStateColorsFromTheme()
+    {
+        var fallback = IconStateColors.Default;
+        return new IconStateColors(
+            Read("WlrixIconTintColor", fallback.Rest),
+            Read("WlrixIconTintHoverColor", fallback.Hover),
+            Read("WlrixIconTintSelectedColor", fallback.Selected));
+
+        uint Read(string key, uint otherwise) =>
+            TryGetResource(key, ActualThemeVariant, out var value) && value is global::Avalonia.Media.Color color
+                ? (uint)color.R << 16 | (uint)color.G << 8 | color.B
+                : otherwise;
     }
 }

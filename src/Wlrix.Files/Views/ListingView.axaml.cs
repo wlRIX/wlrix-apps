@@ -236,7 +236,12 @@ public partial class ListingView : UserControl
         if (Model is not { } model || container.DataContext is not FileEntryViewModel row)
             return;
 
-        row.EnsureIcon(model.Icons, size);
+        // The icon view shows state by recoloring the icon, so it wants all three; the details
+        // view highlights the whole row and shows the icon as drawn.
+        if (size == GridIconSize)
+            row.EnsureStateIcons(model.Icons, size);
+        else
+            row.EnsureIcon(model.Icons, size);
         if (model.ThumbnailsEnabled)
             row.EnsureThumbnail(model.Thumbnails, ThumbnailCache.SizeFor(size));
     }
