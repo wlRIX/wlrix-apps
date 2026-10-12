@@ -28,6 +28,15 @@ public sealed class PollingWatcher(
     /// </remarks>
     public static readonly TimeSpan DefaultInterval = TimeSpan.FromSeconds(10);
 
+    /// <summary>How many times longer than a scan took the wait before the next one is, at least.</summary>
+    /// <remarks>
+    /// Keeps polling to a tenth of whatever is being polled. A phone's Download folder takes
+    /// seconds just to list its handles, and the device can do nothing else meanwhile -- not
+    /// even the copy the user is waiting for -- so a fixed ten seconds would give it to the
+    /// poll a third of the time. A quick listing never reaches this and keeps the interval.
+    /// </remarks>
+    public const int BackoffFactor = 10;
+
     private readonly TimeSpan _interval = interval is { } given && given > TimeSpan.Zero
         ? given
         : DefaultInterval;
@@ -52,20 +61,31 @@ public sealed class PollingWatcher(
 
     private async Task PollAsync(CancellationToken cancellationToken)
     {
-        using var timer = new PeriodicTimer(_interval);
+        var wait = _interval;
         try
         {
-            while (await timer.WaitForNextTickAsync(cancellationToken).ConfigureAwait(false))
+            while (true)
             {
+                await Task.Delay(wait, cancellationToken).ConfigureAwait(false);
                 if (_paused)
                     continue;
+
+                var started = Environment.TickCount64;
                 await ScanAsync(cancellationToken).ConfigureAwait(false);
+                wait = NextWait(_interval, TimeSpan.FromMilliseconds(Environment.TickCount64 - started));
             }
         }
         catch (OperationCanceledException)
         {
             // Navigated away, or the window closed.
         }
+    }
+
+    /// <summary>The wait before the next scan, given how long the last one took.</summary>
+    internal static TimeSpan NextWait(TimeSpan interval, TimeSpan lastScan)
+    {
+        var backoff = lastScan * BackoffFactor;
+        return backoff > interval ? backoff : interval;
     }
 
     public override async ValueTask DisposeAsync()

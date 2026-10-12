@@ -8,6 +8,7 @@ using Wlrix.Files.Core;
 using Wlrix.Files.Core.Dnd;
 using Wlrix.Files.Core.Filesystems;
 using Wlrix.Files.Core.Mime;
+using Wlrix.Files.Core.Mtp;
 using Wlrix.Files.Core.Operations;
 using Wlrix.Common.Desktop;
 using Wlrix.Files.Core.Platform;
@@ -885,7 +886,36 @@ public sealed class MainWindowViewModel : ReactiveObject, IDisposable
             _handlers.SetDefault(handler.MimeType, handler.Entry);
             _ = RefreshHandlersAsync();
         }
-        _launcher.Open(handler.Entry, files);
+        _ = LaunchAsync(handler.Entry, files);
+    }
+
+    /// <summary>Opens files with an application, first copying any on a phone to the disk.</summary>
+    /// <remarks>
+    /// An application is handed a path or a URI, and no application understands
+    /// <c>mtp://</c> -- the protocol has no way to read part of a file in place, so there is
+    /// nothing for one to open. A copy is made in the same scratch space dragging out uses, and
+    /// that is what the application gets. It is a copy: saving it changes the copy, not the
+    /// phone. Shares are left as URIs, which applications built on GIO can open directly.
+    /// </remarks>
+    private async Task LaunchAsync(DesktopEntry application, IReadOnlyList<Location> files)
+    {
+        var onPhone = files.Where(file => file.Scheme == MtpFileSystemFactory.MtpScheme).ToList();
+        if (onPhone.Count == 0)
+        {
+            _launcher.Open(application, files);
+            return;
+        }
+
+        try
+        {
+            var staged = await _staging.StageAsync(onPhone).ConfigureAwait(true);
+            var local = onPhone.Zip(staged).ToDictionary(pair => pair.First, pair => Location.FromLocalPath(pair.Second));
+            _launcher.Open(application, [.. files.Select(file => local.GetValueOrDefault(file, file))]);
+        }
+        catch (FileOperationException ex)
+        {
+            ErrorRaised?.Invoke(ex.Message);
+        }
     }
 
     /// <summary>
@@ -914,7 +944,7 @@ public sealed class MainWindowViewModel : ReactiveObject, IDisposable
 
         if (_handlers.DefaultFor(mimeType) is { } application)
         {
-            _launcher.Open(application, [row.Location]);
+            await LaunchAsync(application, [row.Location]).ConfigureAwait(true);
             return;
         }
 
@@ -1088,6 +1118,12 @@ public sealed class MainWindowViewModel : ReactiveObject, IDisposable
     /// </remarks>
     private void RefreshDevices()
     {
+        var phonesBefore = Devices
+            .Where(row => row.IsPhone)
+            .Select(row => row.Location)
+            .OfType<Location>()
+            .ToList();
+
         Devices.Clear();
         foreach (var device in _devices.Devices)
         {
@@ -1096,7 +1132,38 @@ public sealed class MainWindowViewModel : ReactiveObject, IDisposable
             _ = row.RefreshUsageAsync();
         }
 
+        // A phone that has gone from the list was unplugged, or switched out of File Transfer.
+        // Its filesystem is holding a handle to a device that no longer exists, and a pane
+        // showing it would sit polling a dead connection; both are let go of here.
+        foreach (var gone in phonesBefore.Where(location => Devices.All(row => row.Location != location)))
+            _ = ReleasePhoneAsync(gone);
+
         this.RaisePropertyChanged(nameof(HasDevices));
+    }
+
+    /// <summary>Moves every pane in this window off a device, to Home.</summary>
+    private async Task LeaveAsync(Location device)
+    {
+        foreach (var tab in Tabs)
+        {
+            foreach (var pane in tab.Panes)
+            {
+                if (pane.Location == device || device.Contains(pane.Location))
+                    await pane.NavigateAsync(Home).ConfigureAwait(true);
+            }
+        }
+    }
+
+    /// <summary>Leaves a phone and closes its filesystem, releasing the USB interface.</summary>
+    /// <remarks>
+    /// Closing is what lets another program have the phone: libmtp claims the interface for as
+    /// long as the device is open, and nothing else can open it meanwhile. Safe to call from
+    /// every window at once; the provider closes a mount only the first time.
+    /// </remarks>
+    private async Task ReleasePhoneAsync(Location device)
+    {
+        await LeaveAsync(device).ConfigureAwait(true);
+        await _provider.RemoveAsync(device.MountKey).ConfigureAwait(true);
     }
 
     /// <summary>
@@ -1166,14 +1233,14 @@ public sealed class MainWindowViewModel : ReactiveObject, IDisposable
         if (device.Location is not { } mounted)
             return;
 
-        foreach (var tab in Tabs)
+        if (device.IsPhone)
         {
-            foreach (var pane in tab.Panes)
-            {
-                if (pane.Location == mounted || mounted.Contains(pane.Location))
-                    await pane.NavigateAsync(Home).ConfigureAwait(true);
-            }
+            await ReleasePhoneAsync(mounted).ConfigureAwait(true);
+            StatusRaised?.Invoke(Strings.DeviceDisconnected(device.Label));
+            return;
         }
+
+        await LeaveAsync(mounted).ConfigureAwait(true);
 
         if (await _devices.UnmountAsync(device.Device).ConfigureAwait(true) is { } problem)
         {
@@ -1480,17 +1547,45 @@ public sealed class MainWindowViewModel : ReactiveObject, IDisposable
         await RunAsync(FileOperation.NewDirectory(Pane.Location.Child(name))).ConfigureAwait(true);
     }
 
-    private Task TrashAsync() =>
-        Selection.Count == 0 ? Task.CompletedTask : RunAsync(FileOperation.SendToTrash(SelectedLocations()));
+    /// <summary>Moves the selection to the trash, or deletes it where there is no trash.</summary>
+    /// <remarks>
+    /// Only the local disk has a trash. A phone or a share has nowhere recoverable to put a
+    /// file, so Delete there means deleting it outright -- and because the key was pressed
+    /// expecting a way back, that always asks first, whatever the confirmation setting says.
+    /// </remarks>
+    private async Task TrashAsync()
+    {
+        if (Selection.Count == 0)
+            return;
 
-    private async Task DeleteAsync()
+        try
+        {
+            var fs = await _provider.GetAsync(Pane.Location, CancellationToken.None).ConfigureAwait(true);
+            if (!fs.Capabilities.HasFlag(FileSystemCapabilities.Trash))
+            {
+                await DeleteAsync(alwaysAsk: true).ConfigureAwait(true);
+                return;
+            }
+        }
+        catch (FileOperationException ex)
+        {
+            ErrorRaised?.Invoke(ex.Message);
+            return;
+        }
+
+        await RunAsync(FileOperation.SendToTrash(SelectedLocations())).ConfigureAwait(true);
+    }
+
+    private Task DeleteAsync() => DeleteAsync(alwaysAsk: false);
+
+    private async Task DeleteAsync(bool alwaysAsk)
     {
         if (Selection.Count == 0)
             return;
 
         // Permanent deletion is the one action here with no way back, so it asks unless the
         // user has said not to -- Move to Trash is the one that never asks.
-        if (ConfirmDelete && ConfirmRequested is not null)
+        if ((ConfirmDelete || alwaysAsk) && ConfirmRequested is not null)
         {
             var message = Selection.Count == 1
                 ? Strings.ConfirmDeleteOne(Selection[0].Name)

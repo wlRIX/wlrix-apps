@@ -145,6 +145,18 @@ PipeWire-only setting, the graph's sample rate, goes through `pw-metadata`; on P
 dotnet run --project src/Wlrix.Settings.Audio -- --demo   # the IRIX screenshot's devices; touches nothing
 ```
 
+## Phones
+
+The file manager lists Android phones and other MTP devices (a phone set to **File Transfer** in its USB notification)
+under Devices, beside the disks. It talks to them through **libmtp** (`libmtp.so.9`, P/Invoke) and finds them through
+**libudev** (`libudev.so.1`), so both are needed at runtime. libmtp's package also installs the udev rules that matter:
+they tag the device `ID_MTP_DEVICE=1`, which is how it is found, and `uaccess`, which is what lets the person at the
+seat open it without root.
+
+While the file manager has a phone open, nothing else can open it: libmtp claims the USB interface. **Disconnect** in
+the device's context menu releases it. Files on the phone open in other applications as a copy, because no application
+can read `mtp://`; saving that copy does not change the phone.
+
 ## Build
 
 ```sh

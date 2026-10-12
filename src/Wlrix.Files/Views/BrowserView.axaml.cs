@@ -36,6 +36,7 @@ public partial class BrowserView : UserControl
         // meant to open.
         MountItem.Click += (_, _) => Mount(DevicesList.SelectedItem as DeviceViewModel);
         UnmountItem.Click += (_, _) => Unmount(DevicesList.SelectedItem as DeviceViewModel);
+        DisconnectItem.Click += (_, _) => Unmount(DevicesList.SelectedItem as DeviceViewModel);
         DevicesList.ContextMenu!.Opening += OnDeviceMenuOpening;
         DeviceNewTabItem.Click += (_, _) => OpenInNewTab(DevicesList.SelectedItem as DeviceViewModel);
 
@@ -273,8 +274,11 @@ public partial class BrowserView : UserControl
             return;
         }
 
+        // A phone is never mounted, only opened; what it offers instead is letting go of it, so
+        // another program can have it.
         MountItem.IsVisible = !device.IsMounted;
-        UnmountItem.IsVisible = device.IsMounted;
+        UnmountItem.IsVisible = device.IsMounted && !device.IsPhone;
+        DisconnectItem.IsVisible = device.IsPhone;
     }
 
     private void OnPlaceSelected(object? sender, SelectionChangedEventArgs e)

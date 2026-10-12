@@ -28,6 +28,9 @@ public sealed class DeviceViewModel : ReactiveObject
 
     public bool IsMounted => Device.IsMounted;
 
+    /// <summary>Whether this is a phone or player over MTP rather than a disk.</summary>
+    public bool IsPhone => Device.Kind == StorageDeviceKind.Phone;
+
     /// <summary>Where it is, or null while it is not mounted.</summary>
     public Location? Location => Device.Location;
 
@@ -76,9 +79,16 @@ public sealed class DeviceViewModel : ReactiveObject
     }
 
     /// <summary>What the second line says before the disk has been measured.</summary>
+    /// <remarks>
+    /// A phone says what it is and who made it, and stays that way. Measuring it would mean
+    /// opening it, and opening a phone claims it from every other program on the machine --
+    /// too much to do merely to fill in a row.
+    /// </remarks>
     private static string Describe(StorageDevice device) =>
-        device.IsMounted
-            ? device.MountPoint!
+        device.Kind == StorageDeviceKind.Phone
+            ? device.Device.Length > 0 ? $"{Strings.DevicePhone} · {device.Device}" : Strings.DevicePhone
+            : device.MountPoint is { } mountPoint
+            ? mountPoint
             : device.SizeBytes > 0
                 ? $"{device.Device} · {StorageDevices.FormatSize(device.SizeBytes)}"
                 : device.Device;

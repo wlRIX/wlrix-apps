@@ -556,6 +556,15 @@ If you do not trust this program, click Cancel. Continuing also marks the file e
   <data name="DeviceUnmounted" xml:space="preserve">
     <value>{0} has been unmounted.</value>
   </data>
+  <data name="DeviceDisconnect" xml:space="preserve">
+    <value>_Disconnect</value>
+  </data>
+  <data name="DeviceDisconnected" xml:space="preserve">
+    <value>{0} has been disconnected.</value>
+  </data>
+  <data name="DevicePhone" xml:space="preserve">
+    <value>Phone</value>
+  </data>
   <data name="SettingFailed" xml:space="preserve">
     <value>That setting could not be saved: {0}</value>
   </data>

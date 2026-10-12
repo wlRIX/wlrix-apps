@@ -25,6 +25,15 @@ public readonly record struct BlockDeviceFacts(
     bool Ignore,
     string DriveName = "");
 
+/// <summary>What kind of thing a sidebar device is, which decides its icon and its verbs.</summary>
+public enum StorageDeviceKind
+{
+    /// <summary>A block device: mounted and unmounted, and reached through a local path.</summary>
+    Disk,
+    /// <summary>A phone or player speaking MTP: always openable while plugged in, never mounted.</summary>
+    Phone
+}
+
 /// <summary>A disk worth showing in the sidebar.</summary>
 /// <param name="Id">The stable key, for matching a device across a refresh.</param>
 /// <param name="Label">What the row says.</param>
@@ -44,10 +53,17 @@ public sealed record StorageDevice(
     bool IsRemovable,
     bool IsReadOnly)
 {
-    public bool IsMounted => MountPoint is not null;
+    public StorageDeviceKind Kind { get; init; } = StorageDeviceKind.Disk;
+
+    /// <summary>Where a device with no local mount point is reached, such as <c>mtp://</c>.</summary>
+    public Location? RemoteLocation { get; init; }
+
+    /// <summary>Whether it can be opened now. A phone always can while it is plugged in.</summary>
+    public bool IsMounted => MountPoint is not null || RemoteLocation is not null;
 
     /// <summary>Where clicking it goes, or null while it is not mounted.</summary>
-    public Location? Location => MountPoint is null ? null : Core.Location.FromLocalPath(MountPoint);
+    public Location? Location =>
+        RemoteLocation ?? (MountPoint is null ? null : Core.Location.FromLocalPath(MountPoint));
 }
 
 /// <summary>

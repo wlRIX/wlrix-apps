@@ -293,6 +293,17 @@ public class DirectoryWatcherTests
         await WaitFor(() => { lock (seen) return seen.Any(c => c.Location.Name == "appeared.txt"); });
     }
 
+    [Theory]
+    // A quick listing keeps the interval it was given.
+    [InlineData(10_000, 50, 10_000)]
+    [InlineData(10_000, 1_000, 10_000)]
+    // A slow one -- a phone's Download folder -- waits ten times as long as it took.
+    [InlineData(10_000, 3_000, 30_000)]
+    public void ASlowListingIsPolledLessOften(int intervalMs, int scanMs, int expectedMs) =>
+        Assert.Equal(
+            TimeSpan.FromMilliseconds(expectedMs),
+            PollingWatcher.NextWait(TimeSpan.FromMilliseconds(intervalMs), TimeSpan.FromMilliseconds(scanMs)));
+
     private static async Task<List<FileEntry>> ListAsync(IFileSystem fs, Location? at = null)
     {
         var entries = new List<FileEntry>();

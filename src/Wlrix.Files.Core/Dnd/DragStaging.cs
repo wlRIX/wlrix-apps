@@ -101,7 +101,7 @@ public sealed class DragStaging : IDisposable
         if (plan.TotalBytes > MaxBytes)
         {
             throw new FileOperationException(FileErrorKind.NoSpace, remote[0],
-                $"a drag of {plan.TotalBytes} bytes is over the {MaxBytes} byte staging limit");
+                $"{plan.TotalBytes} bytes is over the {MaxBytes} byte staging limit");
         }
 
         var result = await job.RunAsync(operation, progress, cancellationToken).ConfigureAwait(false);

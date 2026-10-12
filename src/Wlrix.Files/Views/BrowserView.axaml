@@ -130,6 +130,7 @@
                             <MenuItem Header="-" />
                             <MenuItem Header="{loc:Tr DeviceMount}" Name="MountItem" />
                             <MenuItem Header="{loc:Tr DeviceUnmount}" Name="UnmountItem" />
+                            <MenuItem Header="{loc:Tr DeviceDisconnect}" Name="DisconnectItem" />
                         </ContextMenu>
                     </ListBox.ContextMenu>
                     <ListBox.ItemTemplate>

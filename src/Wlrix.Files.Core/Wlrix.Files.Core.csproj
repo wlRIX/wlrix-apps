@@ -3,6 +3,11 @@
         <Version>0.1.0</Version>
     </PropertyGroup>
 
+    <PropertyGroup>
+        <!-- For the libmtp binding, whose transfer callbacks are unmanaged function pointers. -->
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    </PropertyGroup>
+
     <ItemGroup>
         <InternalsVisibleTo Include="Wlrix.Files.Core.Tests" />
     </ItemGroup>

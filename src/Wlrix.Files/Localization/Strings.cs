@@ -174,6 +174,11 @@ public static class Strings
 
     public static string DeviceUnmounted(string label) => Catalog.Format("DeviceUnmounted", label);
 
+    public static string DeviceDisconnected(string label) => Catalog.Format("DeviceDisconnected", label);
+
+    /// <summary>The second line of a phone's row, before anything is known about its storage.</summary>
+    public static string DevicePhone => Catalog.Get("DevicePhone");
+
     public static string PropCalculating => Catalog.Get("PropCalculating");
 
     public static string PropCounting(string size, long items) => Catalog.Format("PropCounting", size, items);

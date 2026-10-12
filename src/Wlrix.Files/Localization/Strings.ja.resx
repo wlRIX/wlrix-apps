@@ -556,6 +556,15 @@
   <data name="DeviceUnmounted" xml:space="preserve">
     <value>{0} をアンマウントしました。</value>
   </data>
+  <data name="DeviceDisconnect" xml:space="preserve">
+    <value>切断(_D)</value>
+  </data>
+  <data name="DeviceDisconnected" xml:space="preserve">
+    <value>{0} を切断しました。</value>
+  </data>
+  <data name="DevicePhone" xml:space="preserve">
+    <value>スマートフォン</value>
+  </data>
   <data name="SettingFailed" xml:space="preserve">
     <value>設定を保存できませんでした: {0}</value>
   </data>
