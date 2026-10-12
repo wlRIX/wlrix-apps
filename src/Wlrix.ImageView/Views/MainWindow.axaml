@@ -1,0 +1,191 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Wlrix.ImageView.ViewModels"
+        xmlns:controls="using:Wlrix.ImageView.Controls"
+        xmlns:loc="using:Wlrix.Common.Localization"
+        xmlns:wlrix="https://vic485.xyz/Wlrix.Avalonia"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="700"
+        x:Class="Wlrix.ImageView.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Title="{Binding Title}"
+        Width="900" Height="700" MinWidth="360" MinHeight="300">
+    <!-- The accelerators.
+         A MenuItem's InputGesture only *draws* the shortcut, and its HotKey does not fire from
+         inside a submenu that has never been opened, as found while fixing the file manager.
+         Window.KeyBindings is what actually runs. -->
+    <Window.KeyBindings>
+        <KeyBinding Gesture="Ctrl+O" Command="{Binding Open}" />
+        <KeyBinding Gesture="Ctrl+S" Command="{Binding Save}" />
+        <KeyBinding Gesture="Ctrl+Shift+S" Command="{Binding SaveAs}" />
+        <KeyBinding Gesture="Ctrl+Q" Command="{Binding Quit}" />
+        <KeyBinding Gesture="Home" Command="{Binding Center}" />
+        <KeyBinding Gesture="Ctrl+D" Command="{Binding ShowDetail}" />
+        <KeyBinding Gesture="Ctrl+H" Command="{Binding ShowHistogram}" />
+        <KeyBinding Gesture="Ctrl+I" Command="{Binding ShowInfo}" />
+        <KeyBinding Gesture="Ctrl+Z" Command="{Binding Undo}" />
+        <KeyBinding Gesture="Ctrl+Shift+Z" Command="{Binding Redo}" />
+    </Window.KeyBindings>
+
+    <!--
+        No SystemDecorations or ExtendClientArea: the compositor draws the 4Dwm frame, and a
+        window that draws its own would get two.
+    -->
+
+    <Design.DataContext>
+        <vm:MainWindowViewModel />
+    </Design.DataContext>
+
+    <Window.Styles>
+        <!-- The palette: small square buttons, one picture each. ToggleButton is a Button, so
+             this covers the three tool buttons as well. -->
+        <Style Selector="StackPanel#Palette > :is(Button)">
+            <Setter Property="Width" Value="30" />
+            <Setter Property="Height" Value="28" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+        </Style>
+        <Style Selector="StackPanel#Palette Path">
+            <Setter Property="Width" Value="20" />
+            <Setter Property="Height" Value="20" />
+            <Setter Property="Stretch" Value="None" />
+        </Style>
+        <Style Selector="StackPanel#Palette Path.stroke">
+            <Setter Property="Stroke" Value="{DynamicResource WlrixForeground}" />
+            <Setter Property="StrokeThickness" Value="1.6" />
+            <Setter Property="StrokeLineCap" Value="Round" />
+            <Setter Property="StrokeJoin" Value="Round" />
+        </Style>
+        <Style Selector="StackPanel#Palette Path.fill">
+            <Setter Property="Fill" Value="{DynamicResource WlrixForeground}" />
+        </Style>
+        <!-- Outlined in the foreground and filled with the bevel's light edge. -->
+        <Style Selector="StackPanel#Palette Path.outline">
+            <Setter Property="Fill" Value="{DynamicResource WlrixTopShadow}" />
+            <Setter Property="Stroke" Value="{DynamicResource WlrixForeground}" />
+            <Setter Property="StrokeThickness" Value="1" />
+            <Setter Property="StrokeJoin" Value="Round" />
+        </Style>
+        <Style Selector="StackPanel#Palette :is(Button):disabled Path.stroke">
+            <Setter Property="Stroke" Value="{DynamicResource WlrixDisabledForeground}" />
+        </Style>
+        <Style Selector="StackPanel#Palette :is(Button):disabled Path.fill">
+            <Setter Property="Fill" Value="{DynamicResource WlrixDisabledForeground}" />
+        </Style>
+    </Window.Styles>
+
+    <DockPanel LastChildFill="True">
+        <wlrix:MenuBar DockPanel.Dock="Top">
+            <MenuItem Header="{loc:Tr MenuFile}">
+                <MenuItem Header="{loc:Tr FileOpen}" InputGesture="Ctrl+O"
+                          Command="{Binding Open}" />
+                <Separator />
+                <MenuItem Header="{loc:Tr FileSave}" InputGesture="Ctrl+S"
+                          Command="{Binding Save}" />
+                <MenuItem Header="{loc:Tr FileSaveAs}" InputGesture="Ctrl+Shift+S"
+                          Command="{Binding SaveAs}" />
+                <Separator />
+                <MenuItem Header="{loc:Tr FileQuit}" InputGesture="Ctrl+Q"
+                          Command="{Binding Quit}" />
+            </MenuItem>
+
+            <MenuItem Header="{loc:Tr MenuView}">
+                <MenuItem Header="{loc:Tr ViewCenter}" InputGesture="Home"
+                          Command="{Binding Center}" />
+                <Separator />
+                <MenuItem Header="{loc:Tr ViewDetail}" InputGesture="Ctrl+D"
+                          Command="{Binding ShowDetail}" />
+                <MenuItem Header="{loc:Tr ViewHistogram}" InputGesture="Ctrl+H"
+                          Command="{Binding ShowHistogram}" />
+                <MenuItem Header="{loc:Tr ViewInfo}" InputGesture="Ctrl+I"
+                          Command="{Binding ShowInfo}" />
+            </MenuItem>
+
+            <MenuItem Header="{loc:Tr MenuEdit}">
+                <MenuItem Header="{loc:Tr EditUndo}" InputGesture="Ctrl+Z"
+                          Command="{Binding Undo}" />
+                <MenuItem Header="{loc:Tr EditRedo}" InputGesture="Ctrl+Shift+Z"
+                          Command="{Binding Redo}" />
+            </MenuItem>
+
+            <MenuItem Header="{loc:Tr MenuHelp}" DockPanel.Dock="Right">
+                <MenuItem Header="{loc:Tr HelpAbout}" Command="{Binding ShowAbout}" />
+            </MenuItem>
+        </wlrix:MenuBar>
+
+        <!-- The status line: what the left mouse button does with the current tool, as IRIX
+             imgview's footer said it. -->
+        <wlrix:BevelBorder DockPanel.Dock="Bottom" Bevel="Sunken" BevelThickness="1"
+                           Background="{DynamicResource WlrixPanel}"
+                           LightBrush="{DynamicResource WlrixPanelTopShadow}"
+                           DarkBrush="{DynamicResource WlrixPanelBottomShadow}"
+                           Padding="4,2" Margin="4,2,4,4">
+            <TextBlock Text="{Binding Status}" VerticalAlignment="Center"
+                       TextTrimming="CharacterEllipsis" />
+        </wlrix:BevelBorder>
+
+        <!-- The tool palette, down the left edge. The three tools are a radio group; the rest
+             are plain buttons that do one thing each. -->
+        <wlrix:BevelBorder DockPanel.Dock="Left" Bevel="Raised" BevelThickness="2"
+                           OuterLineThickness="1"
+                           Background="{DynamicResource WlrixFace}"
+                           LightBrush="{DynamicResource WlrixTopShadow}"
+                           DarkBrush="{DynamicResource WlrixBottomShadow}"
+                           OuterLineBrush="{DynamicResource WlrixOuterLine}"
+                           Padding="2" Margin="4,4,0,0" VerticalAlignment="Top">
+            <StackPanel Name="Palette" Spacing="2">
+                <ToggleButton IsChecked="{Binding IsHandTool}" ToolTip.Tip="{loc:Tr ToolHand}">
+                    <Path Classes="outline" Data="{StaticResource IconHand}" />
+                </ToggleButton>
+                <ToggleButton IsChecked="{Binding IsRotateTool}" ToolTip.Tip="{loc:Tr ToolRotate}">
+                    <Panel>
+                        <Path Classes="stroke" Data="{StaticResource IconRotate}" />
+                        <Path Classes="fill" Data="{StaticResource IconRotateHead}" />
+                    </Panel>
+                </ToggleButton>
+                <ToggleButton IsChecked="{Binding IsZoomTool}" ToolTip.Tip="{loc:Tr ToolZoom}">
+                    <Path Classes="stroke" Data="{StaticResource IconZoom}" />
+                </ToggleButton>
+                <Button Command="{Binding Undo}" ToolTip.Tip="{loc:Tr ToolUndo}">
+                    <Path Classes="stroke" Data="{StaticResource IconUndo}" />
+                </Button>
+
+                <Button Command="{Binding ShowProperties}" ToolTip.Tip="{loc:Tr ToolProperties}"
+                        Margin="0,6,0,0">
+                    <Path Classes="fill" Data="{StaticResource IconProperties}" />
+                </Button>
+                <Button Command="{Binding ShowDetail}" ToolTip.Tip="{loc:Tr ToolDetail}">
+                    <Path Classes="stroke" Data="{StaticResource IconDetail}" />
+                </Button>
+                <Button Command="{Binding ShowHistogram}" ToolTip.Tip="{loc:Tr ToolHistogram}">
+                    <Path Classes="fill" Data="{StaticResource IconHistogram}" />
+                </Button>
+                <Button Command="{Binding ShowInfo}" ToolTip.Tip="{loc:Tr ToolInfo}">
+                    <Path Classes="fill" Data="{StaticResource IconInfo}" />
+                </Button>
+            </StackPanel>
+        </wlrix:BevelBorder>
+
+        <!-- The image well. A Panel so the empty-state message can sit over it. -->
+        <wlrix:BevelBorder Bevel="Sunken" BevelThickness="2"
+                           LightBrush="{DynamicResource WlrixTopShadow}"
+                           DarkBrush="{DynamicResource WlrixBottomShadow}"
+                           Margin="4,4,4,0">
+            <Panel>
+                <controls:ImageCanvas Name="Canvas"
+                                      Source="{Binding DisplayImage}"
+                                      Transform="{Binding Transform}"
+                                      Tool="{Binding Tool}" />
+                <!-- Light on the black well, whatever the color scheme. -->
+                <TextBlock Text="{Binding EmptyText}"
+                           Foreground="#c0c0c0"
+                           IsVisible="{Binding !HasImage}"
+                           IsHitTestVisible="False"
+                           TextWrapping="Wrap" TextAlignment="Center" Margin="16"
+                           HorizontalAlignment="Center" VerticalAlignment="Center" />
+            </Panel>
+        </wlrix:BevelBorder>
+    </DockPanel>
+</Window>

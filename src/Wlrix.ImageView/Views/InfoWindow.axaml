@@ -1,0 +1,62 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Wlrix.ImageView.ViewModels"
+        xmlns:loc="using:Wlrix.Common.Localization"
+        xmlns:wlrix="https://vic485.xyz/Wlrix.Avalonia"
+        x:Class="Wlrix.ImageView.Views.InfoWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Title="{loc:Tr InfoTitle}"
+        Width="420" SizeToContent="Height" CanResize="True" MinWidth="300">
+    <Window.Styles>
+        <Style Selector="Grid#Fields > TextBlock">
+            <Setter Property="Margin" Value="0,2" />
+            <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+        <!-- The labels: right-aligned against their values, as IRIX property sheets set them. -->
+        <Style Selector="Grid#Fields > TextBlock.label">
+            <Setter Property="HorizontalAlignment" Value="Right" />
+            <Setter Property="Margin" Value="0,2,8,2" />
+        </Style>
+    </Window.Styles>
+
+    <DockPanel Margin="8">
+        <Button DockPanel.Dock="Bottom" HorizontalAlignment="Right" MinWidth="80"
+                Margin="0,8,0,0" Content="{loc:Tr Close}" Click="OnClose" />
+
+        <wlrix:BevelBorder Bevel="Etched" BevelThickness="2"
+                           LightBrush="{DynamicResource WlrixTopShadow}"
+                           DarkBrush="{DynamicResource WlrixBottomShadow}"
+                           Padding="8">
+            <Grid Name="Fields" ColumnDefinitions="Auto,*"
+                  RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto">
+                <TextBlock Classes="label" Grid.Row="0" Text="{loc:Tr InfoFile}" />
+                <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding InfoFile}" />
+                <TextBlock Classes="label" Grid.Row="1" Text="{loc:Tr InfoFolder}" />
+                <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding InfoFolder}"
+                           ToolTip.Tip="{Binding InfoFolder}" />
+                <TextBlock Classes="label" Grid.Row="2" Text="{loc:Tr InfoFormat}" />
+                <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding InfoFormat}" />
+                <TextBlock Classes="label" Grid.Row="3" Text="{loc:Tr InfoDimensions}" />
+                <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding InfoDimensions}" />
+                <TextBlock Classes="label" Grid.Row="4" Text="{loc:Tr InfoChannels}" />
+                <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding InfoChannels}" />
+                <TextBlock Classes="label" Grid.Row="5" Text="{loc:Tr InfoDepth}" />
+                <TextBlock Grid.Row="5" Grid.Column="1" Text="{Binding InfoDepth}" />
+                <TextBlock Classes="label" Grid.Row="6" Text="{loc:Tr InfoFrames}" />
+                <TextBlock Grid.Row="6" Grid.Column="1" Text="{Binding InfoFrames}" />
+                <TextBlock Classes="label" Grid.Row="7" Text="{loc:Tr InfoFileSize}" />
+                <TextBlock Grid.Row="7" Grid.Column="1" Text="{Binding InfoFileSize}" />
+                <TextBlock Classes="label" Grid.Row="8" Text="{loc:Tr InfoModified}" />
+                <TextBlock Grid.Row="8" Grid.Column="1" Text="{Binding InfoModified}" />
+                <!-- How it is being viewed, live: these follow a drag as it happens. -->
+                <TextBlock Classes="label" Grid.Row="9" Text="{loc:Tr InfoZoom}" />
+                <TextBlock Grid.Row="9" Grid.Column="1" Text="{Binding ZoomText}" />
+                <TextBlock Classes="label" Grid.Row="10" Text="{loc:Tr InfoRotation}" />
+                <TextBlock Grid.Row="10" Grid.Column="1" Text="{Binding RotationText}" />
+                <TextBlock Classes="label" Grid.Row="11" Text="{loc:Tr InfoPan}" />
+                <TextBlock Grid.Row="11" Grid.Column="1" Text="{Binding PanText}" />
+            </Grid>
+        </wlrix:BevelBorder>
+    </DockPanel>
+</Window>

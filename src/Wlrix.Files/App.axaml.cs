@@ -12,6 +12,7 @@ using Wlrix.Files.Core;
 using Wlrix.Files.Core.Dnd;
 using Wlrix.Files.Core.Icons;
 using Wlrix.Files.Core.Mime;
+using Wlrix.Files.Core.Mtp;
 using Wlrix.Files.Core.Operations;
 using Wlrix.Files.Core.Platform;
 using Wlrix.Files.Core.Remote;
@@ -95,10 +96,12 @@ public class App : Application
                 ?? new TransientCredentialStore());
             services.AddSingleton<ICredentialPrompt>(_ => new DialogCredentialPrompt(ActiveWindow));
             services.AddSingleton(sp => new FileSystemProvider(
-                RemoteFileSystemFactory.Schemes.Select(scheme => new RemoteFileSystemFactory(
-                    scheme,
-                    sp.GetRequiredService<ICredentialStore>(),
-                    sp.GetRequiredService<ICredentialPrompt>()))));
+                RemoteFileSystemFactory.Schemes.Select(IFileSystemFactory (scheme) => new RemoteFileSystemFactory(
+                        scheme,
+                        sp.GetRequiredService<ICredentialStore>(),
+                        sp.GetRequiredService<ICredentialPrompt>()))
+                    // Phones, found by udev and opened by libmtp when first clicked.
+                    .Append(new MtpFileSystemFactory(sp.GetRequiredService<MtpDevices>()))));
             services.AddSingleton(_ => XdgUserDirs.Read());
             services.AddSingleton(_ => MountTable.Read());
             // Loaded once and shared. Parsing the mime database is a couple of milliseconds
@@ -150,7 +153,10 @@ public class App : Application
             // The devices rail. Started once, shared by every window, and never allowed to
             // fail a launch: a machine with no udisks2 gets the disks the mount table knows
             // about and no way to mount anything, which is what the previous version had.
-            services.AddSingleton<IStorageDeviceMonitor, UDisks2Devices>();
+            // Disks come from udisks2 and phones from udev; the windows see one list.
+            services.AddSingleton<UDisks2Devices>();
+            services.AddSingleton<MtpDevices>();
+            services.AddSingleton<IStorageDeviceMonitor, CompositeDeviceMonitor>();
 
             services.AddSingleton<WindowManager>();
             services.AddSingleton<IWindowRouting<MainWindowViewModel>>(

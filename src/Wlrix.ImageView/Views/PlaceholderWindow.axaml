@@ -1,0 +1,19 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:loc="using:Wlrix.Common.Localization"
+        xmlns:wlrix="https://vic485.xyz/Wlrix.Avalonia"
+        x:Class="Wlrix.ImageView.Views.PlaceholderWindow"
+        Width="320" SizeToContent="Height" CanResize="False">
+    <!-- Properties and Detail, until they are written: the windows exist and open from the
+         palette, the menu and the accelerators, so the later pass only fills them in. -->
+    <DockPanel Margin="8">
+        <Button DockPanel.Dock="Bottom" HorizontalAlignment="Right" MinWidth="80"
+                Margin="0,8,0,0" Content="{loc:Tr Close}" Click="OnClose" />
+        <wlrix:BevelBorder Bevel="Etched" BevelThickness="2"
+                           LightBrush="{DynamicResource WlrixTopShadow}"
+                           DarkBrush="{DynamicResource WlrixBottomShadow}"
+                           Padding="12">
+            <TextBlock Text="{loc:Tr NotYetAvailable}" TextWrapping="Wrap" />
+        </wlrix:BevelBorder>
+    </DockPanel>
+</Window>

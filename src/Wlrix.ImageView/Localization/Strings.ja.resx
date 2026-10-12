@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AppName" xml:space="preserve">
+    <value>イメージビュー</value>
+  </data>
+  <data name="WindowTitle" xml:space="preserve">
+    <value>イメージビュー: {0}</value>
+  </data>
+  <data name="MenuFile" xml:space="preserve">
+    <value>ファイル(_F)</value>
+  </data>
+  <data name="MenuView" xml:space="preserve">
+    <value>表示(_V)</value>
+  </data>
+  <data name="MenuEdit" xml:space="preserve">
+    <value>編集(_E)</value>
+  </data>
+  <data name="MenuHelp" xml:space="preserve">
+    <value>ヘルプ(_H)</value>
+  </data>
+  <data name="FileOpen" xml:space="preserve">
+    <value>開く(_O)...</value>
+  </data>
+  <data name="FileSave" xml:space="preserve">
+    <value>保存(_S)</value>
+  </data>
+  <data name="FileSaveAs" xml:space="preserve">
+    <value>名前を付けて保存(_A)...</value>
+  </data>
+  <data name="FileQuit" xml:space="preserve">
+    <value>終了(_Q)</value>
+  </data>
+  <data name="ViewCenter" xml:space="preserve">
+    <value>中央に戻す(_C)</value>
+  </data>
+  <data name="ViewDetail" xml:space="preserve">
+    <value>詳細(_D)...</value>
+  </data>
+  <data name="ViewHistogram" xml:space="preserve">
+    <value>ヒストグラム(_H)...</value>
+  </data>
+  <data name="ViewInfo" xml:space="preserve">
+    <value>情報(_I)...</value>
+  </data>
+  <data name="EditUndo" xml:space="preserve">
+    <value>元に戻す(_U)</value>
+  </data>
+  <data name="EditRedo" xml:space="preserve">
+    <value>やり直す(_R)</value>
+  </data>
+  <data name="HelpAbout" xml:space="preserve">
+    <value>イメージビューについて(_A)</value>
+  </data>
+  <data name="ToolHand" xml:space="preserve">
+    <value>ハンド: 左ボタンのドラッグで画像を移動します。</value>
+  </data>
+  <data name="ToolRotate" xml:space="preserve">
+    <value>回転: 左ボタンのドラッグで画像を回転します。</value>
+  </data>
+  <data name="ToolZoom" xml:space="preserve">
+    <value>ズーム: 左ボタンのドラッグで拡大縮小します (上/左で拡大、下/右で縮小)。</value>
+  </data>
+  <data name="ToolUndo" xml:space="preserve">
+    <value>最後の移動・回転・ズームを元に戻します。</value>
+  </data>
+  <data name="ToolProperties" xml:space="preserve">
+    <value>プロパティ調整パネルを表示します。</value>
+  </data>
+  <data name="ToolDetail" xml:space="preserve">
+    <value>詳細 (クイックズーム) ダイアログを表示します。</value>
+  </data>
+  <data name="ToolHistogram" xml:space="preserve">
+    <value>画像のヒストグラムを表示します。</value>
+  </data>
+  <data name="ToolInfo" xml:space="preserve">
+    <value>画像の情報を表示します。</value>
+  </data>
+  <data name="HintHand" xml:space="preserve">
+    <value>左ボタン: 画像を移動</value>
+  </data>
+  <data name="HintRotate" xml:space="preserve">
+    <value>左ボタン: 画像を回転 (Shift で 90° 単位)</value>
+  </data>
+  <data name="HintZoom" xml:space="preserve">
+    <value>左ボタン: 拡大縮小 (上/左で拡大、下/右で縮小)</value>
+  </data>
+  <data name="StatusLoading" xml:space="preserve">
+    <value>{0} を読み込んでいます...</value>
+  </data>
+  <data name="StatusSaving" xml:space="preserve">
+    <value>{0} を保存しています...</value>
+  </data>
+  <data name="EmptyNoImage" xml:space="preserve">
+    <value>画像がありません。ファイルメニューから「開く」を選んでください。</value>
+  </data>
+  <data name="OpenTitle" xml:space="preserve">
+    <value>画像を開く</value>
+  </data>
+  <data name="SaveAsTitle" xml:space="preserve">
+    <value>名前を付けて画像を保存</value>
+  </data>
+  <data name="FilterImages" xml:space="preserve">
+    <value>画像</value>
+  </data>
+  <data name="FilterAllFiles" xml:space="preserve">
+    <value>すべてのファイル</value>
+  </data>
+  <data name="ErrorTitle" xml:space="preserve">
+    <value>エラー</value>
+  </data>
+  <data name="AboutTitle" xml:space="preserve">
+    <value>イメージビューについて</value>
+  </data>
+  <data name="AboutMessage" xml:space="preserve">
+    <value>wlRIX イメージビュー {0}
+
+IRIX の imgview にならった画像ビューアです。</value>
+  </data>
+  <data name="ConfirmTitle" xml:space="preserve">
+    <value>未保存の回転</value>
+  </data>
+  <data name="ConfirmDiscard" xml:space="preserve">
+    <value>{0} の回転はまだ保存されていません。破棄しますか?</value>
+  </data>
+  <data name="ErrorOpenFailed" xml:space="preserve">
+    <value>{0} を開けませんでした。
+
+{1}</value>
+  </data>
+  <data name="ErrorSaveFailed" xml:space="preserve">
+    <value>{0} を保存できませんでした。
+
+{1}</value>
+  </data>
+  <data name="ErrorCannotWrite" xml:space="preserve">
+    <value>イメージビューは {0} 形式で保存できません。「名前を付けて保存」で PNG、JPEG、WebP、SGI のいずれかを選んでください。</value>
+  </data>
+  <data name="ErrorUnknownType" xml:space="preserve">
+    <value>{0} という名前からは保存形式がわかりません。.png、.jpg、.webp、.rgb などの拡張子を付けてください。</value>
+  </data>
+  <data name="InfoTitle" xml:space="preserve">
+    <value>画像の情報</value>
+  </data>
+  <data name="InfoFile" xml:space="preserve">
+    <value>ファイル:</value>
+  </data>
+  <data name="InfoFolder" xml:space="preserve">
+    <value>フォルダー:</value>
+  </data>
+  <data name="InfoFormat" xml:space="preserve">
+    <value>形式:</value>
+  </data>
+  <data name="InfoDimensions" xml:space="preserve">
+    <value>サイズ:</value>
+  </data>
+  <data name="InfoChannels" xml:space="preserve">
+    <value>チャンネル:</value>
+  </data>
+  <data name="InfoDepth" xml:space="preserve">
+    <value>チャンネルあたりのビット数:</value>
+  </data>
+  <data name="InfoFrames" xml:space="preserve">
+    <value>フレーム:</value>
+  </data>
+  <data name="InfoFileSize" xml:space="preserve">
+    <value>ファイルサイズ:</value>
+  </data>
+  <data name="InfoModified" xml:space="preserve">
+    <value>更新日時:</value>
+  </data>
+  <data name="InfoZoom" xml:space="preserve">
+    <value>ズーム:</value>
+  </data>
+  <data name="InfoRotation" xml:space="preserve">
+    <value>回転:</value>
+  </data>
+  <data name="InfoPan" xml:space="preserve">
+    <value>移動:</value>
+  </data>
+  <data name="FormatRle" xml:space="preserve">
+    <value>{0} (RLE)</value>
+  </data>
+  <data name="FormatVerbatim" xml:space="preserve">
+    <value>{0} (非圧縮)</value>
+  </data>
+  <data name="DimensionsValue" xml:space="preserve">
+    <value>{0} × {1} ピクセル</value>
+  </data>
+  <data name="ChannelsGray" xml:space="preserve">
+    <value>1 (グレー)</value>
+  </data>
+  <data name="ChannelsGrayAlpha" xml:space="preserve">
+    <value>2 (グレー、アルファ)</value>
+  </data>
+  <data name="ChannelsRgb" xml:space="preserve">
+    <value>3 (RGB)</value>
+  </data>
+  <data name="ChannelsRgba" xml:space="preserve">
+    <value>4 (RGBA)</value>
+  </data>
+  <data name="FramesValue" xml:space="preserve">
+    <value>{0} (最初のフレームを表示)</value>
+  </data>
+  <data name="FileSizeBytes" xml:space="preserve">
+    <value>{0:N0} バイト</value>
+  </data>
+  <data name="FileSizeScaled" xml:space="preserve">
+    <value>{0} ({1:N0} バイト)</value>
+  </data>
+  <data name="PanValue" xml:space="preserve">
+    <value>{0:0}, {1:0}</value>
+  </data>
+  <data name="HistogramTitle" xml:space="preserve">
+    <value>ヒストグラム</value>
+  </data>
+  <data name="HistogramChannel" xml:space="preserve">
+    <value>チャンネル:</value>
+  </data>
+  <data name="ChannelRgb" xml:space="preserve">
+    <value>RGB</value>
+  </data>
+  <data name="ChannelRed" xml:space="preserve">
+    <value>赤</value>
+  </data>
+  <data name="ChannelGreen" xml:space="preserve">
+    <value>緑</value>
+  </data>
+  <data name="ChannelBlue" xml:space="preserve">
+    <value>青</value>
+  </data>
+  <data name="ChannelLuminance" xml:space="preserve">
+    <value>輝度</value>
+  </data>
+  <data name="HistogramMin" xml:space="preserve">
+    <value>最小:</value>
+  </data>
+  <data name="HistogramMax" xml:space="preserve">
+    <value>最大:</value>
+  </data>
+  <data name="HistogramMean" xml:space="preserve">
+    <value>平均:</value>
+  </data>
+  <data name="HistogramMedian" xml:space="preserve">
+    <value>中央値:</value>
+  </data>
+  <data name="HistogramPixels" xml:space="preserve">
+    <value>ピクセル数:</value>
+  </data>
+  <data name="PropertiesTitle" xml:space="preserve">
+    <value>画像のプロパティ</value>
+  </data>
+  <data name="DetailTitle" xml:space="preserve">
+    <value>詳細</value>
+  </data>
+  <data name="NotYetAvailable" xml:space="preserve">
+    <value>まだ使用できません。このパネルは今後のリリースで追加されます。</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>閉じる</value>
+  </data>
+  <data name="NoValue" xml:space="preserve">
+    <value>—</value>
+  </data>
+</root>
