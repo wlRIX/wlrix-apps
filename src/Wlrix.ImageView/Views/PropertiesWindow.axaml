@@ -1,0 +1,192 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Wlrix.ImageView.ViewModels"
+        xmlns:controls="using:Wlrix.ImageView.Controls"
+        xmlns:loc="using:Wlrix.Common.Localization"
+        xmlns:wlrix="https://vic485.xyz/Wlrix.Avalonia"
+        x:Class="Wlrix.ImageView.Views.PropertiesWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Title="{loc:Tr PropertiesTitle}"
+        Width="250" Height="720" CanResize="False">
+    <!-- After IRIX imgview's processing panel: a tall, narrow window of thumbwheels and spin
+         fields, with its tabs along the bottom and a hint line under them. The Options tab is
+         left out: it held the Indigo-era hardware and speed settings, which have nothing to
+         act on here.
+
+         The ranges written below are Enhancement's (Models/Enhancement.cs) and
+         PropertiesViewModel's. A wheel and its field share a binding, so each follows the other
+         as it moves. -->
+    <Window.Styles>
+        <Style Selector="wlrix|Thumbwheel">
+            <Setter Property="Orientation" Value="Horizontal" />
+            <Setter Property="ShowHomeButton" Value="True" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+        </Style>
+        <Style Selector="NumericUpDown.field">
+            <Setter Property="Theme" Value="{StaticResource SpinField}" />
+            <Setter Property="Width" Value="150" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+        </Style>
+        <Style Selector="HeaderedContentControl">
+            <Setter Property="Theme" Value="{StaticResource Group}" />
+        </Style>
+        <Style Selector="StackPanel.group">
+            <Setter Property="Spacing" Value="6" />
+        </Style>
+        <!-- A rule between the parts of a group. -->
+        <Style Selector="wlrix|BevelBorder.rule">
+            <Setter Property="Bevel" Value="Etched" />
+            <Setter Property="BevelThickness" Value="2" />
+            <Setter Property="Height" Value="2" />
+            <Setter Property="Margin" Value="0,2" />
+            <Setter Property="LightBrush" Value="{DynamicResource WlrixTopShadow}" />
+            <Setter Property="DarkBrush" Value="{DynamicResource WlrixBottomShadow}" />
+        </Style>
+    </Window.Styles>
+
+    <DockPanel>
+        <wlrix:MenuBar DockPanel.Dock="Top">
+            <MenuItem Header="{loc:Tr MenuEdit}">
+                <MenuItem Header="{loc:Tr EditUndo}" InputGesture="Ctrl+Z" Command="{Binding Undo}" />
+                <MenuItem Header="{loc:Tr EditRedo}" InputGesture="Ctrl+Shift+Z" Command="{Binding Redo}" />
+                <Separator />
+                <MenuItem Header="{loc:Tr EditResetEnhance}" Command="{Binding ResetEnhancements}" />
+                <MenuItem Header="{loc:Tr EditResetGeometry}" Command="{Binding ResetGeometry}" />
+            </MenuItem>
+            <MenuItem Header="{loc:Tr MenuHelp}" DockPanel.Dock="Right">
+                <MenuItem Header="{loc:Tr HelpAbout}" Command="{Binding ShowAbout}" />
+            </MenuItem>
+        </wlrix:MenuBar>
+
+        <!-- What the control under the pointer does. -->
+        <wlrix:BevelBorder DockPanel.Dock="Bottom" Bevel="Sunken" BevelThickness="1"
+                           Background="{DynamicResource WlrixPanel}"
+                           LightBrush="{DynamicResource WlrixPanelTopShadow}"
+                           DarkBrush="{DynamicResource WlrixPanelBottomShadow}"
+                           Padding="4,2" Margin="2,0,2,2" MinHeight="20">
+            <TextBlock Text="{Binding Properties.Hint}" TextTrimming="CharacterEllipsis"
+                       VerticalAlignment="Center" />
+        </wlrix:BevelBorder>
+
+        <TextBlock DockPanel.Dock="Top" Text="{Binding Properties.FileName}" FontWeight="Bold"
+                   HorizontalAlignment="Center" TextTrimming="CharacterEllipsis" Margin="6,4,6,0" />
+
+        <TabControl Name="Tabs" TabStripPlacement="Bottom" Margin="2,2,2,2"
+                    IsEnabled="{Binding Properties.HasImage}">
+            <TabItem Header="{loc:Tr TabEnhance}">
+                <StackPanel Spacing="4" Margin="6,2,6,6">
+                    <HeaderedContentControl Header="{loc:Tr Sharpness}" Tag="{loc:Tr HintSharpness}">
+                        <StackPanel Classes="group">
+                            <wlrix:Thumbwheel Minimum="-5" Maximum="5" HomeValue="0"
+                                              Sensitivity="0.05" RidgePeriod="0.5"
+                                              Value="{Binding Properties.Sharpness}" />
+                            <NumericUpDown Classes="field" Minimum="-5" Maximum="5" Increment="0.1"
+                                           FormatString="0.##" Value="{Binding Properties.Sharpness}" />
+                        </StackPanel>
+                    </HeaderedContentControl>
+                    <HeaderedContentControl Header="{loc:Tr Brightness}" Tag="{loc:Tr HintBrightness}">
+                        <StackPanel Classes="group">
+                            <wlrix:Thumbwheel Minimum="-1" Maximum="1" HomeValue="0"
+                                              Sensitivity="0.01" RidgePeriod="0.1"
+                                              Value="{Binding Properties.Brightness}" />
+                            <NumericUpDown Classes="field" Minimum="-1" Maximum="1" Increment="0.01"
+                                           FormatString="0.##" Value="{Binding Properties.Brightness}" />
+                        </StackPanel>
+                    </HeaderedContentControl>
+                    <HeaderedContentControl Header="{loc:Tr Haze}" Tag="{loc:Tr HintHaze}">
+                        <StackPanel Classes="group">
+                            <wlrix:Thumbwheel Minimum="-0.9" Maximum="0.9" HomeValue="0"
+                                              Sensitivity="0.01" RidgePeriod="0.1"
+                                              Value="{Binding Properties.Haze}" />
+                            <NumericUpDown Classes="field" Minimum="-0.9" Maximum="0.9" Increment="0.01"
+                                           FormatString="0.##" Value="{Binding Properties.Haze}" />
+                        </StackPanel>
+                    </HeaderedContentControl>
+                    <HeaderedContentControl Header="{loc:Tr Contrast}" Tag="{loc:Tr HintContrast}">
+                        <StackPanel Classes="group">
+                            <wlrix:Thumbwheel Minimum="-2" Maximum="2" HomeValue="0"
+                                              Sensitivity="0.02" RidgePeriod="0.2"
+                                              Value="{Binding Properties.Contrast}" />
+                            <NumericUpDown Classes="field" Minimum="-2" Maximum="2" Increment="0.05"
+                                           FormatString="0.##" Value="{Binding Properties.Contrast}" />
+                        </StackPanel>
+                    </HeaderedContentControl>
+                    <HeaderedContentControl Header="{loc:Tr Saturation}" Tag="{loc:Tr HintSaturation}">
+                        <StackPanel Classes="group">
+                            <wlrix:Thumbwheel Minimum="-2" Maximum="4" HomeValue="1"
+                                              Sensitivity="0.02" RidgePeriod="0.2"
+                                              Value="{Binding Properties.Saturation}" />
+                            <NumericUpDown Classes="field" Minimum="-2" Maximum="4" Increment="0.05"
+                                           FormatString="0.##" Value="{Binding Properties.Saturation}" />
+                        </StackPanel>
+                    </HeaderedContentControl>
+                </StackPanel>
+            </TabItem>
+
+            <TabItem Header="{loc:Tr TabGeometry}">
+                <StackPanel Spacing="4" Margin="6,2,6,6">
+                    <HeaderedContentControl Header="{loc:Tr Rotation}" Tag="{loc:Tr HintRotation}">
+                        <StackPanel Classes="group">
+                            <Button Theme="{DynamicResource WlrixThumbwheelHome}"
+                                    Width="18" Height="18" HorizontalAlignment="Center"
+                                    Command="{Binding Properties.ResetRotation}" />
+                            <controls:RotationDial Width="96" Height="96" HorizontalAlignment="Center"
+                                                   Foreground="{DynamicResource WlrixForeground}"
+                                                   Value="{Binding Properties.Rotation}" />
+                            <!-- Below 0 and above 360 wrap, so the spin buttons go round. -->
+                            <NumericUpDown Classes="field" Minimum="-360" Maximum="720" Increment="1"
+                                           FormatString="0.##" Value="{Binding Properties.Rotation}" />
+                        </StackPanel>
+                    </HeaderedContentControl>
+
+                    <HeaderedContentControl Header="{loc:Tr Reflection}" Tag="{loc:Tr HintReflection}">
+                        <StackPanel Classes="group" HorizontalAlignment="Center">
+                            <CheckBox Content="{loc:Tr FlipHorizontal}" IsChecked="{Binding Properties.FlipHorizontal}" />
+                            <CheckBox Content="{loc:Tr FlipVertical}" IsChecked="{Binding Properties.FlipVertical}" />
+                        </StackPanel>
+                    </HeaderedContentControl>
+
+                    <HeaderedContentControl Header="{loc:Tr Zoom}" Tag="{loc:Tr HintZoomGroup}">
+                        <StackPanel Classes="group">
+                            <CheckBox Content="{loc:Tr ZoomIndependent}" HorizontalAlignment="Center"
+                                      Tag="{loc:Tr HintIndependent}"
+                                      IsChecked="{Binding Properties.IsIndependent}" />
+                            <wlrix:BevelBorder Classes="rule" />
+                            <TextBlock Text="{loc:Tr ZoomHorizontal}" />
+                            <wlrix:Thumbwheel Minimum="-5" Maximum="6" HomeValue="0"
+                                              Sensitivity="0.02" RidgePeriod="0.25"
+                                              Value="{Binding Properties.ZoomXLog}" />
+                            <NumericUpDown Classes="field" Minimum="0.03125" Maximum="64" Increment="0.1"
+                                           FormatString="0.###" Value="{Binding Properties.ZoomX}" />
+                            <wlrix:BevelBorder Classes="rule" />
+                            <StackPanel Classes="group" IsEnabled="{Binding Properties.IsIndependent}">
+                                <TextBlock Text="{loc:Tr ZoomVertical}" />
+                                <wlrix:Thumbwheel Minimum="-5" Maximum="6" HomeValue="0"
+                                                  Sensitivity="0.02" RidgePeriod="0.25"
+                                                  Value="{Binding Properties.ZoomYLog}" />
+                                <NumericUpDown Classes="field" Minimum="0.03125" Maximum="64" Increment="0.1"
+                                               FormatString="0.###" Value="{Binding Properties.ZoomY}" />
+                            </StackPanel>
+                        </StackPanel>
+                    </HeaderedContentControl>
+
+                    <HeaderedContentControl Header="{loc:Tr Size}" Tag="{loc:Tr HintSize}">
+                        <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto" RowSpacing="4"
+                              HorizontalAlignment="Center">
+                            <TextBlock Grid.Row="0" Text="{loc:Tr SizeWidth}" VerticalAlignment="Center"
+                                       HorizontalAlignment="Right" Margin="0,0,6,0" />
+                            <NumericUpDown Grid.Row="0" Grid.Column="1" Width="100" ShowButtonSpinner="False"
+                                           Minimum="1" Maximum="10000000" FormatString="0"
+                                           Value="{Binding Properties.ImageWidth}" />
+                            <TextBlock Grid.Row="1" Text="{loc:Tr SizeHeight}" VerticalAlignment="Center"
+                                       HorizontalAlignment="Right" Margin="0,0,6,0" />
+                            <NumericUpDown Grid.Row="1" Grid.Column="1" Width="100" ShowButtonSpinner="False"
+                                           Minimum="1" Maximum="10000000" FormatString="0"
+                                           Value="{Binding Properties.ImageHeight}" />
+                        </Grid>
+                    </HeaderedContentControl>
+                </StackPanel>
+            </TabItem>
+        </TabControl>
+    </DockPanel>
+</Window>

@@ -91,13 +91,15 @@ public sealed class ImageCanvas : Control
 
     /// <summary>The matrix from image pixels to this control's coordinates.</summary>
     /// <remarks>
-    /// The image center goes to the view center plus the pan. The image is scaled, then
-    /// rotated, about its own center. Avalonia's matrices compose left to right, so this
-    /// reads in the order the steps happen.
+    /// The image center goes to the view center plus the pan. The image is mirrored, scaled
+    /// and then rotated, about its own center. Avalonia's matrices compose left to right, so
+    /// this reads in the order the steps happen. A reflection is a negative scale, which is why
+    /// it shares the scale step.
     /// </remarks>
     public static Matrix ImageToView(Size image, Size view, ViewTransform transform) =>
         Matrix.CreateTranslation(-image.Width / 2, -image.Height / 2)
-        * Matrix.CreateScale(transform.Zoom, transform.Zoom)
+        * Matrix.CreateScale(transform.ZoomX * (transform.FlipHorizontal ? -1 : 1),
+            transform.ZoomY * (transform.FlipVertical ? -1 : 1))
         * Matrix.CreateRotation(transform.Rotation * Math.PI / 180)
         * Matrix.CreateTranslation(view.Width / 2 + transform.Pan.X, view.Height / 2 + transform.Pan.Y);
 
@@ -132,7 +134,7 @@ public sealed class ImageCanvas : Control
         // Magnified, every image pixel is drawn as a crisp square, which is the reason to zoom
         // in on an image at all. Reduced, it is filtered so detail is averaged rather than
         // dropped.
-        var interpolation = transform.Zoom >= 1
+        var interpolation = transform.MinimumZoom >= 1
             ? BitmapInterpolationMode.None
             : BitmapInterpolationMode.HighQuality;
 
@@ -210,9 +212,10 @@ public sealed class ImageCanvas : Control
 
             case ViewTool.Zoom:
             {
-                // About the view center as well, so the pan scales by the same factor.
-                var zoom = ViewTransform.ZoomForDrag(start.Zoom, delta.X, delta.Y);
-                Transform = start.WithZoom(zoom).WithPan(start.Pan * (zoom / start.Zoom));
+                // About the view center as well, so the pan scales by the same factor. Both
+                // axes scale together, which keeps an independent zoom's proportions.
+                var zoomed = start.ScaleZoom(ViewTransform.ZoomFactorForDrag(delta.X, delta.Y));
+                Transform = zoomed.WithPan(start.Pan * (zoomed.ZoomX / start.ZoomX));
                 break;
             }
         }

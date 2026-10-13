@@ -259,13 +259,10 @@ An image viewer after IRIX imgview.</value>
     <value>Pixels:</value>
   </data>
   <data name="PropertiesTitle" xml:space="preserve">
-    <value>Image Properties</value>
+    <value>ImageView: Processing</value>
   </data>
   <data name="DetailTitle" xml:space="preserve">
     <value>ImageView: Detail</value>
-  </data>
-  <data name="NotYetAvailable" xml:space="preserve">
-    <value>Not yet available. This panel arrives in a later release.</value>
   </data>
   <data name="Close" xml:space="preserve">
     <value>Close</value>
@@ -293,5 +290,95 @@ An image viewer after IRIX imgview.</value>
   </data>
   <data name="MagnificationValue" xml:space="preserve">
     <value>{0}X</value>
+  </data>
+  <data name="EditResetEnhance" xml:space="preserve">
+    <value>Reset _Enhancements</value>
+  </data>
+  <data name="EditResetGeometry" xml:space="preserve">
+    <value>Reset _Geometry</value>
+  </data>
+  <data name="TabEnhance" xml:space="preserve">
+    <value>Enhance</value>
+  </data>
+  <data name="TabGeometry" xml:space="preserve">
+    <value>Geom</value>
+  </data>
+  <data name="Sharpness" xml:space="preserve">
+    <value>Sharpness</value>
+  </data>
+  <data name="Brightness" xml:space="preserve">
+    <value>Brightness</value>
+  </data>
+  <data name="Haze" xml:space="preserve">
+    <value>Haze</value>
+  </data>
+  <data name="Contrast" xml:space="preserve">
+    <value>Contrast</value>
+  </data>
+  <data name="Saturation" xml:space="preserve">
+    <value>Saturation</value>
+  </data>
+  <data name="Rotation" xml:space="preserve">
+    <value>Rotation</value>
+  </data>
+  <data name="Reflection" xml:space="preserve">
+    <value>Reflection</value>
+  </data>
+  <data name="FlipHorizontal" xml:space="preserve">
+    <value>Flip Horizontal</value>
+  </data>
+  <data name="FlipVertical" xml:space="preserve">
+    <value>Flip Vertical</value>
+  </data>
+  <data name="Zoom" xml:space="preserve">
+    <value>Zoom</value>
+  </data>
+  <data name="ZoomIndependent" xml:space="preserve">
+    <value>Independent</value>
+  </data>
+  <data name="ZoomHorizontal" xml:space="preserve">
+    <value>Horizontal</value>
+  </data>
+  <data name="ZoomVertical" xml:space="preserve">
+    <value>Vertical</value>
+  </data>
+  <data name="Size" xml:space="preserve">
+    <value>Size</value>
+  </data>
+  <data name="SizeWidth" xml:space="preserve">
+    <value>Width:</value>
+  </data>
+  <data name="SizeHeight" xml:space="preserve">
+    <value>Height:</value>
+  </data>
+  <data name="HintSharpness" xml:space="preserve">
+    <value>- values blur, + values sharpen</value>
+  </data>
+  <data name="HintBrightness" xml:space="preserve">
+    <value>- values darken, + values brighten</value>
+  </data>
+  <data name="HintHaze" xml:space="preserve">
+    <value>+ values remove haze, - values add it</value>
+  </data>
+  <data name="HintContrast" xml:space="preserve">
+    <value>- values flatten, below -1 invert</value>
+  </data>
+  <data name="HintSaturation" xml:space="preserve">
+    <value>- values invert, &gt;1 saturate</value>
+  </data>
+  <data name="HintRotation" xml:space="preserve">
+    <value>Drag the dial to turn the image (Shift snaps to 90°)</value>
+  </data>
+  <data name="HintReflection" xml:space="preserve">
+    <value>Mirror the image</value>
+  </data>
+  <data name="HintZoomGroup" xml:space="preserve">
+    <value>Zoom the image along its width and height</value>
+  </data>
+  <data name="HintIndependent" xml:space="preserve">
+    <value>Set width and height independently</value>
+  </data>
+  <data name="HintSize" xml:space="preserve">
+    <value>Size of the image on screen, in pixels</value>
   </data>
 </root>

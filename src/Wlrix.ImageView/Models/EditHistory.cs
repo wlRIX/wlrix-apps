@@ -2,21 +2,21 @@
 
 namespace Wlrix.ImageView.Models;
 
-/// <summary>The committed view transforms, with undo and redo.</summary>
+/// <summary>The committed states of the image, with undo and redo.</summary>
 /// <remarks>
-/// A step is a whole gesture: one drag, from press to release, or one Center. The positions a
-/// drag passes through on the way are never recorded, so Undo goes back to where the drag
-/// started rather than a pixel short of where it ended.
+/// A step is a whole gesture: one drag in the view or on a thumbwheel, from press to release, or
+/// one Center or field entry. The values a drag passes through on the way are never recorded, so
+/// Undo goes back to where the drag started rather than a pixel short of where it ended.
 /// </remarks>
-public sealed class TransformHistory
+public sealed class EditHistory<T> where T : struct, IEquatable<T>
 {
-    private readonly Stack<ViewTransform> _undo = new();
-    private readonly Stack<ViewTransform> _redo = new();
+    private readonly Stack<T> _undo = new();
+    private readonly Stack<T> _redo = new();
 
-    public TransformHistory(ViewTransform initial) => Current = initial;
+    public EditHistory(T initial) => Current = initial;
 
-    /// <summary>The transform the last committed step left.</summary>
-    public ViewTransform Current { get; private set; }
+    /// <summary>The state the last committed step left.</summary>
+    public T Current { get; private set; }
 
     public bool CanUndo => _undo.Count > 0;
 
@@ -27,9 +27,9 @@ public sealed class TransformHistory
     /// A new step clears the redo stack. Redoing a step that branched from somewhere else would
     /// land on a state that never followed the one in front of the user.
     /// </remarks>
-    public bool Commit(ViewTransform next)
+    public bool Commit(T next)
     {
-        if (next == Current)
+        if (next.Equals(Current))
             return false;
 
         _undo.Push(Current);
@@ -59,7 +59,7 @@ public sealed class TransformHistory
     }
 
     /// <summary>Forgets every step and starts again from <paramref name="initial"/>.</summary>
-    public void Reset(ViewTransform initial)
+    public void Reset(T initial)
     {
         _undo.Clear();
         _redo.Clear();

@@ -1,0 +1,86 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:wlrix="https://vic485.xyz/Wlrix.Avalonia">
+    <!-- The Properties dialog's pieces. -->
+
+    <!-- A spin field as IRIX imgview drew it: the down arrow to the left of the field and the up
+         arrow to the right, rather than the two stacked at one end. Only the layout differs from
+         the theme's ButtonSpinner, so the parts and the button look are the theme's own. The
+         button and text box themes are looked up dynamically because they live in WlrixTheme,
+         which this dictionary cannot see when it loads. -->
+    <ControlTheme x:Key="FlankedButtonSpinner" TargetType="ButtonSpinner">
+        <Setter Property="Foreground" Value="{DynamicResource WlrixTextForeground}" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <DockPanel>
+                    <RepeatButton Name="PART_DecreaseButton" DockPanel.Dock="Left"
+                                  Theme="{DynamicResource WlrixSpinnerButton}"
+                                  Width="18" Margin="0,0,4,0">
+                        <Path Data="M 0,0 L 10,0 L 5,6 Z" Fill="{DynamicResource WlrixForeground}" />
+                    </RepeatButton>
+                    <RepeatButton Name="PART_IncreaseButton" DockPanel.Dock="Right"
+                                  Theme="{DynamicResource WlrixSpinnerButton}"
+                                  Width="18" Margin="4,0,0,0">
+                        <Path Data="M 0,6 L 5,0 L 10,6 Z" Fill="{DynamicResource WlrixForeground}" />
+                    </RepeatButton>
+                    <wlrix:BevelBorder Bevel="Sunken" BevelThickness="2" OuterLineThickness="1"
+                                       Background="{DynamicResource WlrixTextBackground}"
+                                       LightBrush="{DynamicResource WlrixTopShadow}"
+                                       DarkBrush="{DynamicResource WlrixBottomShadow}"
+                                       OuterLineBrush="{DynamicResource WlrixOuterLine}">
+                        <ContentPresenter Name="PART_ContentPresenter"
+                                          Content="{TemplateBinding Content}"
+                                          Padding="4,2"
+                                          VerticalContentAlignment="Center"
+                                          HorizontalContentAlignment="Stretch" />
+                    </wlrix:BevelBorder>
+                </DockPanel>
+            </ControlTemplate>
+        </Setter>
+    </ControlTheme>
+
+    <ControlTheme x:Key="SpinField" TargetType="NumericUpDown">
+        <Setter Property="Foreground" Value="{DynamicResource WlrixTextForeground}" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <ButtonSpinner Name="PART_Spinner"
+                               Theme="{StaticResource FlankedButtonSpinner}"
+                               AllowSpin="{TemplateBinding AllowSpin}"
+                               ShowButtonSpinner="{TemplateBinding ShowButtonSpinner}">
+                    <TextBox Name="PART_TextBox"
+                             Theme="{DynamicResource WlrixPlainTextBox}"
+                             VerticalContentAlignment="Center"
+                             Text="{TemplateBinding Text}"
+                             IsReadOnly="{TemplateBinding IsReadOnly}" />
+                </ButtonSpinner>
+            </ControlTemplate>
+        </Setter>
+    </ControlTheme>
+
+    <!-- A titled frame: an etched rule round the content, with the title sitting on its top
+         edge, the way IRIX drew a group. The title is backed with the face color a tab page is
+         drawn in, so it breaks the rule where it crosses it; set Background for anywhere else. -->
+    <ControlTheme x:Key="Group" TargetType="HeaderedContentControl">
+        <Setter Property="Padding" Value="8,12,8,6" />
+        <Setter Property="Background" Value="{DynamicResource WlrixFace}" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Panel>
+                    <wlrix:BevelBorder Bevel="Etched" BevelThickness="2" Margin="0,8,0,0"
+                                       LightBrush="{DynamicResource WlrixTopShadow}"
+                                       DarkBrush="{DynamicResource WlrixBottomShadow}"
+                                       Padding="{TemplateBinding Padding}">
+                        <ContentPresenter Content="{TemplateBinding Content}"
+                                          ContentTemplate="{TemplateBinding ContentTemplate}" />
+                    </wlrix:BevelBorder>
+                    <ContentPresenter Content="{TemplateBinding Header}"
+                                      HorizontalAlignment="Left" VerticalAlignment="Top"
+                                      Margin="8,0,0,0" Padding="3,0"
+                                      Background="{TemplateBinding Background}" />
+                </Panel>
+            </ControlTemplate>
+        </Setter>
+    </ControlTheme>
+</ResourceDictionary>

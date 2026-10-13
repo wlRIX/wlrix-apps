@@ -7,14 +7,14 @@ using Xunit;
 
 namespace Wlrix.ImageView.Tests;
 
-public class TransformHistoryTests
+public class EditHistoryTests
 {
     private static readonly ViewTransform Start = ViewTransform.Identity;
 
     [Fact]
     public void Undo_and_redo_walk_the_committed_steps()
     {
-        var history = new TransformHistory(Start);
+        var history = new EditHistory<ViewTransform>(Start);
         var panned = Start.WithPan(new Vector(10, 5));
         var turned = panned.WithRotation(30);
 
@@ -35,7 +35,7 @@ public class TransformHistoryTests
     [Fact]
     public void A_new_step_clears_redo()
     {
-        var history = new TransformHistory(Start);
+        var history = new EditHistory<ViewTransform>(Start);
         history.Commit(Start.WithZoom(2));
         history.Undo();
         Assert.True(history.CanRedo);
@@ -49,7 +49,7 @@ public class TransformHistoryTests
     [Fact]
     public void A_step_that_changes_nothing_is_not_recorded()
     {
-        var history = new TransformHistory(Start);
+        var history = new EditHistory<ViewTransform>(Start);
         Assert.False(history.Commit(Start));
         Assert.False(history.CanUndo);
     }
@@ -57,7 +57,7 @@ public class TransformHistoryTests
     [Fact]
     public void Reset_forgets_everything()
     {
-        var history = new TransformHistory(Start);
+        var history = new EditHistory<ViewTransform>(Start);
         history.Commit(Start.WithZoom(2));
         history.Commit(Start.WithZoom(3));
         history.Undo();
@@ -66,7 +66,7 @@ public class TransformHistoryTests
 
         Assert.False(history.CanUndo);
         Assert.False(history.CanRedo);
-        Assert.Equal(0.5, history.Current.Zoom);
+        Assert.Equal(0.5, history.Current.ZoomX);
     }
 }
 
@@ -156,5 +156,48 @@ public class ViewMappingTests
         var a = ImageCanvas.ViewToImage(new Point(200, 150), Image, View, transform);
         var b = ImageCanvas.ViewToImage(new Point(202, 150), Image, View, transform);
         Assert.Equal(1, b.X - a.X, 9);
+    }
+}
+
+public class GeometryTests
+{
+    private static readonly Size Image = new(200, 100);
+    private static readonly Size View = new(400, 300);
+
+    [Fact]
+    public void Flips_mirror_about_the_image_center()
+    {
+        var flipped = ViewTransform.Identity.WithFlips(horizontal: true, vertical: false);
+        // The view center is still the image center; a point left of it maps to the right.
+        Assert.Equal(new Point(100, 50), ImageCanvas.ViewToImage(new Point(200, 150), Image, View, flipped));
+        Assert.Equal(new Point(190, 50), ImageCanvas.ViewToImage(new Point(110, 150), Image, View, flipped));
+    }
+
+    [Fact]
+    public void Independent_zoom_stretches_one_axis()
+    {
+        var stretched = ViewTransform.Identity.WithZoom(2, 1);
+        Assert.False(stretched.IsUniformZoom);
+        // Two view pixels across are one image pixel; two down are two.
+        var a = ImageCanvas.ViewToImage(new Point(200, 150), Image, View, stretched);
+        var b = ImageCanvas.ViewToImage(new Point(202, 152), Image, View, stretched);
+        Assert.Equal(1, b.X - a.X, 9);
+        Assert.Equal(2, b.Y - a.Y, 9);
+    }
+
+    [Fact]
+    public void Scaling_keeps_an_independent_zoom_in_proportion()
+    {
+        var scaled = ViewTransform.Identity.WithZoom(2, 1).ScaleZoom(2);
+        Assert.Equal((4, 2), (scaled.ZoomX, scaled.ZoomY));
+    }
+
+    [Fact]
+    public void A_reflection_counts_as_an_edit_and_zoom_does_not()
+    {
+        Assert.True(new ImageState(ViewTransform.Identity.WithFlips(false, true), Enhancement.Identity).IsModified);
+        Assert.False(new ImageState(ViewTransform.Identity.WithZoom(3, 2), Enhancement.Identity).IsModified);
+        Assert.True(new ImageState(ViewTransform.Identity, Enhancement.Identity with { Haze = 0.2 }).IsModified);
+        Assert.False(ViewTransform.Identity.WithRotation(90).WithFlips(true, true).WithoutOrientation.IsReoriented);
     }
 }

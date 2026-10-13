@@ -9,6 +9,7 @@
                 <!-- The palette's icons and button theme. The avares authority is the assembly
                      name (kebab-case), not the namespace. -->
                 <ResourceInclude Source="avares://wlrix-imageview/Themes/ToolIcons.axaml" />
+                <ResourceInclude Source="avares://wlrix-imageview/Themes/Dialog.axaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

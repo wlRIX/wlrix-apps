@@ -259,13 +259,10 @@ IRIX の imgview にならった画像ビューアです。</value>
     <value>ピクセル数:</value>
   </data>
   <data name="PropertiesTitle" xml:space="preserve">
-    <value>画像のプロパティ</value>
+    <value>イメージビュー: 処理</value>
   </data>
   <data name="DetailTitle" xml:space="preserve">
     <value>イメージビュー: 詳細</value>
-  </data>
-  <data name="NotYetAvailable" xml:space="preserve">
-    <value>まだ使用できません。このパネルは今後のリリースで追加されます。</value>
   </data>
   <data name="Close" xml:space="preserve">
     <value>閉じる</value>
@@ -293,5 +290,95 @@ IRIX の imgview にならった画像ビューアです。</value>
   </data>
   <data name="MagnificationValue" xml:space="preserve">
     <value>{0}X</value>
+  </data>
+  <data name="EditResetEnhance" xml:space="preserve">
+    <value>補正をリセット(_E)</value>
+  </data>
+  <data name="EditResetGeometry" xml:space="preserve">
+    <value>形状をリセット(_G)</value>
+  </data>
+  <data name="TabEnhance" xml:space="preserve">
+    <value>補正</value>
+  </data>
+  <data name="TabGeometry" xml:space="preserve">
+    <value>形状</value>
+  </data>
+  <data name="Sharpness" xml:space="preserve">
+    <value>シャープネス</value>
+  </data>
+  <data name="Brightness" xml:space="preserve">
+    <value>明るさ</value>
+  </data>
+  <data name="Haze" xml:space="preserve">
+    <value>かすみ</value>
+  </data>
+  <data name="Contrast" xml:space="preserve">
+    <value>コントラスト</value>
+  </data>
+  <data name="Saturation" xml:space="preserve">
+    <value>彩度</value>
+  </data>
+  <data name="Rotation" xml:space="preserve">
+    <value>回転</value>
+  </data>
+  <data name="Reflection" xml:space="preserve">
+    <value>反転</value>
+  </data>
+  <data name="FlipHorizontal" xml:space="preserve">
+    <value>左右反転</value>
+  </data>
+  <data name="FlipVertical" xml:space="preserve">
+    <value>上下反転</value>
+  </data>
+  <data name="Zoom" xml:space="preserve">
+    <value>ズーム</value>
+  </data>
+  <data name="ZoomIndependent" xml:space="preserve">
+    <value>個別に設定</value>
+  </data>
+  <data name="ZoomHorizontal" xml:space="preserve">
+    <value>横</value>
+  </data>
+  <data name="ZoomVertical" xml:space="preserve">
+    <value>縦</value>
+  </data>
+  <data name="Size" xml:space="preserve">
+    <value>サイズ</value>
+  </data>
+  <data name="SizeWidth" xml:space="preserve">
+    <value>幅:</value>
+  </data>
+  <data name="SizeHeight" xml:space="preserve">
+    <value>高さ:</value>
+  </data>
+  <data name="HintSharpness" xml:space="preserve">
+    <value>- でぼかし、+ でシャープ</value>
+  </data>
+  <data name="HintBrightness" xml:space="preserve">
+    <value>- で暗く、+ で明るく</value>
+  </data>
+  <data name="HintHaze" xml:space="preserve">
+    <value>+ でかすみを除去、- でかすみを追加</value>
+  </data>
+  <data name="HintContrast" xml:space="preserve">
+    <value>- で平坦に、-1 未満で反転</value>
+  </data>
+  <data name="HintSaturation" xml:space="preserve">
+    <value>- で反転、1 より大きいと鮮やかに</value>
+  </data>
+  <data name="HintRotation" xml:space="preserve">
+    <value>ダイヤルをドラッグして回転 (Shift で 90° 単位)</value>
+  </data>
+  <data name="HintReflection" xml:space="preserve">
+    <value>画像を反転します</value>
+  </data>
+  <data name="HintZoomGroup" xml:space="preserve">
+    <value>画像の幅と高さ方向に拡大縮小します</value>
+  </data>
+  <data name="HintIndependent" xml:space="preserve">
+    <value>幅と高さを個別に設定します</value>
+  </data>
+  <data name="HintSize" xml:space="preserve">
+    <value>画面上の画像のサイズ (ピクセル)</value>
   </data>
 </root>

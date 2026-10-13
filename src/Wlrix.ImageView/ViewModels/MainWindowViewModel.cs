@@ -7,6 +7,7 @@ using Avalonia.Threading;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using ReactiveUI;
+using SkiaSharp;
 using Wlrix.ImageView.Controls;
 using Wlrix.ImageView.Localization;
 using Wlrix.ImageView.Models;
@@ -19,12 +20,13 @@ namespace Wlrix.ImageView.ViewModels;
 public sealed class MainWindowViewModel : ViewModelBase, IDisposable
 {
     private readonly ILogger<MainWindowViewModel> _logger;
-    private readonly TransformHistory _history = new(ViewTransform.Identity);
+    private readonly EditHistory<ImageState> _history = new(ImageState.Identity);
     private readonly List<IDisposable> _subscriptions = [];
 
     private ImageDocument? _document;
     private Bitmap? _displayImage;
     private ViewTransform _transform = ViewTransform.Identity;
+    private Enhancement _enhancement = Enhancement.Identity;
     private ViewTool _tool = ViewTool.Hand;
     private bool _isBusy;
     private string? _busyText;
@@ -39,6 +41,27 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
     /// zoom drag moves the image under it without moving it.
     /// </remarks>
     private Point? _pointer;
+
+    /// <summary>Whether a press in the Properties dialog is still down; see <see cref="BeginGesture"/>.</summary>
+    private bool _gesture;
+
+    // The preview. The document's own pixels are drawn while the enhancement is neutral, so
+    // their display copy and histogram are kept from loading rather than recomputed each time
+    // a setting is brought back to its default.
+    private Bitmap? _originalDisplay;
+    private Histogram? _originalHistogram;
+
+    /// <summary>The enhanced pixels, or <c>null</c> while the enhancement is neutral.</summary>
+    private SKBitmap? _adjusted;
+
+    private bool _previewRunning;
+    private bool _previewPending;
+
+    /// <summary>
+    /// A document replaced while a preview was still reading its pixels. It is disposed once
+    /// that preview finishes rather than out from under it.
+    /// </summary>
+    private ImageDocument? _retired;
 
     /// <summary>The design-time constructor. Only the XAML previewer calls this.</summary>
     public MainWindowViewModel()
@@ -60,7 +83,7 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
         Save = ReactiveCommand.CreateFromTask(SaveRequestedAsync, canSave);
         SaveAs = ReactiveCommand.CreateFromTask(SaveAsRequestedAsync, hasImage);
         Quit = ReactiveCommand.Create(() => ExitRequested?.Invoke());
-        Center = ReactiveCommand.Create(() => Apply(_history.Current.WithPan(default)), hasImage);
+        Center = ReactiveCommand.Create(() => Apply(State with { View = Transform.WithPan(default) }), hasImage);
         Undo = ReactiveCommand.Create(UndoStep,
             this.WhenAnyValue(model => model.CanUndo, model => model.IsBusy, (can, busy) => can && !busy));
         Redo = ReactiveCommand.Create(RedoStep,
@@ -73,13 +96,19 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
         ShowHistogram = ReactiveCommand.Create(() => ToolWindowRequested?.Invoke(ToolWindow.Histogram));
         ShowInfo = ReactiveCommand.Create(() => ToolWindowRequested?.Invoke(ToolWindow.Info));
         ShowAbout = ReactiveCommand.Create(() => AboutRequested?.Invoke());
+        ResetEnhancements = ReactiveCommand.Create(
+            () => Apply(State with { Enhance = Enhancement.Identity }), hasImage);
+        ResetGeometry = ReactiveCommand.Create(
+            () => Apply(State with { View = Transform.WithoutOrientation.WithZoom(1) }), hasImage);
+
+        Properties = new PropertiesViewModel(this);
 
         // A command that throws has nowhere to put the exception and rethrows it on the
         // scheduler, taking the process with it. Everything reports here instead.
         foreach (var command in new IHandleObservableErrors[]
                  {
                      Open, Save, SaveAs, Quit, Center, Undo, Redo, ShowProperties, ShowDetail,
-                     ShowHistogram, ShowInfo, ShowAbout,
+                     ShowHistogram, ShowInfo, ShowAbout, ResetEnhancements, ResetGeometry,
                  })
         {
             _subscriptions.Add(command.ThrownExceptions.Subscribe(OnCommandFailed));
@@ -98,6 +127,12 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
     public ReactiveCommand<Unit, Unit> ShowHistogram { get; }
     public ReactiveCommand<Unit, Unit> ShowInfo { get; }
     public ReactiveCommand<Unit, Unit> ShowAbout { get; }
+
+    /// <summary>Puts every Enhance setting back to neutral, as one undoable step.</summary>
+    public ReactiveCommand<Unit, Unit> ResetEnhancements { get; }
+
+    /// <summary>Takes out the rotation and reflections and zooms to 100%, as one undoable step.</summary>
+    public ReactiveCommand<Unit, Unit> ResetGeometry { get; }
 
     /// <summary>Asks the view for an image to open. Null if the user canceled.</summary>
     public event Func<Task<string?>>? OpenFileRequested;
@@ -128,6 +163,9 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
     /// <summary>The Detail dialog's state, kept up to date whether or not the dialog is open.</summary>
     public DetailViewModel Detail { get; } = new();
 
+    /// <summary>The Properties dialog's state: a view onto <see cref="Transform"/> and <see cref="Enhancement"/>.</summary>
+    public PropertiesViewModel Properties { get; }
+
     public ImageDocument? Document
     {
         get => _document;
@@ -143,7 +181,7 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
 
     public bool HasImage => Document is not null;
 
-    /// <summary>What the canvas draws: the document's pixels, premultiplied.</summary>
+    /// <summary>What the canvas draws: the enhanced pixels, premultiplied.</summary>
     public Bitmap? DisplayImage
     {
         get => _displayImage;
@@ -152,7 +190,7 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
 
     /// <summary>
     /// How the image is shown right now. The canvas writes this on every pointer move of a
-    /// drag. Only <see cref="CommitTransform"/> records a step.
+    /// drag. Only <see cref="Commit"/> records a step.
     /// </summary>
     public ViewTransform Transform
     {
@@ -166,6 +204,28 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
             UpdateDetail();
         }
     }
+
+    /// <summary>
+    /// What the Enhance tab is set to right now. Like <see cref="Transform"/>, it changes live
+    /// during a thumbwheel drag and only <see cref="Commit"/> records a step.
+    /// </summary>
+    public Enhancement Enhancement
+    {
+        get => _enhancement;
+        set
+        {
+            if (value == _enhancement)
+                return;
+            this.RaiseAndSetIfChanged(ref _enhancement, value);
+            SchedulePreview();
+        }
+    }
+
+    /// <summary>The live state, as a step would record it.</summary>
+    public ImageState State => new(Transform, Enhancement);
+
+    /// <summary>The pixels as they are shown: enhanced, but neither turned nor mirrored.</summary>
+    public SKBitmap? AdjustedPixels => _adjusted ?? Document?.Pixels;
 
     /// <summary>The size of the image well, which the view keeps up to date.</summary>
     /// <remarks>Used to pick the zoom a newly opened image starts at.</remarks>
@@ -201,7 +261,7 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
         // The view's top-left corner in image coordinates, and how much of the image the view
         // spans. Both in image pixels, so they read against Position in Image.
         Detail.SetView(ImageCanvas.ViewToImage(default, image, ViewportSize, transform),
-            ViewportSize / transform.Zoom);
+            new Size(ViewportSize.Width / transform.ZoomX, ViewportSize.Height / transform.ZoomY));
 
         if (_pointer is not { } pointer)
             return;
@@ -209,11 +269,11 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
         var at = ImageCanvas.ViewToImage(pointer, image, ViewportSize, transform);
         int x = (int)Math.Floor(at.X), y = (int)Math.Floor(at.Y);
         string? pixel = null;
-        if (x >= 0 && y >= 0 && x < document.Width && y < document.Height)
+        if (x >= 0 && y >= 0 && x < document.Width && y < document.Height && AdjustedPixels is { } pixels)
         {
-            // Unpremultiplied, so these are the values the file holds. Alpha only when the
-            // image has any, where it is part of the answer.
-            var color = document.Pixels.GetPixel(x, y);
+            // The enhanced pixel, unpremultiplied: the value Save would write. Alpha only when
+            // the image has any, where it is part of the answer.
+            var color = pixels.GetPixel(x, y);
             pixel = document.HasAlpha
                 ? $"{color.Red}, {color.Green}, {color.Blue}, {color.Alpha}"
                 : $"{color.Red}, {color.Green}, {color.Blue}";
@@ -300,8 +360,8 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
     }
 
     /// <summary>
-    /// Whether the image carries a rotation that has not been saved. Pan and zoom never count:
-    /// Save does not write them, so they are nothing to lose.
+    /// Whether the image carries a rotation, a reflection or an enhancement that has not been
+    /// saved. Pan and zoom never count: Save does not write them, so they are nothing to lose.
     /// </summary>
     public bool IsModified
     {
@@ -331,7 +391,9 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
     public string InfoFileSize => Document is { } document ? Strings.FileSize(document.FileSize) : Strings.NoValue;
     public string InfoModified => Document is { } document ? document.Modified.ToString("g") : Strings.NoValue;
 
-    public string ZoomText => $"{Transform.Zoom * 100:0.#}%";
+    public string ZoomText => Transform.IsUniformZoom
+        ? $"{Transform.ZoomX * 100:0.#}%"
+        : $"{Transform.ZoomX * 100:0.#}% × {Transform.ZoomY * 100:0.#}%";
     public string RotationText => $"{Transform.Rotation:0.#}°";
     public string PanText => Strings.Pan(Transform.Pan.X, Transform.Pan.Y);
 
@@ -348,31 +410,63 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
         }
     }
 
-    /// <summary>Records the gesture the canvas just finished as one undoable step.</summary>
-    public void CommitTransform()
+    /// <summary>Records the live state as one undoable step, if it changed anything.</summary>
+    /// <remarks>Called when a gesture ends: a drag in the view, or a press in the Properties dialog.</remarks>
+    public void Commit()
     {
-        if (_history.Commit(Transform))
+        if (_history.Commit(State))
             UpdateHistoryState();
     }
 
-    /// <summary>Commits <paramref name="transform"/> as a step of its own, as Center does.</summary>
-    private void Apply(ViewTransform transform)
+    /// <summary>A press began in the Properties dialog.</summary>
+    /// <remarks>
+    /// Until it is released, changes from the dialog are live but not committed, so a whole
+    /// thumbwheel drag, or a spin button held down, is one step. The dialog marks this for the
+    /// whole of its content, so every control in it follows the same rule.
+    /// </remarks>
+    public void BeginGesture() => _gesture = true;
+
+    /// <summary>The press in the Properties dialog was released: whatever it changed is one step.</summary>
+    public void EndGesture()
     {
-        Transform = transform;
-        CommitTransform();
+        _gesture = false;
+        Commit();
+    }
+
+    /// <summary>
+    /// Commits a change from the Properties dialog, unless a press is still down there, in
+    /// which case its release commits it. A value typed into a field takes this path.
+    /// </summary>
+    internal void CommitUnlessGesture()
+    {
+        if (!_gesture)
+            Commit();
+    }
+
+    /// <summary>Commits <paramref name="state"/> as a step of its own, as Center does.</summary>
+    private void Apply(ImageState state)
+    {
+        Show(state);
+        Commit();
+    }
+
+    private void Show(ImageState state)
+    {
+        Transform = state.View;
+        Enhancement = state.Enhance;
     }
 
     private void UndoStep()
     {
         if (_history.Undo())
-            Transform = _history.Current;
+            Show(_history.Current);
         UpdateHistoryState();
     }
 
     private void RedoStep()
     {
         if (_history.Redo())
-            Transform = _history.Current;
+            Show(_history.Current);
         UpdateHistoryState();
     }
 
@@ -380,7 +474,89 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
     {
         CanUndo = _history.CanUndo;
         CanRedo = _history.CanRedo;
-        IsModified = Document is not null && _history.Current.IsRotated;
+        IsModified = Document is not null && _history.Current.IsModified;
+    }
+
+    /// <summary>Brings the preview up to date with <see cref="Enhancement"/>.</summary>
+    /// <remarks>
+    /// One preview runs at a time, on the pool. A change that arrives while one is running
+    /// marks another as wanted, and that one renders whatever the setting is by then. A
+    /// thumbwheel drag therefore never queues more than one render behind the current one,
+    /// and the last value it reaches is always the one shown.
+    /// </remarks>
+    private void SchedulePreview()
+    {
+        if (_previewRunning)
+        {
+            _previewPending = true;
+            return;
+        }
+        _ = RunPreviewAsync();
+    }
+
+    private async Task RunPreviewAsync()
+    {
+        _previewRunning = true;
+        try
+        {
+            do
+            {
+                _previewPending = false;
+                if (Document is not { } document)
+                    break;
+
+                var enhancement = Enhancement;
+                if (enhancement.IsIdentity)
+                {
+                    ShowPreview(null, _originalDisplay, _originalHistogram);
+                    continue;
+                }
+
+                var (pixels, display, histogram) = await Task.Run(() =>
+                {
+                    var enhanced = ImageProcessor.Enhance(document.Pixels, enhancement);
+                    return (enhanced, DisplayBitmap.From(enhanced), Models.Histogram.FromBitmap(enhanced));
+                });
+
+                // Opened over while it ran: these pixels belong to an image that is gone.
+                if (!ReferenceEquals(document, Document))
+                {
+                    pixels.Dispose();
+                    display.Dispose();
+                    _previewPending = true;
+                    continue;
+                }
+
+                ShowPreview(pixels, display, histogram);
+            } while (_previewPending);
+        }
+        catch (Exception error)
+        {
+            _logger.ZLogWarning(error, $"could not render the preview");
+        }
+        finally
+        {
+            _previewRunning = false;
+            _retired?.Dispose();
+            _retired = null;
+        }
+    }
+
+    /// <summary>Swaps in a rendered preview, disposing what it replaces.</summary>
+    private void ShowPreview(SKBitmap? pixels, Bitmap? display, Histogram? histogram)
+    {
+        var previousPixels = _adjusted;
+        var previousDisplay = DisplayImage;
+
+        _adjusted = pixels;
+        DisplayImage = display;
+        Histogram.Histogram = histogram;
+        UpdateDetail();
+
+        if (!ReferenceEquals(previousPixels, pixels))
+            previousPixels?.Dispose();
+        if (!ReferenceEquals(previousDisplay, display) && !ReferenceEquals(previousDisplay, _originalDisplay))
+            previousDisplay?.Dispose();
     }
 
     /// <summary>
@@ -406,7 +582,7 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
     /// <summary>Opens <paramref name="path"/>, replacing the current image.</summary>
     /// <param name="keep">
     /// The pan and zoom to keep, rather than starting centered and fitted. Used after a save,
-    /// so the reloaded image appears exactly where the rotated one was.
+    /// so the reloaded image appears exactly where the edited one was.
     /// </param>
     public async Task OpenAsync(string path, ViewTransform? keep = null)
     {
@@ -433,18 +609,30 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
 
             var previousDocument = Document;
             var previousDisplay = DisplayImage;
+            var previousOriginal = _originalDisplay;
+            var previousAdjusted = _adjusted;
 
             var start = keep ?? ViewTransform.Identity.WithZoom(
                 ImageCanvas.FitZoom(new PixelSize(document.Width, document.Height), ViewportSize));
-            _history.Reset(start.WithRotation(0));
-            Transform = _history.Current;
+            _history.Reset(new ImageState(start.WithoutOrientation, Enhancement.Identity));
+            _adjusted = null;
+            _originalDisplay = display;
+            _originalHistogram = histogram;
             Document = document;
             DisplayImage = display;
             Histogram.Histogram = histogram;
+            Show(_history.Current);
             UpdateHistoryState();
 
-            previousDocument?.Dispose();
-            previousDisplay?.Dispose();
+            previousAdjusted?.Dispose();
+            if (!ReferenceEquals(previousDisplay, previousOriginal))
+                previousDisplay?.Dispose();
+            previousOriginal?.Dispose();
+            // A preview may still be reading the old pixels. It disposes them when it is done.
+            if (_previewRunning)
+                _retired = previousDocument;
+            else
+                previousDocument?.Dispose();
             _logger.ZLogInformation($"opened {path} ({document.Width}x{document.Height}, {document.Format})");
         }
         // Anything at all: a decoder meeting a malformed file can fail in ways nobody listed,
@@ -509,13 +697,13 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
             return;
 
         var name = Path.GetFileName(path);
-        var view = _history.Current;
+        var state = _history.Current;
         _busyText = Strings.Saving(name);
         IsBusy = true;
         try
         {
-            await Task.Run(() => ImageCodec.Save(document, view.Rotation, path, format));
-            _logger.ZLogInformation($"saved {path} as {format}, rotated {view.Rotation:0.###} degrees");
+            await Task.Run(() => ImageCodec.Save(document, state, path, format));
+            _logger.ZLogInformation($"saved {path} as {format} with {state}");
         }
         catch (Exception error)
         {
@@ -529,10 +717,10 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
             _busyText = null;
         }
 
-        // The rotation is in the pixels now. What was saved is what is open from here on, so
-        // the next Save goes to the same place, and the history starts again: undoing a turn
-        // that is already written into the file would turn it twice.
-        await OpenAsync(path, view);
+        // The edits are in the pixels now. What was saved is what is open from here on, so the
+        // next Save goes to the same place, and the history starts again: undoing a turn that
+        // is already written into the file would turn it twice.
+        await OpenAsync(path, state.View);
     }
 
     private void OnCommandFailed(Exception error)
@@ -547,6 +735,9 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
             subscription.Dispose();
         _subscriptions.Clear();
         Document?.Dispose();
-        DisplayImage?.Dispose();
+        _adjusted?.Dispose();
+        if (!ReferenceEquals(DisplayImage, _originalDisplay))
+            DisplayImage?.Dispose();
+        _originalDisplay?.Dispose();
     }
 }

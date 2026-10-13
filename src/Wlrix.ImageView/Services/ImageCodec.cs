@@ -188,8 +188,29 @@ public static class ImageCodec
         return ToDocumentLayout(surface);
     }
 
+    /// <summary>The pixels mirrored, in a new bitmap. A copy when neither flag is set.</summary>
+    public static SKBitmap Flip(SKBitmap source, bool horizontal, bool vertical) => (horizontal, vertical) switch
+    {
+        (true, true) => Orient(source, SKEncodedOrigin.BottomRight),
+        (true, false) => Orient(source, SKEncodedOrigin.TopRight),
+        (false, true) => Orient(source, SKEncodedOrigin.BottomLeft),
+        _ => source.Copy(),
+    };
+
+    /// <summary>
+    /// The pixels as Save writes them for <paramref name="state"/>: enhanced, mirrored, then
+    /// turned, which is the order the view draws them in.
+    /// </summary>
+    /// <param name="opaqueBackground">See <see cref="Rotate"/>.</param>
+    public static SKBitmap Render(SKBitmap source, ImageState state, bool opaqueBackground)
+    {
+        using var enhanced = ImageProcessor.Enhance(source, state.Enhance);
+        using var flipped = Flip(enhanced, state.View.FlipHorizontal, state.View.FlipVertical);
+        return Rotate(flipped, state.View.Rotation, opaqueBackground);
+    }
+
     /// <summary>Converts any bitmap to the document layout (BGRA8888, unpremultiplied).</summary>
-    private static SKBitmap ToDocumentLayout(SKBitmap bitmap)
+    internal static SKBitmap ToDocumentLayout(SKBitmap bitmap)
     {
         var result = new SKBitmap(DocumentInfo(bitmap.Width, bitmap.Height));
         using var pixmap = bitmap.PeekPixels();
@@ -258,21 +279,22 @@ public static class ImageCodec
     }
 
     /// <summary>
-    /// Writes <paramref name="document"/> turned by <paramref name="degrees"/> to
-    /// <paramref name="path"/> as <paramref name="format"/>.
+    /// Writes <paramref name="document"/> with the edits in <paramref name="state"/> to
+    /// <paramref name="path"/> as <paramref name="format"/>. Pan and zoom are not edits and are
+    /// ignored.
     /// </summary>
     /// <remarks>
     /// Written to a temporary file beside the destination and moved over it. A failure part
     /// way through, such as a full disk, leaves the original file as it was. Overwriting the
     /// image being viewed is the ordinary case for Save, so losing it would be a real risk.
     /// </remarks>
-    public static void Save(ImageDocument document, double degrees, string path, ImageFormat format)
+    public static void Save(ImageDocument document, ImageState state, string path, ImageFormat format)
     {
         if (!ImageFormats.CanWrite(format))
             throw new NotSupportedException($"Cannot write {ImageFormats.DisplayName(format)} files.");
 
-        using var rotated = Rotate(document.Pixels, degrees, opaqueBackground: format == ImageFormat.Jpeg);
-        var bytes = Encode(rotated, format, path);
+        using var rendered = Render(document.Pixels, state, opaqueBackground: format == ImageFormat.Jpeg);
+        var bytes = Encode(rendered, format, path);
 
         var folder = Path.GetDirectoryName(Path.GetFullPath(path))!;
         var temporary = Path.Combine(folder, $".{Path.GetFileName(path)}.{Guid.NewGuid():N}.tmp");

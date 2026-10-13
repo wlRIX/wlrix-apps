@@ -25,7 +25,7 @@ public partial class MainWindow : Window
         // The generated InitializeComponent loads the XAML and assigns the x:Name fields.
         InitializeComponent();
 
-        Canvas.TransformCommitted += (_, _) => (DataContext as MainWindowViewModel)?.CommitTransform();
+        Canvas.TransformCommitted += (_, _) => (DataContext as MainWindowViewModel)?.Commit();
         Canvas.PointerMovedOver += (_, point) => (DataContext as MainWindowViewModel)?.PointerMoved(point);
         Canvas.PropertyChanged += (_, change) =>
         {
@@ -180,7 +180,7 @@ public partial class MainWindow : Window
             ToolWindow.Histogram => new HistogramWindow(),
             ToolWindow.Info => new InfoWindow(),
             ToolWindow.Detail => new DetailWindow(),
-            _ => new PlaceholderWindow { Title = Strings.Catalog.Get("PropertiesTitle") },
+            _ => new PropertiesWindow(),
         };
         window.DataContext = DataContext;
         // The accelerators work from the dialogs too. Otherwise Ctrl+H with Info in front
