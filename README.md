@@ -144,13 +144,11 @@ watch, because a file replaced by a rename leaves a watch on the old file watchi
 Events are only a hint: the file's time and size are compared with what the editor last read or
 wrote, so its own saves never prompt. The prompt waits until the window has the focus.
 
-Two pieces of `Wlrix.Avalonia` are missing, and the editor's `App.axaml` fills them in:
-
-- **`ItemsControl` has no template.** AvaloniaEdit hosts its line numbers in one, so without the
-  template they turn on and draw nothing. This is the same gap that `Wlrix.Files`,
-  `Wlrix.SourcePicker` and two settings panels each patch locally.
-- **Simple-theme resources.** AvaloniaEdit's templates look up keys such as `FontSizeNormal` and
-  `ThemeBorderThickness`, which `WlrixTheme` does not define.
+AvaloniaEdit's templates look up Simple-theme resource keys such as `FontSizeNormal` and
+`ThemeBorderThickness`, which `WlrixTheme` does not define, so the editor's `App.axaml` defines
+them. AvaloniaEdit also hosts its line numbers in an `ItemsControl`. `WlrixTheme` has templated
+that control since 0.4.3. Before that, an `ItemsControl` rendered as nothing, and every app that
+used one carried its own template.
 
 `Program` also names a default font family. AvaloniaEdit asks for one while it is being
 constructed, and on a system where fontconfig gives Skia no default, Avalonia's `$Default` throws.

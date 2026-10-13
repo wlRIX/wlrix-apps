@@ -165,8 +165,9 @@ public partial class PickerWindow : Window
     /// </summary>
     /// <remarks>
     /// In code rather than through an <c>ItemsControl</c> with a template selector, because
-    /// <c>Wlrix.Avalonia</c> themes neither, and an unthemed control here renders as an empty
-    /// rectangle with no error and nothing in the log.
+    /// <c>Wlrix.Avalonia</c> did not theme <c>ItemsControl</c> when this was written (it has
+    /// since 0.4.3), and an unthemed control renders as an empty rectangle with no error and
+    /// nothing in the log.
     /// </remarks>
     private void BuildChoices(PickerViewModel model)
     {

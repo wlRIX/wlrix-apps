@@ -8,14 +8,4 @@
     <Application.Styles>
         <wlrix:WlrixTheme />
     </Application.Styles>
-
-    <Application.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <!-- The controls WlrixTheme does not cover. `avares://` takes the *assembly*
-                     name, which is wlrix-settings-windows, not the project name. -->
-                <ResourceInclude Source="avares://wlrix-settings-windows/Themes/Panel.axaml" />
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
-    </Application.Resources>
 </Application>

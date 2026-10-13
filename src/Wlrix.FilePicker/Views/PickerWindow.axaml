@@ -94,9 +94,9 @@
                 </DockPanel>
 
                 <!-- The application's own extra controls. Built in code rather than with an
-                     ItemsControl and a template selector: each is a combo box or a checkbox,
-                     and Wlrix.Avalonia themes neither an ItemsControl nor a template
-                     selector — an unthemed control renders as an empty rectangle here, with
+                     ItemsControl and a template selector: each is a combo box or a checkbox.
+                     Wlrix.Avalonia did not theme ItemsControl when this was written (it has
+                     since 0.4.3), and an unthemed control renders as an empty rectangle, with
                      no error and nothing in the log. -->
                 <StackPanel Name="ChoicesPanel" Spacing="4" IsVisible="{Binding ShowChoices}" />
 

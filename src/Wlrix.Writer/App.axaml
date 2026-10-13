@@ -9,9 +9,6 @@
          never shows (the search panel, completion lists), since a Color cannot be dynamic. -->
     <Application.Resources>
         <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceInclude Source="avares://wlrix-writer/Themes/ItemsControl.axaml" />
-            </ResourceDictionary.MergedDictionaries>
         <x:Double x:Key="FontSizeNormal">12</x:Double>
         <Thickness x:Key="ThemeBorderThickness">1</Thickness>
         <Color x:Key="ThemeBackgroundColor">#aaaaaa</Color>
