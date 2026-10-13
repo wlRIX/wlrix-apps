@@ -1,0 +1,43 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ae="using:AvaloniaEdit"
+        xmlns:aee="using:AvaloniaEdit.Editing"
+        xmlns:aer="using:AvaloniaEdit.Rendering">
+    <!--
+        The text area, in the session's colors.
+
+        Every color is a DynamicResource on a scheme brush, never a literal: the screenshot this
+        was drawn from is NEdit under Indigo Magic Classic, and under any other scheme the editor
+        follows that scheme instead, live, as SessionScheme swaps the dictionary. The token colors
+        of syntax highlighting follow it too, but through WriterTheme, since TextMate does not
+        read resources.
+    -->
+    <Style Selector="ae|TextEditor.writer">
+        <Setter Property="Background" Value="{DynamicResource WlrixTextAreaBackground}" />
+        <Setter Property="Foreground" Value="{DynamicResource WlrixTextForeground}" />
+        <!-- Courier, as NEdit had it, through the fonts a Linux system is likely to have in its
+             place. A real chain matters: a bare "monospace" throws during layout (see
+             Wlrix.Files' PropertiesDialog). -->
+        <Setter Property="FontFamily" Value="Courier, Courier New, Nimbus Mono PS, Liberation Mono, DejaVu Sans Mono" />
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="LineNumbersForeground" Value="{DynamicResource WlrixDisabledForeground}" />
+        <Setter Property="Padding" Value="0,2,0,0" />
+        <Setter Property="LineNumbersMargin" Value="4,0,4,0" />
+        <Setter Property="HorizontalScrollBarVisibility" Value="Auto" />
+        <Setter Property="VerticalScrollBarVisibility" Value="Visible" />
+    </Style>
+
+    <!-- A little room between the text and the window's edge, or the line-number rule. -->
+    <Style Selector="ae|TextEditor.writer aer|TextView">
+        <Setter Property="Margin" Value="4,0,0,0" />
+    </Style>
+
+    <!-- A flat block of the scheme's selection color, square-cornered, with no outline: the
+         Motif look, rather than AvaloniaEdit's rounded translucent one. -->
+    <Style Selector="ae|TextEditor.writer aee|TextArea">
+        <Setter Property="SelectionBrush" Value="{DynamicResource WlrixSelection}" />
+        <Setter Property="SelectionForeground" Value="{DynamicResource WlrixSelectionForeground}" />
+        <Setter Property="SelectionCornerRadius" Value="0" />
+        <Setter Property="SelectionBorder" Value="{x:Null}" />
+    </Style>
+</Styles>

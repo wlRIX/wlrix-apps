@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AppName" xml:space="preserve">
+    <value>wlRIX Writer</value>
+  </data>
+  <data name="Untitled" xml:space="preserve">
+    <value>Untitled</value>
+  </data>
+  <data name="TitleModified" xml:space="preserve">
+    <value>{0} (modified)</value>
+  </data>
+  <data name="TabModified" xml:space="preserve">
+    <value>{0} *</value>
+  </data>
+  <data name="MenuFile" xml:space="preserve">
+    <value>_File</value>
+  </data>
+  <data name="MenuEdit" xml:space="preserve">
+    <value>_Edit</value>
+  </data>
+  <data name="MenuSearch" xml:space="preserve">
+    <value>_Search</value>
+  </data>
+  <data name="MenuPreferences" xml:space="preserve">
+    <value>_Preferences</value>
+  </data>
+  <data name="MenuWindows" xml:space="preserve">
+    <value>_Windows</value>
+  </data>
+  <data name="MenuHelp" xml:space="preserve">
+    <value>_Help</value>
+  </data>
+  <data name="FileNew" xml:space="preserve">
+    <value>_New</value>
+  </data>
+  <data name="FileOpen" xml:space="preserve">
+    <value>_Open...</value>
+  </data>
+  <data name="FileOpenPrevious" xml:space="preserve">
+    <value>Open _Previous</value>
+  </data>
+  <data name="FileOpenPreviousNone" xml:space="preserve">
+    <value>(none)</value>
+  </data>
+  <data name="FileClose" xml:space="preserve">
+    <value>_Close</value>
+  </data>
+  <data name="FileSave" xml:space="preserve">
+    <value>_Save</value>
+  </data>
+  <data name="FileSaveAs" xml:space="preserve">
+    <value>Save _As...</value>
+  </data>
+  <data name="FileExit" xml:space="preserve">
+    <value>E_xit</value>
+  </data>
+  <data name="EditUndo" xml:space="preserve">
+    <value>_Undo</value>
+  </data>
+  <data name="EditRedo" xml:space="preserve">
+    <value>_Redo</value>
+  </data>
+  <data name="EditCut" xml:space="preserve">
+    <value>Cu_t</value>
+  </data>
+  <data name="EditCopy" xml:space="preserve">
+    <value>_Copy</value>
+  </data>
+  <data name="EditPaste" xml:space="preserve">
+    <value>_Paste</value>
+  </data>
+  <data name="EditSelectAll" xml:space="preserve">
+    <value>Select _All</value>
+  </data>
+  <data name="SearchFind" xml:space="preserve">
+    <value>_Find...</value>
+  </data>
+  <data name="SearchReplace" xml:space="preserve">
+    <value>_Replace...</value>
+  </data>
+  <data name="PrefLanguageMode" xml:space="preserve">
+    <value>_Language Mode</value>
+  </data>
+  <data name="PrefPlain" xml:space="preserve">
+    <value>Plain</value>
+  </data>
+  <data name="PrefHighlight" xml:space="preserve">
+    <value>_Highlight Syntax</value>
+  </data>
+  <data name="PrefTabs" xml:space="preserve">
+    <value>_Tabs...</value>
+  </data>
+  <data name="PrefLineNumbers" xml:space="preserve">
+    <value>Show Line _Numbers</value>
+  </data>
+  <data name="WindowsSplit" xml:space="preserve">
+    <value>_Split Window</value>
+  </data>
+  <data name="WindowsMove" xml:space="preserve">
+    <value>_Move Tab to Other Side</value>
+  </data>
+  <data name="WindowsUnsplit" xml:space="preserve">
+    <value>_Unsplit Window</value>
+  </data>
+  <data name="WindowsNextTab" xml:space="preserve">
+    <value>_Next Tab</value>
+  </data>
+  <data name="WindowsPreviousTab" xml:space="preserve">
+    <value>_Previous Tab</value>
+  </data>
+  <data name="HelpAbout" xml:space="preserve">
+    <value>_About Writer</value>
+  </data>
+  <data name="OpenTitle" xml:space="preserve">
+    <value>Open File</value>
+  </data>
+  <data name="SaveAsTitle" xml:space="preserve">
+    <value>Save File As</value>
+  </data>
+  <data name="FilterAllFiles" xml:space="preserve">
+    <value>All Files</value>
+  </data>
+  <data name="FilterText" xml:space="preserve">
+    <value>Text Files</value>
+  </data>
+  <data name="ErrorTitle" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="AboutTitle" xml:space="preserve">
+    <value>About wlRIX Writer</value>
+  </data>
+  <data name="AboutMessage" xml:space="preserve">
+    <value>wlRIX Writer {0}
+
+A text editor for the wlRIX desktop, after NEdit.</value>
+  </data>
+  <data name="ErrorOpenFailed" xml:space="preserve">
+    <value>Could not open {0}:
+{1}</value>
+  </data>
+  <data name="ErrorNotText" xml:space="preserve">
+    <value>{0} is not a text file.</value>
+  </data>
+  <data name="ErrorSaveFailed" xml:space="preserve">
+    <value>Could not save {0}:
+{1}</value>
+  </data>
+  <data name="InfoTitle" xml:space="preserve">
+    <value>Information</value>
+  </data>
+  <data name="InfoEncodingWidened" xml:space="preserve">
+    <value>{0} contains characters that {1} cannot represent, so it was saved as UTF-8.</value>
+  </data>
+  <data name="SaveChangesTitle" xml:space="preserve">
+    <value>Save Changes</value>
+  </data>
+  <data name="SaveChangesMessage" xml:space="preserve">
+    <value>Save changes to {0}?</value>
+  </data>
+  <data name="DialogSave" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="DialogDontSave" xml:space="preserve">
+    <value>Don't Save</value>
+  </data>
+  <data name="DialogCancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="DialogOk" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="ReloadTitle" xml:space="preserve">
+    <value>File Changed</value>
+  </data>
+  <data name="ReloadMessage" xml:space="preserve">
+    <value>{0} has been changed by another program.
+
+Reload it from disk?</value>
+  </data>
+  <data name="ReloadMessageModified" xml:space="preserve">
+    <value>{0} has been changed by another program, and it also has unsaved changes here.
+
+Reload it from disk and lose those changes?</value>
+  </data>
+  <data name="DialogReload" xml:space="preserve">
+    <value>Reload</value>
+  </data>
+  <data name="DialogKeep" xml:space="preserve">
+    <value>Keep Mine</value>
+  </data>
+  <data name="DeletedTitle" xml:space="preserve">
+    <value>File Deleted</value>
+  </data>
+  <data name="DeletedMessage" xml:space="preserve">
+    <value>{0} has been deleted or moved by another program.
+
+Its text is still open here. Save it to write it back.</value>
+  </data>
+  <data name="TabsTitle" xml:space="preserve">
+    <value>Tabs</value>
+  </data>
+  <data name="TabsWidth" xml:space="preserve">
+    <value>Tab spacing:</value>
+  </data>
+  <data name="TabsUseSpaces" xml:space="preserve">
+    <value>Insert spaces instead of tab characters</value>
+  </data>
+  <data name="TabsDefault" xml:space="preserve">
+    <value>Use as default for new documents</value>
+  </data>
+</root>

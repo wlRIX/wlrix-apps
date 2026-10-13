@@ -34,6 +34,7 @@ library. Apps recreate the IRIX Interactive Desktop surface.
 | `Wlrix.Clock`             | app  | The desktop clock, after IRIX's: an analog face with a border only. |
 | `Wlrix.ClipboardHistory`  | app  | The clipboard history popup, after KDE's. `Super+V` opens it.       |
 | `Wlrix.ImageView`         | app  | The image viewer, after IRIX's imgview. Reads and writes SGI files. |
+| `Wlrix.Writer`            | app  | The text editor, after NEdit, with tabs and a side-by-side split.   |
 
 Every project with tests has a `<project>.Tests` beside it under `tests/`. More apps (a terminal, among others) get
 added as sibling projects.
@@ -113,6 +114,46 @@ Latin-1 those come out as mojibake, and mojibake in a filename is not cosmetic: 
 `FilenameDecoder` takes valid UTF-8 at its word and otherwise scores the candidate code pages, weighing script coherence
 over raw character counts — a misread Shift-JIS name reads as a jumble alternating between scripts, where the right
 answer reads as one. `View ▸ Encoding` overrides the guess for the cases no heuristic gets right.
+
+## Text editing
+
+`Wlrix.Writer` is NEdit's look with tabs added. The editing surface is
+[AvaloniaEdit](https://github.com/AvaloniaUI/AvaloniaEdit), and Preferences ▸ Language Mode is
+TextMate grammars through `AvaloniaEdit.TextMate`. Both are MIT. The tokenizer is Oniguruma,
+reached through `Onigwrap`, a native library; the `linux-x64` publish ships one copy of it.
+
+**Colors come from the session's scheme, not from the screenshot.** The text area, the text, the
+selection and the line numbers are scheme brushes, so the editor repaints when the scheme does.
+The highlighting palette has a light and a dark variant, picked by the scheme's own `IsDark`. Its
+default foreground and background are filled in from the scheme at run time, so plain text always
+matches it exactly.
+
+**One window, many files.** The editor owns `com.wlrix.writer` on the session bus, the same
+arrangement `Wlrix.Files` uses. A second `wlrix-writer notes.txt`, from a shell or a file manager,
+hands its files to the open window as new tabs and exits without drawing anything. A name that does
+not exist yet opens as an empty document that Save writes without asking for a name.
+
+**Saves are a write and a rename.** The new text goes to a temporary file beside the original,
+which gets the original's permission bits and is then renamed over it. A crash or a full disk
+partway through therefore leaves the old file whole. A symbolic link is followed, so it survives as
+a link. Where the directory cannot take a new file but the file itself is writable, the save falls
+back to rewriting the file in place.
+
+**Changes on disk are noticed by directory.** Each directory with an open file has one inotify
+watch, because a file replaced by a rename leaves a watch on the old file watching nothing.
+Events are only a hint: the file's time and size are compared with what the editor last read or
+wrote, so its own saves never prompt. The prompt waits until the window has the focus.
+
+Two pieces of `Wlrix.Avalonia` are missing, and the editor's `App.axaml` fills them in:
+
+- **`ItemsControl` has no template.** AvaloniaEdit hosts its line numbers in one, so without the
+  template they turn on and draw nothing. This is the same gap that `Wlrix.Files`,
+  `Wlrix.SourcePicker` and two settings panels each patch locally.
+- **Simple-theme resources.** AvaloniaEdit's templates look up keys such as `FontSizeNormal` and
+  `ThemeBorderThickness`, which `WlrixTheme` does not define.
+
+`Program` also names a default font family. AvaloniaEdit asks for one while it is being
+constructed, and on a system where fontconfig gives Skia no default, Avalonia's `$Default` throws.
 
 ## Managing software
 

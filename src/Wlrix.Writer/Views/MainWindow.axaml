@@ -1,0 +1,158 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Wlrix.Writer.ViewModels"
+        xmlns:views="using:Wlrix.Writer.Views"
+        xmlns:loc="using:Wlrix.Common.Localization"
+        xmlns:wlrix="https://vic485.xyz/Wlrix.Avalonia"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="850" d:DesignHeight="690"
+        x:Class="Wlrix.Writer.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Title="{Binding Title}"
+        Width="850" Height="690" MinWidth="320" MinHeight="200">
+    <!-- The accelerators.
+         A MenuItem's InputGesture only *draws* the shortcut, and its HotKey does not fire from
+         inside a submenu that has never been opened. Window.KeyBindings is what actually runs.
+         The editor handles its own Ctrl+Z, Ctrl+X and the rest first while it has the focus, so
+         those here only act when the focus is somewhere else, a tab say. -->
+    <Window.KeyBindings>
+        <KeyBinding Gesture="Ctrl+N" Command="{Binding New}" />
+        <KeyBinding Gesture="Ctrl+O" Command="{Binding Open}" />
+        <KeyBinding Gesture="Ctrl+W" Command="{Binding Close}" />
+        <KeyBinding Gesture="Ctrl+S" Command="{Binding Save}" />
+        <KeyBinding Gesture="Ctrl+Shift+S" Command="{Binding SaveAs}" />
+        <KeyBinding Gesture="Ctrl+Q" Command="{Binding Exit}" />
+        <KeyBinding Gesture="Ctrl+Z" Command="{Binding Undo}" />
+        <KeyBinding Gesture="Ctrl+Shift+Z" Command="{Binding Redo}" />
+        <KeyBinding Gesture="Ctrl+X" Command="{Binding Cut}" />
+        <KeyBinding Gesture="Ctrl+C" Command="{Binding Copy}" />
+        <KeyBinding Gesture="Ctrl+V" Command="{Binding Paste}" />
+        <KeyBinding Gesture="Ctrl+A" Command="{Binding SelectAll}" />
+        <KeyBinding Gesture="Ctrl+F" Command="{Binding Find}" />
+        <KeyBinding Gesture="Ctrl+R" Command="{Binding Replace}" />
+        <KeyBinding Gesture="Ctrl+D2" Command="{Binding SplitWindow}" />
+        <KeyBinding Gesture="Ctrl+D1" Command="{Binding Unsplit}" />
+        <KeyBinding Gesture="Ctrl+PageDown" Command="{Binding NextTab}" />
+        <KeyBinding Gesture="Ctrl+PageUp" Command="{Binding PreviousTab}" />
+    </Window.KeyBindings>
+
+    <!--
+        No SystemDecorations or ExtendClientArea: the compositor draws the 4Dwm frame, and a
+        window that draws its own would get two.
+    -->
+
+    <Design.DataContext>
+        <vm:MainWindowViewModel />
+    </Design.DataContext>
+
+    <Window.Styles>
+        <!-- In a split window, the half the menus act on is outlined, so where Save or Paste
+             will go is visible before the click rather than after it. Never with one half: there
+             the answer is not in doubt. -->
+        <Style Selector="Border.groupHost">
+            <Setter Property="BorderThickness" Value="2" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+        </Style>
+        <Style Selector="Grid.split > Border.groupHost.active">
+            <Setter Property="BorderBrush" Value="{DynamicResource WlrixSelection}" />
+        </Style>
+    </Window.Styles>
+
+    <DockPanel LastChildFill="True">
+        <wlrix:MenuBar DockPanel.Dock="Top">
+            <MenuItem Name="FileMenu" Header="{loc:Tr MenuFile}">
+                <MenuItem Header="{loc:Tr FileNew}" InputGesture="Ctrl+N" Command="{Binding New}" />
+                <MenuItem Header="{loc:Tr FileOpen}" InputGesture="Ctrl+O" Command="{Binding Open}" />
+                <MenuItem Header="{loc:Tr FileOpenPrevious}" ItemsSource="{Binding RecentItems}"
+                          IsEnabled="{Binding HasRecentItems}">
+                    <MenuItem.ItemContainerTheme>
+                        <ControlTheme TargetType="MenuItem" x:DataType="vm:RecentFileItem"
+                                      BasedOn="{StaticResource {x:Type MenuItem}}">
+                            <Setter Property="Header" Value="{Binding Header}" />
+                            <Setter Property="Command" Value="{Binding Open}" />
+                            <Setter Property="CommandParameter" Value="{Binding Path}" />
+                        </ControlTheme>
+                    </MenuItem.ItemContainerTheme>
+                </MenuItem>
+                <Separator />
+                <MenuItem Header="{loc:Tr FileClose}" InputGesture="Ctrl+W" Command="{Binding Close}" />
+                <MenuItem Header="{loc:Tr FileSave}" InputGesture="Ctrl+S" Command="{Binding Save}" />
+                <MenuItem Header="{loc:Tr FileSaveAs}" InputGesture="Ctrl+Shift+S" Command="{Binding SaveAs}" />
+                <Separator />
+                <MenuItem Header="{loc:Tr FileExit}" InputGesture="Ctrl+Q" Command="{Binding Exit}" />
+            </MenuItem>
+
+            <MenuItem Name="EditMenu" Header="{loc:Tr MenuEdit}">
+                <MenuItem Header="{loc:Tr EditUndo}" InputGesture="Ctrl+Z" Command="{Binding Undo}" />
+                <MenuItem Header="{loc:Tr EditRedo}" InputGesture="Ctrl+Shift+Z" Command="{Binding Redo}" />
+                <Separator />
+                <MenuItem Header="{loc:Tr EditCut}" InputGesture="Ctrl+X" Command="{Binding Cut}" />
+                <MenuItem Header="{loc:Tr EditCopy}" InputGesture="Ctrl+C" Command="{Binding Copy}" />
+                <MenuItem Header="{loc:Tr EditPaste}" InputGesture="Ctrl+V" Command="{Binding Paste}" />
+                <MenuItem Header="{loc:Tr EditSelectAll}" InputGesture="Ctrl+A" Command="{Binding SelectAll}" />
+            </MenuItem>
+
+            <MenuItem Header="{loc:Tr MenuSearch}">
+                <MenuItem Header="{loc:Tr SearchFind}" InputGesture="Ctrl+F" Command="{Binding Find}" />
+                <MenuItem Header="{loc:Tr SearchReplace}" InputGesture="Ctrl+R" Command="{Binding Replace}" />
+            </MenuItem>
+
+            <!-- The check marks are one-way: the item flips its own mark when clicked and the
+                 command flips the setting, and the binding then puts the mark where the setting
+                 actually is. Two-way, the click would flip the setting and the command flip it back. -->
+            <MenuItem Name="PreferencesMenu" Header="{loc:Tr MenuPreferences}">
+                <MenuItem Header="{loc:Tr PrefLanguageMode}" ItemsSource="{Binding LanguageItems}">
+                    <MenuItem.ItemContainerTheme>
+                        <ControlTheme TargetType="MenuItem" x:DataType="vm:LanguageChoice"
+                                      BasedOn="{StaticResource {x:Type MenuItem}}">
+                            <Setter Property="Header" Value="{Binding Header}" />
+                            <Setter Property="Command" Value="{Binding Choose}" />
+                            <Setter Property="CommandParameter" Value="{Binding Id}" />
+                            <Setter Property="ToggleType" Value="Radio" />
+                            <Setter Property="IsChecked" Value="{Binding IsChecked, Mode=OneWay}" />
+                        </ControlTheme>
+                    </MenuItem.ItemContainerTheme>
+                </MenuItem>
+                <MenuItem Header="{loc:Tr PrefHighlight}" ToggleType="CheckBox"
+                          IsChecked="{Binding HighlightSyntax, Mode=OneWay}"
+                          Command="{Binding ToggleHighlight}" />
+                <MenuItem Header="{loc:Tr PrefTabs}" Command="{Binding EditTabs}" />
+                <Separator />
+                <MenuItem Header="{loc:Tr PrefLineNumbers}" ToggleType="CheckBox"
+                          IsChecked="{Binding Preferences.ShowLineNumbers, Mode=OneWay}"
+                          Command="{Binding ToggleLineNumbers}" />
+            </MenuItem>
+
+            <!-- Not in the original specification, and here because splitting has to live
+                 somewhere. Named after NEdit's own Windows menu, where its Split Pane was. -->
+            <MenuItem Header="{loc:Tr MenuWindows}">
+                <MenuItem Header="{loc:Tr WindowsSplit}" InputGesture="Ctrl+D2" Command="{Binding SplitWindow}" />
+                <MenuItem Header="{loc:Tr WindowsMove}" Command="{Binding MoveToOtherSide}" />
+                <MenuItem Header="{loc:Tr WindowsUnsplit}" InputGesture="Ctrl+D1" Command="{Binding Unsplit}" />
+                <Separator />
+                <MenuItem Header="{loc:Tr WindowsNextTab}" InputGesture="Ctrl+PageDown" Command="{Binding NextTab}" />
+                <MenuItem Header="{loc:Tr WindowsPreviousTab}" InputGesture="Ctrl+PageUp" Command="{Binding PreviousTab}" />
+            </MenuItem>
+
+            <MenuItem Header="{loc:Tr MenuHelp}" DockPanel.Dock="Right">
+                <MenuItem Header="{loc:Tr HelpAbout}" Command="{Binding ShowAbout}" />
+            </MenuItem>
+        </wlrix:MenuBar>
+
+        <!-- One half, or two side by side. The right half and the splitter are shown and the
+             columns set up in code as the window splits and joins: a GridSplitter leaves pixel
+             widths behind, and joining has to put the left half back to the whole width. -->
+        <Grid Name="GroupGrid" ColumnDefinitions="*,0,0" Margin="2,2,2,2">
+            <Border Name="PrimaryHost" Grid.Column="0" Classes="groupHost"
+                    Classes.active="{Binding PrimaryGroup.IsActive}">
+                <views:TabGroupView Name="PrimaryView" DataContext="{Binding PrimaryGroup}" />
+            </Border>
+            <GridSplitter Name="Splitter" Grid.Column="1" ResizeDirection="Columns" IsVisible="False" />
+            <Border Name="SecondaryHost" Grid.Column="2" Classes="groupHost" IsVisible="False"
+                    Classes.active="{Binding SecondaryGroup.IsActive, FallbackValue=False}">
+                <views:TabGroupView Name="SecondaryView" DataContext="{Binding SecondaryGroup}" />
+            </Border>
+        </Grid>
+    </DockPanel>
+</Window>

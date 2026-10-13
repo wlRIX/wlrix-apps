@@ -1,0 +1,25 @@
+[Desktop Entry]
+Type=Application
+Name=wlRIX Writer
+Name[ja]=wlRIX ライター
+GenericName=Text Editor
+GenericName[ja]=テキストエディタ
+Comment=Edit text files
+Comment[ja]=テキストファイルを編集します
+Categories=Utility;TextEditor;
+
+# %F, not %f: the window holds many files, one per tab, and a second launch hands its files to
+# the window that is already open rather than starting another.
+Exec=wlrix-writer %F
+TryExec=wlrix-writer
+Terminal=false
+
+# Matches the Wayland app id set in Program.BuildAvaloniaApp, which is how `wlrix-desktop`
+# finds the running window.
+StartupWMClass=com.wlrix.writer
+StartupNotify=false
+
+# text/plain covers every text/* subtype through the MIME hierarchy, so a file manager offers the
+# editor for those anyway. These are the types that are text but do not descend from it, and the
+# common source types listed so the editor shows up in "Open With" for them by name.
+MimeType=text/plain;text/markdown;text/x-csrc;text/x-chdr;text/x-c++src;text/x-c++hdr;text/x-csharp;text/x-java;text/x-python;text/x-python3;text/x-shellscript;application/x-shellscript;text/x-makefile;text/x-cmake;text/x-log;text/css;text/html;text/xml;application/xml;application/json;application/x-yaml;application/toml;text/x-rust;text/x-go;application/javascript;text/javascript;application/x-desktop;

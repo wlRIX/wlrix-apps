@@ -1,0 +1,23 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Wlrix.Writer.ViewModels"
+             xmlns:views="using:Wlrix.Writer.Views"
+             x:Class="Wlrix.Writer.Views.TabGroupView"
+             x:DataType="vm:TabGroupViewModel">
+    <!-- The strip is shown even with a single tab, so the file name is always on screen beside
+         the text, which is where NEdit users expect to find it. -->
+    <TabControl Name="TabStrip"
+                ItemsSource="{Binding Tabs}"
+                SelectedItem="{Binding SelectedTab}">
+        <TabControl.ItemTemplate>
+            <DataTemplate x:DataType="vm:EditorTabViewModel">
+                <TextBlock Text="{Binding Header}" ToolTip.Tip="{Binding Document.Path}" />
+            </DataTemplate>
+        </TabControl.ItemTemplate>
+        <TabControl.ContentTemplate>
+            <DataTemplate x:DataType="vm:EditorTabViewModel">
+                <views:EditorView />
+            </DataTemplate>
+        </TabControl.ContentTemplate>
+    </TabControl>
+</UserControl>

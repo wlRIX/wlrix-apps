@@ -1,0 +1,38 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:wlrix="https://vic485.xyz/Wlrix.Avalonia"
+        x:Class="Wlrix.Writer.Views.ChoiceDialog"
+        Width="400"
+        CanResize="False"
+        SizeToContent="Height"
+        ShowInTaskbar="False"
+        WindowStartupLocation="CenterOwner"
+        Background="{DynamicResource WlrixFace}"
+        Foreground="{DynamicResource WlrixForeground}"
+        FontFamily="{DynamicResource WlrixFontFamily}"
+        FontSize="12">
+    <!-- Laid out as Wlrix.Avalonia.Dialogs' MessageDialog is, which has no room for a third
+         button: an icon, the message in a plain frame, and the buttons along the bottom. -->
+    <wlrix:BevelBorder Bevel="Raised" BevelThickness="2" OuterLineThickness="1"
+                       Background="{DynamicResource WlrixFace}"
+                       LightBrush="{DynamicResource WlrixTopShadow}"
+                       DarkBrush="{DynamicResource WlrixBottomShadow}"
+                       OuterLineBrush="{DynamicResource WlrixOuterLine}"
+                       Padding="12">
+        <DockPanel>
+            <StackPanel Name="Buttons" DockPanel.Dock="Bottom"
+                        Orientation="Horizontal" HorizontalAlignment="Right"
+                        Spacing="12" Margin="0,14,0,0" />
+            <Grid ColumnDefinitions="32,12,*" VerticalAlignment="Top">
+                <Image Name="IconImage" Grid.Column="0" Width="32" Height="32" VerticalAlignment="Top" />
+                <Border Grid.Column="2"
+                        BorderBrush="{DynamicResource WlrixForeground}" BorderThickness="1"
+                        Background="{DynamicResource WlrixFace}" Padding="8"
+                        VerticalAlignment="Center">
+                    <TextBlock Name="Message" TextWrapping="Wrap" VerticalAlignment="Center"
+                               Foreground="{DynamicResource WlrixForeground}" />
+                </Border>
+            </Grid>
+        </DockPanel>
+    </wlrix:BevelBorder>
+</Window>

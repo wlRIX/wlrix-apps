@@ -1,0 +1,23 @@
+{
+  "name": "wlRIX Writer (dark)",
+  "comment": "The same roles as nedit-light.json in tints that stay legible on a dark scheme's text area, Gotham's #474747 among them. Plain text is left to the color scheme.",
+  "tokenColors": [
+    { "scope": ["comment", "punctuation.definition.comment"], "settings": { "foreground": "#b4b4b4", "fontStyle": "italic" } },
+    { "scope": ["keyword", "keyword.control", "keyword.operator.new", "keyword.other", "storage.modifier", "variable.language"], "settings": { "fontStyle": "bold" } },
+    { "scope": ["keyword.operator"], "settings": { "fontStyle": "" } },
+    { "scope": ["storage.type", "support.type", "entity.name.type", "entity.name.class", "entity.name.namespace"], "settings": { "foreground": "#f0c27a", "fontStyle": "bold" } },
+    { "scope": ["string", "constant.character", "constant.other.symbol"], "settings": { "foreground": "#a3dc9a" } },
+    { "scope": ["constant.character.escape"], "settings": { "foreground": "#a3dc9a", "fontStyle": "bold" } },
+    { "scope": ["constant.numeric", "constant.language"], "settings": { "foreground": "#a3dc9a" } },
+    { "scope": ["meta.preprocessor", "keyword.control.directive", "punctuation.definition.directive", "entity.name.function.preprocessor", "keyword.control.import", "keyword.control.include"], "settings": { "foreground": "#a8bcff" } },
+    { "scope": ["entity.name.function", "support.function", "meta.function-call entity.name.function"], "settings": { "foreground": "#f0c27a" } },
+    { "scope": ["entity.name.tag", "markup.heading", "entity.name.section"], "settings": { "foreground": "#a8bcff", "fontStyle": "bold" } },
+    { "scope": ["entity.other.attribute-name"], "settings": { "foreground": "#f0c27a" } },
+    { "scope": ["markup.bold"], "settings": { "fontStyle": "bold" } },
+    { "scope": ["markup.italic"], "settings": { "fontStyle": "italic" } },
+    { "scope": ["markup.underline.link", "markup.inline.raw", "markup.fenced_code"], "settings": { "foreground": "#a3dc9a" } },
+    { "scope": ["markup.inserted"], "settings": { "foreground": "#a3dc9a" } },
+    { "scope": ["markup.deleted"], "settings": { "foreground": "#ff9090" } },
+    { "scope": ["invalid", "invalid.illegal"], "settings": { "foreground": "#ff7070", "fontStyle": "bold" } }
+  ]
+}

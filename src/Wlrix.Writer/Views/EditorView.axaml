@@ -1,0 +1,16 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Wlrix.Writer.ViewModels"
+             xmlns:ae="using:AvaloniaEdit"
+             xmlns:wlrix="https://vic485.xyz/Wlrix.Avalonia"
+             x:Class="Wlrix.Writer.Views.EditorView"
+             x:DataType="vm:EditorTabViewModel">
+    <!-- The text area sits in a sunken well, as a Motif XmText does. Colors, font and selection
+         come from Themes/Editor.axaml through the "writer" class. -->
+    <wlrix:BevelBorder Bevel="Sunken" BevelThickness="2"
+                       LightBrush="{DynamicResource WlrixTextTopShadow}"
+                       DarkBrush="{DynamicResource WlrixTextBottomShadow}">
+        <ae:TextEditor Name="Editor" Classes="writer"
+                       ShowLineNumbers="{Binding Preferences.ShowLineNumbers}" />
+    </wlrix:BevelBorder>
+</UserControl>

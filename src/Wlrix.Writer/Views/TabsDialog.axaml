@@ -1,0 +1,35 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:wlrix="https://vic485.xyz/Wlrix.Avalonia"
+        xmlns:loc="using:Wlrix.Common.Localization"
+        x:Class="Wlrix.Writer.Views.TabsDialog"
+        Width="360"
+        CanResize="False"
+        SizeToContent="Height"
+        ShowInTaskbar="False"
+        WindowStartupLocation="CenterOwner"
+        Background="{DynamicResource WlrixFace}"
+        Foreground="{DynamicResource WlrixForeground}"
+        FontFamily="{DynamicResource WlrixFontFamily}"
+        FontSize="12">
+    <wlrix:BevelBorder Bevel="Raised" BevelThickness="2" OuterLineThickness="1"
+                       Background="{DynamicResource WlrixFace}"
+                       LightBrush="{DynamicResource WlrixTopShadow}"
+                       DarkBrush="{DynamicResource WlrixBottomShadow}"
+                       OuterLineBrush="{DynamicResource WlrixOuterLine}"
+                       Padding="12">
+        <StackPanel Spacing="10">
+            <StackPanel Orientation="Horizontal" Spacing="8">
+                <TextBlock Text="{loc:Tr TabsWidth}" VerticalAlignment="Center" />
+                <NumericUpDown Name="TabWidth" Minimum="1" Maximum="16" Increment="1"
+                               FormatString="0" Width="90" />
+            </StackPanel>
+            <CheckBox Name="UseSpaces" Content="{loc:Tr TabsUseSpaces}" />
+            <CheckBox Name="MakeDefault" Content="{loc:Tr TabsDefault}" />
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="12" Margin="0,4,0,0">
+                <Button Name="Accept" Content="{loc:Tr DialogOk}" MinWidth="64" IsDefault="True" />
+                <Button Name="Reject" Content="{loc:Tr DialogCancel}" MinWidth="64" IsCancel="True" />
+            </StackPanel>
+        </StackPanel>
+    </wlrix:BevelBorder>
+</Window>

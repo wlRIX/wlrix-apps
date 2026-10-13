@@ -86,6 +86,22 @@
         <PackageVersion Include="SharpCompress" Version="1.0.0" />
     </ItemGroup>
 
+    <ItemGroup Label="Text editing">
+        <!-- Wlrix.Writer's editing surface and its syntax highlighting. All MIT (verified in the
+             nuspecs), so GPL-3 compatible. AvaloniaEdit 12.0.0 is built against Avalonia 12 and
+             runs on the 12.1 pinned above.
+
+             TextMateSharp tokenizes with Oniguruma through Onigwrap, a native library. It ships a
+             build per platform under runtimes/, but the Justfile publishes linux-x64, so only one
+             of them reaches an install. The two TextMateSharp pins are the versions
+             AvaloniaEdit.TextMate depends on, stated so the grammars cannot drift from the
+             tokenizer that reads them. -->
+        <PackageVersion Include="Avalonia.AvaloniaEdit" Version="12.0.0" />
+        <PackageVersion Include="AvaloniaEdit.TextMate" Version="12.0.0" />
+        <PackageVersion Include="TextMateSharp" Version="2.0.3" />
+        <PackageVersion Include="TextMateSharp.Grammars" Version="2.0.3" />
+    </ItemGroup>
+
     <ItemGroup Label="wlRIX theme">
         <PackageVersion Include="Wlrix.Avalonia" Version="0.4.2" />
         <PackageVersion Include="Wlrix.Avalonia.Dialogs" Version="1.0.0" />

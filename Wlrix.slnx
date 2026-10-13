@@ -23,6 +23,7 @@
         <Project Path="src/Wlrix.Clock/Wlrix.Clock.csproj" />
         <Project Path="src/Wlrix.ClipboardHistory/Wlrix.ClipboardHistory.csproj" />
         <Project Path="src/Wlrix.ImageView/Wlrix.ImageView.csproj" />
+        <Project Path="src/Wlrix.Writer/Wlrix.Writer.csproj" />
     </Folder>
     <Folder Name="/tests/">
         <Project Path="tests/Wlrix.Packages.Tests/Wlrix.Packages.Tests.csproj" />
@@ -37,6 +38,7 @@
         <Project Path="tests/Wlrix.Clock.Tests/Wlrix.Clock.Tests.csproj" />
         <Project Path="tests/Wlrix.ClipboardHistory.Tests/Wlrix.ClipboardHistory.Tests.csproj" />
         <Project Path="tests/Wlrix.ImageView.Tests/Wlrix.ImageView.Tests.csproj" />
+        <Project Path="tests/Wlrix.Writer.Tests/Wlrix.Writer.Tests.csproj" />
         <Project Path="tests/Wlrix.Settings.Displays.Tests/Wlrix.Settings.Displays.Tests.csproj" />
         <Project Path="tests/Wlrix.Settings.Audio.Tests/Wlrix.Settings.Audio.Tests.csproj" />
     </Folder>

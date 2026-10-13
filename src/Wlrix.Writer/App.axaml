@@ -1,0 +1,57 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:wlrix="https://vic485.xyz/Wlrix.Avalonia"
+             x:Class="Wlrix.Writer.App"
+             RequestedThemeVariant="Default">
+    <!-- What AvaloniaEdit's Simple theme looks up, which Avalonia's Simple theme would provide
+         and WlrixTheme does not; without them its templates fail to load. The brushes follow the
+         scheme through its color resources. The colors are only the defaults of parts the Writer
+         never shows (the search panel, completion lists), since a Color cannot be dynamic. -->
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceInclude Source="avares://wlrix-writer/Themes/ItemsControl.axaml" />
+            </ResourceDictionary.MergedDictionaries>
+        <x:Double x:Key="FontSizeNormal">12</x:Double>
+        <Thickness x:Key="ThemeBorderThickness">1</Thickness>
+        <Color x:Key="ThemeBackgroundColor">#aaaaaa</Color>
+        <Color x:Key="ThemeForegroundColor">#000000</Color>
+        <Color x:Key="ThemeBorderLowColor">#555555</Color>
+        <Color x:Key="HighlightColor">#7a8aa8</Color>
+        <SolidColorBrush x:Key="ThemeBackgroundBrush" Color="{DynamicResource WlrixFaceColor}" />
+        <SolidColorBrush x:Key="ThemeForegroundBrush" Color="{DynamicResource WlrixForegroundColor}" />
+        <SolidColorBrush x:Key="ThemeBorderMidBrush" Color="{DynamicResource WlrixBottomShadowColor}" />
+        <SolidColorBrush x:Key="ThemeBorderLowBrush" Color="{DynamicResource WlrixBottomShadowColor}" />
+        <SolidColorBrush x:Key="HighlightBrush" Color="{DynamicResource WlrixSelectionColor}" />
+        <SolidColorBrush x:Key="TextAreaSelectionBrush" Color="{DynamicResource WlrixSelectionColor}" />
+        <FontFamily x:Key="ContentControlThemeFontFamily">Helvetica, Arial, Liberation Sans, DejaVu Sans</FontFamily>
+        <x:Double x:Key="ControlContentThemeFontSize">12</x:Double>
+        <x:Double x:Key="SearchPanelFontSize">12</x:Double>
+        <Color x:Key="SystemAccentColor">#7a8aa8</Color>
+        <Color x:Key="SystemBaseLowColor">#555555</Color>
+        <Color x:Key="SystemChromeMediumColor">#aaaaaa</Color>
+        <Thickness x:Key="ToolTipBorderThemeThickness">1</Thickness>
+        <Thickness x:Key="CompletionToolTipBorderThickness">1</Thickness>
+        <SolidColorBrush x:Key="ToolTipBackground" Color="{DynamicResource WlrixTooltipBackgroundColor}" />
+        <SolidColorBrush x:Key="ToolTipForeground" Color="{DynamicResource WlrixTooltipForegroundColor}" />
+        <SolidColorBrush x:Key="ToolTipBorderBrush" Color="{DynamicResource WlrixOuterLineColor}" />
+        <SolidColorBrush x:Key="CompletionToolTipBackground" Color="{DynamicResource WlrixTooltipBackgroundColor}" />
+        <SolidColorBrush x:Key="CompletionToolTipForeground" Color="{DynamicResource WlrixTooltipForegroundColor}" />
+        <SolidColorBrush x:Key="CompletionToolTipBorderBrush" Color="{DynamicResource WlrixOuterLineColor}" />
+        <SolidColorBrush x:Key="OverloadViewerBackground" Color="{DynamicResource WlrixTooltipBackgroundColor}" />
+        <SolidColorBrush x:Key="OverloadViewerForeground" Color="{DynamicResource WlrixTooltipForegroundColor}" />
+        <SolidColorBrush x:Key="OverloadViewerBorderBrush" Color="{DynamicResource WlrixOuterLineColor}" />
+        <SolidColorBrush x:Key="SearchPanelBackgroundBrush" Color="{DynamicResource WlrixFaceColor}" />
+        <SolidColorBrush x:Key="SearchPanelBorderBrush" Color="{DynamicResource WlrixOuterLineColor}" />
+        </ResourceDictionary>
+    </Application.Resources>
+
+    <Application.Styles>
+        <wlrix:WlrixTheme />
+        <!-- AvaloniaEdit's own templates, the Simple flavor because WlrixTheme is not Fluent.
+             After the theme, so the editor's parts are styled on top of it; the Writer's colors
+             and font come after that again. -->
+        <StyleInclude Source="avares://AvaloniaEdit/Themes/Simple/AvaloniaEdit.xaml" />
+        <StyleInclude Source="avares://wlrix-writer/Themes/Editor.axaml" />
+    </Application.Styles>
+</Application>

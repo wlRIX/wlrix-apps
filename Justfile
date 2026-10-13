@@ -33,7 +33,8 @@ apps := "Wlrix.Archiver:wlrix-archiver:com.wlrix.archiver.desktop \
          Wlrix.Clock:wlrix-clock:com.wlrix.clock.desktop \
          Wlrix.Settings.Displays:wlrix-settings-displays:com.wlrix.settings.displays.desktop \
          Wlrix.Settings.Audio:wlrix-settings-audio:com.wlrix.settings.audio.desktop \
-         Wlrix.ImageView:wlrix-imageview:com.wlrix.imageview.desktop"
+         Wlrix.ImageView:wlrix-imageview:com.wlrix.imageview.desktop \
+         Wlrix.Writer:wlrix-writer:com.wlrix.writer.desktop"
 
 # List available recipes.
 default:
@@ -157,7 +158,7 @@ set-default-apps:
   python3 - "$target" <<'PY'
   import sys, re
   path = sys.argv[1]
-  wanted = {"inode/directory": "com.wlrix.files.desktop"}
+  wanted = {"inode/directory": "com.wlrix.files.desktop", "text/plain": "com.wlrix.writer.desktop"}
   lines = open(path).read().splitlines()
   group = "[Default Applications]"
   if group not in [l.strip() for l in lines]:
