@@ -220,4 +220,46 @@ Its text is still open here. Save it to write it back.</value>
   <data name="TabsDefault" xml:space="preserve">
     <value>Use as default for new documents</value>
   </data>
+  <data name="FindTitle" xml:space="preserve">
+    <value>Find</value>
+  </data>
+  <data name="FindLabel" xml:space="preserve">
+    <value>_String to Find:</value>
+  </data>
+  <data name="FindRecallHint" xml:space="preserve">
+    <value>(use up arrow key to recall previous)</value>
+  </data>
+  <data name="FindRegex" xml:space="preserve">
+    <value>_Regular Expression</value>
+  </data>
+  <data name="FindCase" xml:space="preserve">
+    <value>_Case Sensitive</value>
+  </data>
+  <data name="FindWholeWord" xml:space="preserve">
+    <value>_Whole Word</value>
+  </data>
+  <data name="FindBackward" xml:space="preserve">
+    <value>Search _Backward</value>
+  </data>
+  <data name="FindKeep" xml:space="preserve">
+    <value>_Keep Dialog</value>
+  </data>
+  <data name="FindButton" xml:space="preserve">
+    <value>Find</value>
+  </data>
+  <data name="FindWrapped" xml:space="preserve">
+    <value>Search wrapped to the beginning.</value>
+  </data>
+  <data name="FindWrappedBackward" xml:space="preserve">
+    <value>Search wrapped to the end.</value>
+  </data>
+  <data name="FindNotFound" xml:space="preserve">
+    <value>String not found.</value>
+  </data>
+  <data name="FindInvalid" xml:space="preserve">
+    <value>Invalid regular expression: {0}</value>
+  </data>
+  <data name="FindNoDocument" xml:space="preserve">
+    <value>There is no document to search.</value>
+  </data>
 </root>

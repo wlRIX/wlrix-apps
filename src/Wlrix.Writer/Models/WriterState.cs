@@ -19,6 +19,9 @@ public sealed record WriterStateDocument
 
     /// <summary>Preferences ▸ Show Line Numbers, which applies to every editor at once.</summary>
     public bool ShowLineNumbers { get; init; }
+
+    /// <summary>Strings searched for, most recent first: the Find dialog's up-arrow recall.</summary>
+    public List<string> SearchHistory { get; init; } = [];
 }
 
 [JsonSourceGenerationOptions(WriteIndented = true, PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase)]
@@ -74,6 +77,7 @@ public sealed class WriterState
             return document with
             {
                 Recent = document.Recent ?? [],
+                SearchHistory = document.SearchHistory ?? [],
                 DefaultTabs = (document.DefaultTabs ?? TabSettings.Default).Normalized(),
             };
         }

@@ -54,4 +54,11 @@ public static class Strings
     public static string Deleted(string name) => Catalog.Format("DeletedMessage", name);
 
     public static string TabsTitle => Catalog.Get("TabsTitle");
+
+    public static string FindTitle => Catalog.Get("FindTitle");
+    public static string FindWrapped => Catalog.Get("FindWrapped");
+    public static string FindWrappedBackward => Catalog.Get("FindWrappedBackward");
+    public static string FindNotFound => Catalog.Get("FindNotFound");
+    public static string FindInvalid(string reason) => Catalog.Format("FindInvalid", reason);
+    public static string FindNoDocument => Catalog.Get("FindNoDocument");
 }

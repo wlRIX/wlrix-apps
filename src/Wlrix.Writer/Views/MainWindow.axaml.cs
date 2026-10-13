@@ -16,6 +16,7 @@ public partial class MainWindow : Window
 {
     private IReadOnlyList<string> _openOnStartup = [];
     private IDisposable? _splitSubscription;
+    private FindDialog? _findDialog;
 
     /// <summary>Set once every unsaved document has been dealt with, so the second close goes through.</summary>
     private bool _closeConfirmed;
@@ -66,6 +67,7 @@ public partial class MainWindow : Window
         model.ReloadRequested += OnReloadRequested;
         model.DeletedNoticeRequested += OnDeletedNoticeRequested;
         model.TabsDialogRequested += OnTabsDialogRequested;
+        model.FindDialogRequested += OnFindDialogRequested;
         model.ErrorRaised += OnErrorRaised;
         model.InformationRaised += OnInformationRaised;
         model.AboutRequested += OnAboutRequested;
@@ -111,6 +113,7 @@ public partial class MainWindow : Window
             model.ReloadRequested -= OnReloadRequested;
             model.DeletedNoticeRequested -= OnDeletedNoticeRequested;
             model.TabsDialogRequested -= OnTabsDialogRequested;
+        model.FindDialogRequested -= OnFindDialogRequested;
             model.ErrorRaised -= OnErrorRaised;
             model.InformationRaised -= OnInformationRaised;
             model.AboutRequested -= OnAboutRequested;
@@ -215,6 +218,36 @@ public partial class MainWindow : Window
     private Task OnDeletedNoticeRequested(string name) =>
         MessageDialog.ShowAsync(this, DialogType.Warning, Strings.Deleted(name),
             buttons: DialogButtons.Ok, title: Strings.DeletedTitle);
+
+    /// <summary>Shows the Find dialog, or brings it forward with its field ready if it is already open.</summary>
+    /// <remarks>
+    /// Modeless and owned by this window, so it stays above the text and the text can still be
+    /// clicked in, and Find then searches whichever editor was used last.
+    /// </remarks>
+    private void OnFindDialogRequested()
+    {
+        if (Model is not { } model)
+            return;
+
+        if (_findDialog is { } open)
+        {
+            open.Activate();
+            open.FocusField();
+            return;
+        }
+
+        model.FindOptions.ClearMessage();
+        var dialog = new FindDialog { DataContext = model.FindOptions };
+        dialog.Closed += (_, _) =>
+        {
+            _findDialog = null;
+            // Back to the text, with the match selected and the caret at it.
+            Activate();
+            Model?.ActiveTab?.RequestFocus();
+        };
+        _findDialog = dialog;
+        dialog.Show(this);
+    }
 
     private Task<TabsDialogResult?> OnTabsDialogRequested(TabSettings current) => TabsDialog.ShowAsync(this, current);
 

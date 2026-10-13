@@ -144,6 +144,13 @@ watch, because a file replaced by a rename leaves a watch on the old file watchi
 Events are only a hint: the file's time and size are compared with what the editor last read or
 wrote, so its own saves never prompt. The prompt waits until the window has the focus.
 
+**Search ▸ Find is NEdit's dialog.** It is modeless, so with Keep Dialog checked it stays beside
+the text and each Find selects the next match. Every query is compiled to a .NET regular
+expression; a plain string is escaped first, so Whole Word and Case Sensitive work the same way for
+both kinds. The search starts from the selection and wraps around the end of the document, and the
+dialog says when it wrapped or found nothing. AvaloniaEdit's own Ctrl+F search panel is removed, so
+there is only one search. Replace is still to come.
+
 AvaloniaEdit's templates look up Simple-theme resource keys such as `FontSizeNormal` and
 `ThemeBorderThickness`, which `WlrixTheme` does not define, so the editor's `App.axaml` defines
 them. AvaloniaEdit also hosts its line numbers in an `ItemsControl`. `WlrixTheme` has templated

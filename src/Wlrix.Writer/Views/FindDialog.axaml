@@ -1,0 +1,63 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Wlrix.Writer.ViewModels"
+        xmlns:wlrix="https://vic485.xyz/Wlrix.Avalonia"
+        xmlns:loc="using:Wlrix.Common.Localization"
+        x:Class="Wlrix.Writer.Views.FindDialog"
+        x:DataType="vm:FindViewModel"
+        Title="{loc:Tr FindTitle}"
+        Width="420"
+        CanResize="False"
+        SizeToContent="Height"
+        ShowInTaskbar="False"
+        WindowStartupLocation="CenterOwner"
+        Background="{DynamicResource WlrixFace}"
+        Foreground="{DynamicResource WlrixForeground}"
+        FontFamily="{DynamicResource WlrixFontFamily}"
+        FontSize="12">
+    <!-- NEdit's Find dialog, laid out as it was. Modeless, so that with Keep Dialog checked it
+         can sit beside the text while Find steps through the matches. -->
+    <wlrix:BevelBorder Bevel="Raised" BevelThickness="2" OuterLineThickness="1"
+                       Background="{DynamicResource WlrixFace}"
+                       LightBrush="{DynamicResource WlrixTopShadow}"
+                       DarkBrush="{DynamicResource WlrixBottomShadow}"
+                       OuterLineBrush="{DynamicResource WlrixOuterLine}"
+                       Padding="10,8">
+        <StackPanel Spacing="6">
+            <!-- AccessText rather than a Label: WlrixTheme has no Label template, and an
+                 untemplated control draws nothing. Alt+S is handled in code instead. -->
+            <DockPanel>
+                <TextBlock DockPanel.Dock="Right" FontWeight="Bold" Text="{loc:Tr FindRecallHint}" />
+                <AccessText FontWeight="Bold" Text="{loc:Tr FindLabel}" />
+            </DockPanel>
+
+            <TextBox Name="Field" Text="{Binding SearchText}" />
+
+            <Grid ColumnDefinitions="*,*,Auto" RowDefinitions="Auto,Auto" RowSpacing="6" Margin="0,2,0,0">
+                <CheckBox Grid.Row="0" Grid.Column="0" Content="{loc:Tr FindRegex}"
+                          IsChecked="{Binding RegularExpression}" />
+                <CheckBox Grid.Row="0" Grid.Column="1" Content="{loc:Tr FindCase}"
+                          IsChecked="{Binding CaseSensitive}" />
+                <CheckBox Grid.Row="0" Grid.Column="2" Content="{loc:Tr FindWholeWord}"
+                          IsChecked="{Binding WholeWord}" />
+                <CheckBox Grid.Row="1" Grid.Column="0" Content="{loc:Tr FindBackward}"
+                          IsChecked="{Binding SearchBackward}" />
+                <CheckBox Grid.Row="1" Grid.Column="2" Content="{loc:Tr FindKeep}"
+                          IsChecked="{Binding KeepDialog}" />
+            </Grid>
+
+            <!-- Why nothing was selected, or that the search went round the end. Empty most of
+                 the time, and then it takes no room. -->
+            <TextBlock Text="{Binding Message}" FontStyle="Italic" TextWrapping="Wrap"
+                       IsVisible="{Binding Message, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+
+            <Grid ColumnDefinitions="*,*" Margin="0,4,0,0">
+                <Button Name="FindButton" Grid.Column="0" Content="{loc:Tr FindButton}"
+                        MinWidth="64" HorizontalAlignment="Center" IsDefault="True"
+                        IsEnabled="{Binding SearchText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                <Button Name="CancelButton" Grid.Column="1" Content="{loc:Tr DialogCancel}"
+                        MinWidth="64" HorizontalAlignment="Center" IsCancel="True" />
+            </Grid>
+        </StackPanel>
+    </wlrix:BevelBorder>
+</Window>

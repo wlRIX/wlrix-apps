@@ -56,6 +56,8 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
         _state = new WriterState(warn: message => _logger.ZLogWarning($"{message}"));
         _recent = new RecentFiles(_state.Document.Recent);
         Preferences.ShowLineNumbers = _state.Document.ShowLineNumbers;
+        FindOptions = new FindViewModel(new SearchHistory(_state.Document.SearchHistory), FindNext,
+            history => _state.Update(state => state with { SearchHistory = [.. history] }));
 
         PrimaryGroup = new TabGroupViewModel { IsActive = true };
         _activeGroup = PrimaryGroup;
@@ -87,8 +89,8 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
             this.WhenAnyValue(model => model.ActiveTab, model => model.ClipboardHasText, (tab, text) => tab is not null && text));
         SelectAll = ReactiveCommand.Create(() => Edit(editor => editor.SelectAll()), hasTab);
 
-        // A later pass: the menu items are there so the menu reads as it will, but do nothing yet.
-        Find = ReactiveCommand.Create(() => { }, Observable.Return(false));
+        Find = ReactiveCommand.Create(() => FindDialogRequested?.Invoke(), hasTab);
+        // A later pass: the menu item is there so the menu reads as it will, but does nothing yet.
         Replace = ReactiveCommand.Create(() => { }, Observable.Return(false));
 
         ChooseLanguage = ReactiveCommand.Create<string?>(SetLanguage, hasTab);
@@ -160,6 +162,9 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
     /// <summary>Opens the Tabs dialog on the given settings.</summary>
     public event Func<TabSettings, Task<TabsDialogResult?>>? TabsDialogRequested;
 
+    /// <summary>Opens the Find dialog, or brings it forward if it is open.</summary>
+    public event Action? FindDialogRequested;
+
     public event Action? AboutRequested;
     public event Action? ExitRequested;
     public event Action<string>? ErrorRaised;
@@ -171,6 +176,9 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
     // --- state ---------------------------------------------------------------------------------
 
     public EditorPreferences Preferences { get; } = new();
+
+    /// <summary>The Find dialog's text and options, kept while the dialog is closed.</summary>
+    public FindViewModel FindOptions { get; }
 
     /// <summary>The left half, or the whole window when it is not split.</summary>
     public TabGroupViewModel PrimaryGroup { get; }
@@ -792,6 +800,39 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
         document.Tabs = result.Settings;
         if (result.MakeDefault)
             _state.Update(state => state with { DefaultTabs = result.Settings.Normalized() });
+    }
+
+    // --- searching -----------------------------------------------------------------------------
+
+    /// <summary>Selects the next match for <paramref name="query"/> in the active editor.</summary>
+    /// <returns>How it went, with the reason when the pattern is invalid.</returns>
+    private (FindOutcome, string?) FindNext(SearchQuery query)
+    {
+        if (ActiveTab?.Editor is not { } editor)
+            return (FindOutcome.NoDocument, null);
+
+        SearchMatch? match;
+        try
+        {
+            match = TextSearch.Find(editor.Document.Text, editor.SelectionStart,
+                editor.SelectionStart + editor.SelectionLength, query);
+        }
+        catch (InvalidPatternException ex)
+        {
+            return (FindOutcome.Invalid, ex.Message);
+        }
+        catch (System.Text.RegularExpressions.RegexMatchTimeoutException)
+        {
+            return (FindOutcome.Invalid, null);
+        }
+
+        if (match is not { } found)
+            return (FindOutcome.NotFound, null);
+
+        editor.Select(found.Offset, found.Length);
+        var location = editor.Document.GetLocation(found.Offset);
+        editor.ScrollTo(location.Line, location.Column);
+        return (found.Wrapped ? FindOutcome.Wrapped : FindOutcome.Found, null);
     }
 
     // --- changes on disk -----------------------------------------------------------------------
