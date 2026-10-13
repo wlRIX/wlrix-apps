@@ -61,4 +61,11 @@ public static class Strings
     public static string FindNotFound => Catalog.Get("FindNotFound");
     public static string FindInvalid(string reason) => Catalog.Format("FindInvalid", reason);
     public static string FindNoDocument => Catalog.Get("FindNoDocument");
+
+    public static string Replaced(int count) =>
+        count == 1 ? Catalog.Get("ReplacedOne") : Catalog.Format("ReplacedMany", count);
+
+    /// <summary>Replace All in All Tabs. One document reads as plain <see cref="Replaced"/>.</summary>
+    public static string ReplacedInDocuments(int count, int documents) =>
+        documents <= 1 ? Replaced(count) : Catalog.Format("ReplacedManyInDocuments", count, documents);
 }

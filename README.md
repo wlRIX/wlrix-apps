@@ -149,7 +149,14 @@ the text and each Find selects the next match. Every query is compiled to a .NET
 expression; a plain string is escaped first, so Whole Word and Case Sensitive work the same way for
 both kinds. The search starts from the selection and wraps around the end of the document, and the
 dialog says when it wrapped or found nothing. AvaloniaEdit's own Ctrl+F search panel is removed, so
-there is only one search. Replace is still to come.
+there is only one search.
+
+**Search ▸ Replace is NEdit's Replace/Find,** with the same options, the same history and the same
+Keep Dialog. Replace replaces the selection if it is an occurrence and otherwise the next one, and
+Replace & Find then selects the occurrence after it. "Replace all in" is scoped to tabs: Tab,
+Selection, and All Tabs in place of NEdit's Multiple Files. Each Replace All is one undo step per
+document. A regular expression's replacement takes .NET substitutions (`$1`, `${name}`, `$&`), not
+NEdit's `\1` and `&`.
 
 AvaloniaEdit's templates look up Simple-theme resource keys such as `FontSizeNormal` and
 `ThemeBorderThickness`, which `WlrixTheme` does not define, so the editor's `App.axaml` defines

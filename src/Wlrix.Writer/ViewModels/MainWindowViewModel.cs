@@ -26,7 +26,7 @@ public enum SaveChoice
 public sealed record TabsDialogResult(TabSettings Settings, bool MakeDefault);
 
 /// <summary>The editor window: its documents, its one or two tab groups, and every menu command.</summary>
-public sealed class MainWindowViewModel : ViewModelBase, IDisposable
+public sealed class MainWindowViewModel : ViewModelBase, ISearchTarget, IDisposable
 {
     private readonly ILogger<MainWindowViewModel> _logger;
     private readonly WriterState _state;
@@ -56,8 +56,13 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
         _state = new WriterState(warn: message => _logger.ZLogWarning($"{message}"));
         _recent = new RecentFiles(_state.Document.Recent);
         Preferences.ShowLineNumbers = _state.Document.ShowLineNumbers;
-        FindOptions = new FindViewModel(new SearchHistory(_state.Document.SearchHistory), FindNext,
-            history => _state.Update(state => state with { SearchHistory = [.. history] }));
+        // One history for both dialogs: a string searched for in Find is there to recall in
+        // Replace/Find, and the other way round.
+        var searchHistory = new SearchHistory(_state.Document.SearchHistory);
+        Action<IReadOnlyList<string>> saveHistory =
+            history => _state.Update(state => state with { SearchHistory = [.. history] });
+        FindOptions = new FindViewModel(this, searchHistory, saveHistory);
+        ReplaceOptions = new ReplaceViewModel(this, searchHistory, saveHistory);
 
         PrimaryGroup = new TabGroupViewModel { IsActive = true };
         _activeGroup = PrimaryGroup;
@@ -90,8 +95,8 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
         SelectAll = ReactiveCommand.Create(() => Edit(editor => editor.SelectAll()), hasTab);
 
         Find = ReactiveCommand.Create(() => FindDialogRequested?.Invoke(), hasTab);
-        // A later pass: the menu item is there so the menu reads as it will, but does nothing yet.
-        Replace = ReactiveCommand.Create(() => { }, Observable.Return(false));
+        Replace = ReactiveCommand.Create(() => ReplaceDialogRequested?.Invoke(), hasTab);
+        _subscriptions.Add(hasSelection.Subscribe(selected => ReplaceOptions.HasSelection = selected));
 
         ChooseLanguage = ReactiveCommand.Create<string?>(SetLanguage, hasTab);
         ToggleHighlight = ReactiveCommand.Create(() =>
@@ -165,6 +170,9 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
     /// <summary>Opens the Find dialog, or brings it forward if it is open.</summary>
     public event Action? FindDialogRequested;
 
+    /// <summary>Opens the Replace/Find dialog, or brings it forward if it is open.</summary>
+    public event Action? ReplaceDialogRequested;
+
     public event Action? AboutRequested;
     public event Action? ExitRequested;
     public event Action<string>? ErrorRaised;
@@ -179,6 +187,9 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
 
     /// <summary>The Find dialog's text and options, kept while the dialog is closed.</summary>
     public FindViewModel FindOptions { get; }
+
+    /// <summary>The Replace/Find dialog's text and options, kept while the dialog is closed.</summary>
+    public ReplaceViewModel ReplaceOptions { get; }
 
     /// <summary>The left half, or the whole window when it is not split.</summary>
     public TabGroupViewModel PrimaryGroup { get; }
@@ -551,6 +562,7 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
     private void AddDocument(DocumentViewModel document)
     {
         _documents.Add(document);
+        ReplaceOptions.HasOtherDocuments = _documents.Count > 1;
         if (document.Path is { } path)
             Watch(document, path);
     }
@@ -581,6 +593,7 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
         if (document.Views == 0)
         {
             _documents.Remove(document);
+            ReplaceOptions.HasOtherDocuments = _documents.Count > 1;
             if (document.Path is { } path)
                 Unwatch(document, path);
             document.Dispose();
@@ -804,35 +817,156 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
 
     // --- searching -----------------------------------------------------------------------------
 
-    /// <summary>Selects the next match for <paramref name="query"/> in the active editor.</summary>
-    /// <returns>How it went, with the reason when the pattern is invalid.</returns>
-    private (FindOutcome, string?) FindNext(SearchQuery query)
+    /// <inheritdoc/>
+    public SearchResult FindNext(SearchQuery query)
     {
         if (ActiveTab?.Editor is not { } editor)
-            return (FindOutcome.NoDocument, null);
+            return new SearchResult(FindOutcome.NoDocument);
 
-        SearchMatch? match;
+        return Searching(() =>
+        {
+            var match = TextSearch.Find(editor.Document.Text, editor.SelectionStart,
+                editor.SelectionStart + editor.SelectionLength, query);
+            if (match is not { } found)
+                return new SearchResult(FindOutcome.NotFound);
+
+            editor.Select(found.Offset, found.Length);
+            Reveal(editor, found.Offset);
+            return new SearchResult(found.Wrapped ? FindOutcome.Wrapped : FindOutcome.Found);
+        });
+    }
+
+    /// <inheritdoc/>
+    public SearchResult ReplaceNext(SearchQuery query, string replacement, bool thenFind)
+    {
+        if (ActiveTab?.Editor is not { } editor)
+            return new SearchResult(FindOutcome.NoDocument);
+
+        return Searching(() =>
+        {
+            var document = editor.Document;
+            var text = document.Text;
+            var offset = editor.SelectionStart;
+            var length = editor.SelectionLength;
+            var wrapped = false;
+
+            // The selection is the occurrence to replace when it is one, which is what it is after
+            // a Find; otherwise the next occurrence is found and replaced.
+            var expanded = TextSearch.ReplacementAt(text, offset, length, query, replacement);
+            if (expanded is null)
+            {
+                if (TextSearch.Find(text, offset, offset + length, query) is not { } found)
+                    return new SearchResult(FindOutcome.NotFound);
+                (offset, length, wrapped) = (found.Offset, found.Length, found.Wrapped);
+                expanded = TextSearch.ReplacementAt(text, offset, length, query, replacement) ?? replacement;
+            }
+
+            document.Replace(offset, length, expanded);
+
+            // The caret goes past the new text in the direction of the search, so the next search
+            // does not find the replacement itself (replacing "a" with "aa", say).
+            editor.Select(query.Backward ? offset : offset + expanded.Length, 0);
+            Reveal(editor, offset);
+
+            if (thenFind)
+                return FindNext(query);
+            return new SearchResult(wrapped ? FindOutcome.Wrapped : FindOutcome.Found);
+        });
+    }
+
+    /// <inheritdoc/>
+    public SearchResult ReplaceAll(SearchQuery query, string replacement, ReplaceScope scope)
+    {
+        if (ActiveTab?.Editor is not { } editor)
+            return new SearchResult(FindOutcome.NoDocument);
+
+        return Searching(() =>
+        {
+            if (scope == ReplaceScope.Selection)
+            {
+                var start = editor.SelectionStart;
+                var end = start + editor.SelectionLength;
+                var count = ReplaceIn(editor.Document, query, replacement, start, end, out var delta);
+                // The replaced text stays selected, so a second Replace All in Selection works on
+                // the same stretch.
+                editor.Select(start, end - start + delta);
+                return Counted(count, count > 0 ? 1 : 0);
+            }
+
+            var documents = scope == ReplaceScope.AllTabs ? [.. _documents] : new[] { ActiveTab.Document };
+            var total = 0;
+            var touched = 0;
+            foreach (var document in documents)
+            {
+                var count = ReplaceIn(document.Text, query, replacement, 0, document.Text.TextLength, out _);
+                total += count;
+                if (count > 0)
+                    touched++;
+            }
+
+            return Counted(total, touched);
+        });
+
+        static SearchResult Counted(int count, int documents) => count == 0
+            ? new SearchResult(FindOutcome.NotFound)
+            : new SearchResult(FindOutcome.Found, Count: count, Documents: documents);
+    }
+
+    /// <summary>Replaces every match between two offsets of one document.</summary>
+    /// <param name="delta">How much longer the range is afterward.</param>
+    /// <returns>How many were replaced.</returns>
+    /// <remarks>
+    /// In one update, so a single Undo takes the whole Replace All back. Applied from the last
+    /// match to the first, so each edit leaves the offsets of the ones still to come alone.
+    /// </remarks>
+    private static int ReplaceIn(AvaloniaEdit.Document.TextDocument document, SearchQuery query, string replacement,
+        int start, int end, out int delta)
+    {
+        var edits = TextSearch.ReplaceAll(document.Text, start, end, query, replacement);
+        delta = 0;
+        if (edits.Count == 0)
+            return 0;
+
+        document.BeginUpdate();
         try
         {
-            match = TextSearch.Find(editor.Document.Text, editor.SelectionStart,
-                editor.SelectionStart + editor.SelectionLength, query);
+            for (var i = edits.Count - 1; i >= 0; i--)
+            {
+                var edit = edits[i];
+                document.Replace(edit.Offset, edit.Length, edit.Replacement);
+                delta += edit.Replacement.Length - edit.Length;
+            }
+        }
+        finally
+        {
+            document.EndUpdate();
+        }
+
+        return edits.Count;
+    }
+
+    /// <summary>Runs a search, turning a bad or runaway pattern into a result rather than an exception.</summary>
+    private static SearchResult Searching(Func<SearchResult> search)
+    {
+        try
+        {
+            return search();
         }
         catch (InvalidPatternException ex)
         {
-            return (FindOutcome.Invalid, ex.Message);
+            return new SearchResult(FindOutcome.Invalid, ex.Message);
         }
         catch (System.Text.RegularExpressions.RegexMatchTimeoutException)
         {
-            return (FindOutcome.Invalid, null);
+            return new SearchResult(FindOutcome.Invalid);
         }
+    }
 
-        if (match is not { } found)
-            return (FindOutcome.NotFound, null);
-
-        editor.Select(found.Offset, found.Length);
-        var location = editor.Document.GetLocation(found.Offset);
+    /// <summary>Scrolls <paramref name="offset"/> into view.</summary>
+    private static void Reveal(AvaloniaEdit.TextEditor editor, int offset)
+    {
+        var location = editor.Document.GetLocation(offset);
         editor.ScrollTo(location.Line, location.Column);
-        return (found.Wrapped ? FindOutcome.Wrapped : FindOutcome.Found, null);
     }
 
     // --- changes on disk -----------------------------------------------------------------------

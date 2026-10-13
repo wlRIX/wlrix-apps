@@ -103,6 +103,60 @@ public class TextSearchTests
     }
 }
 
+public class ReplaceTests
+{
+    [Fact]
+    public void The_selection_is_replaced_only_when_it_is_a_match()
+    {
+        Assert.Equal("new", TextSearch.ReplacementAt("an old one", 3, 3, new SearchQuery("old"), "new"));
+        Assert.Null(TextSearch.ReplacementAt("an old one", 3, 2, new SearchQuery("old"), "new"));
+        Assert.Null(TextSearch.ReplacementAt("an old one", 0, 2, new SearchQuery("old"), "new"));
+    }
+
+    [Fact]
+    public void Plain_replacements_are_used_as_they_are()
+    {
+        Assert.Equal("$1 &", TextSearch.ReplacementAt("x", 0, 1, new SearchQuery("x"), "$1 &"));
+    }
+
+    [Fact]
+    public void Regular_expression_replacements_substitute_groups()
+    {
+        var edits = TextSearch.ReplaceAll("int a; int b;", 0, 13,
+            new SearchQuery(@"int (\w)", RegularExpression: true), "long $1");
+
+        Assert.Equal([new TextEdit(0, 5, "long a"), new TextEdit(7, 5, "long b")], edits);
+    }
+
+    [Fact]
+    public void Replace_all_in_a_range_leaves_matches_outside_or_across_its_ends()
+    {
+        //                 0123456789012345678
+        const string text = "old old old old";
+
+        var edits = TextSearch.ReplaceAll(text, 2, 13, new SearchQuery("old"), "new");
+
+        Assert.Equal([4, 8], edits.Select(edit => edit.Offset));
+    }
+
+    [Fact]
+    public void Whole_word_in_a_range_still_sees_the_text_beside_it()
+    {
+        // The range starts inside "bold": "old" there touches a letter and is not a whole word.
+        var edits = TextSearch.ReplaceAll("bold old", 1, 8, new SearchQuery("old", WholeWord: true), "new");
+
+        Assert.Equal([5], edits.Select(edit => edit.Offset));
+    }
+
+    [Fact]
+    public void Empty_matches_can_be_replaced_everywhere()
+    {
+        var edits = TextSearch.ReplaceAll("a\nb\n", 0, 4, new SearchQuery("^", RegularExpression: true), "> ");
+
+        Assert.Equal([0, 2], edits.Select(edit => edit.Offset));
+    }
+}
+
 public class SearchHistoryTests
 {
     [Fact]

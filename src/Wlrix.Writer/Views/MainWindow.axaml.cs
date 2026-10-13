@@ -17,6 +17,7 @@ public partial class MainWindow : Window
     private IReadOnlyList<string> _openOnStartup = [];
     private IDisposable? _splitSubscription;
     private FindDialog? _findDialog;
+    private ReplaceDialog? _replaceDialog;
 
     /// <summary>Set once every unsaved document has been dealt with, so the second close goes through.</summary>
     private bool _closeConfirmed;
@@ -68,6 +69,7 @@ public partial class MainWindow : Window
         model.DeletedNoticeRequested += OnDeletedNoticeRequested;
         model.TabsDialogRequested += OnTabsDialogRequested;
         model.FindDialogRequested += OnFindDialogRequested;
+        model.ReplaceDialogRequested += OnReplaceDialogRequested;
         model.ErrorRaised += OnErrorRaised;
         model.InformationRaised += OnInformationRaised;
         model.AboutRequested += OnAboutRequested;
@@ -114,6 +116,7 @@ public partial class MainWindow : Window
             model.DeletedNoticeRequested -= OnDeletedNoticeRequested;
             model.TabsDialogRequested -= OnTabsDialogRequested;
         model.FindDialogRequested -= OnFindDialogRequested;
+        model.ReplaceDialogRequested -= OnReplaceDialogRequested;
             model.ErrorRaised -= OnErrorRaised;
             model.InformationRaised -= OnInformationRaised;
             model.AboutRequested -= OnAboutRequested;
@@ -246,6 +249,31 @@ public partial class MainWindow : Window
             Model?.ActiveTab?.RequestFocus();
         };
         _findDialog = dialog;
+        dialog.Show(this);
+    }
+
+    /// <summary>Shows the Replace/Find dialog, or brings it forward. Modeless, as Find is.</summary>
+    private void OnReplaceDialogRequested()
+    {
+        if (Model is not { } model)
+            return;
+
+        if (_replaceDialog is { } open)
+        {
+            open.Activate();
+            open.FocusField();
+            return;
+        }
+
+        model.ReplaceOptions.ClearMessage();
+        var dialog = new ReplaceDialog { DataContext = model.ReplaceOptions };
+        dialog.Closed += (_, _) =>
+        {
+            _replaceDialog = null;
+            Activate();
+            Model?.ActiveTab?.RequestFocus();
+        };
+        _replaceDialog = dialog;
         dialog.Show(this);
     }
 

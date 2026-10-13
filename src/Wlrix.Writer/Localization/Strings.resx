@@ -235,9 +235,6 @@ Its text is still open here. Save it to write it back.</value>
   <data name="FindCase" xml:space="preserve">
     <value>_Case Sensitive</value>
   </data>
-  <data name="FindWholeWord" xml:space="preserve">
-    <value>_Whole Word</value>
-  </data>
   <data name="FindBackward" xml:space="preserve">
     <value>Search _Backward</value>
   </data>
@@ -261,5 +258,44 @@ Its text is still open here. Save it to write it back.</value>
   </data>
   <data name="FindNoDocument" xml:space="preserve">
     <value>There is no document to search.</value>
+  </data>
+  <data name="ReplaceTitle" xml:space="preserve">
+    <value>Replace/Find</value>
+  </data>
+  <data name="ReplaceWithLabel" xml:space="preserve">
+    <value>Replace _With:</value>
+  </data>
+  <data name="FindWholeWord" xml:space="preserve">
+    <value>W_hole Word</value>
+  </data>
+  <data name="ReplaceAllIn" xml:space="preserve">
+    <value>Replace all in:</value>
+  </data>
+  <data name="ReplaceScopeTab" xml:space="preserve">
+    <value>_Tab</value>
+  </data>
+  <data name="ReplaceScopeSelection" xml:space="preserve">
+    <value>Se_lection</value>
+  </data>
+  <data name="ReplaceScopeAllTabs" xml:space="preserve">
+    <value>_All Tabs</value>
+  </data>
+  <data name="ReplaceButton" xml:space="preserve">
+    <value>Replace</value>
+  </data>
+  <data name="ReplaceFindButton" xml:space="preserve">
+    <value>_Find</value>
+  </data>
+  <data name="ReplaceAndFindButton" xml:space="preserve">
+    <value>Replace &amp; F_ind</value>
+  </data>
+  <data name="ReplacedOne" xml:space="preserve">
+    <value>Replaced 1 occurrence.</value>
+  </data>
+  <data name="ReplacedMany" xml:space="preserve">
+    <value>Replaced {0} occurrences.</value>
+  </data>
+  <data name="ReplacedManyInDocuments" xml:space="preserve">
+    <value>Replaced {0} occurrences in {1} documents.</value>
   </data>
 </root>

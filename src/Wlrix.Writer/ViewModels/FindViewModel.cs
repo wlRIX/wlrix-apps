@@ -24,18 +24,53 @@ public enum FindOutcome
     NoDocument,
 }
 
+/// <summary>What a search or replacement did.</summary>
+/// <param name="Detail">Why the pattern is invalid, for <see cref="FindOutcome.Invalid"/>.</param>
+/// <param name="Count">For Replace All: how many occurrences were replaced.</param>
+/// <param name="Documents">For Replace All: in how many documents.</param>
+public sealed record SearchResult(FindOutcome Outcome, string? Detail = null, int Count = 0, int Documents = 0);
+
+/// <summary>Where Replace All works.</summary>
+public enum ReplaceScope
+{
+    /// <summary>The whole of the active tab's document.</summary>
+    Tab,
+
+    /// <summary>Only the selected text in the active tab.</summary>
+    Selection,
+
+    /// <summary>Every open document.</summary>
+    AllTabs,
+}
+
+/// <summary>The window, as the search dialogs see it: something to search and replace in.</summary>
+public interface ISearchTarget
+{
+    /// <summary>Selects the next match in the active editor.</summary>
+    SearchResult FindNext(SearchQuery query);
+
+    /// <summary>
+    /// Replaces the selection if it is a match, otherwise the next match; then, with
+    /// <paramref name="thenFind"/>, selects the match after it.
+    /// </summary>
+    SearchResult ReplaceNext(SearchQuery query, string replacement, bool thenFind);
+
+    /// <summary>Replaces every match in <paramref name="scope"/>.</summary>
+    SearchResult ReplaceAll(SearchQuery query, string replacement, ReplaceScope scope);
+}
+
 /// <summary>
-/// Search ▸ Find: the dialog's field and options.
+/// What the Find and Replace/Find dialogs have in common: the string to find, the options, the
+/// up-arrow history and the line that reports how the last search went.
 /// </summary>
 /// <remarks>
-/// One for the window's lifetime, so the options and the text survive closing and reopening the
-/// dialog, as NEdit's did. The search itself is the window's: this asks it through
-/// <see cref="Search"/> and reports how it went.
+/// One of each dialog's model lives as long as the window, so the text and the options are still
+/// there when a dialog is opened again, as NEdit kept them. Both dialogs share one
+/// <see cref="SearchHistory"/>.
 /// </remarks>
-public sealed class FindViewModel : ViewModelBase
+public abstract class SearchDialogViewModel : ViewModelBase
 {
     private readonly SearchHistory _history;
-    private readonly Func<SearchQuery, (FindOutcome Outcome, string? Detail)> _search;
     private readonly Action<IReadOnlyList<string>> _historyChanged;
 
     private string _searchText = "";
@@ -47,14 +82,13 @@ public sealed class FindViewModel : ViewModelBase
     private string? _message;
     private bool _recalling;
 
+    /// <param name="target">Where the searching happens.</param>
     /// <param name="history">The strings searched for so far.</param>
-    /// <param name="search">Runs a search in the active editor.</param>
     /// <param name="historyChanged">Told the new history after each search, to save it.</param>
-    public FindViewModel(SearchHistory history, Func<SearchQuery, (FindOutcome, string?)> search,
-        Action<IReadOnlyList<string>> historyChanged)
+    protected SearchDialogViewModel(ISearchTarget target, SearchHistory history, Action<IReadOnlyList<string>> historyChanged)
     {
+        Target = target;
         _history = history;
-        _search = search;
         _historyChanged = historyChanged;
 
         // Typing starts a new search, so whatever the last one said no longer applies, and the
@@ -66,6 +100,8 @@ public sealed class FindViewModel : ViewModelBase
                 _history.ResetRecall();
         });
     }
+
+    protected ISearchTarget Target { get; }
 
     public string SearchText
     {
@@ -97,52 +133,52 @@ public sealed class FindViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _searchBackward, value);
     }
 
-    /// <summary>Whether the dialog stays open after a successful Find, so Find again finds the next one.</summary>
+    /// <summary>Whether the dialog stays open after it has done something, so it can do it again.</summary>
     public bool KeepDialog
     {
         get => _keepDialog;
         set => this.RaiseAndSetIfChanged(ref _keepDialog, value);
     }
 
-    /// <summary>A line under the field saying why nothing was selected, or that the search wrapped.</summary>
+    /// <summary>A line under the options saying why nothing happened, or what did.</summary>
     public string? Message
     {
         get => _message;
-        private set => this.RaiseAndSetIfChanged(ref _message, value);
+        protected set => this.RaiseAndSetIfChanged(ref _message, value);
     }
 
     /// <summary>Clears the message, as reopening the dialog does.</summary>
     public void ClearMessage() => Message = null;
-
-    /// <summary>Runs the search.</summary>
-    /// <returns>Whether the dialog should close: something was found and Keep Dialog is off.</returns>
-    public bool Search()
-    {
-        if (SearchText.Length == 0)
-            return false;
-
-        _history.Add(SearchText);
-        _historyChanged(_history.Entries);
-
-        var query = new SearchQuery(SearchText, RegularExpression, CaseSensitive, WholeWord, SearchBackward);
-        var (outcome, detail) = _search(query);
-        Message = outcome switch
-        {
-            FindOutcome.Found => null,
-            FindOutcome.Wrapped => SearchBackward ? Strings.FindWrappedBackward : Strings.FindWrapped,
-            FindOutcome.NotFound => Strings.FindNotFound,
-            FindOutcome.Invalid => Strings.FindInvalid(detail ?? ""),
-            _ => Strings.FindNoDocument,
-        };
-
-        return outcome is FindOutcome.Found or FindOutcome.Wrapped && !KeepDialog;
-    }
 
     /// <summary>Up arrow: the previous string searched for.</summary>
     public void RecallOlder() => Recall(_history.Older(SearchText));
 
     /// <summary>Down arrow: back toward what was typed.</summary>
     public void RecallNewer() => Recall(_history.Newer());
+
+    /// <summary>The query the dialog describes, with the search string added to the history.</summary>
+    protected SearchQuery Record()
+    {
+        _history.Add(SearchText);
+        _historyChanged(_history.Entries);
+        return new SearchQuery(SearchText, RegularExpression, CaseSensitive, WholeWord, SearchBackward);
+    }
+
+    /// <summary>Puts the message for <paramref name="result"/> under the options.</summary>
+    /// <returns>Whether the dialog should close: the action did something and Keep Dialog is off.</returns>
+    protected bool Report(SearchResult result, string? success = null)
+    {
+        Message = result.Outcome switch
+        {
+            FindOutcome.Found => success,
+            FindOutcome.Wrapped => success ?? (SearchBackward ? Strings.FindWrappedBackward : Strings.FindWrapped),
+            FindOutcome.NotFound => Strings.FindNotFound,
+            FindOutcome.Invalid => Strings.FindInvalid(result.Detail ?? ""),
+            _ => Strings.FindNoDocument,
+        };
+
+        return result.Outcome is FindOutcome.Found or FindOutcome.Wrapped && !KeepDialog;
+    }
 
     private void Recall(string? text)
     {
@@ -158,4 +194,13 @@ public sealed class FindViewModel : ViewModelBase
             _recalling = false;
         }
     }
+}
+
+/// <summary>Search ▸ Find.</summary>
+public sealed class FindViewModel(ISearchTarget target, SearchHistory history, Action<IReadOnlyList<string>> historyChanged)
+    : SearchDialogViewModel(target, history, historyChanged)
+{
+    /// <summary>Runs the search.</summary>
+    /// <returns>Whether the dialog should close: something was found and Keep Dialog is off.</returns>
+    public bool Search() => SearchText.Length > 0 && Report(Target.FindNext(Record()));
 }

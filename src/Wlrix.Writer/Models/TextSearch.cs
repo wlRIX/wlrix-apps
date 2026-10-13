@@ -16,6 +16,9 @@ public sealed record SearchQuery(
 /// <summary>A match: where it is, and whether the search went past the end of the document to find it.</summary>
 public readonly record struct SearchMatch(int Offset, int Length, bool Wrapped);
 
+/// <summary>One replacement: the span to replace and what goes there.</summary>
+public readonly record struct TextEdit(int Offset, int Length, string Replacement);
+
 /// <summary>Raised for a regular expression that does not parse.</summary>
 public sealed class InvalidPatternException(string message, Exception inner) : Exception(message, inner);
 
@@ -95,6 +98,61 @@ public static class TextSearch
         var wrapped = regex.Match(text, wrapFrom);
         return wrapped.Success ? new SearchMatch(wrapped.Index, wrapped.Length, true) : null;
     }
+
+    /// <summary>
+    /// What the span from <paramref name="offset"/> becomes when replaced, or null if that span is
+    /// not itself a match. Replace uses it to decide whether the selection is the occurrence to
+    /// replace, or whether it has to find one first.
+    /// </summary>
+    /// <exception cref="InvalidPatternException">The pattern does not parse.</exception>
+    public static string? ReplacementAt(string text, int offset, int length, SearchQuery query, string replacement)
+    {
+        if (query.Text.Length == 0 || offset < 0 || offset + length > text.Length)
+            return null;
+
+        var match = Compile(query with { Backward = false }).Match(text, offset);
+        return match.Success && match.Index == offset && match.Length == length
+            ? Expand(match, query, replacement)
+            : null;
+    }
+
+    /// <summary>Every match lying wholly between <paramref name="start"/> and <paramref name="end"/>, with its replacement.</summary>
+    /// <remarks>
+    /// Matched against the whole text rather than a cut-out of the range, so Whole Word and
+    /// <c>^</c> see the characters on either side of it exactly as Find would. In document order;
+    /// apply them from the last one back so the earlier offsets stay true.
+    /// </remarks>
+    /// <exception cref="InvalidPatternException">The pattern does not parse.</exception>
+    /// <exception cref="RegexMatchTimeoutException">The pattern took too long.</exception>
+    public static IReadOnlyList<TextEdit> ReplaceAll(string text, int start, int end, SearchQuery query, string replacement)
+    {
+        if (query.Text.Length == 0)
+            return [];
+
+        start = Math.Clamp(start, 0, text.Length);
+        end = Math.Clamp(end, start, text.Length);
+        var edits = new List<TextEdit>();
+        for (var match = Compile(query with { Backward = false }).Match(text, start);
+             match.Success && match.Index + match.Length <= end;
+             match = match.NextMatch())
+        {
+            // A file ending in a newline has an empty "line" after it that is not a line at all.
+            // ^ matches there, and prefixing every line would otherwise grow a stray one.
+            if (match.Length == 0 && match.Index == text.Length && text.EndsWith('\n'))
+                break;
+            edits.Add(new TextEdit(match.Index, match.Length, Expand(match, query, replacement)));
+        }
+
+        return edits;
+    }
+
+    /// <summary>
+    /// The replacement for one match. For a regular expression, .NET substitutions apply: <c>$1</c>
+    /// for a group, <c>${name}</c> for a named one, <c>$&amp;</c> for the whole match, <c>$$</c> for
+    /// a dollar sign. A plain string is used as it is.
+    /// </summary>
+    private static string Expand(Match match, SearchQuery query, string replacement) =>
+        query.RegularExpression ? match.Result(replacement) : replacement;
 
     private static Match? Next(Regex regex, string text, int from, int selectionStart, int selectionEnd)
     {
