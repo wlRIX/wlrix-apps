@@ -88,6 +88,7 @@ public sealed class AppLauncher(ILogger<AppLauncher> logger) : IAppLauncher
 
             using var process = Process.Start(info);
             logger.ZLogInformation($"Launched '{displayName}': {file} (pid {process?.Id})");
+            SystemSound.Play("wlrix-launch");
         }
         catch (Exception ex) when (ex is Win32Exception or InvalidOperationException or IOException)
         {

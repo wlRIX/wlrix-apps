@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Globalization;
 using System.Reactive;
 using Avalonia.Collections;
@@ -10,6 +11,7 @@ using Wlrix.Files.Core.Filesystems;
 using Wlrix.Files.Core.Mime;
 using Wlrix.Files.Core.Mtp;
 using Wlrix.Files.Core.Operations;
+using Wlrix.Common;
 using Wlrix.Common.Desktop;
 using Wlrix.Files.Core.Platform;
 using Wlrix.Files.Core.Remote;
@@ -39,6 +41,9 @@ public sealed class MainWindowViewModel : ReactiveObject, IDisposable
     private readonly FilesStateStore _state;
     private readonly ApplicationHandlers _handlers;
     private readonly ApplicationLauncher _launcher;
+
+    /// <summary>How long a copy or move has to run before its end is worth a sound.</summary>
+    private static readonly TimeSpan CompletionSoundAfter = TimeSpan.FromSeconds(2);
     private readonly ICredentialStore _credentials;
     private readonly SharedMimeDatabase _mime;
     private readonly IStorageDeviceMonitor _devices;
@@ -902,7 +907,8 @@ public sealed class MainWindowViewModel : ReactiveObject, IDisposable
         var onPhone = files.Where(file => file.Scheme == MtpFileSystemFactory.MtpScheme).ToList();
         if (onPhone.Count == 0)
         {
-            _launcher.Open(application, files);
+            if (_launcher.Open(application, files))
+                SystemSound.Play("wlrix-launch");
             return;
         }
 
@@ -910,7 +916,8 @@ public sealed class MainWindowViewModel : ReactiveObject, IDisposable
         {
             var staged = await _staging.StageAsync(onPhone).ConfigureAwait(true);
             var local = onPhone.Zip(staged).ToDictionary(pair => pair.First, pair => Location.FromLocalPath(pair.Second));
-            _launcher.Open(application, [.. files.Select(file => local.GetValueOrDefault(file, file))]);
+            if (_launcher.Open(application, [.. files.Select(file => local.GetValueOrDefault(file, file))]))
+                SystemSound.Play("wlrix-launch");
         }
         catch (FileOperationException ex)
         {
@@ -930,6 +937,9 @@ public sealed class MainWindowViewModel : ReactiveObject, IDisposable
     {
         if (row.IsDirectory)
         {
+            // IRIX's two folder sounds: a folder on this machine, and one somewhere else -- a
+            // share or a phone, anything without a local path.
+            SystemSound.Play(row.Location.TryGetLocalPath(out _) ? "wlrix-open-folder" : "wlrix-open-remote-folder");
             _routing.Open(row.Location, intent, this);
             return;
         }
@@ -1017,8 +1027,8 @@ public sealed class MainWindowViewModel : ReactiveObject, IDisposable
                 return;
         }
 
-        if (row.Location.TryGetLocalPath(out var path))
-            _launcher.Run(path);
+        if (row.Location.TryGetLocalPath(out var path) && _launcher.Run(path))
+            SystemSound.Play("wlrix-launch");
     }
 
     /// <summary>Sets the owner's execute bit, reporting rather than throwing if it cannot.</summary>
@@ -1216,6 +1226,8 @@ public sealed class MainWindowViewModel : ReactiveObject, IDisposable
             ErrorRaised?.Invoke(Strings.DeviceMountFailed(device.Label, problem));
             return null;
         }
+
+        SystemSound.Play("wlrix-volume-mount");
 
         return mountPoint is null ? null : Location.FromLocalPath(mountPoint);
     }
@@ -1573,6 +1585,7 @@ public sealed class MainWindowViewModel : ReactiveObject, IDisposable
             return;
         }
 
+        SystemSound.Play("file-trash");
         await RunAsync(FileOperation.SendToTrash(SelectedLocations())).ConfigureAwait(true);
     }
 
@@ -1594,6 +1607,7 @@ public sealed class MainWindowViewModel : ReactiveObject, IDisposable
                 return;
         }
 
+        SystemSound.Play("item-deleted");
         await RunAsync(FileOperation.Delete(SelectedLocations())).ConfigureAwait(true);
     }
 
@@ -1615,6 +1629,14 @@ public sealed class MainWindowViewModel : ReactiveObject, IDisposable
     public Task DropAsync(IReadOnlyList<Location> sources, Location target, DropModifiers modifiers)
     {
         var plan = DropPolicy.Decide(sources, target, modifiers, OnOneFilesystem(sources, target));
+        // As the drop lands, not when the work finishes: the sound says what the drop did.
+        // A reference (link) is IRIX's copy gesture, so it sounds like one.
+        SystemSound.Play(plan.Action switch
+        {
+            DropAction.Move => "wlrix-drag-move",
+            DropAction.Copy or DropAction.Link => "wlrix-drag-copy",
+            _ => "drag-fail",
+        });
         return DropPolicy.ToOperation(plan, target) is { } operation
             ? RunAsync(operation)
             : Task.CompletedTask;
@@ -1653,11 +1675,18 @@ public sealed class MainWindowViewModel : ReactiveObject, IDisposable
         queued.Changed += OnOperationChanged;
         RefreshOperation();
 
+        var started = Stopwatch.GetTimestamp();
         try
         {
             var result = await queued.Completion.ConfigureAwait(true);
             if (result.Errors.Count > 0)
                 ErrorRaised?.Invoke(Strings.OperationFailed(result.Errors.Count) + " " + result.Errors[0].Message);
+            // Only for a copy or move long enough to have been waited on. One that is over in a
+            // blink was already announced by the drop that started it.
+            else if (result.Succeeded
+                     && operation.Kind is OperationKind.Copy or OperationKind.Move
+                     && Stopwatch.GetElapsedTime(started) >= CompletionSoundAfter)
+                SystemSound.Play("complete-copy");
         }
         finally
         {

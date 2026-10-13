@@ -1,6 +1,7 @@
 using System.Net.Sockets;
 using Microsoft.Extensions.Logging;
 using Tmds.DBus.Protocol;
+using Wlrix.Common;
 using Wlrix.Files.Core.Platform;
 using Wlrix.Files.DBus;
 using ZLogger;
@@ -108,7 +109,7 @@ public sealed class UDisks2Devices(ILogger<UDisks2Devices> logger) : IStorageDev
     /// device and a partition — and answering each one separately would rebuild the rail three
     /// times for one stick.
     /// </remarks>
-    private void OnObjectsChanged<T>(T signal) => _ = RefreshAsync();
+    private void OnObjectsChanged<T>(T signal) => _ = RefreshAsync(hotplug: true);
 
     /// <summary>A device was mounted or unmounted, possibly by something else entirely.</summary>
     private void OnFilesystemChanged(IChangedFilesystemProperties changed) => _ = RefreshAsync();
@@ -184,7 +185,12 @@ public sealed class UDisks2Devices(ILogger<UDisks2Devices> logger) : IStorageDev
     /// The per-object property watches are rebuilt from scratch each time, which is the simple
     /// arrangement that cannot leak a subscription to a device that has been unplugged.
     /// </remarks>
-    private async Task RefreshAsync()
+    /// <param name="hotplug">
+    /// Whether this refresh follows something being plugged in or taken away, which is the one
+    /// time the difference is worth a sound. Not the first read, a mount or an unmount: nothing
+    /// arrived or left then.
+    /// </param>
+    private async Task RefreshAsync(bool hotplug = false)
     {
         if (_objects is null || _connection is null)
             return;
@@ -210,6 +216,8 @@ public sealed class UDisks2Devices(ILogger<UDisks2Devices> logger) : IStorageDev
                 ? byKind
                 : string.CompareOrdinal(a.MountPoint ?? a.Label, b.MountPoint ?? b.Label));
 
+            if (hotplug)
+                AnnounceHotplug(Devices, devices);
             Devices = devices;
             await WatchFilesystemsAsync(managed).ConfigureAwait(false);
             Changed?.Invoke();
@@ -218,6 +226,22 @@ public sealed class UDisks2Devices(ILogger<UDisks2Devices> logger) : IStorageDev
         {
             logger.ZLogWarning($"could not read the disks: {ex.Message}");
         }
+    }
+
+    /// <summary>IRIX's sounds for a device arriving or going, if one did.</summary>
+    /// <remarks>
+    /// One stick is several objects -- a drive, a block device, a partition -- and arrives as
+    /// several signals, so this may run more than once for it. The sound daemon drops a repeat
+    /// of the same sound that close together.
+    /// </remarks>
+    private static void AnnounceHotplug(IReadOnlyList<StorageDevice> before, IReadOnlyList<StorageDevice> after)
+    {
+        var known = before.Select(device => device.Id).ToHashSet(StringComparer.Ordinal);
+        var now = after.Select(device => device.Id).ToHashSet(StringComparer.Ordinal);
+        if (!now.IsSubsetOf(known))
+            SystemSound.Play("device-added");
+        else if (!known.IsSubsetOf(now))
+            SystemSound.Play("device-removed");
     }
 
     /// <summary>Fixed disks first, removable ones under them.</summary>
