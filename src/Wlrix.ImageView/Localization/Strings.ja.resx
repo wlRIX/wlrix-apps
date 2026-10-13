@@ -262,7 +262,7 @@ IRIX の imgview にならった画像ビューアです。</value>
     <value>画像のプロパティ</value>
   </data>
   <data name="DetailTitle" xml:space="preserve">
-    <value>詳細</value>
+    <value>イメージビュー: 詳細</value>
   </data>
   <data name="NotYetAvailable" xml:space="preserve">
     <value>まだ使用できません。このパネルは今後のリリースで追加されます。</value>
@@ -272,5 +272,26 @@ IRIX の imgview にならった画像ビューアです。</value>
   </data>
   <data name="NoValue" xml:space="preserve">
     <value>—</value>
+  </data>
+  <data name="DetailPosition" xml:space="preserve">
+    <value>画像内の位置:</value>
+  </data>
+  <data name="DetailPixel" xml:space="preserve">
+    <value>ピクセル値:</value>
+  </data>
+  <data name="DetailViewOrigin" xml:space="preserve">
+    <value>表示の原点:</value>
+  </data>
+  <data name="DetailViewSize" xml:space="preserve">
+    <value>表示のサイズ:</value>
+  </data>
+  <data name="CoordinatesValue" xml:space="preserve">
+    <value>{0:0.###}, {1:0.###}</value>
+  </data>
+  <data name="ViewSizeValue" xml:space="preserve">
+    <value>{0:0.###} x {1:0.###}</value>
+  </data>
+  <data name="MagnificationValue" xml:space="preserve">
+    <value>{0}X</value>
   </data>
 </root>

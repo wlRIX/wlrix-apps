@@ -4,8 +4,8 @@
         xmlns:wlrix="https://vic485.xyz/Wlrix.Avalonia"
         x:Class="Wlrix.ImageView.Views.PlaceholderWindow"
         Width="320" SizeToContent="Height" CanResize="False">
-    <!-- Properties and Detail, until they are written: the windows exist and open from the
-         palette, the menu and the accelerators, so the later pass only fills them in. -->
+    <!-- Properties, until it is written: the window exists and opens from the palette, so the
+         later pass only fills it in. -->
     <DockPanel Margin="8">
         <Button DockPanel.Dock="Bottom" HorizontalAlignment="Right" MinWidth="80"
                 Margin="0,8,0,0" Content="{loc:Tr Close}" Click="OnClose" />

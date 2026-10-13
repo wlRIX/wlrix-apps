@@ -26,6 +26,7 @@ public partial class MainWindow : Window
         InitializeComponent();
 
         Canvas.TransformCommitted += (_, _) => (DataContext as MainWindowViewModel)?.CommitTransform();
+        Canvas.PointerMovedOver += (_, point) => (DataContext as MainWindowViewModel)?.PointerMoved(point);
         Canvas.PropertyChanged += (_, change) =>
         {
             if (change.Property == BoundsProperty && DataContext is MainWindowViewModel model)
@@ -178,7 +179,7 @@ public partial class MainWindow : Window
         {
             ToolWindow.Histogram => new HistogramWindow(),
             ToolWindow.Info => new InfoWindow(),
-            ToolWindow.Detail => new PlaceholderWindow { Title = Strings.Catalog.Get("DetailTitle") },
+            ToolWindow.Detail => new DetailWindow(),
             _ => new PlaceholderWindow { Title = Strings.Catalog.Get("PropertiesTitle") },
         };
         window.DataContext = DataContext;

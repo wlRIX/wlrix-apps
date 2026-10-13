@@ -85,6 +85,10 @@ public sealed class ImageCanvas : Control
     /// <summary>Raised when a drag ends, with <see cref="Transform"/> where it left off.</summary>
     public event EventHandler? TransformCommitted;
 
+    /// <summary>Raised whenever the pointer moves over the well, with its position in this control.</summary>
+    /// <remarks>Dragging or not, and over the image or beside it: Detail follows it either way.</remarks>
+    public event EventHandler<Point>? PointerMovedOver;
+
     /// <summary>The matrix from image pixels to this control's coordinates.</summary>
     /// <remarks>
     /// The image center goes to the view center plus the pan. The image is scaled, then
@@ -96,6 +100,15 @@ public sealed class ImageCanvas : Control
         * Matrix.CreateScale(transform.Zoom, transform.Zoom)
         * Matrix.CreateRotation(transform.Rotation * Math.PI / 180)
         * Matrix.CreateTranslation(view.Width / 2 + transform.Pan.X, view.Height / 2 + transform.Pan.Y);
+
+    /// <summary>The image point under <paramref name="point"/> in the view. The inverse of <see cref="ImageToView"/>.</summary>
+    /// <remarks>
+    /// Continuous, not a pixel index: pixel (3, 4) covers [3, 4) × [4, 5). Off the image, the
+    /// result is simply outside [0, width) × [0, height), so a view corner above and to the
+    /// left of the image comes out negative.
+    /// </remarks>
+    public static Point ViewToImage(Point point, Size image, Size view, ViewTransform transform) =>
+        point.Transform(ImageToView(image, view, transform).Invert());
 
     protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
     {
@@ -160,10 +173,11 @@ public sealed class ImageCanvas : Control
     protected override void OnPointerMoved(PointerEventArgs e)
     {
         base.OnPointerMoved(e);
+        var position = e.GetPosition(this);
+        PointerMovedOver?.Invoke(this, position);
         if (!_dragging)
             return;
 
-        var position = e.GetPosition(this);
         var delta = Between(_pressedAt, position);
         var start = _pressedTransform;
 

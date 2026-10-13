@@ -1,0 +1,59 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Wlrix.ImageView.ViewModels"
+        xmlns:controls="using:Wlrix.ImageView.Controls"
+        xmlns:loc="using:Wlrix.Common.Localization"
+        xmlns:wlrix="https://vic485.xyz/Wlrix.Avalonia"
+        x:Class="Wlrix.ImageView.Views.DetailWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Title="{loc:Tr DetailTitle}"
+        SizeToContent="WidthAndHeight" CanResize="False">
+    <!-- After IRIX imgview's Detail: the readings down the left, the close-up on the right with
+         its magnification under it. -->
+    <Window.Styles>
+        <Style Selector="StackPanel#Readings > TextBlock.label">
+            <Setter Property="FontWeight" Value="Bold" />
+        </Style>
+        <Style Selector="StackPanel#Readings > TextBlock">
+            <Setter Property="Margin" Value="0,1" />
+        </Style>
+        <!-- A rule between the groups, etched as IRIX separators were. -->
+        <Style Selector="StackPanel#Readings > wlrix|BevelBorder">
+            <Setter Property="Bevel" Value="Etched" />
+            <Setter Property="BevelThickness" Value="2" />
+            <Setter Property="Height" Value="2" />
+            <Setter Property="Margin" Value="0,4" />
+            <Setter Property="LightBrush" Value="{DynamicResource WlrixTopShadow}" />
+            <Setter Property="DarkBrush" Value="{DynamicResource WlrixBottomShadow}" />
+        </Style>
+    </Window.Styles>
+
+    <Grid ColumnDefinitions="Auto,Auto" Margin="8">
+        <StackPanel Name="Readings" Grid.Column="0" MinWidth="150" Margin="0,0,10,0">
+            <TextBlock Classes="label" Text="{loc:Tr DetailPosition}" />
+            <TextBlock Text="{Binding Detail.PositionText}" />
+            <wlrix:BevelBorder />
+            <TextBlock Classes="label" Text="{loc:Tr DetailPixel}" />
+            <TextBlock Text="{Binding Detail.PixelText}" />
+            <wlrix:BevelBorder />
+            <TextBlock Classes="label" Text="{loc:Tr DetailViewOrigin}" />
+            <TextBlock Text="{Binding Detail.ViewOriginText}" />
+            <TextBlock Classes="label" Text="{loc:Tr DetailViewSize}" Margin="0,4,0,1" />
+            <TextBlock Text="{Binding Detail.ViewSizeText}" />
+        </StackPanel>
+
+        <StackPanel Grid.Column="1" Spacing="8">
+            <wlrix:BevelBorder Bevel="Sunken" BevelThickness="2"
+                               LightBrush="{DynamicResource WlrixTopShadow}"
+                               DarkBrush="{DynamicResource WlrixBottomShadow}">
+                <controls:DetailView Width="160" Height="160"
+                                     Source="{Binding DisplayImage}"
+                                     Center="{Binding Detail.Center}"
+                                     Magnification="{Binding Detail.Magnification}" />
+            </wlrix:BevelBorder>
+            <ComboBox HorizontalAlignment="Right" MinWidth="80"
+                      ItemsSource="{Binding Detail.MagnificationNames}"
+                      SelectedIndex="{Binding Detail.MagnificationIndex}" />
+        </StackPanel>
+    </Grid>
+</Window>

@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 using Avalonia;
+using Wlrix.ImageView.Controls;
 using Wlrix.ImageView.Models;
 using Xunit;
 
@@ -112,5 +113,48 @@ public class ViewTransformTests
     {
         Assert.Equal(ViewTransform.MaxZoom, ViewTransform.ZoomForDrag(1, 0, -100_000));
         Assert.Equal(ViewTransform.MinZoom, ViewTransform.ZoomForDrag(1, 0, 100_000));
+    }
+}
+
+public class ViewMappingTests
+{
+    private static readonly Size Image = new(200, 100);
+    private static readonly Size View = new(400, 300);
+
+    [Fact]
+    public void The_view_center_is_the_image_center_until_panned()
+    {
+        var at = ImageCanvas.ViewToImage(new Point(200, 150), Image, View, ViewTransform.Identity);
+        Assert.Equal(new Point(100, 50), at);
+    }
+
+    [Fact]
+    public void The_view_origin_is_negative_when_the_image_sits_down_and_right()
+    {
+        // At 100% the image's top-left is at (100, 100) in the view.
+        var origin = ImageCanvas.ViewToImage(default, Image, View, ViewTransform.Identity);
+        Assert.Equal(new Point(-100, -100), origin);
+    }
+
+    [Fact]
+    public void Mapping_follows_pan_zoom_and_rotation()
+    {
+        var transform = ViewTransform.Identity.WithZoom(2).WithRotation(90).WithPan(new Vector(30, -10));
+        var point = new Point(17.25, 63.5);
+
+        var view = point.Transform(ImageCanvas.ImageToView(Image, View, transform));
+        var back = ImageCanvas.ViewToImage(view, Image, View, transform);
+
+        Assert.Equal(point.X, back.X, 9);
+        Assert.Equal(point.Y, back.Y, 9);
+    }
+
+    [Fact]
+    public void Zooming_in_doubles_the_detail_per_view_pixel()
+    {
+        var transform = ViewTransform.Identity.WithZoom(2);
+        var a = ImageCanvas.ViewToImage(new Point(200, 150), Image, View, transform);
+        var b = ImageCanvas.ViewToImage(new Point(202, 150), Image, View, transform);
+        Assert.Equal(1, b.X - a.X, 9);
     }
 }

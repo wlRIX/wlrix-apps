@@ -49,6 +49,15 @@ public static class Strings
     public static string Pan(double x, double y) => Catalog.Format("PanValue", x, y);
     public static string NoValue => Catalog.Get("NoValue");
 
+    /// <summary>"853, 801.982": an image point, to three places where it has them.</summary>
+    public static string Coordinates(double x, double y) => Catalog.Format("CoordinatesValue", x, y);
+
+    /// <summary>"694 x 555": the visible part of the image, in image pixels.</summary>
+    public static string ViewSize(double width, double height) => Catalog.Format("ViewSizeValue", width, height);
+
+    /// <summary>"2X", a close-up's magnification.</summary>
+    public static string Magnification(int factor) => Catalog.Format("MagnificationValue", factor);
+
     public static string Channels(int channels) => channels switch
     {
         1 => Catalog.Get("ChannelsGray"),

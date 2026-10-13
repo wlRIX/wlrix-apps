@@ -31,6 +31,14 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
     private bool _canUndo;
     private bool _canRedo;
     private bool _isModified;
+    private Size _viewportSize;
+
+    /// <summary>Where the pointer last was over the well, in view coordinates.</summary>
+    /// <remarks>
+    /// Kept so the close-up can follow a change of view with the pointer standing still: a
+    /// zoom drag moves the image under it without moving it.
+    /// </remarks>
+    private Point? _pointer;
 
     /// <summary>The design-time constructor. Only the XAML previewer calls this.</summary>
     public MainWindowViewModel()
@@ -117,6 +125,9 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
     /// <summary>The Histogram dialog's state. Kept here so it follows the open image.</summary>
     public HistogramViewModel Histogram { get; } = new();
 
+    /// <summary>The Detail dialog's state, kept up to date whether or not the dialog is open.</summary>
+    public DetailViewModel Detail { get; } = new();
+
     public ImageDocument? Document
     {
         get => _document;
@@ -126,6 +137,7 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
             this.RaisePropertyChanged(nameof(HasImage));
             this.RaisePropertyChanged(nameof(Title));
             RaiseInfo();
+            UpdateDetail();
         }
     }
 
@@ -151,12 +163,63 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
             this.RaisePropertyChanged(nameof(ZoomText));
             this.RaisePropertyChanged(nameof(RotationText));
             this.RaisePropertyChanged(nameof(PanText));
+            UpdateDetail();
         }
     }
 
     /// <summary>The size of the image well, which the view keeps up to date.</summary>
     /// <remarks>Used to pick the zoom a newly opened image starts at.</remarks>
-    public Size ViewportSize { get; set; }
+    public Size ViewportSize
+    {
+        get => _viewportSize;
+        set
+        {
+            _viewportSize = value;
+            UpdateDetail();
+        }
+    }
+
+    /// <summary>The pointer moved over the well, to <paramref name="point"/> in view coordinates.</summary>
+    public void PointerMoved(Point point)
+    {
+        _pointer = point;
+        UpdateDetail();
+    }
+
+    /// <summary>Recomputes what Detail shows from the pointer, the view and the image.</summary>
+    private void UpdateDetail()
+    {
+        if (Document is not { } document)
+        {
+            Detail.Clear();
+            return;
+        }
+
+        var image = new Size(document.Width, document.Height);
+        var transform = Transform;
+
+        // The view's top-left corner in image coordinates, and how much of the image the view
+        // spans. Both in image pixels, so they read against Position in Image.
+        Detail.SetView(ImageCanvas.ViewToImage(default, image, ViewportSize, transform),
+            ViewportSize / transform.Zoom);
+
+        if (_pointer is not { } pointer)
+            return;
+
+        var at = ImageCanvas.ViewToImage(pointer, image, ViewportSize, transform);
+        int x = (int)Math.Floor(at.X), y = (int)Math.Floor(at.Y);
+        string? pixel = null;
+        if (x >= 0 && y >= 0 && x < document.Width && y < document.Height)
+        {
+            // Unpremultiplied, so these are the values the file holds. Alpha only when the
+            // image has any, where it is part of the answer.
+            var color = document.Pixels.GetPixel(x, y);
+            pixel = document.HasAlpha
+                ? $"{color.Red}, {color.Green}, {color.Blue}, {color.Alpha}"
+                : $"{color.Red}, {color.Green}, {color.Blue}";
+        }
+        Detail.SetPointer(at, pixel);
+    }
 
     public ViewTool Tool
     {

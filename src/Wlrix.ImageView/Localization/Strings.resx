@@ -262,7 +262,7 @@ An image viewer after IRIX imgview.</value>
     <value>Image Properties</value>
   </data>
   <data name="DetailTitle" xml:space="preserve">
-    <value>Detail</value>
+    <value>ImageView: Detail</value>
   </data>
   <data name="NotYetAvailable" xml:space="preserve">
     <value>Not yet available. This panel arrives in a later release.</value>
@@ -272,5 +272,26 @@ An image viewer after IRIX imgview.</value>
   </data>
   <data name="NoValue" xml:space="preserve">
     <value>—</value>
+  </data>
+  <data name="DetailPosition" xml:space="preserve">
+    <value>Position in Image:</value>
+  </data>
+  <data name="DetailPixel" xml:space="preserve">
+    <value>Pixel Value:</value>
+  </data>
+  <data name="DetailViewOrigin" xml:space="preserve">
+    <value>View Origin:</value>
+  </data>
+  <data name="DetailViewSize" xml:space="preserve">
+    <value>View Size:</value>
+  </data>
+  <data name="CoordinatesValue" xml:space="preserve">
+    <value>{0:0.###}, {1:0.###}</value>
+  </data>
+  <data name="ViewSizeValue" xml:space="preserve">
+    <value>{0:0.###} x {1:0.###}</value>
+  </data>
+  <data name="MagnificationValue" xml:space="preserve">
+    <value>{0}X</value>
   </data>
 </root>
