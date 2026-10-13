@@ -1,0 +1,127 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Wlrix.Settings.Sound.ViewModels"
+        xmlns:loc="using:Wlrix.Common.Localization"
+        xmlns:controls="using:Wlrix.Settings.Sound.Controls"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="330" d:DesignHeight="560"
+        Width="330" SizeToContent="Height"
+        x:Class="Wlrix.Settings.Sound.Views.MainWindow"
+        x:DataType="vm:SoundSettingsViewModel"
+        CanResize="False"
+        Title="{loc:Tr WindowTitle}">
+
+    <Design.DataContext>
+        <vm:SoundSettingsViewModel />
+    </Design.DataContext>
+
+    <!-- The layout follows IRIX's System & Desktop Sounds panel: a title banner, then a bold
+         heading per group with its controls indented beneath it, the three buttons along the
+         bottom, and under those the line that says what the control under the pointer does.
+         Window Sounds and Sound Scheme are wlRIX's additions, placed where IRIX's own panel
+         would have put them. -->
+    <DockPanel>
+
+        <!-- The status line, along the very bottom edge as on the original. -->
+        <TextBlock x:Name="HintLine" DockPanel.Dock="Bottom" Margin="6,2,6,4"
+                   TextWrapping="Wrap" MinHeight="16" />
+
+        <DockPanel Margin="12,12,12,4" LastChildFill="True">
+
+            <!-- Title banner: icon slot plus the panel name. -->
+            <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="12" Margin="0,0,0,12">
+                <Border Width="48" Height="48"
+                        BorderThickness="1"
+                        BorderBrush="{DynamicResource WlrixOuterLine}"
+                        Background="{DynamicResource WlrixSelect}">
+                    <!-- Placeholder for the panel icon (a real asset comes from wlrix-assets). -->
+                    <TextBlock Text="&#x266B;" FontSize="26"
+                               HorizontalAlignment="Center" VerticalAlignment="Center" />
+                </Border>
+                <TextBlock Text="{loc:Tr PanelTitle}" FontWeight="Bold" FontSize="14"
+                           VerticalAlignment="Center" TextWrapping="Wrap" MaxWidth="240" />
+            </StackPanel>
+
+            <!-- Close / Reset / Help. -->
+            <UniformGrid DockPanel.Dock="Bottom" Columns="3" ColumnSpacing="12" Margin="0,12,0,0">
+                <Button Content="{loc:Tr Close}" Click="OnClose" HorizontalAlignment="Stretch"
+                        controls:Hint.Text="{loc:Tr HintClose}" />
+                <Button Content="{loc:Tr Reset}" Click="OnReset" HorizontalAlignment="Stretch"
+                        IsEnabled="{Binding IsReady}"
+                        controls:Hint.Text="{loc:Tr HintReset}" />
+                <Button Content="{loc:Tr Help}" HorizontalAlignment="Stretch"
+                        controls:Hint.Text="{loc:Tr HintHelp}">
+                    <Button.Flyout>
+                        <Flyout>
+                            <TextBlock MaxWidth="260" TextWrapping="Wrap" Text="{loc:Tr HelpText}" />
+                        </Flyout>
+                    </Button.Flyout>
+                </Button>
+            </UniformGrid>
+
+            <!-- What became of the last change, when it is worth saying. Empty, and so
+                 invisible, when everything applied. -->
+            <TextBlock DockPanel.Dock="Bottom" Text="{Binding Status}" TextWrapping="Wrap" Margin="0,8,0,0"
+                       IsVisible="{Binding Status, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+
+            <StackPanel Spacing="6">
+
+                <!-- Master Volume Control. The sound server's mute, not the desktop's: on IRIX
+                     this silenced the machine. Framed, as the original framed it. -->
+                <TextBlock Text="{loc:Tr MasterVolume}" FontWeight="Bold" />
+                <Border Margin="40,0,0,6" HorizontalAlignment="Left" Padding="4,2"
+                        BorderThickness="1" BorderBrush="{DynamicResource WlrixOuterLine}">
+                    <CheckBox Content="{loc:Tr MuteSystem}" IsChecked="{Binding MuteSystem}"
+                              IsEnabled="{Binding MuteKnown}"
+                              controls:Hint.Text="{loc:Tr HintMute}" />
+                </Border>
+
+                <!-- Enable Selected Sounds: one box per kind of sound, sounds.toml's [play]. -->
+                <TextBlock Text="{loc:Tr EnableSelected}" FontWeight="Bold" />
+                <StackPanel Margin="40,0,0,6" Spacing="6" IsEnabled="{Binding IsReady}">
+                    <CheckBox Content="{loc:Tr Startup}" IsChecked="{Binding PlayStartup}"
+                              controls:Hint.Text="{loc:Tr HintStartup}" />
+                    <CheckBox Content="{loc:Tr Desktop}" IsChecked="{Binding PlayDesktop}"
+                              controls:Hint.Text="{loc:Tr HintDesktop}" />
+                    <CheckBox Content="{loc:Tr Windows}" IsChecked="{Binding PlayWindows}"
+                              controls:Hint.Text="{loc:Tr HintWindows}" />
+                    <CheckBox Content="{loc:Tr Alerts}" IsChecked="{Binding PlayAlerts}"
+                              controls:Hint.Text="{loc:Tr HintAlerts}" />
+                    <CheckBox Content="{loc:Tr Bell}" IsChecked="{Binding PlayBell}"
+                              controls:Hint.Text="{loc:Tr HintBell}" />
+                </StackPanel>
+
+                <!-- Play Desktop Sounds Through: Default Output, then every sink. -->
+                <TextBlock Text="{loc:Tr PlayThrough}" FontWeight="Bold" />
+                <ComboBox Margin="40,0,0,6" HorizontalAlignment="Stretch"
+                          IsEnabled="{Binding IsReady}"
+                          ItemsSource="{Binding Outputs}" SelectedItem="{Binding SelectedOutput}"
+                          controls:Hint.Text="{loc:Tr HintOutput}">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate x:DataType="vm:Choice">
+                            <TextBlock Text="{Binding Label}" TextTrimming="CharacterEllipsis" />
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+
+                <!-- The sound theme: wlRIX's addition. -->
+                <TextBlock Text="{loc:Tr Scheme}" FontWeight="Bold" />
+                <ComboBox Margin="40,0,0,0" HorizontalAlignment="Stretch"
+                          IsEnabled="{Binding IsReady}"
+                          ItemsSource="{Binding Themes}" SelectedItem="{Binding SelectedTheme}"
+                          controls:Hint.Text="{loc:Tr HintScheme}">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate x:DataType="vm:Choice">
+                            <TextBlock Text="{Binding Label}" TextTrimming="CharacterEllipsis" />
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+
+            </StackPanel>
+
+        </DockPanel>
+
+    </DockPanel>
+
+</Window>

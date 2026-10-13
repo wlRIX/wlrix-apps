@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="WindowTitle" xml:space="preserve">
+    <value>System &amp; Desktop Sounds</value>
+  </data>
+  <data name="PanelTitle" xml:space="preserve">
+    <value>System &amp; Desktop Sounds</value>
+  </data>
+  <data name="MasterVolume" xml:space="preserve">
+    <value>Master Volume Control:</value>
+  </data>
+  <data name="MuteSystem" xml:space="preserve">
+    <value>Mute System</value>
+  </data>
+  <data name="EnableSelected" xml:space="preserve">
+    <value>Enable Selected Sounds:</value>
+  </data>
+  <data name="Startup" xml:space="preserve">
+    <value>Startup &amp; Shutdown Tunes</value>
+  </data>
+  <data name="Desktop" xml:space="preserve">
+    <value>Desktop Sounds</value>
+  </data>
+  <data name="Windows" xml:space="preserve">
+    <value>Window Sounds</value>
+  </data>
+  <data name="Alerts" xml:space="preserve">
+    <value>System Alerts Sounds</value>
+  </data>
+  <data name="Bell" xml:space="preserve">
+    <value>Keyboard Bell</value>
+  </data>
+  <data name="PlayThrough" xml:space="preserve">
+    <value>Play Desktop Sounds Through:</value>
+  </data>
+  <data name="Scheme" xml:space="preserve">
+    <value>Sound Scheme:</value>
+  </data>
+  <data name="DefaultOutput" xml:space="preserve">
+    <value>Default Output</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="Reset" xml:space="preserve">
+    <value>Reset</value>
+  </data>
+  <data name="Help" xml:space="preserve">
+    <value>Help</value>
+  </data>
+  <data name="HintMute" xml:space="preserve">
+    <value>Check to mute all sound from the system, not only desktop sounds.</value>
+  </data>
+  <data name="HintStartup" xml:space="preserve">
+    <value>Check to play a tune when you log in, log out and lock the screen.</value>
+  </data>
+  <data name="HintDesktop" xml:space="preserve">
+    <value>Check to hear sounds when you launch, open, move and remove icons.</value>
+  </data>
+  <data name="HintWindows" xml:space="preserve">
+    <value>Check to hear sounds when windows are minimized and restored, and when you change desks.</value>
+  </data>
+  <data name="HintAlerts" xml:space="preserve">
+    <value>Check to hear a sound when a dialog asks for your attention.</value>
+  </data>
+  <data name="HintBell" xml:space="preserve">
+    <value>Check to turn on the keyboard bell.</value>
+  </data>
+  <data name="HintOutput" xml:space="preserve">
+    <value>Choose the speakers or headphones desktop sounds play through.</value>
+  </data>
+  <data name="HintScheme" xml:space="preserve">
+    <value>Choose the set of sounds the desktop plays.</value>
+  </data>
+  <data name="HintClose" xml:space="preserve">
+    <value>Close this panel. Changes have already been applied.</value>
+  </data>
+  <data name="HintReset" xml:space="preserve">
+    <value>Put back the settings this panel opened with.</value>
+  </data>
+  <data name="HintHelp" xml:space="preserve">
+    <value>Show what this panel does.</value>
+  </data>
+  <data name="HelpText" xml:space="preserve">
+    <value>Choose which kinds of sound the desktop plays, which set of sounds it plays them from, and where they are heard. Mute System silences everything the computer plays, as the audio panel's mute does. Changes apply as you make them; turning a kind of sound on plays one of its sounds. Reset restores the settings from when this panel opened.</value>
+  </data>
+  <data name="MuteFailed" xml:space="preserve">
+    <value>The sound server would not change the mute.</value>
+  </data>
+  <data name="NotConnected" xml:space="preserve">
+    <value>{0} (not connected)</value>
+  </data>
+  <data name="NotInstalled" xml:space="preserve">
+    <value>{0} (not installed)</value>
+  </data>
+  <data name="NoSettingsService" xml:space="preserve">
+    <value>No settings service: {0}</value>
+  </data>
+  <data name="FileInvalid" xml:space="preserve">
+    <value>{0} is not valid; showing the last good values.</value>
+  </data>
+</root>

@@ -1,0 +1,113 @@
+<root>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="WindowTitle" xml:space="preserve">
+        <value>システムとデスクトップのサウンド</value>
+    </data>
+    <data name="PanelTitle" xml:space="preserve">
+        <value>システムとデスクトップのサウンド</value>
+    </data>
+    <data name="MasterVolume" xml:space="preserve">
+        <value>マスター音量の制御：</value>
+    </data>
+    <data name="MuteSystem" xml:space="preserve">
+        <value>システムを消音</value>
+    </data>
+    <data name="EnableSelected" xml:space="preserve">
+        <value>有効にするサウンド：</value>
+    </data>
+    <data name="Startup" xml:space="preserve">
+        <value>起動と終了のメロディ</value>
+    </data>
+    <data name="Desktop" xml:space="preserve">
+        <value>デスクトップのサウンド</value>
+    </data>
+    <data name="Windows" xml:space="preserve">
+        <value>ウィンドウのサウンド</value>
+    </data>
+    <data name="Alerts" xml:space="preserve">
+        <value>システム警告のサウンド</value>
+    </data>
+    <data name="Bell" xml:space="preserve">
+        <value>キーボードのベル</value>
+    </data>
+    <data name="PlayThrough" xml:space="preserve">
+        <value>デスクトップのサウンドの出力先：</value>
+    </data>
+    <data name="Scheme" xml:space="preserve">
+        <value>サウンドの組み合わせ：</value>
+    </data>
+    <data name="DefaultOutput" xml:space="preserve">
+        <value>既定の出力</value>
+    </data>
+    <data name="Close" xml:space="preserve">
+        <value>閉じる</value>
+    </data>
+    <data name="Reset" xml:space="preserve">
+        <value>リセット</value>
+    </data>
+    <data name="Help" xml:space="preserve">
+        <value>ヘルプ</value>
+    </data>
+    <data name="HintMute" xml:space="preserve">
+        <value>チェックすると、デスクトップのサウンドだけでなくシステムのすべての音を消音します。</value>
+    </data>
+    <data name="HintStartup" xml:space="preserve">
+        <value>チェックすると、ログイン、ログアウト、画面のロック時にメロディを鳴らします。</value>
+    </data>
+    <data name="HintDesktop" xml:space="preserve">
+        <value>チェックすると、アイコンの起動、オープン、移動、削除時にサウンドを鳴らします。</value>
+    </data>
+    <data name="HintWindows" xml:space="preserve">
+        <value>チェックすると、ウィンドウの最小化と復元、デスクの切り替え時にサウンドを鳴らします。</value>
+    </data>
+    <data name="HintAlerts" xml:space="preserve">
+        <value>チェックすると、ダイアログが注意を求めるときにサウンドを鳴らします。</value>
+    </data>
+    <data name="HintBell" xml:space="preserve">
+        <value>チェックすると、キーボードのベルを有効にします。</value>
+    </data>
+    <data name="HintOutput" xml:space="preserve">
+        <value>デスクトップのサウンドを鳴らすスピーカーまたはヘッドホンを選択します。</value>
+    </data>
+    <data name="HintScheme" xml:space="preserve">
+        <value>デスクトップが鳴らすサウンドの組み合わせを選択します。</value>
+    </data>
+    <data name="HintClose" xml:space="preserve">
+        <value>このパネルを閉じます。変更はすでに適用されています。</value>
+    </data>
+    <data name="HintReset" xml:space="preserve">
+        <value>このパネルを開いたときの設定に戻します。</value>
+    </data>
+    <data name="HintHelp" xml:space="preserve">
+        <value>このパネルの説明を表示します。</value>
+    </data>
+    <data name="HelpText" xml:space="preserve">
+        <value>デスクトップが鳴らすサウンドの種類、使うサウンドの組み合わせ、出力先を選択します。「システムを消音」は、オーディオパネルの消音と同じく、コンピュータのすべての音を消します。変更はすぐに適用されます。種類を有効にすると、そのサウンドの一つが鳴ります。「リセット」は、このパネルを開いたときの設定に戻します。</value>
+    </data>
+    <data name="MuteFailed" xml:space="preserve">
+        <value>サウンドサーバーが消音を変更できませんでした。</value>
+    </data>
+    <data name="NotConnected" xml:space="preserve">
+        <value>{0}（未接続）</value>
+    </data>
+    <data name="NotInstalled" xml:space="preserve">
+        <value>{0}（未インストール）</value>
+    </data>
+    <data name="NoSettingsService" xml:space="preserve">
+        <value>設定サービスがありません：{0}</value>
+    </data>
+    <data name="FileInvalid" xml:space="preserve">
+        <value>{0} が正しくないため、最後に有効だった値を表示しています。</value>
+    </data>
+</root>

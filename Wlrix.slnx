@@ -11,6 +11,7 @@
         <Project Path="src/Wlrix.Settings.Windows/Wlrix.Settings.Windows.csproj" />
         <Project Path="src/Wlrix.Settings.Displays/Wlrix.Settings.Displays.csproj" />
         <Project Path="src/Wlrix.Settings.Audio/Wlrix.Settings.Audio.csproj" />
+        <Project Path="src/Wlrix.Settings.Sound/Wlrix.Settings.Sound.csproj" />
         <Project Path="src/Wlrix.Shutdown/Wlrix.Shutdown.csproj" />
         <Project Path="src/Wlrix.SourcePicker/Wlrix.SourcePicker.csproj" />
         <Project Path="src/Wlrix.SoftwareManager/Wlrix.SoftwareManager.csproj" />
@@ -40,6 +41,7 @@
         <Project Path="tests/Wlrix.ImageView.Tests/Wlrix.ImageView.Tests.csproj" />
         <Project Path="tests/Wlrix.Writer.Tests/Wlrix.Writer.Tests.csproj" />
         <Project Path="tests/Wlrix.Settings.Displays.Tests/Wlrix.Settings.Displays.Tests.csproj" />
+        <Project Path="tests/Wlrix.Settings.Sound.Tests/Wlrix.Settings.Sound.Tests.csproj" />
         <Project Path="tests/Wlrix.Settings.Audio.Tests/Wlrix.Settings.Audio.Tests.csproj" />
     </Folder>
 </Solution>

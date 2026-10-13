@@ -24,6 +24,7 @@ library. Apps recreate the IRIX Interactive Desktop surface.
 | `Wlrix.Settings.Windows`  | app  | Window settings panel: focus policy and the 4Dwm flags.             |
 | `Wlrix.Settings.Displays` | app  | Displays panel, after KDE's: arrangement, modes, scale, HDR.        |
 | `Wlrix.Settings.Audio`    | app  | Audio Panel, after IRIX's apanel. Replaces pavucontrol.             |
+| `Wlrix.Settings.Sound`    | app  | System & Desktop Sounds panel, for `wlrix-sound`.                   |
 | `Wlrix.Settings.Schemes`  | app  | Color scheme browser, after IRIX's. One Apply, whole desktop.       |
 | `Wlrix.Shutdown`          | app  | The Shut Down System dialog, behind the Toolchest's two items.      |
 | `Wlrix.SourcePicker`      | app  | The screen-share picker `xdg-desktop-portal-wlrix` puts up.         |
@@ -198,6 +199,22 @@ PipeWire-only setting, the graph's sample rate, goes through `pw-metadata`; on P
 ```sh
 dotnet run --project src/Wlrix.Settings.Audio -- --demo   # the IRIX screenshot's devices; touches nothing
 ```
+
+## Sounds
+
+`Wlrix.Settings.Sound` is IRIX's System & Desktop Sounds panel, for the sounds `wlrix-sound` plays. Its settings come
+in two kinds, and they go two different ways:
+
+- **Mute System** is the sound server's. On IRIX it muted the machine, not the desktop's sounds, so it is the default
+  output's mute, set through `wpctl`. It is the same mute the Audio Panel shows.
+- **Everything else** is `sounds.toml`, written through `wlrix-settings-daemon` like any other panel's settings:
+  - the kinds of sound (`sounds.play.*`): IRIX's four checkboxes plus *Window Sounds*, which IRIX did not have;
+  - the output desktop sounds play through (`sounds.output`, a sink listed from `pw-dump`);
+  - the sound scheme (`sounds.theme`, the installed themes from `com.wlrix.Sound1.ListThemes`).
+
+Turning a kind of sound on plays one of its sounds, and so does picking a new scheme or output, through
+`com.wlrix.Sound1.Preview`. IRIX's *Key Click* is left out: it was the keyboard's own hardware, and the nearest thing
+here, a sound per keypress, is not worth the latency.
 
 ## Phones
 

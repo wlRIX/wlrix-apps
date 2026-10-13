@@ -1,0 +1,53 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+        <ApplicationManifest>app.manifest</ApplicationManifest>
+        <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+        <AssemblyName>wlrix-settings-sound</AssemblyName>
+        <Version>0.0.0</Version>
+        <!-- The generated wlrix-sound proxy reads and writes spans over the raw message buffer,
+             as Wlrix.Settings.Client's does. No hand-written unsafe code here. -->
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <AvaloniaResource Include="Assets\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Avalonia" />
+        <PackageReference Include="Avalonia.Desktop" />
+        <PackageReference Include="Avalonia.Wayland" />
+        <PackageReference Include="AvaloniaUI.DiagnosticsSupport">
+            <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
+            <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
+        </PackageReference>
+        <PackageReference Include="ReactiveUI.Avalonia" />
+        <PackageReference Include="Wlrix.Avalonia" />
+        <PackageReference Include="Tmds.DBus.Protocol" />
+        <PackageReference Include="Tmds.DBus.Generator" PrivateAssets="all" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <!-- com.wlrix.Sound1, for the installed themes and the preview a checkbox plays. From
+             the daemon's own introspection, so the two cannot disagree about a signature. -->
+        <AdditionalFiles Include="DBusXml/com.wlrix.Sound1.xml"
+                         Namespace="Wlrix.Settings.Sound.DBus"
+                         DBusGeneratorMode="Proxy" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <!-- The localized strings and the {loc:Tr} markup extension. -->
+        <ProjectReference Include="../Wlrix.Common/Wlrix.Common.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <!-- The only way this panel touches sounds.toml. -->
+        <ProjectReference Include="../Wlrix.Settings.Client/Wlrix.Settings.Client.csproj" />
+    </ItemGroup>
+    <ItemGroup>
+        <!-- Follows the session's color scheme. One call in App.axaml.cs. -->
+        <ProjectReference Include="../Wlrix.Theme/Wlrix.Theme.csproj" />
+    </ItemGroup>
+
+</Project>
