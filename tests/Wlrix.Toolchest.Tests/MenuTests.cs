@@ -29,10 +29,20 @@ public class MenuTests
     }
 
     [Fact]
-    public void TheDesktopMenuIsExtraDesksAudioAndClipboardThenTerminalThenLogOut() =>
+    public void TheDesktopMenuIsCustomizeDesksAudioAndClipboardThenTerminalThenLogOut() =>
         Assert.Equal(
-            [Strings.ExtraDesks, Strings.ControlAudio, Strings.ClipboardHistory, Strings.OpenTerminal, Strings.LogOut],
+            [Strings.Customize, Strings.ExtraDesks, Strings.ControlAudio, Strings.ClipboardHistory, Strings.OpenTerminal, Strings.LogOut],
             HeadersUnder(Strings.Desktop));
+
+    [Fact]
+    public void CustomizeOpensTheSoundsPanel()
+    {
+        // IRIX's Desktop → Customize submenu, ahead of Desks as on IRIX.
+        var customize = Assert.Single(ItemsUnder(Strings.Desktop), node => node.Header == Strings.Customize);
+        var sounds = Assert.Single(customize.Children!);
+        Assert.Equal(Strings.Sounds, sounds.Header);
+        Assert.NotNull(sounds.Command);
+    }
 
     [Fact]
     public void TheDesktopMenuIsInThreeGroups()
@@ -40,7 +50,7 @@ public class MenuTests
         // The desktop's own panels together, then the terminal, then Log Out, with a rule between
         // the groups and none at either end: Log Out in particular should not sit flush against
         // the item above it.
-        Assert.Equal([false, false, false, true, false, true, false],
+        Assert.Equal([false, false, false, false, true, false, true, false],
             ItemsUnder(Strings.Desktop).Select(item => item.IsSeparator));
     }
 
@@ -74,7 +84,24 @@ public class MenuTests
     public void EveryEnabledItemDoesSomething()
     {
         foreach (var menu in new[] { Strings.Desktop, Strings.System })
-        foreach (var item in ItemsUnder(menu).Where(item => !item.IsSeparator && item.IsEnabled))
+        foreach (var item in Leaves(ItemsUnder(menu)).Where(item => !item.IsSeparator && item.IsEnabled))
             Assert.True(item.Command is not null, $"{menu} → {item.Header}");
+    }
+
+    /// <summary>The items that act: a submenu's children in place of the submenu itself.</summary>
+    private static IEnumerable<MenuNode> Leaves(IEnumerable<MenuNode> items)
+    {
+        foreach (var item in items)
+        {
+            if (item.Children is { } children)
+            {
+                foreach (var leaf in Leaves(children))
+                    yield return leaf;
+            }
+            else
+            {
+                yield return item;
+            }
+        }
     }
 }

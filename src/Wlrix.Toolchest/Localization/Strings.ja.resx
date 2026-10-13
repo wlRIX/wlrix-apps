@@ -27,6 +27,12 @@
   <data name="Help" xml:space="preserve">
     <value>ヘルプ</value>
   </data>
+  <data name="Customize" xml:space="preserve">
+    <value>カスタマイズ</value>
+  </data>
+  <data name="Sounds" xml:space="preserve">
+    <value>サウンド</value>
+  </data>
   <data name="ExtraDesks" xml:space="preserve">
     <value>デスクの追加</value>
   </data>

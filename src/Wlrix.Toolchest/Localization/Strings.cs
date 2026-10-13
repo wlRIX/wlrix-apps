@@ -17,6 +17,8 @@ public static class Strings
     public static string System => Catalog.Get("System");
     public static string Applications => Catalog.Get("Applications");
     public static string Help => Catalog.Get("Help");
+    public static string Customize => Catalog.Get("Customize");
+    public static string Sounds => Catalog.Get("Sounds");
     public static string ExtraDesks => Catalog.Get("ExtraDesks");
     public static string ControlAudio => Catalog.Get("ControlAudio");
     public static string ClipboardHistory => Catalog.Get("ClipboardHistory");

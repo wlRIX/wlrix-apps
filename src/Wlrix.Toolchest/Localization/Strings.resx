@@ -27,6 +27,12 @@
   <data name="Help" xml:space="preserve">
     <value>Help</value>
   </data>
+  <data name="Customize" xml:space="preserve">
+    <value>Customize</value>
+  </data>
+  <data name="Sounds" xml:space="preserve">
+    <value>Sounds</value>
+  </data>
   <data name="ExtraDesks" xml:space="preserve">
     <value>Extra Desks</value>
   </data>

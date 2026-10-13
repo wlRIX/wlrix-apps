@@ -17,6 +17,12 @@ public sealed class MainWindowViewModel : ViewModelBase
     private const string AudioProgram = "wlrix-settings-audio";
 
     /// <summary>
+    /// The installed name of the System &amp; Desktop Sounds panel, launched by Desktop → Customize
+    /// → Sounds.
+    /// </summary>
+    private const string SoundProgram = "wlrix-settings-sound";
+
+    /// <summary>
     /// The installed name of the clipboard history popup, launched by Desktop → Clipboard
     /// History. The same program <c>Super+V</c> starts.
     /// </summary>
@@ -104,6 +110,13 @@ public sealed class MainWindowViewModel : ViewModelBase
         TopLevel.Clear();
         TopLevel.Add(new MenuNode(Strings.Desktop,
         [
+            // IRIX's Desktop → Customize, where the desktop's own settings panels live. Only
+            // Sounds so far; the rest of IRIX's list joins it as each panel is reachable.
+            new MenuNode(Strings.Customize,
+            [
+                new MenuNode(Strings.Sounds,
+                    command: new RelayCommand(() => _launcher.Run(Strings.Sounds, SoundProgram))),
+            ]),
             new MenuNode(Strings.ExtraDesks,
                 command: new RelayCommand(() => _launcher.Run(Strings.ExtraDesks, DesksProgram))),
             new MenuNode(Strings.ControlAudio,
