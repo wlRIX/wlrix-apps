@@ -16,9 +16,8 @@ using NWayland;
 using NWayland.Protocols.Wayland;
 using NWayland.Protocols.WlrixOutputColorV1;
 using NWayland.Protocols.WlrOutputManagementUnstableV1;
-using Wlrix.Settings.Displays.Models;
 
-namespace Wlrix.Settings.Displays.Services;
+namespace Wlrix.Settings.Outputs;
 
 public sealed class WaylandOutputFeed : IOutputFeed
 {

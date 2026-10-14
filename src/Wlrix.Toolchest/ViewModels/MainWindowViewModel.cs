@@ -30,6 +30,7 @@ public sealed class MainWindowViewModel : ViewModelBase
 
     /// <summary>The installed name of the Software Manager, launched by System → Software Manager.</summary>
     private const string SoftwareManagerProgram = "wlrix-software-manager";
+    private const string LoginSettingsProgram = "wlrix-settings-login";
 
     /// <summary>
     /// The installed name of the Shut Down System dialog, behind both of the System menu's
@@ -132,6 +133,10 @@ public sealed class MainWindowViewModel : ViewModelBase
         [
             new MenuNode(Strings.SoftwareManager,
                 command: new RelayCommand(() => _launcher.Run(Strings.SoftwareManager, SoftwareManagerProgram))),
+            // Beside the Software Manager because it is the same kind of thing: the machine's
+            // settings rather than the person's, behind an administrator's password.
+            new MenuNode(Strings.LoginSettings,
+                command: new RelayCommand(() => _launcher.Run(Strings.LoginSettings, LoginSettingsProgram))),
             MenuNode.Separator(),
             // Neither acts: both open the Shut Down System dialog, which is where the machine
             // actually gets asked to go down. That indirection is the point -- a menu item that

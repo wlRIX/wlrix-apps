@@ -56,6 +56,9 @@ Every running application will be closed, and anything not saved will be lost.</
   <data name="SoftwareManager" xml:space="preserve">
     <value>Software Manager</value>
   </data>
+  <data name="LoginSettings" xml:space="preserve">
+    <value>Login Settings</value>
+  </data>
   <data name="RestartSystem" xml:space="preserve">
     <value>Restart System</value>
   </data>

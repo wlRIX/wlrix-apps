@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <!-- What the login screen's settings are, how they are spelled in /etc/wlrix/greeter.toml
+             and on the helper's command line, and the validation both sides run. Shared by the
+             Login Settings panel and wlrix-login-helper, so the two cannot disagree about what
+             is allowed: the same split as Wlrix.Packages and its helper. No UI in here: the
+             helper runs as root and should load nothing it does not need. -->
+        <Version>0.1.0</Version>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Wlrix.Common\Wlrix.Common.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Tomlyn" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <InternalsVisibleTo Include="Wlrix.Settings.Login.Tests" />
+    </ItemGroup>
+</Project>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE policyconfig PUBLIC
+ "-//freedesktop//DTD PolicyKit Policy Configuration 1.0//EN"
+ "http://www.freedesktop.org/standards/PolicyKit/1/policyconfig.dtd">
+
+<!--
+    The polkit action behind the wlRIX Login Settings panel's privileged half.
+
+    One action for both verbs. Writing the login screen's settings and removing them both change
+    the same root-owned file, /etc/wlrix/greeter.toml, which decides what everyone sees before
+    they log in.
+
+    auth_admin_keep, so that trying a setting, looking at the result and adjusting it does not ask
+    for the password each time.
+
+    Installed to $PREFIX/share/polkit-1/actions/.
+-->
+<policyconfig>
+
+    <vendor>wlRIX</vendor>
+    <vendor_url>https://github.com/wlRIX</vendor_url>
+
+    <action id="com.wlrix.settings.login.configure">
+        <description>Change the login screen's settings</description>
+        <message>Authentication is required to change the login screen's settings.</message>
+        <defaults>
+            <allow_any>auth_admin</allow_any>
+            <allow_inactive>auth_admin</allow_inactive>
+            <allow_active>auth_admin_keep</allow_active>
+        </defaults>
+        <annotate key="org.freedesktop.policykit.exec.path">/usr/bin/wlrix-login-helper</annotate>
+    </action>
+
+</policyconfig>

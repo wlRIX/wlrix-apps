@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="WindowTitle" xml:space="preserve">
+    <value>ログイン設定</value>
+  </data>
+  <data name="PanelTitle" xml:space="preserve">
+    <value>ログイン画面</value>
+  </data>
+  <data name="MenuApplication" xml:space="preserve">
+    <value>アプリケーション</value>
+  </data>
+  <data name="MenuClose" xml:space="preserve">
+    <value>閉じる</value>
+  </data>
+  <data name="MenuCopy" xml:space="preserve">
+    <value>コピー</value>
+  </data>
+  <data name="MenuCopyKeyboard" xml:space="preserve">
+    <value>自分のキーボード</value>
+  </data>
+  <data name="MenuCopyScheme" xml:space="preserve">
+    <value>自分のカラースキーム</value>
+  </data>
+  <data name="MenuCopyDisplays" xml:space="preserve">
+    <value>自分のディスプレイ</value>
+  </data>
+  <data name="MenuCopyAll" xml:space="preserve">
+    <value>自分の設定をすべて</value>
+  </data>
+  <data name="MenuHelp" xml:space="preserve">
+    <value>ヘルプ</value>
+  </data>
+  <data name="MenuClickForHelp" xml:space="preserve">
+    <value>ヘルプを表示</value>
+  </data>
+  <data name="Apply" xml:space="preserve">
+    <value>適用</value>
+  </data>
+  <data name="UseSystemDefaults" xml:space="preserve">
+    <value>システムの既定値を使用</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>キャンセル</value>
+  </data>
+  <data name="TabKeyboard" xml:space="preserve">
+    <value>キーボード</value>
+  </data>
+  <data name="TabScheme" xml:space="preserve">
+    <value>カラースキーム</value>
+  </data>
+  <data name="TabDisplays" xml:space="preserve">
+    <value>ディスプレイ</value>
+  </data>
+  <data name="Layout" xml:space="preserve">
+    <value>レイアウト:</value>
+  </data>
+  <data name="Model" xml:space="preserve">
+    <value>モデル:</value>
+  </data>
+  <data name="KeyRepeat" xml:space="preserve">
+    <value>キーリピート</value>
+  </data>
+  <data name="RepeatDelay" xml:space="preserve">
+    <value>リピート開始までの時間 (ms):</value>
+  </data>
+  <data name="RepeatRate" xml:space="preserve">
+    <value>1 秒あたりのリピート回数:</value>
+  </data>
+  <data name="KeyboardNote" xml:space="preserve">
+    <value>名前とパスワードを入力するときのレイアウトです。このマシンにログインする全員が使えるものを選んでください。</value>
+  </data>
+  <data name="SchemeNote" xml:space="preserve">
+    <value>ログインダイアログとその周りの画面の両方に使われます。</value>
+  </data>
+  <data name="DisplaysNote" xml:space="preserve">
+    <value>ログイン画面用に設定するディスプレイにチェックを入れてください。チェックのないディスプレイは自動的に配置されます。</value>
+  </data>
+  <data name="AutomaticLayout" xml:space="preserve">
+    <value>自動配置</value>
+  </data>
+  <data name="NotConnected" xml:space="preserve">
+    <value>未接続</value>
+  </data>
+  <data name="Remove" xml:space="preserve">
+    <value>削除</value>
+  </data>
+  <data name="OutputOn" xml:space="preserve">
+    <value>オン</value>
+  </data>
+  <data name="Resolution" xml:space="preserve">
+    <value>解像度:</value>
+  </data>
+  <data name="Scale" xml:space="preserve">
+    <value>拡大率:</value>
+  </data>
+  <data name="Rotation" xml:space="preserve">
+    <value>回転:</value>
+  </data>
+  <data name="Position" xml:space="preserve">
+    <value>位置:</value>
+  </data>
+  <data name="SystemDefault" xml:space="preserve">
+    <value>システムの既定値</value>
+  </data>
+  <data name="ModeAutomatic" xml:space="preserve">
+    <value>自動</value>
+  </data>
+  <data name="ModeWithRefresh" xml:space="preserve">
+    <value>{0} × {1} @ {2} Hz</value>
+  </data>
+  <data name="ModeFastest" xml:space="preserve">
+    <value>{0} × {1}</value>
+  </data>
+  <data name="TransformNormal" xml:space="preserve">
+    <value>標準</value>
+  </data>
+  <data name="Transform90" xml:space="preserve">
+    <value>90°</value>
+  </data>
+  <data name="Transform180" xml:space="preserve">
+    <value>180°</value>
+  </data>
+  <data name="Transform270" xml:space="preserve">
+    <value>270°</value>
+  </data>
+  <data name="TransformFlipped" xml:space="preserve">
+    <value>反転</value>
+  </data>
+  <data name="TransformFlipped90" xml:space="preserve">
+    <value>反転、90°</value>
+  </data>
+  <data name="TransformFlipped180" xml:space="preserve">
+    <value>反転、180°</value>
+  </data>
+  <data name="TransformFlipped270" xml:space="preserve">
+    <value>反転、270°</value>
+  </data>
+  <data name="SourceOwn" xml:space="preserve">
+    <value>{0} にあるログイン画面専用の設定を表示しています。</value>
+  </data>
+  <data name="SourceSystem" xml:space="preserve">
+    <value>ログイン画面には専用の設定がなく、{0} にあるシステムの既定値を使っています。</value>
+  </data>
+  <data name="GreeterNotInstalled" xml:space="preserve">
+    <value>wlrix-greeter がインストールされていないため、インストールされるまでこの設定は使われません。</value>
+  </data>
+  <data name="GreeterNotEnabled" xml:space="preserve">
+    <value>wlrix-greeter はインストールされていますが、ディスプレイマネージャーではありません。この設定を使うには wlrix-greeter.service を有効にしてください。</value>
+  </data>
+  <data name="ReadFailed" xml:space="preserve">
+    <value>{0} を読み込めませんでした: {1}</value>
+  </data>
+  <data name="Invalid" xml:space="preserve">
+    <value>この設定は書き込めません: {0}</value>
+  </data>
+  <data name="Applied" xml:space="preserve">
+    <value>保存しました。ログイン画面は次回の起動からこの設定を使います。</value>
+  </data>
+  <data name="ResetDone" xml:space="preserve">
+    <value>ログイン画面はふたたびシステムの既定値を使います。</value>
+  </data>
+  <data name="Copied" xml:space="preserve">
+    <value>コピーしました。ログイン画面で使うには「適用」を押してください。</value>
+  </data>
+  <data name="NotAuthorized" xml:space="preserve">
+    <value>変更されていません: 認証がキャンセルされたか、失敗しました。</value>
+  </data>
+  <data name="HelperUnavailable" xml:space="preserve">
+    <value>ログイン画面の設定を変更できません: {0}</value>
+  </data>
+  <data name="HelperFailed" xml:space="preserve">
+    <value>設定は保存されませんでした: {0}</value>
+  </data>
+  <data name="NoSettingsService" xml:space="preserve">
+    <value>設定サービスがありません: {0}</value>
+  </data>
+  <data name="NoDisplays" xml:space="preserve">
+    <value>コンポジターから接続中のディスプレイを読み取れません。</value>
+  </data>
+  <data name="ConfirmReset" xml:space="preserve">
+    <value>ログイン画面専用の設定を削除して、システムの既定値を使いますか?</value>
+  </data>
+  <data name="HelpTitle" xml:space="preserve">
+    <value>ログイン設定のヘルプ</value>
+  </data>
+  <data name="HelpText" xml:space="preserve">
+    <value>ログインする前に全員が目にするログイン画面の、キーボードレイアウト、カラースキーム、ディスプレイを設定します。「コピー」メニューを使うと、自分の設定がフォームに入ります。「適用」を押すまで何も変わりません。「適用」を押すと管理者のパスワードを尋ね、設定を /etc/wlrix/greeter.toml に保存します。「システムの既定値を使用」はそのファイルを削除し、ログイン画面は /etc/wlrix/compositor.toml に戻ります。</value>
+  </data>
+</root>

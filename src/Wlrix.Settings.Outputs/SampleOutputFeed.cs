@@ -1,6 +1,5 @@
-using Wlrix.Settings.Displays.Models;
 
-namespace Wlrix.Settings.Displays.Services;
+namespace Wlrix.Settings.Outputs;
 
 /// <summary>
 /// Displays that are not there: a portrait 1920×1200 and two 2560×1440 panels side by side,

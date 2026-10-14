@@ -56,6 +56,9 @@
   <data name="SoftwareManager" xml:space="preserve">
     <value>ソフトウェアマネージャ</value>
   </data>
+  <data name="LoginSettings" xml:space="preserve">
+    <value>ログイン設定</value>
+  </data>
   <data name="RestartSystem" xml:space="preserve">
     <value>システムを再起動</value>
   </data>

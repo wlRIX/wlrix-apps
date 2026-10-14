@@ -1,0 +1,49 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <!-- The displays as the compositor describes them, and the feed that reads and configures
+             them. Shared by the Displays panel, which configures the session's monitors live, and
+             the Login Settings panel, which offers them as the choices for the login screen's. -->
+        <OutputType>Library</OutputType>
+        <!-- NWayland's generated bindings and runtime interop are unsafe. -->
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    </PropertyGroup>
+
+    <!-- Monitors are configured live through wlr-output-management, not through the settings
+         daemon: the daemon deliberately does not handle `[[output]]` (see its README), and the
+         compositor already applies and saves a layout atomically through the protocol. HDR is
+         not part of that protocol, so wlrix-output-color extends its heads. Both sets of
+         bindings are generated at build time by the NWayland fork's source generator, as in
+         Wlrix.Desks, from submodules of the fork: wlr-protocols and wlrix-protocols. -->
+    <!-- The protocol files go through a copy with their `error` enums removed. The fork's
+         generator turns those into AddError calls and typed PostError overloads, which need a
+         newer NWayland runtime than the 0.11.0 Avalonia.Wayland pins. A client never sends a
+         protocol error, so nothing is lost; drop this step once the runtime catches up. -->
+    <ItemGroup>
+        <WaylandProtocol Include="../../../NWayland/external/wlr-protocols/unstable/wlr-output-management-unstable-v1.xml" />
+        <WaylandProtocol Include="../../../NWayland/external/wlrix-protocols/wlrix-output-color.xml" />
+        <AdditionalFiles Include="@(WaylandProtocol->'$(IntermediateOutputPath)protocols/%(Filename)%(Extension)')"
+                         NWaylandNamespace="NWayland.Protocols" />
+    </ItemGroup>
+    <Target Name="StripProtocolErrors" BeforeTargets="GenerateMSBuildEditorConfigFileCore;CoreCompile"
+            Inputs="@(WaylandProtocol)" Outputs="@(WaylandProtocol->'$(IntermediateOutputPath)protocols/%(Filename)%(Extension)')">
+        <!-- Said plainly, rather than as the MSB4184 that ReadAllText below fails with. -->
+        <Error Condition="!Exists('%(WaylandProtocol.FullPath)')"
+               Text="Missing Wayland protocol %(WaylandProtocol.FullPath). It comes from a submodule of NWayland: run `git submodule update --init external/wlr-protocols external/wlrix-protocols` there." />
+        <MakeDir Directories="$(IntermediateOutputPath)protocols" />
+        <WriteLinesToFile File="$(IntermediateOutputPath)protocols/%(WaylandProtocol.Filename)%(WaylandProtocol.Extension)"
+                          Lines="$([MSBuild]::Escape($([System.Text.RegularExpressions.Regex]::Replace($([System.IO.File]::ReadAllText(%(WaylandProtocol.FullPath))), '\s*&lt;enum name=&quot;error&quot;.*?&lt;/enum&gt;', '', System.Text.RegularExpressions.RegexOptions.Singleline))))"
+                          Overwrite="true" WriteOnlyWhenDifferent="true" />
+    </Target>
+    <PropertyGroup>
+        <WarningsNotAsErrors>$(WarningsNotAsErrors);CS1591;CS1573;CS1572;CS1570;CS1571;CS1574;CS1580;CS1581;CS1584</WarningsNotAsErrors>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <!-- NWayland runtime (WlDisplay/WlRegistry + core protocols), pinned in
+             Directory.Packages.props to the version Avalonia.Wayland binds to. -->
+        <PackageReference Include="NWayland" />
+    </ItemGroup>
+
+    <!-- The NWayland fork's source generator, as an analyzer. See Wlrix.Desks.csproj. -->
+    <Import Project="../../../NWayland/src/NWayland.Generator/NWayland.Generator.Use.targets" />
+</Project>

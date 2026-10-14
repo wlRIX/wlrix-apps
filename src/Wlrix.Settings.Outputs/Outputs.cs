@@ -1,4 +1,4 @@
-namespace Wlrix.Settings.Displays.Models;
+namespace Wlrix.Settings.Outputs;
 
 /// <summary>
 /// How a display's picture is turned, in <c>wl_output.transform</c>'s numbering, so a value

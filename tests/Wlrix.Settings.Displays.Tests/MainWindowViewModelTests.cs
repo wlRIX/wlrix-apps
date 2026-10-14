@@ -1,5 +1,4 @@
-using Wlrix.Settings.Displays.Models;
-using Wlrix.Settings.Displays.Services;
+using Wlrix.Settings.Outputs;
 using Wlrix.Settings.Displays.ViewModels;
 using Xunit;
 

@@ -1,4 +1,4 @@
-using Wlrix.Settings.Displays.Models;
+using Wlrix.Settings.Outputs;
 
 namespace Wlrix.Settings.Displays.Layout;
 

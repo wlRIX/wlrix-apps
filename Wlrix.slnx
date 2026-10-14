@@ -9,9 +9,13 @@
         <Project Path="src/Wlrix.Settings.Keyboard/Wlrix.Settings.Keyboard.csproj" />
         <Project Path="src/Wlrix.Settings.Schemes/Wlrix.Settings.Schemes.csproj" />
         <Project Path="src/Wlrix.Settings.Windows/Wlrix.Settings.Windows.csproj" />
+        <Project Path="src/Wlrix.Settings.Outputs/Wlrix.Settings.Outputs.csproj" />
         <Project Path="src/Wlrix.Settings.Displays/Wlrix.Settings.Displays.csproj" />
         <Project Path="src/Wlrix.Settings.Audio/Wlrix.Settings.Audio.csproj" />
         <Project Path="src/Wlrix.Settings.Sound/Wlrix.Settings.Sound.csproj" />
+        <Project Path="src/Wlrix.Settings.Login.Core/Wlrix.Settings.Login.Core.csproj" />
+        <Project Path="src/Wlrix.Settings.Login.Helper/Wlrix.Settings.Login.Helper.csproj" />
+        <Project Path="src/Wlrix.Settings.Login/Wlrix.Settings.Login.csproj" />
         <Project Path="src/Wlrix.Shutdown/Wlrix.Shutdown.csproj" />
         <Project Path="src/Wlrix.SourcePicker/Wlrix.SourcePicker.csproj" />
         <Project Path="src/Wlrix.SoftwareManager/Wlrix.SoftwareManager.csproj" />
@@ -43,5 +47,6 @@
         <Project Path="tests/Wlrix.Settings.Displays.Tests/Wlrix.Settings.Displays.Tests.csproj" />
         <Project Path="tests/Wlrix.Settings.Sound.Tests/Wlrix.Settings.Sound.Tests.csproj" />
         <Project Path="tests/Wlrix.Settings.Audio.Tests/Wlrix.Settings.Audio.Tests.csproj" />
+        <Project Path="tests/Wlrix.Settings.Login.Tests/Wlrix.Settings.Login.Tests.csproj" />
     </Folder>
 </Solution>

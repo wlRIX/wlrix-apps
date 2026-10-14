@@ -1,5 +1,5 @@
 using Wlrix.Settings.Displays.Layout;
-using Wlrix.Settings.Displays.Models;
+using Wlrix.Settings.Outputs;
 using Xunit;
 
 namespace Wlrix.Settings.Displays.Tests;

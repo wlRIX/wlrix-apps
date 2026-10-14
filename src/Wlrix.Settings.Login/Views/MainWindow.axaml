@@ -1,0 +1,209 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Wlrix.Settings.Login.ViewModels"
+        xmlns:svc="using:Wlrix.Settings.Keyboard.Services"
+        xmlns:wlrix="https://vic485.xyz/Wlrix.Avalonia"
+        xmlns:theme="using:Wlrix.Avalonia"
+        xmlns:loc="using:Wlrix.Common.Localization"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="560" d:DesignHeight="580"
+        Width="560" Height="580" MinWidth="480" MinHeight="460"
+        x:Class="Wlrix.Settings.Login.Views.MainWindow"
+        x:DataType="vm:LoginSettingsViewModel"
+        Title="{loc:Tr WindowTitle}">
+
+    <Design.DataContext>
+        <vm:LoginSettingsViewModel />
+    </Design.DataContext>
+
+    <!-- The Color Scheme Browser's shape: a menu bar, a title banner, the settings, then
+         Apply / Use System Defaults / Cancel along the bottom with a line of prose above them.
+         Nothing applies until Apply, which asks for the administrator's password. -->
+    <DockPanel LastChildFill="True">
+
+        <wlrix:MenuBar DockPanel.Dock="Top">
+            <MenuItem Header="{loc:Tr MenuApplication}">
+                <MenuItem Header="{loc:Tr MenuClose}" Click="OnCancel" />
+            </MenuItem>
+            <MenuItem Header="{loc:Tr MenuCopy}">
+                <MenuItem Header="{loc:Tr MenuCopyKeyboard}" Click="OnCopyKeyboard" />
+                <MenuItem Header="{loc:Tr MenuCopyScheme}" Click="OnCopyScheme" />
+                <MenuItem Header="{loc:Tr MenuCopyDisplays}" Click="OnCopyDisplays" />
+                <Separator />
+                <MenuItem Header="{loc:Tr MenuCopyAll}" Click="OnCopyAll" />
+            </MenuItem>
+            <MenuItem Header="{loc:Tr MenuHelp}" DockPanel.Dock="Right">
+                <MenuItem Header="{loc:Tr MenuClickForHelp}" Click="OnHelp" />
+            </MenuItem>
+        </wlrix:MenuBar>
+
+        <!-- A grid rather than a horizontal stack, so the line under the title wraps to the
+             window's width instead of running off it. -->
+        <Grid DockPanel.Dock="Top" ColumnDefinitions="Auto,*" ColumnSpacing="12" Margin="12,12,12,10">
+            <Border Grid.Column="0" Width="48" Height="48"
+                    BorderThickness="1"
+                    BorderBrush="{DynamicResource WlrixOuterLine}"
+                    Background="{DynamicResource WlrixSelect}">
+                <!-- Placeholder for the panel icon (a real asset comes from wlrix-assets). -->
+                <TextBlock Text="&#x1F511;" FontSize="24"
+                           HorizontalAlignment="Center" VerticalAlignment="Center" />
+            </Border>
+            <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                <TextBlock Text="{loc:Tr PanelTitle}" FontWeight="Bold" FontSize="16" />
+                <TextBlock Text="{Binding Source}" TextWrapping="Wrap" />
+            </StackPanel>
+        </Grid>
+
+        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal"
+                    HorizontalAlignment="Center" Spacing="10" Margin="12,10,12,12">
+            <Button Content="{loc:Tr Apply}" MinWidth="92" Click="OnApply"
+                    IsEnabled="{Binding IsIdle}" />
+            <Button Content="{loc:Tr UseSystemDefaults}" MinWidth="92" Click="OnUseSystemDefaults"
+                    IsEnabled="{Binding IsIdle}" />
+            <Button Content="{loc:Tr Cancel}" MinWidth="92" Click="OnCancel" />
+        </StackPanel>
+
+        <!-- What the last action came to. Above it, a warning when the greeter these settings
+             are for is not installed, or is not the display manager. -->
+        <TextBlock DockPanel.Dock="Bottom" Margin="12,0,12,0" TextWrapping="Wrap"
+                   Text="{Binding Status}"
+                   IsVisible="{Binding Status, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+        <TextBlock DockPanel.Dock="Bottom" Margin="12,0,12,4" TextWrapping="Wrap"
+                   FontWeight="Bold" Text="{Binding Install}"
+                   IsVisible="{Binding Install, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+
+        <TabControl Margin="12,0,12,10">
+
+            <TabItem Header="{loc:Tr TabKeyboard}">
+                <StackPanel Margin="10" Spacing="10">
+                    <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto" ColumnSpacing="8" RowSpacing="8">
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="{loc:Tr Layout}" VerticalAlignment="Center" />
+                        <ComboBox Grid.Row="0" Grid.Column="1" HorizontalAlignment="Stretch"
+                                  ItemsSource="{Binding Layouts}" SelectedItem="{Binding SelectedLayout}">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate x:DataType="svc:XkbEntry">
+                                    <TextBlock Text="{Binding Description}" />
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="{loc:Tr Model}" VerticalAlignment="Center" />
+                        <ComboBox Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch"
+                                  ItemsSource="{Binding Models}" SelectedItem="{Binding SelectedModel}">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate x:DataType="svc:XkbEntry">
+                                    <TextBlock Text="{Binding Description}" />
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </Grid>
+
+                    <CheckBox Content="{loc:Tr KeyRepeat}" IsChecked="{Binding RepeatEnabled}" />
+                    <Grid ColumnDefinitions="Auto,120" RowDefinitions="Auto,Auto" ColumnSpacing="8" RowSpacing="8"
+                          IsEnabled="{Binding RepeatEnabled}">
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="{loc:Tr RepeatDelay}" VerticalAlignment="Center" />
+                        <NumericUpDown Grid.Row="0" Grid.Column="1" Value="{Binding RepeatDelay}"
+                                       Minimum="0" Maximum="10000"
+                                       Increment="10" FormatString="0" />
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="{loc:Tr RepeatRate}" VerticalAlignment="Center" />
+                        <NumericUpDown Grid.Row="1" Grid.Column="1" Value="{Binding RepeatRate}"
+                                       Minimum="1" Maximum="255"
+                                       Increment="1" FormatString="0" />
+                    </Grid>
+
+                    <TextBlock Text="{loc:Tr KeyboardNote}" TextWrapping="Wrap" />
+                </StackPanel>
+            </TabItem>
+
+            <TabItem Header="{loc:Tr TabScheme}">
+                <DockPanel Margin="10" LastChildFill="True">
+                    <TextBlock DockPanel.Dock="Bottom" Text="{loc:Tr SchemeNote}" TextWrapping="Wrap"
+                               Margin="0,8,0,0" />
+                    <ListBox ItemsSource="{Binding Schemes}"
+                             SelectedItem="{Binding SelectedScheme, Mode=TwoWay}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate x:DataType="theme:WlrixScheme">
+                                <TextBlock Text="{Binding Name}" />
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </DockPanel>
+            </TabItem>
+
+            <TabItem Header="{loc:Tr TabDisplays}">
+                <DockPanel Margin="10" LastChildFill="True">
+                    <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Spacing="10" Margin="0,8,0,0">
+                        <Button Content="{loc:Tr AutomaticLayout}" Click="OnAutomaticLayout" />
+                    </StackPanel>
+                    <TextBlock DockPanel.Dock="Top" Text="{loc:Tr DisplaysNote}" TextWrapping="Wrap"
+                               Margin="0,0,0,8" />
+                    <ScrollViewer>
+                        <ItemsControl ItemsSource="{Binding Outputs}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="vm:OutputRowViewModel">
+                                    <Border BorderThickness="0,0,0,1" BorderBrush="{DynamicResource WlrixOuterLine}"
+                                            Padding="0,6">
+                                        <StackPanel Spacing="6">
+                                            <DockPanel>
+                                                <Button DockPanel.Dock="Right" Content="{loc:Tr Remove}"
+                                                        IsVisible="{Binding IsDisconnected}" Click="OnRemove" />
+                                                <TextBlock DockPanel.Dock="Right" Text="{loc:Tr NotConnected}"
+                                                           VerticalAlignment="Center" Margin="0,0,8,0"
+                                                           IsVisible="{Binding IsDisconnected}" />
+                                                <CheckBox IsChecked="{Binding IsSet}">
+                                                    <TextBlock Text="{Binding Title}" FontWeight="Bold" />
+                                                </CheckBox>
+                                            </DockPanel>
+                                            <Grid ColumnDefinitions="Auto,*,Auto,*" RowDefinitions="Auto,Auto,Auto"
+                                                  ColumnSpacing="8" RowSpacing="6" Margin="24,0,0,0"
+                                                  IsEnabled="{Binding IsSet}">
+                                                <CheckBox Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="4"
+                                                          Content="{loc:Tr OutputOn}" IsChecked="{Binding Enabled}" />
+                                                <TextBlock Grid.Row="1" Grid.Column="0" Text="{loc:Tr Resolution}"
+                                                           VerticalAlignment="Center" />
+                                                <ComboBox Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch"
+                                                          ItemsSource="{Binding Modes}" SelectedItem="{Binding Mode}">
+                                                    <ComboBox.ItemTemplate>
+                                                        <DataTemplate x:DataType="vm:ModeChoice">
+                                                            <TextBlock Text="{Binding Display}" />
+                                                        </DataTemplate>
+                                                    </ComboBox.ItemTemplate>
+                                                </ComboBox>
+                                                <TextBlock Grid.Row="1" Grid.Column="2" Text="{loc:Tr Scale}"
+                                                           VerticalAlignment="Center" />
+                                                <NumericUpDown Grid.Row="1" Grid.Column="3" Value="{Binding Scale}"
+                                                               Minimum="0.25" Maximum="8" Increment="0.25"
+                                                               FormatString="0.0##" />
+                                                <TextBlock Grid.Row="2" Grid.Column="0" Text="{loc:Tr Rotation}"
+                                                           VerticalAlignment="Center" />
+                                                <ComboBox Grid.Row="2" Grid.Column="1" HorizontalAlignment="Stretch"
+                                                          ItemsSource="{x:Static vm:OutputRowViewModel.Transforms}"
+                                                          SelectedItem="{Binding Transform}">
+                                                    <ComboBox.ItemTemplate>
+                                                        <DataTemplate x:DataType="vm:TransformChoice">
+                                                            <TextBlock Text="{Binding Display}" />
+                                                        </DataTemplate>
+                                                    </ComboBox.ItemTemplate>
+                                                </ComboBox>
+                                                <TextBlock Grid.Row="2" Grid.Column="2" Text="{loc:Tr Position}"
+                                                           VerticalAlignment="Center" />
+                                                <StackPanel Grid.Row="2" Grid.Column="3" Orientation="Horizontal" Spacing="4">
+                                                    <NumericUpDown Value="{Binding X}" Width="90" Increment="10"
+                                                                   Minimum="-32768" Maximum="32768" FormatString="0" />
+                                                    <NumericUpDown Value="{Binding Y}" Width="90" Increment="10"
+                                                                   Minimum="-32768" Maximum="32768" FormatString="0" />
+                                                </StackPanel>
+                                            </Grid>
+                                        </StackPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </DockPanel>
+            </TabItem>
+
+        </TabControl>
+    </DockPanel>
+
+</Window>

@@ -26,6 +26,7 @@ public static class Strings
     public static string LogOut => Catalog.Get("LogOut");
     public static string LogOutPrompt => Catalog.Get("LogOutPrompt");
     public static string SoftwareManager => Catalog.Get("SoftwareManager");
+    public static string LoginSettings => Catalog.Get("LoginSettings");
     public static string RestartSystem => Catalog.Get("RestartSystem");
     public static string ShutDownSystem => Catalog.Get("ShutDownSystem");
     public static string AboutToolchest => Catalog.Get("AboutToolchest");

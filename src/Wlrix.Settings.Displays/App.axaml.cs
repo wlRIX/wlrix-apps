@@ -3,7 +3,7 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Wlrix.Common.Localization;
 using Wlrix.Settings.Displays.Localization;
-using Wlrix.Settings.Displays.Services;
+using Wlrix.Settings.Outputs;
 using Wlrix.Settings.Displays.ViewModels;
 using Wlrix.Settings.Displays.Views;
 using Wlrix.Theme;

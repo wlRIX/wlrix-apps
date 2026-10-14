@@ -3,8 +3,7 @@ using Avalonia.Threading;
 using ReactiveUI;
 using Wlrix.Settings.Displays.Layout;
 using Wlrix.Settings.Displays.Localization;
-using Wlrix.Settings.Displays.Models;
-using Wlrix.Settings.Displays.Services;
+using Wlrix.Settings.Outputs;
 
 namespace Wlrix.Settings.Displays.ViewModels;
 

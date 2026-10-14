@@ -55,15 +55,15 @@ public class MenuTests
     }
 
     [Fact]
-    public void TheSystemMenuIsSoftwareManagerThenRestartThenShutDown() =>
-        Assert.Equal([Strings.SoftwareManager, Strings.RestartSystem, Strings.ShutDownSystem],
+    public void TheSystemMenuIsSoftwareManagerThenLoginSettingsThenRestartThenShutDown() =>
+        Assert.Equal([Strings.SoftwareManager, Strings.LoginSettings, Strings.RestartSystem, Strings.ShutDownSystem],
             HeadersUnder(Strings.System));
 
     [Fact]
     public void TheSystemMenuSeparatesTheAppFromTheMachine()
     {
-        // One rule, between launching an application and ending everything running on the box.
-        Assert.Equal([false, true, false, false],
+        // One rule, between the two applications and ending everything running on the box.
+        Assert.Equal([false, false, true, false, false],
             ItemsUnder(Strings.System).Select(item => item.IsSeparator));
     }
 

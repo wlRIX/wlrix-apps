@@ -1,0 +1,15 @@
+[Desktop Entry]
+Type=Application
+Name=Login Settings
+Comment=Set the login screen's keyboard layout, color scheme and displays
+Icon=preferences-system-login
+Categories=Settings;System;
+Keywords=login;greeter;display manager;keyboard;layout;scheme;monitor;
+Exec=wlrix-settings-login
+TryExec=wlrix-settings-login
+Terminal=false
+
+# Matches the Wayland app id set in Program.BuildAvaloniaApp. `wlrix-desktop` looks a running
+# window up by StartupWMClass first, and wlrix-compositor frames the window by the same id.
+StartupWMClass=com.wlrix.settings.login
+StartupNotify=false

@@ -16,7 +16,10 @@ library. Apps recreate the IRIX Interactive Desktop surface.
 | `Wlrix.Theme`             | lib  | Keeps an app drawing in the session's color scheme. One call.       |
 | `Wlrix.Packages`          | lib  | The system package managers behind one interface. No UI.            |
 | `Wlrix.Files.Core`        | lib  | Files, listings, MIME, icons and thumbnails. No Avalonia at all.    |
+| `Wlrix.Settings.Outputs`  | lib  | The connected displays, over wlr-output-management. No UI.          |
+| `Wlrix.Settings.Login.Core` | lib | The login screen's settings and their validation. No UI.           |
 | `Wlrix.Packages.Helper`   | exe  | `wlrix-pkg-helper` — the privileged half, run through `pkexec`.     |
+| `Wlrix.Settings.Login.Helper` | exe | `wlrix-login-helper` — writes `/etc/wlrix/greeter.toml` as root. |
 | `Wlrix.Toolchest`         | app  | IRIX-style menu launcher anchored top-left of the desktop.          |
 | `Wlrix.Desks`             | app  | Virtual-desktop (Rooms) overview and switcher.                      |
 | `Wlrix.Console`           | app  | Tails the wlRIX component logs, one tab each.                       |
@@ -26,6 +29,7 @@ library. Apps recreate the IRIX Interactive Desktop surface.
 | `Wlrix.Settings.Audio`    | app  | Audio Panel, after IRIX's apanel. Replaces pavucontrol.             |
 | `Wlrix.Settings.Sound`    | app  | System & Desktop Sounds panel, for `wlrix-sound`.                   |
 | `Wlrix.Settings.Schemes`  | app  | Color scheme browser, after IRIX's. One Apply, whole desktop.       |
+| `Wlrix.Settings.Login`    | app  | Login Settings: the greeter's keyboard, color scheme and displays.  |
 | `Wlrix.Shutdown`          | app  | The Shut Down System dialog, behind the Toolchest's two items.      |
 | `Wlrix.SourcePicker`      | app  | The screen-share picker `xdg-desktop-portal-wlrix` puts up.         |
 | `Wlrix.SoftwareManager`   | app  | Package manager, after IRIX's `swmgr`.                              |
@@ -187,6 +191,24 @@ and every one of them reads and writes through `Wlrix.Settings.Client`
 compositor to reload" signal, and the schema the panel renders from, so a new panel is a window and a list of keys
 rather than another copy of all three. See that project's README, and `wlrix-settings-daemon/README.md` for what it
 guarantees about the file.
+
+## Login Settings
+
+`Wlrix.Settings.Login` sets the login screen's keyboard layout, color scheme and displays. It is an exception to the
+rule above: those are the machine's settings, not a user's, so they are not the settings daemon's either. They live
+in `/etc/wlrix/greeter.toml`, a `compositor.toml` that `wlrix-greeter-start` hands to the greeter's compositor with
+`--config` (see the wlrix-greeter README). The panel reads that file directly, since it is world-readable, and writes it
+through `wlrix-login-helper` under `pkexec`, the way the Software Manager runs `wlrix-pkg-helper`. The helper takes
+values, never a path: it re-validates them, splices them into the file (keeping every other section and comment), has
+`wlrix-compositor --check-config` accept the result, and renames it into place. Use System Defaults removes the file.
+
+The Copy menu fills the form in from the person using it — the keyboard and scheme from the settings daemon, the displays
+as the compositor reports them through `Wlrix.Settings.Outputs` — and, like every other change here, waits for Apply.
+
+```sh
+dotnet run --project src/Wlrix.Settings.Login -- --demo   # made-up displays
+dotnet run --project src/Wlrix.Settings.Login.Helper -- --check write --layout jp --palette gotham
+```
 
 ## Audio
 

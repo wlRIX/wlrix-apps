@@ -1,6 +1,5 @@
-using Wlrix.Settings.Displays.Models;
 
-namespace Wlrix.Settings.Displays.Services;
+namespace Wlrix.Settings.Outputs;
 
 /// <summary>
 /// Where the panel gets its displays from and sends changes to. The real one speaks

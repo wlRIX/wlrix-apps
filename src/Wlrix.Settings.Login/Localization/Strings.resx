@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="WindowTitle" xml:space="preserve">
+    <value>Login Settings</value>
+  </data>
+  <data name="PanelTitle" xml:space="preserve">
+    <value>Login Screen</value>
+  </data>
+  <data name="MenuApplication" xml:space="preserve">
+    <value>Application</value>
+  </data>
+  <data name="MenuClose" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="MenuCopy" xml:space="preserve">
+    <value>Copy</value>
+  </data>
+  <data name="MenuCopyKeyboard" xml:space="preserve">
+    <value>My Keyboard</value>
+  </data>
+  <data name="MenuCopyScheme" xml:space="preserve">
+    <value>My Color Scheme</value>
+  </data>
+  <data name="MenuCopyDisplays" xml:space="preserve">
+    <value>My Displays</value>
+  </data>
+  <data name="MenuCopyAll" xml:space="preserve">
+    <value>All of My Settings</value>
+  </data>
+  <data name="MenuHelp" xml:space="preserve">
+    <value>Help</value>
+  </data>
+  <data name="MenuClickForHelp" xml:space="preserve">
+    <value>Click for Help</value>
+  </data>
+  <data name="Apply" xml:space="preserve">
+    <value>Apply</value>
+  </data>
+  <data name="UseSystemDefaults" xml:space="preserve">
+    <value>Use System Defaults</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="TabKeyboard" xml:space="preserve">
+    <value>Keyboard</value>
+  </data>
+  <data name="TabScheme" xml:space="preserve">
+    <value>Color Scheme</value>
+  </data>
+  <data name="TabDisplays" xml:space="preserve">
+    <value>Displays</value>
+  </data>
+  <data name="Layout" xml:space="preserve">
+    <value>Layout:</value>
+  </data>
+  <data name="Model" xml:space="preserve">
+    <value>Model:</value>
+  </data>
+  <data name="KeyRepeat" xml:space="preserve">
+    <value>Key Repeat</value>
+  </data>
+  <data name="RepeatDelay" xml:space="preserve">
+    <value>Delay before repeat (ms):</value>
+  </data>
+  <data name="RepeatRate" xml:space="preserve">
+    <value>Repeats per second:</value>
+  </data>
+  <data name="KeyboardNote" xml:space="preserve">
+    <value>The layout people type their name and password in. Choose one everybody who logs in to this machine can use.</value>
+  </data>
+  <data name="SchemeNote" xml:space="preserve">
+    <value>Used for both the login dialog and the screen around it.</value>
+  </data>
+  <data name="DisplaysNote" xml:space="preserve">
+    <value>Check a display to set it for the login screen. Unchecked displays are arranged automatically.</value>
+  </data>
+  <data name="AutomaticLayout" xml:space="preserve">
+    <value>Automatic Layout</value>
+  </data>
+  <data name="NotConnected" xml:space="preserve">
+    <value>Not connected</value>
+  </data>
+  <data name="Remove" xml:space="preserve">
+    <value>Remove</value>
+  </data>
+  <data name="OutputOn" xml:space="preserve">
+    <value>Turned on</value>
+  </data>
+  <data name="Resolution" xml:space="preserve">
+    <value>Resolution:</value>
+  </data>
+  <data name="Scale" xml:space="preserve">
+    <value>Scale:</value>
+  </data>
+  <data name="Rotation" xml:space="preserve">
+    <value>Rotation:</value>
+  </data>
+  <data name="Position" xml:space="preserve">
+    <value>Position:</value>
+  </data>
+  <data name="SystemDefault" xml:space="preserve">
+    <value>System default</value>
+  </data>
+  <data name="ModeAutomatic" xml:space="preserve">
+    <value>Automatic</value>
+  </data>
+  <data name="ModeWithRefresh" xml:space="preserve">
+    <value>{0} × {1} @ {2} Hz</value>
+  </data>
+  <data name="ModeFastest" xml:space="preserve">
+    <value>{0} × {1}</value>
+  </data>
+  <data name="TransformNormal" xml:space="preserve">
+    <value>Normal</value>
+  </data>
+  <data name="Transform90" xml:space="preserve">
+    <value>90°</value>
+  </data>
+  <data name="Transform180" xml:space="preserve">
+    <value>180°</value>
+  </data>
+  <data name="Transform270" xml:space="preserve">
+    <value>270°</value>
+  </data>
+  <data name="TransformFlipped" xml:space="preserve">
+    <value>Flipped</value>
+  </data>
+  <data name="TransformFlipped90" xml:space="preserve">
+    <value>Flipped, 90°</value>
+  </data>
+  <data name="TransformFlipped180" xml:space="preserve">
+    <value>Flipped, 180°</value>
+  </data>
+  <data name="TransformFlipped270" xml:space="preserve">
+    <value>Flipped, 270°</value>
+  </data>
+  <data name="SourceOwn" xml:space="preserve">
+    <value>Showing the login screen's own settings, from {0}.</value>
+  </data>
+  <data name="SourceSystem" xml:space="preserve">
+    <value>The login screen has no settings of its own and uses the system defaults, from {0}.</value>
+  </data>
+  <data name="GreeterNotInstalled" xml:space="preserve">
+    <value>wlrix-greeter is not installed, so these settings will not be seen until it is.</value>
+  </data>
+  <data name="GreeterNotEnabled" xml:space="preserve">
+    <value>wlrix-greeter is installed but is not the display manager; enable wlrix-greeter.service for these settings to be seen.</value>
+  </data>
+  <data name="ReadFailed" xml:space="preserve">
+    <value>Could not read {0}: {1}</value>
+  </data>
+  <data name="Invalid" xml:space="preserve">
+    <value>These settings cannot be written: {0}</value>
+  </data>
+  <data name="Applied" xml:space="preserve">
+    <value>Saved. The login screen uses these settings from the next time it starts.</value>
+  </data>
+  <data name="ResetDone" xml:space="preserve">
+    <value>The login screen uses the system defaults again.</value>
+  </data>
+  <data name="Copied" xml:space="preserve">
+    <value>Copied. Press Apply to use these for the login screen.</value>
+  </data>
+  <data name="NotAuthorized" xml:space="preserve">
+    <value>Not changed: authentication was canceled or failed.</value>
+  </data>
+  <data name="HelperUnavailable" xml:space="preserve">
+    <value>Cannot change the login screen's settings: {0}</value>
+  </data>
+  <data name="HelperFailed" xml:space="preserve">
+    <value>The settings were not saved: {0}</value>
+  </data>
+  <data name="NoSettingsService" xml:space="preserve">
+    <value>No settings service: {0}</value>
+  </data>
+  <data name="NoDisplays" xml:space="preserve">
+    <value>The connected displays cannot be read from the compositor.</value>
+  </data>
+  <data name="ConfirmReset" xml:space="preserve">
+    <value>Remove the login screen's own settings and use the system defaults?</value>
+  </data>
+  <data name="HelpTitle" xml:space="preserve">
+    <value>Login Settings Help</value>
+  </data>
+  <data name="HelpText" xml:space="preserve">
+    <value>Sets the keyboard layout, color scheme and displays of the login screen, which everyone sees before they log in. The Copy menu fills the form in from your own settings. Nothing changes until you press Apply, which asks for an administrator's password and saves the settings to /etc/wlrix/greeter.toml. Use System Defaults removes that file, and the login screen goes back to /etc/wlrix/compositor.toml.</value>
+  </data>
+</root>

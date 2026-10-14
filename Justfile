@@ -33,6 +33,7 @@ apps := "Wlrix.Archiver:wlrix-archiver:com.wlrix.archiver.desktop \
          Wlrix.Clock:wlrix-clock:com.wlrix.clock.desktop \
          Wlrix.Settings.Displays:wlrix-settings-displays:com.wlrix.settings.displays.desktop \
          Wlrix.Settings.Audio:wlrix-settings-audio:com.wlrix.settings.audio.desktop \
+         Wlrix.Settings.Login:wlrix-settings-login:com.wlrix.settings.login.desktop \
          Wlrix.ImageView:wlrix-imageview:com.wlrix.imageview.desktop \
          Wlrix.Writer:wlrix-writer:com.wlrix.writer.desktop"
 
