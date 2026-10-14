@@ -28,9 +28,17 @@ public sealed class MainWindowViewModel : ViewModelBase
     /// </summary>
     private const string ClipboardHistoryProgram = "wlrix-clipboard-history";
 
-    /// <summary>The installed name of the Software Manager, launched by System → Software Manager.</summary>
+    /// <summary>The installed name of the Software Manager, launched by System → Manage Software.</summary>
     private const string SoftwareManagerProgram = "wlrix-software-manager";
-    private const string LoginSettingsProgram = "wlrix-settings-login";
+
+    // The rest of the desktop's settings panels, by installed name. Desktop → Customize holds the
+    // ones about the person's own desktop; System holds the ones about the machine, which ask for
+    // an administrator's password (Login) or affect every monitor (Display).
+    private const string WindowsProgram = "wlrix-settings-windows";
+    private const string SchemesProgram = "wlrix-settings-schemes";
+    private const string KeyboardProgram = "wlrix-settings-keyboard";
+    private const string DisplaysProgram = "wlrix-settings-displays";
+    private const string LoginProgram = "wlrix-settings-login";
 
     /// <summary>
     /// The installed name of the Shut Down System dialog, behind both of the System menu's
@@ -106,17 +114,25 @@ public sealed class MainWindowViewModel : ViewModelBase
         }
     }
 
+    /// <summary>A menu item that starts <paramref name="program"/>, named <paramref name="label"/>.</summary>
+    private MenuNode Launch(string label, string program) =>
+        new(label, command: new RelayCommand(() => _launcher.Run(label, program)));
+
     private void BuildTopLevel(MenuNode applications)
     {
         TopLevel.Clear();
         TopLevel.Add(new MenuNode(Strings.Desktop,
         [
-            // IRIX's Desktop → Customize, where the desktop's own settings panels live. Only
-            // Sounds so far; the rest of IRIX's list joins it as each panel is reachable.
+            // IRIX's Desktop → Customize, where the desktop's own settings panels live: how
+            // windows and sounds behave, then how everything looks, then the keyboard.
             new MenuNode(Strings.Customize,
             [
-                new MenuNode(Strings.Sounds,
-                    command: new RelayCommand(() => _launcher.Run(Strings.Sounds, SoundProgram))),
+                Launch(Strings.Windows, WindowsProgram),
+                Launch(Strings.Sounds, SoundProgram),
+                MenuNode.Separator(),
+                Launch(Strings.ColorSchemes, SchemesProgram),
+                MenuNode.Separator(),
+                Launch(Strings.Keyboard, KeyboardProgram),
             ]),
             new MenuNode(Strings.ExtraDesks,
                 command: new RelayCommand(() => _launcher.Run(Strings.ExtraDesks, DesksProgram))),
@@ -131,12 +147,11 @@ public sealed class MainWindowViewModel : ViewModelBase
         ]));
         TopLevel.Add(new MenuNode(Strings.System,
         [
-            new MenuNode(Strings.SoftwareManager,
-                command: new RelayCommand(() => _launcher.Run(Strings.SoftwareManager, SoftwareManagerProgram))),
-            // Beside the Software Manager because it is the same kind of thing: the machine's
-            // settings rather than the person's, behind an administrator's password.
-            new MenuNode(Strings.LoginSettings,
-                command: new RelayCommand(() => _launcher.Run(Strings.LoginSettings, LoginSettingsProgram))),
+            Launch(Strings.ManageSoftware, SoftwareManagerProgram),
+            MenuNode.Separator(),
+            // The machine's own settings, as IRIX's System menu had them.
+            Launch(Strings.DisplayProperties, DisplaysProgram),
+            Launch(Strings.LoginProperties, LoginProgram),
             MenuNode.Separator(),
             // Neither acts: both open the Shut Down System dialog, which is where the machine
             // actually gets asked to go down. That indirection is the point -- a menu item that

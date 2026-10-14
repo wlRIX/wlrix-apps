@@ -35,13 +35,15 @@ public class MenuTests
             HeadersUnder(Strings.Desktop));
 
     [Fact]
-    public void CustomizeOpensTheSoundsPanel()
+    public void CustomizeHoldsTheDesktopsOwnPanels()
     {
-        // IRIX's Desktop → Customize submenu, ahead of Desks as on IRIX.
+        // IRIX's Desktop → Customize submenu, ahead of Desks as on IRIX: behavior, then looks,
+        // then the keyboard, with a rule between each group.
         var customize = Assert.Single(ItemsUnder(Strings.Desktop), node => node.Header == Strings.Customize);
-        var sounds = Assert.Single(customize.Children!);
-        Assert.Equal(Strings.Sounds, sounds.Header);
-        Assert.NotNull(sounds.Command);
+        Assert.Equal(
+            [Strings.Windows, Strings.Sounds, null, Strings.ColorSchemes, null, Strings.Keyboard],
+            customize.Children!.Select(item => item.IsSeparator ? null : item.Header));
+        Assert.All(customize.Children!.Where(item => !item.IsSeparator), item => Assert.NotNull(item.Command));
     }
 
     [Fact]
@@ -55,17 +57,13 @@ public class MenuTests
     }
 
     [Fact]
-    public void TheSystemMenuIsSoftwareManagerThenLoginSettingsThenRestartThenShutDown() =>
-        Assert.Equal([Strings.SoftwareManager, Strings.LoginSettings, Strings.RestartSystem, Strings.ShutDownSystem],
-            HeadersUnder(Strings.System));
-
-    [Fact]
-    public void TheSystemMenuSeparatesTheAppFromTheMachine()
-    {
-        // One rule, between the two applications and ending everything running on the box.
-        Assert.Equal([false, false, true, false, false],
-            ItemsUnder(Strings.System).Select(item => item.IsSeparator));
-    }
+    public void TheSystemMenuIsSoftwareThenPropertiesThenTheMachine() =>
+        // Three groups: installing software, the machine's own settings, and ending everything
+        // running on the box.
+        Assert.Equal(
+            [Strings.ManageSoftware, null, Strings.DisplayProperties, Strings.LoginProperties, null,
+                Strings.RestartSystem, Strings.ShutDownSystem],
+            ItemsUnder(Strings.System).Select(item => item.IsSeparator ? null : item.Header));
 
     [Fact]
     public void RestartAndShutDownBothOpenTheShutDownDialog()

@@ -53,12 +53,6 @@
 
 Every running application will be closed, and anything not saved will be lost.</value>
   </data>
-  <data name="SoftwareManager" xml:space="preserve">
-    <value>Software Manager</value>
-  </data>
-  <data name="LoginSettings" xml:space="preserve">
-    <value>Login Settings</value>
-  </data>
   <data name="RestartSystem" xml:space="preserve">
     <value>Restart System</value>
   </data>
@@ -126,5 +120,23 @@ Version {0}</value>
   <data name="CouldNotStart" xml:space="preserve">
     <value>Could not start “{0}”.
 {1}</value>
+  </data>
+  <data name="Windows" xml:space="preserve">
+    <value>Windows</value>
+  </data>
+  <data name="ColorSchemes" xml:space="preserve">
+    <value>Color Schemes</value>
+  </data>
+  <data name="Keyboard" xml:space="preserve">
+    <value>Keyboard</value>
+  </data>
+  <data name="ManageSoftware" xml:space="preserve">
+    <value>Manage Software</value>
+  </data>
+  <data name="DisplayProperties" xml:space="preserve">
+    <value>Display Properties</value>
+  </data>
+  <data name="LoginProperties" xml:space="preserve">
+    <value>Login Properties</value>
   </data>
 </root>
