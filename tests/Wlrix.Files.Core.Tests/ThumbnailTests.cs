@@ -299,6 +299,19 @@ public class ThumbnailTests
     }
 
     [Fact]
+    public async Task AnSvgResvgCannotParseRendersNothingRatherThanThrowing()
+    {
+        // The shape of the old icon sets: no SVG namespace. An exception from here once ended
+        // the thumbnail worker, and with it every thumbnail for the rest of the session.
+        using var dir = new TemporaryDirectory();
+        var path = Path.Combine(dir.Path, "old.svg");
+        File.WriteAllText(path,
+            """<svg width="50pt" height="50pt" viewBox="0 0 50 50"><path d="M0 0L50 50"/></svg>""");
+
+        Assert.Null(await new SvgThumbnailer().RenderAsync(path, 64, None));
+    }
+
+    [Fact]
     public async Task SomethingThatIsNotAnImageRendersNothingRatherThanThrowing()
     {
         using var dir = new TemporaryDirectory();

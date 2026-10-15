@@ -132,14 +132,19 @@ public sealed class ThumbnailService : IDisposable
                     bitmap = new Bitmap(stream);
                 }
             }
-            catch (OperationCanceledException)
+            catch (OperationCanceledException) when (_shutdown.IsCancellationRequested)
             {
                 return;
             }
-            catch (Exception ex) when (ex is IOException or ArgumentException or NotSupportedException)
+            catch (Exception ex) when (ex is not OutOfMemoryException)
             {
                 // A file that will not decode is remembered as having no thumbnail, so the
                 // next scroll past it costs a dictionary lookup rather than another attempt.
+                //
+                // Every failure, not a list of the expected ones. This loop is the only reader
+                // of the queue and nothing awaits it, so an exception that escaped once ended
+                // thumbnails for the rest of the session without a word: one SVG that resvg
+                // would not parse, and every file after it fell back to its icon.
             }
 
             // Misses are cached too, for the same reason.

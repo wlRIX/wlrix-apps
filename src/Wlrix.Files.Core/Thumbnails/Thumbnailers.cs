@@ -126,9 +126,19 @@ public sealed class SvgThumbnailer : IThumbnailer
         {
             cancellationToken.ThrowIfCancellationRequested();
             var svg = File.ReadAllText(localPath);
-            // Answers encoded PNG bytes, which is exactly what the cache stores, so nothing
-            // is decoded and re-encoded on the way through.
-            return Resvg.RenderToPng(svg, new ResvgOptions { Width = size, Height = size });
+            try
+            {
+                // Answers encoded PNG bytes, which is exactly what the cache stores, so nothing
+                // is decoded and re-encoded on the way through.
+                return Resvg.RenderToPng(svg, new ResvgOptions { Width = size, Height = size });
+            }
+            catch (ResvgSharp.Exceptions.ResvgException)
+            {
+                // resvg will not parse every file that calls itself SVG -- an old one without
+                // the SVG namespace is the common case -- and that file has no thumbnail, as a
+                // PNG that will not decode has none.
+                return null;
+            }
         }, cancellationToken);
 }
 
