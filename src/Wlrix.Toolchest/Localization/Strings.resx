@@ -130,6 +130,9 @@ Version {0}</value>
   <data name="Keyboard" xml:space="preserve">
     <value>Keyboard</value>
   </data>
+  <data name="Mouse" xml:space="preserve">
+    <value>Mouse</value>
+  </data>
   <data name="ManageSoftware" xml:space="preserve">
     <value>Manage Software</value>
   </data>

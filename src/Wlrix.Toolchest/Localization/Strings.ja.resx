@@ -114,6 +114,9 @@
   <data name="Keyboard" xml:space="preserve">
     <value>キーボード</value>
   </data>
+  <data name="Mouse" xml:space="preserve">
+    <value>マウス</value>
+  </data>
   <data name="ManageSoftware" xml:space="preserve">
     <value>ソフトウェアの管理</value>
   </data>

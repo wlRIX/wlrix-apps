@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="WindowTitle" xml:space="preserve">
+    <value>マウスの設定</value>
+  </data>
+  <data name="PanelTitle" xml:space="preserve">
+    <value>マウスの設定</value>
+  </data>
+  <data name="MouseAcceleration" xml:space="preserve">
+    <value>マウスの加速：</value>
+  </data>
+  <data name="Slow" xml:space="preserve">
+    <value>遅い</value>
+  </data>
+  <data name="Fast" xml:space="preserve">
+    <value>速い</value>
+  </data>
+  <data name="FinerControl" xml:space="preserve">
+    <value>詳細設定</value>
+  </data>
+  <data name="Acceleration" xml:space="preserve">
+    <value>加速</value>
+  </data>
+  <data name="MouseMapping" xml:space="preserve">
+    <value>ボタンの割り当て：</value>
+  </data>
+  <data name="RightHanded" xml:space="preserve">
+    <value>右利き</value>
+  </data>
+  <data name="LeftHanded" xml:space="preserve">
+    <value>左利き</value>
+  </data>
+  <data name="Test" xml:space="preserve">
+    <value>テスト：</value>
+  </data>
+  <data name="ClickHere" xml:space="preserve">
+    <value>ここをクリック！</value>
+  </data>
+  <data name="SingleClick" xml:space="preserve">
+    <value>シングルクリック</value>
+  </data>
+  <data name="DoubleClick" xml:space="preserve">
+    <value>ダブルクリック</value>
+  </data>
+  <data name="ClickSpeed" xml:space="preserve">
+    <value>クリックの速さ：</value>
+  </data>
+  <data name="CursorTheme" xml:space="preserve">
+    <value>カーソルのテーマ：</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>閉じる</value>
+  </data>
+  <data name="Reset" xml:space="preserve">
+    <value>リセット...</value>
+  </data>
+  <data name="Help" xml:space="preserve">
+    <value>ヘルプ</value>
+  </data>
+  <data name="HelpText" xml:space="preserve">
+    <value>「マウスの加速」はポインタの移動の速さを設定します。「詳細設定」を押すと、プリセットの間の値を選べるスライダーが表示されます。「ボタンの割り当て」は左手用にボタンを入れ替えます。「クリックの速さ」は2回のクリックをダブルクリックとみなす間隔で、テストボタンをクリックまたはダブルクリックして試せます。変更はすぐに適用され、「リセット」はこのウィンドウを開いたときの設定に戻します。</value>
+  </data>
+  <data name="HintAcceleration" xml:space="preserve">
+    <value>ポインタの移動の速さ</value>
+  </data>
+  <data name="HintAccelerationFiner" xml:space="preserve">
+    <value>押すと加速を細かく設定できます。</value>
+  </data>
+  <data name="HintAccelerationSlider" xml:space="preserve">
+    <value>ドラッグしてプリセットの間の加速を設定します</value>
+  </data>
+  <data name="HintMapping" xml:space="preserve">
+    <value>マウスのボタンをどちらの手向けに配置するか</value>
+  </data>
+  <data name="HintTest" xml:space="preserve">
+    <value>ここをクリックまたはダブルクリックして、クリックの速さを試します</value>
+  </data>
+  <data name="HintClickSpeed" xml:space="preserve">
+    <value>ダブルクリックとみなすクリックの速さ</value>
+  </data>
+  <data name="HintClickSpeedFiner" xml:space="preserve">
+    <value>押すとクリックの速さを細かく設定できます。</value>
+  </data>
+  <data name="HintCursorTheme" xml:space="preserve">
+    <value>デスクトップ全体で使うポインタです。実行中のアプリケーションは、再起動するまで以前のものを使うことがあります。</value>
+  </data>
+  <data name="HintClose" xml:space="preserve">
+    <value>このウィンドウを閉じます</value>
+  </data>
+  <data name="HintReset" xml:space="preserve">
+    <value>このウィンドウを開いたときの設定に戻します</value>
+  </data>
+  <data name="HintHelp" xml:space="preserve">
+    <value>これらの設定について説明します</value>
+  </data>
+  <data name="Milliseconds" xml:space="preserve">
+    <value>{0} ミリ秒</value>
+  </data>
+  <data name="NotInstalled" xml:space="preserve">
+    <value>{0}（未インストール）</value>
+  </data>
+  <data name="NoSettingsService" xml:space="preserve">
+    <value>設定サービスがありません：{0}</value>
+  </data>
+  <data name="FileInvalid" xml:space="preserve">
+    <value>{0} が正しくないため、最後に有効だった値を表示しています。</value>
+  </data>
+</root>

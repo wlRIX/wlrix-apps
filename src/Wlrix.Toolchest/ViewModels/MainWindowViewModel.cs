@@ -37,6 +37,7 @@ public sealed class MainWindowViewModel : ViewModelBase
     private const string WindowsProgram = "wlrix-settings-windows";
     private const string SchemesProgram = "wlrix-settings-schemes";
     private const string KeyboardProgram = "wlrix-settings-keyboard";
+    private const string MouseProgram = "wlrix-settings-mouse";
     private const string DisplaysProgram = "wlrix-settings-displays";
     private const string LoginProgram = "wlrix-settings-login";
 
@@ -124,7 +125,7 @@ public sealed class MainWindowViewModel : ViewModelBase
         TopLevel.Add(new MenuNode(Strings.Desktop,
         [
             // IRIX's Desktop → Customize, where the desktop's own settings panels live: how
-            // windows and sounds behave, then how everything looks, then the keyboard.
+            // windows and sounds behave, then how everything looks, then the mouse and keyboard.
             new MenuNode(Strings.Customize,
             [
                 Launch(Strings.Windows, WindowsProgram),
@@ -132,6 +133,7 @@ public sealed class MainWindowViewModel : ViewModelBase
                 MenuNode.Separator(),
                 Launch(Strings.ColorSchemes, SchemesProgram),
                 MenuNode.Separator(),
+                Launch(Strings.Mouse, MouseProgram),
                 Launch(Strings.Keyboard, KeyboardProgram),
             ]),
             new MenuNode(Strings.ExtraDesks,

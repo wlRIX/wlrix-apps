@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="WindowTitle" xml:space="preserve">
+    <value>Mouse Settings</value>
+  </data>
+  <data name="PanelTitle" xml:space="preserve">
+    <value>Mouse Settings</value>
+  </data>
+  <data name="MouseAcceleration" xml:space="preserve">
+    <value>Mouse Acceleration:</value>
+  </data>
+  <data name="Slow" xml:space="preserve">
+    <value>Slow</value>
+  </data>
+  <data name="Fast" xml:space="preserve">
+    <value>Fast</value>
+  </data>
+  <data name="FinerControl" xml:space="preserve">
+    <value>Finer Control</value>
+  </data>
+  <data name="Acceleration" xml:space="preserve">
+    <value>Acceleration</value>
+  </data>
+  <data name="MouseMapping" xml:space="preserve">
+    <value>Mouse Mapping:</value>
+  </data>
+  <data name="RightHanded" xml:space="preserve">
+    <value>Right handed</value>
+  </data>
+  <data name="LeftHanded" xml:space="preserve">
+    <value>Left handed</value>
+  </data>
+  <data name="Test" xml:space="preserve">
+    <value>Test:</value>
+  </data>
+  <data name="ClickHere" xml:space="preserve">
+    <value>Click Here!</value>
+  </data>
+  <data name="SingleClick" xml:space="preserve">
+    <value>Single Click</value>
+  </data>
+  <data name="DoubleClick" xml:space="preserve">
+    <value>Double Click</value>
+  </data>
+  <data name="ClickSpeed" xml:space="preserve">
+    <value>Click Speed:</value>
+  </data>
+  <data name="CursorTheme" xml:space="preserve">
+    <value>Cursor Theme:</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="Reset" xml:space="preserve">
+    <value>Reset ...</value>
+  </data>
+  <data name="Help" xml:space="preserve">
+    <value>Help</value>
+  </data>
+  <data name="HelpText" xml:space="preserve">
+    <value>Mouse Acceleration sets how quickly the pointer moves; Finer Control shows a slider for values between the presets. Mouse Mapping swaps the buttons for a left hand. Click Speed is how quickly two clicks must come to count as a double click: click or double-click the Test button to try it. Changes apply as you make them, and Reset restores the settings from when this window opened.</value>
+  </data>
+  <data name="HintAcceleration" xml:space="preserve">
+    <value>How fast the pointer moves</value>
+  </data>
+  <data name="HintAccelerationFiner" xml:space="preserve">
+    <value>Press to customize acceleration.</value>
+  </data>
+  <data name="HintAccelerationSlider" xml:space="preserve">
+    <value>Drag to set the acceleration between the presets</value>
+  </data>
+  <data name="HintMapping" xml:space="preserve">
+    <value>Which hand the mouse buttons are arranged for</value>
+  </data>
+  <data name="HintTest" xml:space="preserve">
+    <value>Click or double-click here to try the click speed</value>
+  </data>
+  <data name="HintClickSpeed" xml:space="preserve">
+    <value>How fast you click the mouse to do double clicks</value>
+  </data>
+  <data name="HintClickSpeedFiner" xml:space="preserve">
+    <value>Press to customize click speed.</value>
+  </data>
+  <data name="HintCursorTheme" xml:space="preserve">
+    <value>The pointer used across the desktop. Applications already running may keep the old one until they are restarted.</value>
+  </data>
+  <data name="HintClose" xml:space="preserve">
+    <value>Close this window</value>
+  </data>
+  <data name="HintReset" xml:space="preserve">
+    <value>Restore the settings from when this window opened</value>
+  </data>
+  <data name="HintHelp" xml:space="preserve">
+    <value>Explain these settings</value>
+  </data>
+  <data name="Milliseconds" xml:space="preserve">
+    <value>{0} ms</value>
+  </data>
+  <data name="NotInstalled" xml:space="preserve">
+    <value>{0} (not installed)</value>
+  </data>
+  <data name="NoSettingsService" xml:space="preserve">
+    <value>No settings service: {0}</value>
+  </data>
+  <data name="FileInvalid" xml:space="preserve">
+    <value>{0} is not valid; showing the last good values.</value>
+  </data>
+</root>

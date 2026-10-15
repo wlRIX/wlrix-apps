@@ -22,6 +22,7 @@ public static class Strings
     public static string Sounds => Catalog.Get("Sounds");
     public static string ColorSchemes => Catalog.Get("ColorSchemes");
     public static string Keyboard => Catalog.Get("Keyboard");
+    public static string Mouse => Catalog.Get("Mouse");
     public static string ExtraDesks => Catalog.Get("ExtraDesks");
     public static string ControlAudio => Catalog.Get("ControlAudio");
     public static string ClipboardHistory => Catalog.Get("ClipboardHistory");

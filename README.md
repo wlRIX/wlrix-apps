@@ -24,6 +24,7 @@ library. Apps recreate the IRIX Interactive Desktop surface.
 | `Wlrix.Desks`             | app  | Virtual-desktop (Rooms) overview and switcher.                      |
 | `Wlrix.Console`           | app  | Tails the wlRIX component logs, one tab each.                       |
 | `Wlrix.Settings.Keyboard` | app  | Keyboard settings panel.                                            |
+| `Wlrix.Settings.Mouse`    | app  | Mouse Settings, after IRIX's: acceleration, buttons, click speed.   |
 | `Wlrix.Settings.Windows`  | app  | Window settings panel: focus policy and the 4Dwm flags.             |
 | `Wlrix.Settings.Displays` | app  | Displays panel, after KDE's: arrangement, modes, scale, HDR.        |
 | `Wlrix.Settings.Audio`    | app  | Audio Panel, after IRIX's apanel. Replaces pavucontrol.             |
@@ -237,6 +238,27 @@ in two kinds, and they go two different ways:
 Turning a kind of sound on plays one of its sounds, and so does picking a new scheme or output, through
 `com.wlrix.Sound1.Preview`. IRIX's *Key Click* is left out: it was the keyboard's own hardware, and the nearest thing
 here, a sound per keypress, is not worth the latency.
+
+## Mouse
+
+`Wlrix.Settings.Mouse` is IRIX's Mouse Settings panel. Everything it sets is in `compositor.toml`, written through
+`wlrix-settings-daemon`:
+
+- **Mouse Acceleration** is `compositor.mouse.acceleration`, libinput's pointer speed from -1 to 1. The five diamonds are
+  -1, -0.5, 0, 0.5 and 1; **Finer Control** shows a slider for the values between them. IRIX's *Threshold* slider is
+  left out, because libinput has no threshold: its acceleration is a curve over pointer speed, not a step.
+- **Mouse Mapping** is `compositor.mouse.left_handed`, libinput's button swap.
+- **Click Speed** is `compositor.mouse.double_click_ms`. The diamonds are 600, 400 and 250 ms, Slow to Fast, and the
+  slider reads the same way round. The compositor uses it for the window-menu button, and the portal passes it to GTK
+  as `org.gnome.desktop.peripherals.mouse` `double-click`. Avalonia applications do not follow it yet: they take their
+  double-click time from `Avalonia.FreeDesktop`, which does not ask the portal for it.
+- **Test** times your clicks against the Click Speed currently set, including a value nobody else has read yet. It says
+  *Double Click* at once, and *Single Click* only once the double-click time has passed without a second click.
+- **Cursor Theme**, wlRIX's addition, is `compositor.cursor.theme`, listing the themes that have a `cursors` directory
+  where an XCursor loader looks, with a row of each theme's pointers. It is written only when it is changed, so a file
+  that names no theme keeps following `XCURSOR_THEME`.
+
+Under the nested compositor there is no libinput, and the host decides acceleration and button mapping.
 
 ## Phones
 
