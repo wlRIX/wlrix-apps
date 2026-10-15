@@ -2,6 +2,7 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
+using Wlrix.Common;
 using Wlrix.Settings.Displays.ViewModels;
 
 namespace Wlrix.Settings.Displays.Views;
@@ -24,6 +25,9 @@ public partial class ConfirmWindow : Window
     {
         base.OnOpened(e);
         _timer.Start();
+        // "Keep these settings?" is a question, and one with a deadline: heard, it is less
+        // likely to run out unseen behind a monitor that has just gone dark.
+        SystemSound.Play("dialog-question");
     }
 
     protected override void OnClosed(EventArgs e)

@@ -1,5 +1,6 @@
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
+using Wlrix.Common;
 using Wlrix.Files.Core;
 using Wlrix.Files.Core.Remote;
 using Location = Wlrix.Files.Core.Location;
@@ -72,7 +73,13 @@ public partial class ConnectDialog : Window
         }
 
         dialog.ApplyScheme();
-        dialog.Opened += (_, _) => dialog.User.Focus();
+        dialog.Opened += (_, _) =>
+        {
+            dialog.User.Focus();
+            // Unlike Connect to Server, which the user opened, this one interrupts: a share
+            // asking again for a password is a question put to them, and sounds like one.
+            SystemSound.Play("dialog-question");
+        };
         return await dialog.ShowDialog<ConnectRequest?>(owner);
     }
 

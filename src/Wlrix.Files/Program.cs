@@ -55,7 +55,8 @@ internal static class Program
         // %U in the desktop entry hands over URIs, never a leading dash, so nothing legitimate
         // arrives looking like this. A file genuinely named "--x" comes as file:///...--x.
         if (args.FirstOrDefault(argument =>
-                argument.StartsWith("--", StringComparison.Ordinal) && argument != NewWindowFlag) is { } unknown)
+                argument.StartsWith("--", StringComparison.Ordinal)
+                && argument != NewWindowFlag && argument != EmptyTrashFlag) is { } unknown)
         {
             Console.Error.WriteLine($"wlrix-files: unknown argument: {unknown}");
             Environment.Exit(2);
@@ -66,6 +67,28 @@ internal static class Program
         // no flash of a frame that is about to close -- and, more to the point, the Classic
         // window registry stays an in-process dictionary with one process to ask.
         var guard = new DBusInstanceGuard();
+
+        // The desktop's Empty Dumpster. A running instance asks over one of its own windows, as
+        // its own menu item would. With none running, this asks on its own -- the question and
+        // nothing else -- and leaves: emptying the trash is not a reason to open a file manager.
+        // The bus name is let go first, so a folder opened meanwhile starts a real instance
+        // rather than arriving at one that is about to exit.
+        if (args is [EmptyTrashFlag])
+        {
+            if (guard.TryAcquireAsync().GetAwaiter().GetResult())
+            {
+                guard.DisposeAsync().AsTask().GetAwaiter().GetResult();
+                App.EmptyTrashOnly = true;
+                BuildAvaloniaApp().StartWithClassicDesktopLifetime([]);
+            }
+            else
+            {
+                guard.SendActionAsync(EmptyTrashAction).GetAwaiter().GetResult();
+                guard.DisposeAsync().AsTask().GetAwaiter().GetResult();
+            }
+            return;
+        }
+
         var newWindow = args.Contains(NewWindowFlag, StringComparer.Ordinal);
         var paths = args.Where(argument => argument != NewWindowFlag).ToArray();
 
@@ -91,6 +114,12 @@ internal static class Program
 
     /// <summary>The command line the desktop entry's New Window action runs.</summary>
     private const string NewWindowFlag = "--new-window";
+
+    /// <summary>What the desktop's Empty Dumpster runs.</summary>
+    private const string EmptyTrashFlag = "--empty-trash";
+
+    /// <summary>The action <see cref="EmptyTrashFlag"/> sends to a running instance.</summary>
+    public const string EmptyTrashAction = "EmptyTrash";
 
     /// <summary>What the settings daemon calls to have a candidate config file checked.</summary>
     private const string CheckConfigFlag = "--check-config";

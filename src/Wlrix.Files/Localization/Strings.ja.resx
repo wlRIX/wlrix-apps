@@ -574,4 +574,28 @@
   <data name="ContextSelectAll" xml:space="preserve">
     <value>すべて選択(_A)</value>
   </data>
+  <data name="PlaceDumpster" xml:space="preserve">
+    <value>ごみ箱</value>
+  </data>
+  <data name="ActionEmptyDumpster" xml:space="preserve">
+    <value>ごみ箱を空にする</value>
+  </data>
+  <data name="SelectedPutBack" xml:space="preserve">
+    <value>元に戻す</value>
+  </data>
+  <data name="ConfirmEmptyTitle" xml:space="preserve">
+    <value>ごみ箱を空にする</value>
+  </data>
+  <data name="ConfirmEmptyMessage" xml:space="preserve">
+    <value>ごみ箱の中身をすべて完全に削除しますか。元に戻せません。</value>
+  </data>
+  <data name="DumpsterAlreadyEmpty" xml:space="preserve">
+    <value>ごみ箱はすでに空です。</value>
+  </data>
+  <data name="EmptyFailed" xml:space="preserve">
+    <value>ごみ箱の {0} 個の項目を削除できませんでした。</value>
+  </data>
+  <data name="RestoreFailed" xml:space="preserve">
+    <value>{0} 個の項目を元に戻せませんでした。</value>
+  </data>
 </root>

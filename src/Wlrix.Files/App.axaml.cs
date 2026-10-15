@@ -5,6 +5,7 @@ using Avalonia.Markup.Xaml;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Avalonia.Threading;
+using Wlrix.Avalonia.Dialogs;
 using Wlrix.Common;
 using Wlrix.Common.Desktop;
 using Wlrix.Common.Localization;
@@ -52,6 +53,12 @@ public class App : Application
     public static bool SuppressRestore { get; set; }
 
     /// <summary>
+    /// Whether this process was started only to empty the Dumpster: <c>--empty-trash</c>, from
+    /// the desktop's Empty Dumpster, with no file manager running to ask instead.
+    /// </summary>
+    public static bool EmptyTrashOnly { get; set; }
+
+    /// <summary>
     /// The window a dialog with no obvious owner should hang from.
     /// </summary>
     /// <remarks>
@@ -64,6 +71,48 @@ public class App : Application
         .FirstOrDefault(window => window.IsActive)
         ?? (Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.Windows
         .FirstOrDefault();
+
+    /// <summary>
+    /// The Empty Dumpster question on its own, for the desktop: the same question the file
+    /// manager's own menu item asks, then the empty, then exit.
+    /// </summary>
+    /// <remarks>
+    /// Shown rather than shown as a dialog, because there is no window to be modal to -- the
+    /// desktop is a layer surface in another process. The dialog says what was chosen through
+    /// <see cref="MessageDialog.Result"/>.
+    /// </remarks>
+    private static void AskToEmptyTrash(IClassicDesktopStyleApplicationLifetime desktop)
+    {
+        if (Trash.IsEmpty())
+        {
+            desktop.Shutdown();
+            return;
+        }
+
+        var dialog = new MessageDialog
+        {
+            DialogType = DialogType.Question,
+            Title = Strings.ConfirmEmptyTitle,
+            Message = Strings.ConfirmEmptyMessage,
+            Buttons = DialogButtons.OkCancel,
+            Width = 360,
+            MinWidth = 360,
+            MaxWidth = 360,
+        };
+        dialog.Closed += async (_, _) =>
+        {
+            if (dialog.Result == DialogResult.Ok)
+            {
+                var problems = await Task.Run(() => Trash.Empty()).ConfigureAwait(true);
+                SystemSound.Play("trash-empty");
+                foreach (var problem in problems)
+                    Console.Error.WriteLine($"wlrix-files: could not empty {problem}");
+            }
+            desktop.Shutdown();
+        };
+        desktop.MainWindow = dialog;
+        dialog.Show();
+    }
 
     public override void Initialize()
     {
@@ -79,6 +128,13 @@ public class App : Application
         // Fire and forget: follows the session color scheme, and fails soft if the settings
         // daemon is not running.
         _ = SessionScheme.FollowAsync(this);
+
+        if (EmptyTrashOnly && ApplicationLifetime is IClassicDesktopStyleApplicationLifetime asking)
+        {
+            AskToEmptyTrash(asking);
+            base.OnFrameworkInitializationCompleted();
+            return;
+        }
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
@@ -221,6 +277,14 @@ public class App : Application
                 {
                     if (action == Program.NewWindowAction)
                         windows.OpenNewWindow();
+                    // The desktop's Empty Dumpster, asked over the window in front, as that
+                    // window's own menu item would ask it.
+                    else if (action == Program.EmptyTrashAction
+                             && windows.Router.Registry.Windows.LastOrDefault() is { } front)
+                    {
+                        windows.Present(front);
+                        front.EmptyTrash.Execute().Subscribe(_ => { }, _ => { });
+                    }
                 });
                 desktop.ShutdownRequested += (_, _) =>
                     guard.DisposeAsync().AsTask().Wait(TimeSpan.FromSeconds(2));

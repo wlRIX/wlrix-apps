@@ -16,3 +16,17 @@ public class SystemSoundTests
         SystemSound.Play("not a valid name/../at all");
     }
 }
+
+/// <summary>An app's own dialog sounding like the MessageDialog it resembles.</summary>
+public class DialogIconSoundTests
+{
+    [Theory]
+    [InlineData("Error", "dialog-error")]
+    [InlineData("Critical", "dialog-error-serious")]
+    [InlineData("Warning", "dialog-warning")]
+    [InlineData("Question", "dialog-question")]
+    [InlineData("Information", "dialog-information")]
+    [InlineData("Unheard-of", "dialog-information")]
+    public void EachIconHasItsSound(string icon, string sound) =>
+        Assert.Equal(sound, SystemSound.ForDialogIcon(icon));
+}

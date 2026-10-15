@@ -66,6 +66,7 @@
                 <MenuItem Header="-" />
                 <MenuItem Header="{loc:Tr ActionNewFolder}" Command="{Binding NewFolder}" InputGesture="Ctrl+Shift+N" />
                 <MenuItem Header="{loc:Tr ActionFind}" Command="{Binding Find}" InputGesture="Ctrl+F" />
+                <MenuItem Header="{loc:Tr ActionEmptyDumpster}" Command="{Binding EmptyTrash}" />
                 <MenuItem Header="-" />
                 <MenuItem Header="{loc:Tr ActionBookmark}"
                           ToggleType="CheckBox"
@@ -136,6 +137,9 @@
                 <MenuItem Header="-" />
                 <MenuItem Header="{loc:Tr SelectedTrash}" Command="{Binding TrashSelection}" InputGesture="Delete" />
                 <MenuItem Header="{loc:Tr SelectedDelete}" Command="{Binding DeleteSelection}" InputGesture="Shift+Delete" />
+                <!-- Only in the Dumpster, where a thrown-away item has somewhere to go back to. -->
+                <MenuItem Header="{loc:Tr SelectedPutBack}" Command="{Binding RestoreSelection}"
+                          IsVisible="{Binding IsInTrash}" />
                 <MenuItem Header="-" />
                 <MenuItem Header="{loc:Tr SelectedProperties}" Command="{Binding ShowProperties}"
                           InputGesture="Alt+Return" />

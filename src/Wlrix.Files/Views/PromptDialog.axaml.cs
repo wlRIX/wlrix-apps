@@ -1,5 +1,6 @@
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
+using Wlrix.Common;
 
 namespace Wlrix.Files.Views;
 
@@ -11,6 +12,13 @@ namespace Wlrix.Files.Views;
 /// </remarks>
 public partial class PromptDialog : Window
 {
+    /// <summary>Asking for a name is a question, and sounds like one.</summary>
+    protected override void OnOpened(EventArgs e)
+    {
+        base.OnOpened(e);
+        SystemSound.Play("dialog-question");
+    }
+
     public PromptDialog()
     {
         InitializeComponent();

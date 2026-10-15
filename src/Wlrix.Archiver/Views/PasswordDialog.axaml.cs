@@ -2,6 +2,7 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
+using Wlrix.Common;
 using Wlrix.Archiver.ViewModels;
 
 namespace Wlrix.Archiver.Views;
@@ -21,6 +22,13 @@ namespace Wlrix.Archiver.Views;
 /// </remarks>
 public partial class PasswordDialog : Window
 {
+    /// <summary>Both of its questions -- a password, or how to encrypt -- sound like a question.</summary>
+    protected override void OnOpened(EventArgs e)
+    {
+        base.OnOpened(e);
+        SystemSound.Play("dialog-question");
+    }
+
     public PasswordDialog()
     {
         InitializeComponent();

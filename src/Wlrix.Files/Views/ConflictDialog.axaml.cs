@@ -1,6 +1,7 @@
 using System.Globalization;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
+using Wlrix.Common;
 using Wlrix.Files.Core.Operations;
 using Wlrix.Files.Localization;
 using Wlrix.Files.ViewModels;
@@ -10,6 +11,13 @@ namespace Wlrix.Files.Views;
 /// <summary>Asks what to do about a name that is already taken.</summary>
 public partial class ConflictDialog : Window
 {
+    /// <summary>A name already taken is a warning: something is about to be replaced or skipped.</summary>
+    protected override void OnOpened(EventArgs e)
+    {
+        base.OnOpened(e);
+        SystemSound.Play("dialog-warning");
+    }
+
     public ConflictDialog()
     {
         InitializeComponent();

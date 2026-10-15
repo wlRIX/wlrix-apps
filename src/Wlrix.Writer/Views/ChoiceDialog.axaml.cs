@@ -3,6 +3,7 @@
 using Avalonia.Controls;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
+using Wlrix.Common;
 
 namespace Wlrix.Writer.Views;
 
@@ -45,7 +46,11 @@ public partial class ChoiceDialog : Window
         }
 
         dialog.Opened += (_, _) =>
+        {
             dialog.Buttons.Children.OfType<Button>().FirstOrDefault(button => button.IsDefault)?.Focus();
+            // Sounds like a MessageDialog with the same icon, which is what it looks like.
+            SystemSound.Play(SystemSound.ForDialogIcon(icon));
+        };
 
         var answer = await dialog.ShowDialog<object?>(owner);
         return answer is T chosen ? chosen : dismissed;

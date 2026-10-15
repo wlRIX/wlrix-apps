@@ -574,4 +574,28 @@ If you do not trust this program, click Cancel. Continuing also marks the file e
   <data name="ContextSelectAll" xml:space="preserve">
     <value>Select _All</value>
   </data>
+  <data name="PlaceDumpster" xml:space="preserve">
+    <value>Dumpster</value>
+  </data>
+  <data name="ActionEmptyDumpster" xml:space="preserve">
+    <value>Empty Dumpster</value>
+  </data>
+  <data name="SelectedPutBack" xml:space="preserve">
+    <value>Put Back</value>
+  </data>
+  <data name="ConfirmEmptyTitle" xml:space="preserve">
+    <value>Empty Dumpster</value>
+  </data>
+  <data name="ConfirmEmptyMessage" xml:space="preserve">
+    <value>Permanently delete everything in the Dumpster? This cannot be undone.</value>
+  </data>
+  <data name="DumpsterAlreadyEmpty" xml:space="preserve">
+    <value>The Dumpster is already empty.</value>
+  </data>
+  <data name="EmptyFailed" xml:space="preserve">
+    <value>{0} items in the Dumpster could not be deleted.</value>
+  </data>
+  <data name="RestoreFailed" xml:space="preserve">
+    <value>{0} items could not be put back.</value>
+  </data>
 </root>

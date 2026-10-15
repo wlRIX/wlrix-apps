@@ -124,4 +124,91 @@ public class TrashTests
         var bytes = File.ReadAllBytes(Path.Combine(trash, "info", "a.txt.trashinfo"));
         Assert.Equal((byte)'[', bytes[0]);
     }
+
+    [Fact]
+    public void EmptyingTakesTheFilesAndTheirRecords()
+    {
+        using var temp = new TemporaryDirectory();
+        var trash = Path.Combine(temp.Path, "Trash");
+        Trash.Send(Location.FromLocalPath(temp.File("a.txt", "a")), trash);
+        Trash.Send(Location.FromLocalPath(temp.File("dir/inner.txt", "b")[..^"/inner.txt".Length]), trash);
+        Assert.False(Trash.IsEmpty(trash));
+
+        var problems = Trash.Empty(trash);
+
+        Assert.Empty(problems);
+        Assert.True(Trash.IsEmpty(trash));
+        Assert.Empty(Directory.GetFileSystemEntries(Path.Combine(trash, "info")));
+    }
+
+    [Fact]
+    public void EmptyingDeletesALinkNotWhatItPointsAt()
+    {
+        // The one mistake emptying must never make: a link to the user's own files, thrown
+        // away, taking those files with it.
+        using var temp = new TemporaryDirectory();
+        var kept = temp.File("precious/keep.txt", "keep");
+        var trash = Path.Combine(temp.Path, "Trash");
+        var link = Path.Combine(temp.Path, "shortcut");
+        Directory.CreateSymbolicLink(link, Path.GetDirectoryName(kept)!);
+        Trash.Send(Location.FromLocalPath(link), trash);
+
+        Trash.Empty(trash);
+
+        Assert.True(File.Exists(kept));
+        Assert.True(Trash.IsEmpty(trash));
+    }
+
+    [Fact]
+    public void PuttingBackReturnsAnItemToWhereItCameFrom()
+    {
+        using var temp = new TemporaryDirectory();
+        var file = temp.File("docs/plan.txt", "plan");
+        var trash = Path.Combine(temp.Path, "Trash");
+        Trash.Send(Location.FromLocalPath(file), trash);
+        // Its folder went too, since; putting back makes it again.
+        Directory.Delete(Path.GetDirectoryName(file)!);
+
+        var back = Trash.Restore(Location.FromLocalPath(Path.Combine(trash, "files", "plan.txt")), trash);
+
+        Assert.Equal(Location.FromLocalPath(file), back);
+        Assert.Equal("plan", File.ReadAllText(file));
+        Assert.False(File.Exists(Path.Combine(trash, "info", "plan.txt.trashinfo")));
+    }
+
+    [Fact]
+    public void PuttingBackNeverReplacesWhatIsThereNow()
+    {
+        using var temp = new TemporaryDirectory();
+        var file = temp.File("plan.txt", "old");
+        var trash = Path.Combine(temp.Path, "Trash");
+        Trash.Send(Location.FromLocalPath(file), trash);
+        File.WriteAllText(file, "new");
+
+        var error = Assert.Throws<FileOperationException>(() =>
+            Trash.Restore(Location.FromLocalPath(Path.Combine(trash, "files", "plan.txt")), trash));
+
+        Assert.Equal(FileErrorKind.AlreadyExists, error.Kind);
+        Assert.Equal("new", File.ReadAllText(file));
+        Assert.True(File.Exists(Path.Combine(trash, "files", "plan.txt")));
+    }
+
+    [Fact]
+    public void ARecordedPathIsDecoded()
+    {
+        using var temp = new TemporaryDirectory();
+        var record = temp.File("x.trashinfo", "[Trash Info]\nPath=/home/me/My%20Notes/%E3%83%A1%E3%83%A2.txt\nDeletionDate=2026-10-15T10:00:00\n");
+        Assert.Equal("/home/me/My Notes/メモ.txt", Trash.ReadOriginalPath(record));
+    }
+
+    [Fact]
+    public void TheDumpsterIsRecognizedByItsFilesDirectory()
+    {
+        using var temp = new TemporaryDirectory();
+        var trash = Path.Combine(temp.Path, "Trash");
+        Assert.True(Trash.IsTrash(Location.FromLocalPath(Path.Combine(trash, "files")), trash));
+        Assert.True(Trash.IsTrash(Location.FromLocalPath(Path.Combine(trash, "files") + "/"), trash));
+        Assert.False(Trash.IsTrash(Location.FromLocalPath(trash), trash));
+        Assert.False(Trash.IsTrash(temp.Location, trash));
+    }
 }

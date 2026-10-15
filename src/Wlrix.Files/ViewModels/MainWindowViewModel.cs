@@ -145,6 +145,8 @@ public sealed class MainWindowViewModel : ReactiveObject, IDisposable
         NewFolder = Command(NewFolderAsync);
         TrashSelection = Command(TrashAsync);
         DeleteSelection = Command(DeleteAsync);
+        EmptyTrash = Command(EmptyTrashAsync);
+        RestoreSelection = Command(RestoreAsync);
         NewTab = ReactiveCommand.Create(() => { AddTab(Pane.Location); });
         OpenSelection = Command(() => OpenSelectionAsync(OpenIntent.Default));
         OpenSelectionInNewTab = Command(() => OpenSelectionAsync(OpenIntent.NewTab));
@@ -640,6 +642,18 @@ public sealed class MainWindowViewModel : ReactiveObject, IDisposable
     public ReactiveCommand<Unit, Unit> NewFolder { get; }
     public ReactiveCommand<Unit, Unit> TrashSelection { get; }
     public ReactiveCommand<Unit, Unit> DeleteSelection { get; }
+
+    /// <summary>Empty Dumpster: deletes everything in the trash, once the user has agreed.</summary>
+    public ReactiveCommand<Unit, Unit> EmptyTrash { get; }
+
+    /// <summary>Put Back: returns the selected trashed items to where they were thrown away from.</summary>
+    public ReactiveCommand<Unit, Unit> RestoreSelection { get; }
+
+    /// <summary>
+    /// Whether this window is showing the Dumpster, which is what puts Put Back in the Selected
+    /// menu: nothing anywhere else has a "where it came from" to go back to.
+    /// </summary>
+    public bool IsInTrash => Trash.IsTrash(Pane.Location);
     public ReactiveCommand<Unit, Unit> NewTab { get; }
 
     /// <summary>Opens what is selected, as a double-click would.</summary>
@@ -1390,6 +1404,7 @@ public sealed class MainWindowViewModel : ReactiveObject, IDisposable
     {
         SessionChanged?.Invoke();
         this.RaisePropertyChanged(nameof(IsRemote));
+        this.RaisePropertyChanged(nameof(IsInTrash));
         // The Bookmarks checkmark is about where you are, so it changes when that does.
         this.RaisePropertyChanged(nameof(IsBookmarked));
     }
@@ -1570,6 +1585,14 @@ public sealed class MainWindowViewModel : ReactiveObject, IDisposable
         if (Selection.Count == 0)
             return;
 
+        // Thrown away from the Dumpster itself, there is nowhere further to throw it: the
+        // only step left is the permanent one, and that always asks.
+        if (IsInTrash)
+        {
+            await DeleteAsync(alwaysAsk: true).ConfigureAwait(true);
+            return;
+        }
+
         try
         {
             var fs = await _provider.GetAsync(Pane.Location, CancellationToken.None).ConfigureAwait(true);
@@ -1611,6 +1634,51 @@ public sealed class MainWindowViewModel : ReactiveObject, IDisposable
         await RunAsync(FileOperation.Delete(SelectedLocations())).ConfigureAwait(true);
     }
 
+    /// <summary>Empty Dumpster, after asking: there is no way back from it.</summary>
+    private async Task EmptyTrashAsync()
+    {
+        if (Trash.IsEmpty())
+        {
+            StatusRaised?.Invoke(Strings.DumpsterAlreadyEmpty);
+            return;
+        }
+        if (ConfirmRequested is null
+            || !await ConfirmRequested(Strings.ConfirmEmptyTitle, Strings.ConfirmEmptyMessage).ConfigureAwait(true))
+            return;
+
+        // Off the UI thread: a trash can hold a great deal, and emptying is one delete per
+        // file in it.
+        var problems = await Task.Run(() => Trash.Empty()).ConfigureAwait(true);
+        SystemSound.Play("trash-empty");
+        if (problems.Count > 0)
+            ErrorRaised?.Invoke(Strings.EmptyFailed(problems.Count) + " " + problems[0]);
+        if (IsInTrash)
+            await Pane.RefreshAsync().ConfigureAwait(true);
+    }
+
+    /// <summary>Put Back: each selected item to the place its record says it came from.</summary>
+    private async Task RestoreAsync()
+    {
+        if (!IsInTrash || Selection.Count == 0)
+            return;
+
+        var failures = new List<string>();
+        foreach (var location in SelectedLocations())
+        {
+            try
+            {
+                Trash.Restore(location);
+            }
+            catch (FileOperationException ex)
+            {
+                failures.Add(ex.Message);
+            }
+        }
+        if (failures.Count > 0)
+            ErrorRaised?.Invoke(Strings.RestoreFailed(failures.Count) + " " + failures[0]);
+        await Pane.RefreshAsync().ConfigureAwait(true);
+    }
+
     // --- drag and drop ----------------------------------------------------
 
     /// <summary>
@@ -1623,11 +1691,32 @@ public sealed class MainWindowViewModel : ReactiveObject, IDisposable
     /// no side effects for that reason.
     /// </remarks>
     public DropAction PreviewDrop(IReadOnlyList<Location> sources, Location target, DropModifiers modifiers) =>
-        DropPolicy.Decide(sources, target, modifiers, OnOneFilesystem(sources, target)).Action;
+        Trash.IsTrash(target)
+            ? (sources.Any(source => source.IsLocal && !InTrash(source)) ? DropAction.Move : DropAction.None)
+            : DropPolicy.Decide(sources, target, modifiers, OnOneFilesystem(sources, target)).Action;
+
+    /// <summary>Whether <paramref name="location"/> is something already in the Dumpster.</summary>
+    private static bool InTrash(Location location) =>
+        location.Parent is { } parent && Trash.IsTrash(parent);
 
     /// <summary>Carries out a drop.</summary>
     public Task DropAsync(IReadOnlyList<Location> sources, Location target, DropModifiers modifiers)
     {
+        // Onto the Dumpster -- its place in the rail, or its open listing -- is throwing away,
+        // not moving into a directory: moved there by hand, a file would have no record of
+        // where it came from and could never be put back.
+        if (Trash.IsTrash(target))
+        {
+            var throwing = sources.Where(source => source.IsLocal && !InTrash(source)).ToList();
+            if (throwing.Count == 0)
+            {
+                SystemSound.Play("drag-fail");
+                return Task.CompletedTask;
+            }
+            SystemSound.Play("wlrix-drag-to-trash");
+            return RunAsync(FileOperation.SendToTrash(throwing));
+        }
+
         var plan = DropPolicy.Decide(sources, target, modifiers, OnOneFilesystem(sources, target));
         // As the drop lands, not when the work finishes: the sound says what the drop did.
         // A reference (link) is IRIX's copy gesture, so it sounds like one.
@@ -1763,6 +1852,21 @@ public sealed class MainWindowViewModel : ReactiveObject, IDisposable
         foreach (var dir in userDirs.Places())
             places.Add(new PlaceViewModel(Strings.Place(dir.Key), dir.Location));
         places.Add(new PlaceViewModel(Strings.Catalog.Get("PlaceFilesystem"), Location.FromLocalPath("/")));
+        // Last, as IRIX's dumpster sat apart from everything else on the desktop. Made if it is
+        // not there yet, so the first visit lists an empty Dumpster rather than failing to read
+        // a directory nothing has created.
+        if (Trash.FilesDirectory() is { } trash)
+        {
+            try
+            {
+                Directory.CreateDirectory(trash);
+                places.Add(new PlaceViewModel(Strings.Catalog.Get("PlaceDumpster"), Location.FromLocalPath(trash)));
+            }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+            {
+                // No Dumpster entry, then; Move to Trash still reports its own failure.
+            }
+        }
         return places;
     }
 

@@ -61,6 +61,15 @@ public static class Strings
     public static string NewFolderDefault => Catalog.Get("NewFolderDefault");
     public static string RenameTitle => Catalog.Get("RenameTitle");
     public static string ConfirmDeleteTitle => Catalog.Get("ConfirmDeleteTitle");
+
+    /// <summary>Empty Dumpster's question, and what is said when there is nothing to empty.</summary>
+    public static string ConfirmEmptyTitle => Catalog.Get("ConfirmEmptyTitle");
+    public static string ConfirmEmptyMessage => Catalog.Get("ConfirmEmptyMessage");
+    public static string DumpsterAlreadyEmpty => Catalog.Get("DumpsterAlreadyEmpty");
+
+    /// <summary>Some of the Dumpster would not empty, or some items would not go back.</summary>
+    public static string EmptyFailed(int count) => Catalog.Format("EmptyFailed", count);
+    public static string RestoreFailed(int count) => Catalog.Format("RestoreFailed", count);
     public static string ConflictTitle => Catalog.Get("ConflictTitle");
     public static string OperationCancel => Catalog.Get("OperationCancel");
 

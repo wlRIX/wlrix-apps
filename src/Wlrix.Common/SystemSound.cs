@@ -57,6 +57,20 @@ public static class SystemSound
         }
     }
 
+    /// <summary>
+    /// The sound for a dialog showing one of <c>Wlrix.Avalonia.Dialogs</c>' icons -- <c>Error</c>,
+    /// <c>Critical</c>, <c>Warning</c>, <c>Question</c>, <c>Information</c> -- for an app's own
+    /// dialog that borrows the icon, so it sounds the way a <c>MessageDialog</c> of that type does.
+    /// </summary>
+    public static string ForDialogIcon(string icon) => icon switch
+    {
+        "Error" => "dialog-error",
+        "Critical" => "dialog-error-serious",
+        "Warning" => "dialog-warning",
+        "Question" => "dialog-question",
+        _ => "dialog-information",
+    };
+
     /// <summary>The socket, made on first use. False when there is nowhere to send to.</summary>
     private static bool Open()
     {
