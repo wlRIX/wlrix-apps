@@ -105,7 +105,7 @@ public static class DirectoryUsage
                     // A link is one entry and is never followed: following would count a
                     // target twice when it is inside the tree anyway, and never finish at all
                     // when two directories point at each other.
-                    if (entry.IsDirectory && entry.SymlinkTarget is null)
+                    if (entry.IsDirectory && !entry.IsSymlink)
                     {
                         directories++;
                         pending.Push(entry.Location);

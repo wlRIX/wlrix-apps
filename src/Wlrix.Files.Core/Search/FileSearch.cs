@@ -106,7 +106,7 @@ public static class FileSearch
                     if (entry.IsHidden && !query.IncludeHidden)
                         continue;
 
-                    if (entry.IsDirectory && entry.SymlinkTarget is null)
+                    if (entry.IsDirectory && !entry.IsSymlink)
                         pending.Enqueue(entry.Location);
 
                     if (!query.Matches(entry.Name))

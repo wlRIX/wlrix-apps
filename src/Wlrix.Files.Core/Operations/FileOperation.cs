@@ -101,4 +101,12 @@ public sealed record TransferPlan(IReadOnlyList<PlannedItem> Items, long TotalBy
 /// <param name="Target">Where it is going, or null for a delete.</param>
 /// <param name="IsDirectory">Directories are created before their contents and deleted after.</param>
 /// <param name="Size">Bytes, for progress. Zero for a directory.</param>
-public sealed record PlannedItem(Location Source, Location? Target, bool IsDirectory, long Size);
+/// <param name="IsLink">
+/// A symbolic link, which is planned as one item whatever it points at and never walked into.
+/// </param>
+/// <param name="LinkTarget">
+/// The text of the link, when the source filesystem could say, so a copy can make the same link.
+/// </param>
+public sealed record PlannedItem(
+    Location Source, Location? Target, bool IsDirectory, long Size,
+    bool IsLink = false, string? LinkTarget = null);

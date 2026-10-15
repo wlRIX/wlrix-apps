@@ -177,6 +177,13 @@ public sealed class OperationJob
             var fs = await _provider.GetAsync(source, cancellationToken).ConfigureAwait(false);
             var stat = await fs.StatAsync(source, cancellationToken).ConfigureAwait(false);
 
+            if (stat.SymlinkTarget is { } linkTarget)
+            {
+                items.Add(LinkItem(source, target, stat.IsDirectory, stat.Size, linkTarget));
+                Tick();
+                continue;
+            }
+
             if (!stat.IsDirectory)
             {
                 items.Add(new PlannedItem(source, target, false, stat.Size));
@@ -197,6 +204,13 @@ public sealed class OperationJob
             items.Count > 0 ? items[^1].Source.Name : null));
     }
 
+    /// <remarks>
+    /// A link is never walked into, whatever it points at. The local filesystem lists a link to
+    /// a directory as a directory, and following one that points at an ancestor plans forever,
+    /// growing the item list until memory runs out, before a single byte has been written. A
+    /// link that is not walked is also the right copy: it is reproduced as a link, as
+    /// <c>cp -R</c> does, rather than as a second copy of whatever it pointed at.
+    /// </remarks>
     private async Task<long> ScanDirectoryAsync(
         IFileSystem fs, Location directory, Location? target,
         List<PlannedItem> into, CancellationToken cancellationToken)
@@ -206,6 +220,29 @@ public sealed class OperationJob
         {
             cancellationToken.ThrowIfCancellationRequested();
             var childTarget = target?.Child(entry.Name);
+
+            if (entry.IsSymlink)
+            {
+                // The listing does not carry the link's text; a stat of the link does.
+                var linkTarget = entry.SymlinkTarget;
+                if (linkTarget is null)
+                {
+                    try
+                    {
+                        linkTarget = (await fs.StatAsync(entry.Location, cancellationToken).ConfigureAwait(false)).SymlinkTarget;
+                    }
+                    catch (FileOperationException)
+                    {
+                        // The link is still one item. Copying it will ask again, and report
+                        // the error then, where it can be retried or skipped.
+                    }
+                }
+
+                var item = LinkItem(entry.Location, childTarget, entry.IsDirectory, entry.Size, linkTarget);
+                into.Add(item);
+                bytes += item.Size;
+                continue;
+            }
 
             if (entry.IsDirectory)
             {
@@ -221,6 +258,14 @@ public sealed class OperationJob
         }
         return bytes;
     }
+
+    /// <summary>Plans a symbolic link as the one item it is.</summary>
+    /// <remarks>
+    /// Sized as the file it points at, because that is what a destination that cannot hold
+    /// links receives instead. A link to a directory is sized zero, like a directory.
+    /// </remarks>
+    private static PlannedItem LinkItem(Location source, Location? target, bool toDirectory, long size, string? linkTarget) =>
+        new(source, target, false, toDirectory ? 0 : size, IsLink: true, LinkTarget: linkTarget);
 
     // --- execute ---------------------------------------------------------
 
@@ -364,7 +409,39 @@ public sealed class OperationJob
         if (final is null)
             return ItemOutcome.Skipped;
 
+        if (item.IsLink)
+            return await CopyLinkAsync(sourceFs, targetFs, item, final, cancellationToken).ConfigureAwait(false);
+
         await CopyBytesAsync(sourceFs, targetFs, item, final, cancellationToken).ConfigureAwait(false);
+        return ItemOutcome.Done;
+    }
+
+    /// <summary>Reproduces a symbolic link at <paramref name="target"/>.</summary>
+    /// <remarks>
+    /// The link's text is copied as it is, relative or absolute, so a relative link inside a
+    /// copied tree points into the copy. Where the link cannot be made -- a remote or a phone
+    /// cannot hold one, and a remote cannot say what a link holds -- a link to a file is copied
+    /// as the file, which is what anything that follows it would have read. A link to a
+    /// directory is refused instead: copying the directory is the walk that never ends when the
+    /// link points at its own ancestor.
+    /// </remarks>
+    private async Task<ItemOutcome> CopyLinkAsync(
+        IFileSystem sourceFs, IFileSystem targetFs, PlannedItem item, Location target,
+        CancellationToken cancellationToken)
+    {
+        if (item.LinkTarget is { } linkTarget && targetFs.Capabilities.HasFlag(FileSystemCapabilities.SymLink))
+        {
+            if (await targetFs.ExistsAsync(target, cancellationToken).ConfigureAwait(false))
+                await targetFs.DeleteAsync(target, recursive: false, cancellationToken).ConfigureAwait(false);
+            await targetFs.CreateSymlinkAsync(target, linkTarget, cancellationToken).ConfigureAwait(false);
+            return ItemOutcome.Done;
+        }
+
+        var pointsAt = await sourceFs.StatAsync(item.Source, cancellationToken).ConfigureAwait(false);
+        if (pointsAt.IsDirectory)
+            throw new FileOperationException(FileErrorKind.Unsupported, item.Source, "cannot copy a link to a directory here");
+
+        await CopyBytesAsync(sourceFs, targetFs, item, target, cancellationToken).ConfigureAwait(false);
         return ItemOutcome.Done;
     }
 

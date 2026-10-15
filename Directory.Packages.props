@@ -46,6 +46,9 @@
         <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
         <PackageVersion Include="xunit" Version="2.9.3" />
         <PackageVersion Include="xunit.runner.visualstudio" Version="3.0.2" />
+        <!-- Lays a real window out without a display, for the tests that need Avalonia's layout.
+             Moves with the Avalonia pin. -->
+        <PackageVersion Include="Avalonia.Headless" Version="12.1.4" />
     </ItemGroup>
     <ItemGroup Label="Remote filesystems">
         <!-- Licenses and versions verified in the M0.2 gate, all GPL-3 compatible: SMBLibrary

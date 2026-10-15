@@ -402,6 +402,18 @@ public class OperationJobTests
         Assert.True(paths.IndexOf("/src/deep") < paths.IndexOf("/src/deep/b.txt"));
     }
 
+    [Fact]
+    public async Task CopyingATreeKeepsItsLinksAsLinks()
+    {
+        var fs = new FakeFileSystem().AddFile("/src/a.txt", "1").AddDirectory("/dst");
+        await fs.CreateSymlinkAsync(Location.Parse("/src/loop"), "/src", None);
+
+        var result = await Run(fs, FileOperation.Copy([Location.Parse("/src")], Location.Parse("/dst")));
+
+        Assert.True(result.Succeeded);
+        Assert.Contains("/dst/src/loop -> /src", fs.Snapshot());
+    }
+
     // --- helpers ---------------------------------------------------------
 
     private static Task<OperationResult> Run(
