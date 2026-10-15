@@ -40,6 +40,7 @@ public sealed class FileEntryViewModel : INotifyPropertyChanged
     private static readonly PropertyChangedEventArgs RestChanged = new(nameof(IconRest));
     private static readonly PropertyChangedEventArgs HoverChanged = new(nameof(IconHover));
     private static readonly PropertyChangedEventArgs SelectedChanged = new(nameof(IconSelected));
+    private static readonly PropertyChangedEventArgs ThumbnailChanged = new(nameof(Thumbnail));
     private static readonly PropertyChangedEventArgs HasThumbnailChanged = new(nameof(HasThumbnail));
     private static readonly PropertyChangedEventArgs ShowsIconChanged = new(nameof(ShowsIcon));
 
@@ -140,6 +141,10 @@ public sealed class FileEntryViewModel : INotifyPropertyChanged
             if (ReferenceEquals(_thumbnail, value))
                 return;
             _thumbnail = value;
+            // The icon view binds the picture itself and the details view binds Preview, so
+            // both are raised. Without the first, the icon view framed an empty picture until
+            // the row was bound again.
+            PropertyChanged?.Invoke(this, ThumbnailChanged);
             PropertyChanged?.Invoke(this, PreviewChanged);
             PropertyChanged?.Invoke(this, HasThumbnailChanged);
             PropertyChanged?.Invoke(this, ShowsIconChanged);

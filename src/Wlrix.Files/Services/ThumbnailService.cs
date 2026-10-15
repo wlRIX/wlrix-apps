@@ -38,7 +38,7 @@ public sealed class ThumbnailService : IDisposable
     private readonly IconService _icons;
     private readonly Channel<Pending> _queue;
     private readonly CancellationTokenSource _shutdown = new();
-    private readonly ConcurrentDictionary<(string Uri, ThumbnailSize Size), Bitmap?> _ready = [];
+    private readonly ConcurrentDictionary<Key, Bitmap?> _ready = [];
     private int _generation;
 
     public ThumbnailService(ThumbnailProvider provider, IconService icons)
@@ -74,7 +74,7 @@ public sealed class ThumbnailService : IDisposable
 
     /// <summary>A thumbnail already rendered for this entry, or null.</summary>
     public Bitmap? TryGet(FileEntry entry, ThumbnailSize size) =>
-        _ready.TryGetValue((entry.Location.ToUriString(), size), out var bitmap) ? bitmap : null;
+        _ready.TryGetValue(Key.Of(entry, size), out var bitmap) ? bitmap : null;
 
     /// <summary>Asks for a thumbnail and delivers it on the UI thread if one can be made.</summary>
     /// <param name="stillWanted">
@@ -86,7 +86,7 @@ public sealed class ThumbnailService : IDisposable
         if (!Enabled)
             return;
 
-        var key = (entry.Location.ToUriString(), size);
+        var key = Key.Of(entry, size);
         if (_ready.TryGetValue(key, out var cached))
         {
             if (cached is not null)
@@ -116,7 +116,7 @@ public sealed class ThumbnailService : IDisposable
             if (!Enabled || request.Generation != Volatile.Read(ref _generation))
                 continue;
 
-            var key = (request.Entry.Location.ToUriString(), request.Size);
+            var key = Key.Of(request.Entry, request.Size);
             if (_ready.ContainsKey(key))
                 continue;
 
@@ -165,6 +165,19 @@ public sealed class ThumbnailService : IDisposable
         _shutdown.Cancel();
         _queue.Writer.TryComplete();
         _shutdown.Dispose();
+    }
+
+    /// <summary>What a rendered thumbnail, or a failure to render one, is remembered under.</summary>
+    /// <remarks>
+    /// The file's date and size are part of it, as they are of the disk cache's validity. A
+    /// file is often listed while it is still being copied in, and a thumbnail tried then fails
+    /// on the half that has arrived. Keyed by the name alone, that failure stood for the
+    /// finished file too, and so did an old picture for a file since rewritten.
+    /// </remarks>
+    private readonly record struct Key(string Uri, DateTimeOffset? Modified, long Size, ThumbnailSize ThumbnailSize)
+    {
+        public static Key Of(FileEntry entry, ThumbnailSize size) =>
+            new(entry.Location.ToUriString(), entry.Modified, entry.Size, size);
     }
 
     private readonly record struct Pending(
