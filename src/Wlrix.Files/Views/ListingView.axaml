@@ -48,6 +48,38 @@
             <Setter Property="IsVisible" Value="True" />
         </Style>
 
+        <!-- A selection in a window without the keyboard is knocked back as IRIX did it: the
+             rest state's checkerboard with yellow for white, so the solid yellow selection on
+             screen is always the one keys would act on.
+             The window's own IsActive, rather than keyboard focus inside the listing: a click
+             in the path bar of the same window should not dim the selection it is about to
+             act on. -->
+        <Style Selector="Image.state.selectedInactive">
+            <Setter Property="IsVisible" Value="False" />
+        </Style>
+        <Style Selector="ListBox.inactive ListBoxItem:selected Image.state.selected">
+            <Setter Property="IsVisible" Value="False" />
+        </Style>
+        <Style Selector="ListBox.inactive ListBoxItem:selected Image.state.selectedInactive">
+            <Setter Property="IsVisible" Value="True" />
+        </Style>
+
+        <!-- Mid-drag, after the IRIX Interactive Desktop UI Guidelines' figure of icon states,
+             and after the three above so they win: a row being dragged shows its dark gray ghost
+             in place, and a folder a drag would drop into shows royal blue. -->
+        <Style Selector="Image.state.ghost, Image.state.drop">
+            <Setter Property="IsVisible" Value="False" />
+        </Style>
+        <Style Selector="Panel.icon.dragSource Image.state, Panel.icon.dropTarget Image.state">
+            <Setter Property="IsVisible" Value="False" />
+        </Style>
+        <Style Selector="Panel.icon.dragSource Image.state.ghost">
+            <Setter Property="IsVisible" Value="True" />
+        </Style>
+        <Style Selector="Panel.icon.dropTarget Image.state.drop">
+            <Setter Property="IsVisible" Value="True" />
+        </Style>
+
         <!-- A thumbnail is a picture of the file, not an icon, so it is never recolored: it is
              framed, as the login screen frames a user's own picture. One black pixel around it
              at rest; under the pointer or selected, two — that pixel and the picture's own
@@ -116,6 +148,7 @@
              part in layout. -->
         <Panel IsVisible="{Binding IsIconView}">
         <ListBox Name="IconView"
+                 Classes.inactive="{Binding !$parent[Window].IsActive}"
                  ItemsSource="{Binding Entries}"
                  SelectionMode="Multiple"
                  ScrollViewer.HorizontalScrollBarVisibility="Disabled"
@@ -157,6 +190,9 @@
                                  taking presses the second landed on a different element and a
                                  double-click on anything not already selected did nothing. -->
                             <Panel Width="48" Height="48"
+                                   Classes="icon"
+                                   Classes.dragSource="{Binding IsDragSource}"
+                                   Classes.dropTarget="{Binding IsDropTarget}"
                                    Background="Transparent"
                                    HorizontalAlignment="Center"
                                    VerticalAlignment="Center"
@@ -164,6 +200,9 @@
                                 <Image Classes="state rest" Source="{Binding IconRest}" IsHitTestVisible="False" />
                                 <Image Classes="state hover" Source="{Binding IconHover}" IsHitTestVisible="False" />
                                 <Image Classes="state selected" Source="{Binding IconSelected}" IsHitTestVisible="False" />
+                                <Image Classes="state selectedInactive" Source="{Binding IconSelectedInactive}" IsHitTestVisible="False" />
+                                <Image Classes="state ghost" Source="{Binding IconGhost}" IsHitTestVisible="False" />
+                                <Image Classes="state drop" Source="{Binding IconDrop}" IsHitTestVisible="False" />
                             </Panel>
                             <!-- Or the file's own picture, framed. The frame hugs the picture
                                  rather than the 48px square, so a wide photograph is framed

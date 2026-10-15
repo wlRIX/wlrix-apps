@@ -611,8 +611,19 @@ public partial class ListingView : UserControl
         // All three are offered so the drop target's modifiers get to choose. What comes back
         // is the only feedback the drag had: the compositor gives no drag image to a client
         // that draws no drag surface, so the cursor shape is the entire channel.
-        await DragDrop.DoDragDropAsync(trigger, transfer,
-            DragDropEffects.Copy | DragDropEffects.Move | DragDropEffects.Link).ConfigureAwait(true);
+        // The dragged rows leave their ghosts in place until the drag is over, however it ends.
+        foreach (var row in rows)
+            row.IsDragSource = true;
+        try
+        {
+            await DragDrop.DoDragDropAsync(trigger, transfer,
+                DragDropEffects.Copy | DragDropEffects.Move | DragDropEffects.Link).ConfigureAwait(true);
+        }
+        finally
+        {
+            foreach (var row in rows)
+                row.IsDragSource = false;
+        }
     }
 
     // --- drop in ----------------------------------------------------------

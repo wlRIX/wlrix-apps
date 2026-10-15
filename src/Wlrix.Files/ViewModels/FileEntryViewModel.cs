@@ -40,6 +40,10 @@ public sealed class FileEntryViewModel : INotifyPropertyChanged
     private static readonly PropertyChangedEventArgs RestChanged = new(nameof(IconRest));
     private static readonly PropertyChangedEventArgs HoverChanged = new(nameof(IconHover));
     private static readonly PropertyChangedEventArgs SelectedChanged = new(nameof(IconSelected));
+    private static readonly PropertyChangedEventArgs SelectedInactiveChanged = new(nameof(IconSelectedInactive));
+    private static readonly PropertyChangedEventArgs GhostChanged = new(nameof(IconGhost));
+    private static readonly PropertyChangedEventArgs DropChanged = new(nameof(IconDrop));
+    private static readonly PropertyChangedEventArgs DragSourceChanged = new(nameof(IsDragSource));
     private static readonly PropertyChangedEventArgs ThumbnailChanged = new(nameof(Thumbnail));
     private static readonly PropertyChangedEventArgs HasThumbnailChanged = new(nameof(HasThumbnail));
     private static readonly PropertyChangedEventArgs ShowsIconChanged = new(nameof(ShowsIcon));
@@ -48,6 +52,10 @@ public sealed class FileEntryViewModel : INotifyPropertyChanged
     private Bitmap? _rest;
     private Bitmap? _hover;
     private Bitmap? _selected;
+    private Bitmap? _selectedInactive;
+    private Bitmap? _ghost;
+    private Bitmap? _drop;
+    private bool _isDragSource;
     private Bitmap? _thumbnail;
     private bool _isDropTarget;
 
@@ -183,6 +191,43 @@ public sealed class FileEntryViewModel : INotifyPropertyChanged
         private set => Set(ref _selected, value, SelectedChanged);
     }
 
+    /// <summary>The icon selected in a window without the keyboard: its body dim yellow.</summary>
+    public Bitmap? IconSelectedInactive
+    {
+        get => _selectedInactive;
+        private set => Set(ref _selectedInactive, value, SelectedInactiveChanged);
+    }
+
+    /// <summary>The icon left behind while it is dragged away: its body dark gray.</summary>
+    public Bitmap? IconGhost
+    {
+        get => _ghost;
+        private set => Set(ref _ghost, value, GhostChanged);
+    }
+
+    /// <summary>A folder's icon while it would accept a drop: its body royal blue.</summary>
+    public Bitmap? IconDrop
+    {
+        get => _drop;
+        private set => Set(ref _drop, value, DropChanged);
+    }
+
+    /// <summary>
+    /// Whether this row is being dragged, so the icon view shows its ghost in place -- as IRIX
+    /// did, with the icon itself following the pointer in selected yellow.
+    /// </summary>
+    public bool IsDragSource
+    {
+        get => _isDragSource;
+        set
+        {
+            if (_isDragSource == value)
+                return;
+            _isDragSource = value;
+            PropertyChanged?.Invoke(this, DragSourceChanged);
+        }
+    }
+
     /// <summary>Whether a thumbnail is showing, which the icon view frames rather than recolors.</summary>
     public bool HasThumbnail => _thumbnail is not null;
 
@@ -245,6 +290,14 @@ public sealed class FileEntryViewModel : INotifyPropertyChanged
             icons.Request(Entry, size, IconState.Hover, bitmap => IconHover = bitmap, () => _hover is null);
         if (_selected is null)
             icons.Request(Entry, size, IconState.Selected, bitmap => IconSelected = bitmap, () => _selected is null);
+        if (_selectedInactive is null)
+            icons.Request(Entry, size, IconState.SelectedInactive, bitmap => IconSelectedInactive = bitmap,
+                () => _selectedInactive is null);
+        if (_ghost is null)
+            icons.Request(Entry, size, IconState.Ghost, bitmap => IconGhost = bitmap, () => _ghost is null);
+        // Only a folder is ever a drop target; a file's blue would be a render nobody sees.
+        if (_drop is null && IsDirectory)
+            icons.Request(Entry, size, IconState.DropTarget, bitmap => IconDrop = bitmap, () => _drop is null);
     }
 
     /// <summary>Asks for this row's thumbnail, if the file is one that can have a picture.</summary>
@@ -279,6 +332,9 @@ public sealed class FileEntryViewModel : INotifyPropertyChanged
         IconRest = null;
         IconHover = null;
         IconSelected = null;
+        IconSelectedInactive = null;
+        IconGhost = null;
+        IconDrop = null;
     }
 
     private void Set(ref Bitmap? field, Bitmap? value, PropertyChangedEventArgs changed)

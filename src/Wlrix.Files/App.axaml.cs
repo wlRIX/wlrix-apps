@@ -344,7 +344,11 @@ public class App : Application
         return new IconStateColors(
             Read("WlrixIconTintColor", fallback.Rest),
             Read("WlrixIconTintHoverColor", fallback.Hover),
-            Read("WlrixIconTintSelectedColor", fallback.Selected));
+            Read("WlrixIconTintSelectedColor", fallback.Selected),
+            // Newer than the other three: a theme package from before the drag colors has
+            // neither, and gets the classic scheme's.
+            Read("WlrixIconTintGhostColor", fallback.Ghost),
+            Read("WlrixIconTintDropColor", fallback.Drop));
 
         uint Read(string key, uint otherwise) =>
             TryGetResource(key, ActualThemeVariant, out var value) && value is global::Avalonia.Media.Color color

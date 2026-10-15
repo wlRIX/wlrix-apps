@@ -8,21 +8,35 @@ public enum IconState
     Normal,
     Hover,
     Selected,
+    /// <summary>
+    /// Selected, in a window without the keyboard. IRIX knocked the yellow back the way it
+    /// knocked a resting icon back: the rest state's checkerboard with the selection yellow where
+    /// white was -- <c>#ffff00</c> and <c>#c9c9c9</c>, measured pixel for pixel off an IRIX
+    /// screen. So the selection keys would act on is the one drawn solid.
+    /// </summary>
+    SelectedInactive,
+    /// <summary>
+    /// What stays in place while the icon is dragged away: IRIX left a dark gray ghost there
+    /// for as long as the drag lasted.
+    /// </summary>
+    Ghost,
+    /// <summary>A folder that will take what is dragged over it, which IRIX turned royal blue.</summary>
+    DropTarget,
 }
 
 /// <summary>
-/// The three colors an icon's body takes, as <c>0xRRGGBB</c>: the palette's
-/// <c>iconTint</c>, <c>iconTintHover</c> and <c>iconTintSelected</c>.
+/// The colors an icon's body takes, as <c>0xRRGGBB</c>: the palette's <c>iconTint</c>,
+/// <c>iconTintHover</c>, <c>iconTintSelected</c>, <c>iconTintGhost</c> and <c>iconTintDrop</c>.
 /// </summary>
 /// <remarks>
 /// Values rather than a reference to the theme, so this assembly stays free of Avalonia. The
 /// app reads them out of the scheme dictionary and hands them over, and again when the scheme
 /// changes.
 /// </remarks>
-public readonly record struct IconStateColors(uint Rest, uint Hover, uint Selected)
+public readonly record struct IconStateColors(uint Rest, uint Hover, uint Selected, uint Ghost, uint Drop)
 {
     /// <summary>The <c>classic</c> scheme's, for a caller with no theme to ask.</summary>
-    public static IconStateColors Default { get; } = new(0xAAAAAA, 0xFFFFFF, 0xFFFF00);
+    public static IconStateColors Default { get; } = new(0xAAAAAA, 0xFFFFFF, 0xFFFF00, 0x555555, 0x0000FF);
 }
 
 /// <summary>
@@ -70,6 +84,10 @@ public static class IconStatePainter
         IconState.Normal when ((x + y) & 1) == 0 => 0xFFFFFF,
         IconState.Normal => colors.Rest,
         IconState.Hover => colors.Hover,
+        IconState.SelectedInactive when ((x + y) & 1) == 0 => colors.Selected,
+        IconState.SelectedInactive => colors.Rest,
+        IconState.Ghost => colors.Ghost,
+        IconState.DropTarget => colors.Drop,
         _ => colors.Selected,
     };
 

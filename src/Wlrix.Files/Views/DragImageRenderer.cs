@@ -66,7 +66,9 @@ internal static class DragImageRenderer
 
     private static void Draw(DrawingContext context, IReadOnlyList<FileEntryViewModel> rows, int side)
     {
-        var icon = rows[0].Preview;
+        // Selected yellow, as IRIX's dragged image was; a thumbnail is the file's own picture and
+        // is carried as it is. Plain if the yellow render has not arrived yet.
+        var icon = rows[0].Thumbnail ?? rows[0].IconSelected ?? rows[0].Preview;
         if (icon is not null)
         {
             var box = new Rect(Padding, Padding, IconSize, IconSize);

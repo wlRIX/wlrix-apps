@@ -10,7 +10,7 @@ namespace Wlrix.Files.Core.Tests;
 /// </summary>
 public class IconStateTests
 {
-    private static readonly IconStateColors Colors = new(0xC9C9C9, 0xFFFFFF, 0xFFFF00);
+    private static readonly IconStateColors Colors = new(0xC9C9C9, 0xFFFFFF, 0xFFFF00, 0x555555, 0x0000FF);
 
     private static (byte, byte, byte, byte) Paint(IconState state, int x, int y, uint rgb, byte a = 255) =>
         IconStatePainter.Paint(state, Colors, x, y, (byte)(rgb >> 16), (byte)(rgb >> 8), (byte)rgb, a);
@@ -20,6 +20,32 @@ public class IconStateTests
     {
         Assert.Equal(((byte)0xFF, (byte)0xFF, (byte)0x00, (byte)0xFF), Paint(IconState.Selected, 0, 0, 0xFFFFFF));
         Assert.Equal(((byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF), Paint(IconState.Hover, 0, 0, 0xFFFFFF));
+    }
+
+    [Fact]
+    public void AGhostIsDarkGrayAndADropTargetRoyalBlue()
+    {
+        // After the IRIX Interactive Desktop UI Guidelines' figure of icon states, as the
+        // desktop draws them: solid, with no stipple.
+        foreach (var (x, y) in new[] { (0, 0), (1, 0) })
+        {
+            Assert.Equal(((byte)0x55, (byte)0x55, (byte)0x55, (byte)0xFF), Paint(IconState.Ghost, x, y, 0xFFFFFF));
+            Assert.Equal(((byte)0x00, (byte)0x00, (byte)0xFF, (byte)0xFF), Paint(IconState.DropTarget, x, y, 0xFFFFFF));
+        }
+        // And the outline is untouched, as in every other state.
+        Assert.Equal(((byte)0, (byte)0, (byte)0, (byte)0xFF), Paint(IconState.DropTarget, 0, 0, 0x000000));
+    }
+
+    [Fact]
+    public void SelectedWithoutTheKeyboardIsTheRestCheckerboardInYellow()
+    {
+        // Measured off IRIX: #ffff00 and #c9c9c9 alternating, in the rest state's phase.
+        var yellow = ((byte)0xFF, (byte)0xFF, (byte)0x00, (byte)0xFF);
+        var gray = ((byte)0xC9, (byte)0xC9, (byte)0xC9, (byte)0xFF);
+        Assert.Equal(yellow, Paint(IconState.SelectedInactive, 0, 0, 0xFFFFFF));
+        Assert.Equal(yellow, Paint(IconState.SelectedInactive, 1, 1, 0xFFFFFF));
+        Assert.Equal(gray, Paint(IconState.SelectedInactive, 1, 0, 0xFFFFFF));
+        Assert.Equal(gray, Paint(IconState.SelectedInactive, 0, 1, 0xFFFFFF));
     }
 
     [Fact]
