@@ -41,6 +41,13 @@ public sealed class GreeterHelperRunner
 
     private const int NotExecuted = 127;
 
+    /// <summary>What pkexec says on stderr when no polkit authentication agent is running.</summary>
+    private const string NoAgentMessage = "No authentication agent found";
+
+    private const string NoAgentExplanation =
+        "No polkit authentication agent is running in this session, so there is nothing to ask for the "
+        + "administrator's password. Start one (polkit-gnome, lxqt-policykit, mate-polkit, ...) and try again.";
+
     public static bool IsAvailable => Executables.Exists("pkexec") && File.Exists(ResolveHelper());
 
     public async Task<HelperResult> RunAsync(GreeterRequest request, CancellationToken cancellationToken = default)
@@ -59,6 +66,10 @@ public sealed class GreeterHelperRunner
             RedirectStandardOutput = true,
             RedirectStandardInput = true,
         };
+        // Without a polkit agent in the session, pkexec falls back to a text prompt on its
+        // controlling terminal. A session greetd started has the VT as that terminal, so the prompt
+        // lands on a console hidden under the compositor and this waits for ever. Refuse instead.
+        info.ArgumentList.Add("--disable-internal-agent");
         info.ArgumentList.Add(helper);
         foreach (var argument in request.ToArguments())
             info.ArgumentList.Add(argument);
@@ -88,7 +99,10 @@ public sealed class GreeterHelperRunner
             {
                 0 => new HelperResult(HelperOutcome.Succeeded, null),
                 NotAuthorized => new HelperResult(HelperOutcome.NotAuthorized, null),
-                NotExecuted => new HelperResult(HelperOutcome.Unavailable, "pkexec could not run the helper."),
+                NotExecuted => new HelperResult(HelperOutcome.Unavailable,
+                    message.Contains(NoAgentMessage, StringComparison.Ordinal)
+                        ? NoAgentExplanation
+                        : "pkexec could not run the helper."),
                 _ => new HelperResult(HelperOutcome.Failed, message.Length > 0 ? message : null),
             };
         }

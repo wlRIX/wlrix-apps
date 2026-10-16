@@ -84,6 +84,16 @@ public sealed class PkexecRunner(ILogger<PkexecRunner> logger) : IPrivilegedRunn
 
     private const int NotExecuted = 127;
 
+    /// <summary>
+    /// What pkexec says, on stderr, when no polkit authentication agent is running in the session.
+    /// With <c>--disable-internal-agent</c> that ends in exit 127 rather than a password prompt.
+    /// </summary>
+    private const string NoAgentMessage = "No authentication agent found";
+
+    private const string NoAgentExplanation =
+        "No polkit authentication agent is running in this session, so there is nothing to ask for the "
+        + "administrator's password. Start one (polkit-gnome, lxqt-policykit, mate-polkit, ...) and try again.";
+
     public bool IsAvailable => Executables.Exists("pkexec") && File.Exists(ResolveHelper());
 
     public async IAsyncEnumerable<TransactionEvent> RunAsync(HelperRequest request,
@@ -112,6 +122,7 @@ public sealed class PkexecRunner(ILogger<PkexecRunner> logger) : IPrivilegedRunn
         CancellationToken cancellationToken)
     {
         var sawCommand = false;
+        var noAgent = false;
         string? failure = null;
         int? exitCode = null;
 
@@ -131,7 +142,11 @@ public sealed class PkexecRunner(ILogger<PkexecRunner> logger) : IPrivilegedRunn
                 return;
             }
 
-            var arguments = new List<string> { helper };
+            // --disable-internal-agent: without a polkit agent in the session, pkexec otherwise
+            // falls back to a text prompt on its controlling terminal. A wlRIX session started by
+            // greetd has the VT as that terminal, so the prompt goes to a console hidden under the
+            // compositor and the transaction waits for ever on a password nobody can type.
+            var arguments = new List<string> { "--disable-internal-agent", helper };
             arguments.AddRange(request.ToArguments());
             logger.ZLogInformation($"pkexec {helper} {string.Join(' ', request.ToArguments())}");
 
@@ -152,6 +167,7 @@ public sealed class PkexecRunner(ILogger<PkexecRunner> logger) : IPrivilegedRunn
                 // runtime wrote before the helper got going. Both belong in the log verbatim.
                 if (line.IsError)
                 {
+                    noAgent |= !sawCommand && line.Text.Contains(NoAgentMessage, StringComparison.Ordinal);
                     writer.TryWrite(new TransactionEvent.Log(line.Text, IsError: true));
                     continue;
                 }
@@ -183,7 +199,7 @@ public sealed class PkexecRunner(ILogger<PkexecRunner> logger) : IPrivilegedRunn
                 }
             }
 
-            writer.TryWrite(Finish(sawCommand, failure, exitCode));
+            writer.TryWrite(Finish(sawCommand, noAgent, failure, exitCode));
         }
         catch (OperationCanceledException)
         {
@@ -212,7 +228,7 @@ public sealed class PkexecRunner(ILogger<PkexecRunner> logger) : IPrivilegedRunn
     /// anything, so if no command was ever announced, the helper never started — and at that
     /// point pkexec's own exit codes are the ones being read.
     /// </summary>
-    private TransactionEvent.Completed Finish(bool sawCommand, string? failure, int? exitCode)
+    private TransactionEvent.Completed Finish(bool sawCommand, bool noAgent, string? failure, int? exitCode)
     {
         if (failure is not null)
             return new TransactionEvent.Completed(TransactionOutcome.Failed, failure);
@@ -223,7 +239,7 @@ public sealed class PkexecRunner(ILogger<PkexecRunner> logger) : IPrivilegedRunn
             {
                 NotAuthorized => new TransactionEvent.Completed(TransactionOutcome.NotAuthorized, null),
                 NotExecuted => new TransactionEvent.Completed(TransactionOutcome.Unavailable,
-                    "pkexec could not run the helper."),
+                    noAgent ? NoAgentExplanation : "pkexec could not run the helper."),
                 _ => new TransactionEvent.Completed(TransactionOutcome.Failed,
                     $"The helper exited {exitCode?.ToString() ?? "without a status"} without doing anything."),
             };
