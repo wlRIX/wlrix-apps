@@ -19,6 +19,7 @@
         <Project Path="src/Wlrix.Settings.Login/Wlrix.Settings.Login.csproj" />
         <Project Path="src/Wlrix.Shutdown/Wlrix.Shutdown.csproj" />
         <Project Path="src/Wlrix.PolkitAgent/Wlrix.PolkitAgent.csproj" />
+        <Project Path="src/Wlrix.Pinentry/Wlrix.Pinentry.csproj" />
         <Project Path="src/Wlrix.SourcePicker/Wlrix.SourcePicker.csproj" />
         <Project Path="src/Wlrix.SoftwareManager/Wlrix.SoftwareManager.csproj" />
         <Project Path="src/Wlrix.Packages/Wlrix.Packages.csproj" />
@@ -52,5 +53,6 @@
         <Project Path="tests/Wlrix.Settings.Audio.Tests/Wlrix.Settings.Audio.Tests.csproj" />
         <Project Path="tests/Wlrix.Settings.Login.Tests/Wlrix.Settings.Login.Tests.csproj" />
         <Project Path="tests/Wlrix.PolkitAgent.Tests/Wlrix.PolkitAgent.Tests.csproj" />
+        <Project Path="tests/Wlrix.Pinentry.Tests/Wlrix.Pinentry.Tests.csproj" />
     </Folder>
 </Solution>

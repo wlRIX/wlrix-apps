@@ -31,6 +31,7 @@ library. Apps recreate the IRIX Interactive Desktop surface.
 | `Wlrix.Settings.Sound`    | app  | System & Desktop Sounds panel, for `wlrix-sound`.                   |
 | `Wlrix.Settings.Schemes`  | app  | Color scheme browser, after IRIX's. One Apply, whole desktop.       |
 | `Wlrix.Settings.Login`    | app  | Login Settings: the greeter's keyboard, color scheme and displays.  |
+| `Wlrix.Pinentry`          | app  | The pinentry gpg-agent asks for passphrases with. IRIX-styled.      |
 | `Wlrix.PolkitAgent`       | app  | The polkit authentication agent: the password dialog for pkexec & co. |
 | `Wlrix.Shutdown`          | app  | The Shut Down System dialog, behind the Toolchest's two items.      |
 | `Wlrix.SourcePicker`      | app  | The screen-share picker `xdg-desktop-portal-wlrix` puts up.         |
@@ -211,6 +212,22 @@ as the compositor reports them through `Wlrix.Settings.Outputs` — and, like ev
 dotnet run --project src/Wlrix.Settings.Login -- --demo   # made-up displays
 dotnet run --project src/Wlrix.Settings.Login.Helper -- --check write --layout jp --palette gotham
 ```
+
+## Passphrases
+
+`Wlrix.Pinentry` (`wlrix-pinentry`) is a pinentry: gpg-agent starts it for each passphrase, PIN or confirmation and
+speaks the Assuan protocol to it over stdin and stdout, exactly as it does to GnuPG's own pinentries. It shows the same
+IRIX dialog as the polkit agent, using the description, prompt and button labels gpg-agent sends (already in the user's
+language). Without a `WAYLAND_DISPLAY` -- gpg over ssh, or on a VT -- it hands the conversation to `pinentry-curses`.
+
+It is chosen per user, in `~/.gnupg/gpg-agent.conf`:
+
+```
+pinentry-program /usr/bin/wlrix-pinentry
+```
+
+then `gpgconf --reload gpg-agent`. Not offered: the quality bar for new passphrases, generated passphrases and saving to
+an external password manager; gpg-agent works without all three.
 
 ## Audio
 

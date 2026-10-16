@@ -1,0 +1,70 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Wlrix.Pinentry.ViewModels"
+        xmlns:loc="using:Wlrix.Common.Localization"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="480"
+        x:Class="Wlrix.Pinentry.Views.PinentryWindow"
+        x:DataType="vm:PinentryViewModel"
+        Width="480" SizeToContent="Height"
+        CanResize="False"
+        Topmost="True"
+        WindowStartupLocation="CenterScreen"
+        Title="{Binding Title}">
+
+    <!-- The IRIX dialog shape the polkit agent and Shut Down System share: an icon slot and a
+         heading, the body indented past the icon, the buttons along the bottom. The compositor
+         draws the 4Dwm frame; CanResize="False" tells it this window is fixed. -->
+
+    <Design.DataContext>
+        <vm:PinentryViewModel />
+    </Design.DataContext>
+
+    <StackPanel Margin="16" Spacing="12">
+
+        <StackPanel Orientation="Horizontal" Spacing="12">
+            <Border Width="48" Height="48"
+                    BorderThickness="1"
+                    BorderBrush="{DynamicResource WlrixOuterLine}"
+                    Background="{DynamicResource WlrixSelect}">
+                <!-- Placeholder for the key icon (a real asset comes from wlrix-assets). -->
+                <TextBlock Text="&#x1F511;" FontSize="24"
+                           HorizontalAlignment="Center" VerticalAlignment="Center" />
+            </Border>
+            <TextBlock Text="{Binding Heading}" FontWeight="Bold" FontSize="16"
+                       TextWrapping="Wrap" MaxWidth="380" VerticalAlignment="Center" />
+        </StackPanel>
+
+        <StackPanel Margin="60,0,0,0" Spacing="10">
+            <SelectableTextBlock Text="{Binding Description}" TextWrapping="Wrap"
+                                 IsVisible="{Binding HasDescription}" />
+            <TextBlock Text="{Binding Error}" FontWeight="Bold" TextWrapping="Wrap"
+                       IsVisible="{Binding HasError}" />
+
+            <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto" ColumnSpacing="8" RowSpacing="8"
+                  IsVisible="{Binding AsksForPin}">
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Prompt}" VerticalAlignment="Center" />
+                <TextBox Grid.Row="0" Grid.Column="1" x:Name="PinBox"
+                         Text="{Binding Pin}" PasswordChar="{Binding MaskChar}" />
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding RepeatPrompt}" VerticalAlignment="Center"
+                           IsVisible="{Binding AsksTwice}" />
+                <TextBox Grid.Row="1" Grid.Column="1"
+                         Text="{Binding RepeatPin}" PasswordChar="{Binding MaskChar}"
+                         IsVisible="{Binding AsksTwice}" />
+                <CheckBox Grid.Row="2" Grid.Column="1" Content="{loc:Tr ShowPassphrase}"
+                          IsChecked="{Binding ShowPin}" />
+            </Grid>
+        </StackPanel>
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10">
+            <Button Content="{Binding CancelLabel}" MinWidth="92" Click="OnCancel" IsCancel="True"
+                    IsVisible="{Binding ShowCancel}" />
+            <Button Content="{Binding NotOkLabel}" MinWidth="92" Click="OnNotOk"
+                    IsVisible="{Binding ShowNotOk}" />
+            <Button Content="{Binding OkLabel}" MinWidth="92" Click="OnOk" IsDefault="True" />
+        </StackPanel>
+
+    </StackPanel>
+
+</Window>
