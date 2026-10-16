@@ -301,6 +301,9 @@ What remains:
   the `dnd-` cursor names are tried before the generic ones.
 - **Popup grabs.** A popup that takes focus (menus, context menus) asks for `xdg_popup.grab`, so the compositor
   dismisses it on an outside click.
+- **The desktop's double-click time.** Read from the settings portal's `org.gnome.desktop.peripherals.mouse`
+  `double-click`, which `xdg-desktop-portal-wlrix` serves from the compositor's `[mouse] double_click_ms`, and followed
+  when it changes. Upstream uses a fixed 500 ms on Linux.
 - **Smaller fixes.** `XCURSOR_THEME` is honored, key repeat stops when a modal dialog disables its owner, and
   pointer enter/leave events carry a timestamp.
 
@@ -315,7 +318,7 @@ cd ../Avalonia && git checkout wlrix-12.1.4 && git submodule update --init --rec
 ```
 
 ```bash
-dotnet pack src/Avalonia.Wayland/Avalonia.Wayland.csproj -c Release -p:PackageVersion=12.1.5-wlrix.1 -o /tmp/wl
+dotnet pack src/Avalonia.Wayland/Avalonia.Wayland.csproj -c Release -p:PackageVersion=12.1.5-wlrix.2 -o /tmp/wl
 ```
 
 Two things then need fixing up by hand, because upstream's own packages are assembled by Nuke (`numerge.json`) rather
