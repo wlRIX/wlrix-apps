@@ -1,0 +1,9 @@
+# Installed by wlRIX as the system-wide default for gpg-agent (GnuPG 2.4 reads /etc/gnupg before
+# each user's own ~/.gnupg/gpg-agent.conf, which still overrides it).
+#
+# wlrix-pinentry asks for passphrases in wlRIX's own dialog. In any other desktop's session it
+# hands the request to the distribution's /usr/bin/pinentry, and with no display at all (ssh, a
+# VT) to pinentry-curses, so this is safe to leave in place for every user of the machine.
+#
+# `just uninstall` in wlrix-epoch removes this file again, but only while it is unchanged.
+pinentry-program @BINDIR@/wlrix-pinentry

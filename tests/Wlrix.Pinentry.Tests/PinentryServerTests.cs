@@ -179,4 +179,13 @@ public class PinentryServerTests
         var result = await model.Completion.WaitAsync(TimeSpan.FromSeconds(5));
         Assert.Equal(DialogOutcome.TimedOut, result.Outcome);
     }
+
+    [Theory]
+    [InlineData("wlRIX", true)]
+    [InlineData("GNOME:wlRIX", true)]
+    [InlineData("KDE", false)]
+    [InlineData("", false)]
+    [InlineData(null, false)]
+    public void OnlyAWlrixSessionGetsTheWlrixDialog(string? desktop, bool wlrix) =>
+        Assert.Equal(wlrix, Program.IsWlrixSession(desktop));
 }

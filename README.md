@@ -220,14 +220,19 @@ speaks the Assuan protocol to it over stdin and stdout, exactly as it does to Gn
 IRIX dialog as the polkit agent, using the description, prompt and button labels gpg-agent sends (already in the user's
 language). Without a `WAYLAND_DISPLAY` -- gpg over ssh, or on a VT -- it hands the conversation to `pinentry-curses`.
 
-It is chosen per user, in `~/.gnupg/gpg-agent.conf`:
+The wlRIX install makes it the machine's default: the epoch's `install-cs` writes `/etc/gnupg/gpg-agent.conf`
+(`data/gpg-agent.conf.in`), which GnuPG 2.4 reads before each user's own `~/.gnupg/gpg-agent.conf`. That is safe for
+every desktop on the machine, because outside a wlRIX session (`XDG_CURRENT_DESKTOP`) it hands the conversation to the
+distribution's `/usr/bin/pinentry`, which picks the Qt, GNOME or GTK pinentry as it would have anyway. An existing
+`/etc/gnupg/gpg-agent.conf` is the administrator's and is left alone; `install-cs` prints the line to add instead, and
+`uninstall` removes the file only while it is unchanged. A user can choose another pinentry in their own file:
 
 ```
-pinentry-program /usr/bin/wlrix-pinentry
+pinentry-program /usr/bin/pinentry-qt
 ```
 
-then `gpgconf --reload gpg-agent`. Not offered: the quality bar for new passphrases, generated passphrases and saving to
-an external password manager; gpg-agent works without all three.
+and gpg-agent picks up either file on `gpgconf --reload gpg-agent`. Not offered: the quality bar for new passphrases,
+generated passphrases and saving to an external password manager; gpg-agent works without all three.
 
 ## Audio
 
