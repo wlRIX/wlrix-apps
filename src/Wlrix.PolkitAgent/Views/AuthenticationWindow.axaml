@@ -1,0 +1,82 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Wlrix.PolkitAgent.ViewModels"
+        xmlns:loc="using:Wlrix.Common.Localization"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="480"
+        x:Class="Wlrix.PolkitAgent.Views.AuthenticationWindow"
+        x:DataType="vm:AuthenticationViewModel"
+        Width="480" SizeToContent="Height"
+        CanResize="False"
+        Topmost="True"
+        WindowStartupLocation="CenterScreen"
+        Title="{loc:Tr WindowTitle}">
+
+    <!-- The IRIX dialog shape the Shut Down System window has: an icon slot and a heading, then
+         the body indented past the icon, then the buttons. No ExtendClientArea: the compositor
+         draws the 4Dwm frame, and CanResize="False" tells it this one is fixed. -->
+
+    <Window.Styles>
+        <!-- A wrong password, or PAM refusing, stands out from an ordinary notice. -->
+        <Style Selector="TextBlock.error">
+            <Setter Property="FontWeight" Value="Bold" />
+        </Style>
+    </Window.Styles>
+
+    <Design.DataContext>
+        <vm:AuthenticationViewModel />
+    </Design.DataContext>
+
+    <StackPanel Margin="16" Spacing="12">
+
+        <StackPanel Orientation="Horizontal" Spacing="12">
+            <Border Width="48" Height="48"
+                    BorderThickness="1"
+                    BorderBrush="{DynamicResource WlrixOuterLine}"
+                    Background="{DynamicResource WlrixSelect}">
+                <!-- Placeholder for the padlock icon (a real asset comes from wlrix-assets). -->
+                <TextBlock Text="&#x1F512;" FontSize="24"
+                           HorizontalAlignment="Center" VerticalAlignment="Center" />
+            </Border>
+            <TextBlock Text="{loc:Tr Heading}" FontWeight="Bold" FontSize="16"
+                       VerticalAlignment="Center" />
+        </StackPanel>
+
+        <StackPanel Margin="60,0,0,0" Spacing="10">
+            <TextBlock Text="{loc:Tr Explanation}" TextWrapping="Wrap" />
+            <TextBlock Text="{Binding Message}" FontWeight="Bold" TextWrapping="Wrap" />
+
+            <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto" ColumnSpacing="8" RowSpacing="8">
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="{loc:Tr UserLabel}" VerticalAlignment="Center"
+                           IsVisible="{Binding ShowUsers}" />
+                <ComboBox Grid.Row="0" Grid.Column="1" HorizontalAlignment="Stretch"
+                          ItemsSource="{Binding Users}" SelectedIndex="{Binding SelectedUser}"
+                          IsVisible="{Binding ShowUsers}" />
+                <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding OnlyUser}"
+                           IsVisible="{Binding !ShowUsers}" />
+
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding Prompt}" VerticalAlignment="Center" />
+                <TextBox Grid.Row="1" Grid.Column="1" x:Name="ResponseBox"
+                         Text="{Binding Response}" PasswordChar="{Binding MaskChar}"
+                         IsEnabled="{Binding WaitingForAnswer}" />
+            </Grid>
+
+            <TextBlock Text="{Binding Notice}" TextWrapping="Wrap"
+                       Classes.error="{Binding NoticeIsError}"
+                       IsVisible="{Binding Notice, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+
+            <Expander Header="{loc:Tr Details}" HorizontalAlignment="Stretch">
+                <SelectableTextBlock Text="{Binding Details}" TextWrapping="Wrap" />
+            </Expander>
+        </StackPanel>
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10">
+            <Button Content="{loc:Tr Cancel}" MinWidth="92" Click="OnCancel" IsCancel="True" />
+            <Button Content="{loc:Tr Authenticate}" MinWidth="92" Click="OnAuthenticate" IsDefault="True"
+                    IsEnabled="{Binding WaitingForAnswer}" />
+        </StackPanel>
+
+    </StackPanel>
+
+</Window>

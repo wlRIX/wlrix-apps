@@ -92,7 +92,7 @@ public sealed class PkexecRunner(ILogger<PkexecRunner> logger) : IPrivilegedRunn
 
     private const string NoAgentExplanation =
         "No polkit authentication agent is running in this session, so there is nothing to ask for the "
-        + "administrator's password. Start one (polkit-gnome, lxqt-policykit, mate-polkit, ...) and try again.";
+        + "administrator's password. wlrix-session starts wlrix-polkit-agent; start it (or another agent) and try again.";
 
     public bool IsAvailable => Executables.Exists("pkexec") && File.Exists(ResolveHelper());
 

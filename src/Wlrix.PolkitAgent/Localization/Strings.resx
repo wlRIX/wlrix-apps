@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="WindowTitle" xml:space="preserve">
+    <value>Authentication Required</value>
+  </data>
+  <data name="Heading" xml:space="preserve">
+    <value>Authentication Required</value>
+  </data>
+  <data name="Explanation" xml:space="preserve">
+    <value>An application is attempting an action that requires privileges. Authentication is required to perform this action.</value>
+  </data>
+  <data name="UserLabel" xml:space="preserve">
+    <value>User:</value>
+  </data>
+  <data name="Details" xml:space="preserve">
+    <value>Details</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Authenticate" xml:space="preserve">
+    <value>Authenticate</value>
+  </data>
+  <data name="PasswordPrompt" xml:space="preserve">
+    <value>Password:</value>
+  </data>
+  <data name="AuthenticatingAs" xml:space="preserve">
+    <value>Authenticating as {0}.</value>
+  </data>
+  <data name="TryAgain" xml:space="preserve">
+    <value>Sorry, that didn't work. Please try again.</value>
+  </data>
+  <data name="CouldNotAuthenticate" xml:space="preserve">
+    <value>Authentication could not be started on this system.</value>
+  </data>
+  <data name="HelperUnavailable" xml:space="preserve">
+    <value>Cannot reach polkit's authentication helper: {0}</value>
+  </data>
+  <data name="ActionLabel" xml:space="preserve">
+    <value>Action:</value>
+  </data>
+</root>

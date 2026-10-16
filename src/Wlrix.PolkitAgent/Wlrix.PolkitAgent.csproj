@@ -1,0 +1,39 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+        <ApplicationManifest>app.manifest</ApplicationManifest>
+        <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+        <AssemblyName>wlrix-polkit-agent</AssemblyName>
+        <Version>0.1.0</Version>
+        <!-- Tmds.DBus.Protocol's readers and writers are spans over the raw message buffer. No
+             hand-written unsafe code here; same arrangement as Wlrix.Shutdown. -->
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <InternalsVisibleTo Include="Wlrix.PolkitAgent.Tests" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Avalonia" />
+        <PackageReference Include="Avalonia.Desktop" />
+        <PackageReference Include="Avalonia.Wayland" />
+        <PackageReference Include="AvaloniaUI.DiagnosticsSupport">
+            <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
+            <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
+        </PackageReference>
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+        <PackageReference Include="ReactiveUI.Avalonia" />
+        <PackageReference Include="Tmds.DBus.Protocol" />
+        <PackageReference Include="Wlrix.Avalonia" />
+        <PackageReference Include="ZLogger" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Wlrix.Common\Wlrix.Common.csproj" />
+        <!-- Follows the session's color scheme. One call in App.axaml.cs. -->
+        <ProjectReference Include="../Wlrix.Theme/Wlrix.Theme.csproj" />
+    </ItemGroup>
+
+</Project>

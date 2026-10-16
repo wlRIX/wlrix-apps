@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="WindowTitle" xml:space="preserve">
+    <value>認証が必要です</value>
+  </data>
+  <data name="Heading" xml:space="preserve">
+    <value>認証が必要です</value>
+  </data>
+  <data name="Explanation" xml:space="preserve">
+    <value>アプリケーションが特権を必要とする操作を行おうとしています。この操作を行うには認証が必要です。</value>
+  </data>
+  <data name="UserLabel" xml:space="preserve">
+    <value>ユーザー:</value>
+  </data>
+  <data name="Details" xml:space="preserve">
+    <value>詳細</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>キャンセル</value>
+  </data>
+  <data name="Authenticate" xml:space="preserve">
+    <value>認証</value>
+  </data>
+  <data name="PasswordPrompt" xml:space="preserve">
+    <value>パスワード:</value>
+  </data>
+  <data name="AuthenticatingAs" xml:space="preserve">
+    <value>{0} として認証します。</value>
+  </data>
+  <data name="TryAgain" xml:space="preserve">
+    <value>認証できませんでした。もう一度入力してください。</value>
+  </data>
+  <data name="CouldNotAuthenticate" xml:space="preserve">
+    <value>このシステムでは認証を開始できませんでした。</value>
+  </data>
+  <data name="HelperUnavailable" xml:space="preserve">
+    <value>polkit の認証ヘルパーに接続できません: {0}</value>
+  </data>
+  <data name="ActionLabel" xml:space="preserve">
+    <value>操作:</value>
+  </data>
+</root>
