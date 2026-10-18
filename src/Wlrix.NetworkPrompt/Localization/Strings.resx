@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="WindowTitle" xml:space="preserve">
+    <value>Wi-Fi Password</value>
+  </data>
+  <data name="OtherTitle" xml:space="preserve">
+    <value>Join Other Network</value>
+  </data>
+  <data name="PasswordHeading" xml:space="preserve">
+    <value>Wireless Network Password</value>
+  </data>
+  <data name="OtherHeading" xml:space="preserve">
+    <value>Join Other Network</value>
+  </data>
+  <data name="PasswordDescription" xml:space="preserve">
+    <value>Enter the password for the wireless network “{0}”.</value>
+  </data>
+  <data name="OtherDescription" xml:space="preserve">
+    <value>Enter the name of a hidden network, and its security.</value>
+  </data>
+  <data name="RetryError" xml:space="preserve">
+    <value>That password was not accepted. Check it and try again.</value>
+  </data>
+  <data name="NetworkName" xml:space="preserve">
+    <value>Network name:</value>
+  </data>
+  <data name="SecurityLabel" xml:space="preserve">
+    <value>Security:</value>
+  </data>
+  <data name="PasswordLabel" xml:space="preserve">
+    <value>Password:</value>
+  </data>
+  <data name="ShowPassword" xml:space="preserve">
+    <value>Show password</value>
+  </data>
+  <data name="Connect" xml:space="preserve">
+    <value>Connect</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="KeyTooShort" xml:space="preserve">
+    <value>At least 8 characters.</value>
+  </data>
+  <data name="KeyTooLong" xml:space="preserve">
+    <value>At most 63 characters, or 64 hexadecimal digits.</value>
+  </data>
+  <data name="KeyNotAscii" xml:space="preserve">
+    <value>Only plain ASCII letters, digits and symbols.</value>
+  </data>
+  <data name="KeyWepLength" xml:space="preserve">
+    <value>5 or 13 characters, or 10 or 26 hexadecimal digits.</value>
+  </data>
+  <data name="SecurityNone" xml:space="preserve">
+    <value>None</value>
+  </data>
+  <data name="SecurityWpa" xml:space="preserve">
+    <value>WPA/WPA2 Personal</value>
+  </data>
+  <data name="SecuritySae" xml:space="preserve">
+    <value>WPA3 Personal</value>
+  </data>
+  <data name="SecurityWep" xml:space="preserve">
+    <value>WEP</value>
+  </data>
+</root>

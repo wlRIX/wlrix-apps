@@ -1,0 +1,79 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Wlrix.NetworkPrompt.ViewModels"
+        xmlns:loc="using:Wlrix.Common.Localization"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="460"
+        x:Class="Wlrix.NetworkPrompt.Views.PromptWindow"
+        x:DataType="vm:PromptViewModel"
+        Width="460" SizeToContent="Height"
+        CanResize="False"
+        Topmost="True"
+        WindowStartupLocation="CenterScreen"
+        Title="{Binding Title}">
+
+    <!-- The IRIX dialog shape the pinentry, the polkit agent and Shut Down System share: an icon
+         slot and a heading, the body indented past the icon, the buttons along the bottom. The
+         compositor draws the 4Dwm frame; CanResize="False" tells it this window is fixed. -->
+
+    <Design.DataContext>
+        <vm:PromptViewModel />
+    </Design.DataContext>
+
+    <StackPanel Margin="16" Spacing="12">
+
+        <StackPanel Orientation="Horizontal" Spacing="12">
+            <Border Width="48" Height="48"
+                    BorderThickness="1"
+                    BorderBrush="{DynamicResource WlrixOuterLine}"
+                    Background="{DynamicResource WlrixSelect}">
+                <!-- Placeholder for a network icon (a real asset comes from wlrix-assets). -->
+                <TextBlock Text="&#x1F4F6;" FontSize="24"
+                           HorizontalAlignment="Center" VerticalAlignment="Center" />
+            </Border>
+            <TextBlock Text="{Binding Heading}" FontWeight="Bold" FontSize="16"
+                       TextWrapping="Wrap" MaxWidth="360" VerticalAlignment="Center" />
+        </StackPanel>
+
+        <StackPanel Margin="60,0,0,0" Spacing="10">
+            <TextBlock Text="{Binding Description}" TextWrapping="Wrap" />
+            <TextBlock Text="{loc:Tr RetryError}" FontWeight="Bold" TextWrapping="Wrap"
+                       IsVisible="{Binding ShowRetry}" />
+
+            <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto"
+                  ColumnSpacing="8" RowSpacing="8">
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="{loc:Tr NetworkName}" VerticalAlignment="Center"
+                           IsVisible="{Binding IsOther}" />
+                <TextBox Grid.Row="0" Grid.Column="1" x:Name="NameBox" Text="{Binding Ssid}"
+                         IsVisible="{Binding IsOther}" />
+
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="{loc:Tr SecurityLabel}" VerticalAlignment="Center"
+                           IsVisible="{Binding IsOther}" />
+                <ComboBox Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch"
+                          ItemsSource="{Binding SecurityChoices}" SelectedIndex="{Binding SecurityIndex}"
+                          IsVisible="{Binding IsOther}" />
+
+                <TextBlock Grid.Row="2" Grid.Column="0" Text="{loc:Tr PasswordLabel}" VerticalAlignment="Center"
+                           IsVisible="{Binding AsksForPassword}" />
+                <TextBox Grid.Row="2" Grid.Column="1" x:Name="PasswordBox"
+                         Text="{Binding Password}" PasswordChar="{Binding MaskChar}"
+                         IsVisible="{Binding AsksForPassword}" />
+
+                <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding Problem}" TextWrapping="Wrap"
+                           IsVisible="{Binding HasProblem}" />
+
+                <CheckBox Grid.Row="4" Grid.Column="1" Content="{loc:Tr ShowPassword}"
+                          IsChecked="{Binding ShowPassword}" IsVisible="{Binding AsksForPassword}" />
+            </Grid>
+        </StackPanel>
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10">
+            <Button Content="{loc:Tr Cancel}" MinWidth="92" Click="OnCancel" IsCancel="True" />
+            <Button Content="{loc:Tr Connect}" MinWidth="92" Click="OnConnect" IsDefault="True"
+                    IsEnabled="{Binding CanConnect}" />
+        </StackPanel>
+
+    </StackPanel>
+
+</Window>

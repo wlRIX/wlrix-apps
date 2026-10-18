@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="WindowTitle" xml:space="preserve">
+    <value>Wi-Fi パスワード</value>
+  </data>
+  <data name="OtherTitle" xml:space="preserve">
+    <value>他のネットワークに接続</value>
+  </data>
+  <data name="PasswordHeading" xml:space="preserve">
+    <value>ワイヤレスネットワークのパスワード</value>
+  </data>
+  <data name="OtherHeading" xml:space="preserve">
+    <value>他のネットワークに接続</value>
+  </data>
+  <data name="PasswordDescription" xml:space="preserve">
+    <value>ワイヤレスネットワーク「{0}」のパスワードを入力してください。</value>
+  </data>
+  <data name="OtherDescription" xml:space="preserve">
+    <value>非公開ネットワークの名前とセキュリティを入力してください。</value>
+  </data>
+  <data name="RetryError" xml:space="preserve">
+    <value>パスワードが受け付けられませんでした。確認してもう一度入力してください。</value>
+  </data>
+  <data name="NetworkName" xml:space="preserve">
+    <value>ネットワーク名:</value>
+  </data>
+  <data name="SecurityLabel" xml:space="preserve">
+    <value>セキュリティ:</value>
+  </data>
+  <data name="PasswordLabel" xml:space="preserve">
+    <value>パスワード:</value>
+  </data>
+  <data name="ShowPassword" xml:space="preserve">
+    <value>パスワードを表示</value>
+  </data>
+  <data name="Connect" xml:space="preserve">
+    <value>接続</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>キャンセル</value>
+  </data>
+  <data name="KeyTooShort" xml:space="preserve">
+    <value>8 文字以上必要です。</value>
+  </data>
+  <data name="KeyTooLong" xml:space="preserve">
+    <value>63 文字以内、または 16 進数 64 桁で入力してください。</value>
+  </data>
+  <data name="KeyNotAscii" xml:space="preserve">
+    <value>半角の英数字と記号のみ使用できます。</value>
+  </data>
+  <data name="KeyWepLength" xml:space="preserve">
+    <value>5 文字か 13 文字、または 16 進数 10 桁か 26 桁で入力してください。</value>
+  </data>
+  <data name="SecurityNone" xml:space="preserve">
+    <value>なし</value>
+  </data>
+  <data name="SecurityWpa" xml:space="preserve">
+    <value>WPA/WPA2 パーソナル</value>
+  </data>
+  <data name="SecuritySae" xml:space="preserve">
+    <value>WPA3 パーソナル</value>
+  </data>
+  <data name="SecurityWep" xml:space="preserve">
+    <value>WEP</value>
+  </data>
+</root>

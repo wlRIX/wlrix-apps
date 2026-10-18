@@ -32,6 +32,7 @@ library. Apps recreate the IRIX Interactive Desktop surface.
 | `Wlrix.Settings.Schemes`  | app  | Color scheme browser, after IRIX's. One Apply, whole desktop.       |
 | `Wlrix.Settings.Login`    | app  | Login Settings: the greeter's keyboard, color scheme and displays.  |
 | `Wlrix.Pinentry`          | app  | The pinentry gpg-agent asks for passphrases with. IRIX-styled.      |
+| `Wlrix.NetworkPrompt`     | app  | The Wi-Fi password dialog `wlrix-network` puts up. One question.    |
 | `Wlrix.PolkitAgent`       | app  | The polkit authentication agent: the password dialog for pkexec & co. |
 | `Wlrix.Shutdown`          | app  | The Shut Down System dialog, behind the Toolchest's two items.      |
 | `Wlrix.SourcePicker`      | app  | The screen-share picker `xdg-desktop-portal-wlrix` puts up.         |
