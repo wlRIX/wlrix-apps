@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="WindowTitle" xml:space="preserve">
+    <value>ネットワーク設定</value>
+  </data>
+  <data name="PanelTitle" xml:space="preserve">
+    <value>ネットワーク設定</value>
+  </data>
+  <data name="StatusHeading" xml:space="preserve">
+    <value>状態</value>
+  </data>
+  <data name="NoDevices" xml:space="preserve">
+    <value>有線またはWi-Fiのデバイスがありません。</value>
+  </data>
+  <data name="WirelessHeading" xml:space="preserve">
+    <value>ワイヤレス</value>
+  </data>
+  <data name="WirelessEnabled" xml:space="preserve">
+    <value>ワイヤレスを有効にする</value>
+  </data>
+  <data name="HardwareOff" xml:space="preserve">
+    <value>ハードウェアスイッチでオフになっています。先にそちらをオンにしてください。</value>
+  </data>
+  <data name="ShowInTray" xml:space="preserve">
+    <value>トレイにWi-Fiアイコンを表示する</value>
+  </data>
+  <data name="KnownHeading" xml:space="preserve">
+    <value>既知のネットワーク</value>
+  </data>
+  <data name="NoKnown" xml:space="preserve">
+    <value>保存されたWi-Fiネットワークはありません。Wi-Fiアイコンのメニューから接続してください。</value>
+  </data>
+  <data name="AutoConnect" xml:space="preserve">
+    <value>自動的に接続する</value>
+  </data>
+  <data name="Priority" xml:space="preserve">
+    <value>優先度:</value>
+  </data>
+  <data name="ForEveryone" xml:space="preserve">
+    <value>すべてのユーザーが使用可能</value>
+  </data>
+  <data name="NoKeyring" xml:space="preserve">
+    <value>パスワードを保管できるロック解除済みのキーリングがないため、パスワードはNetworkManagerに保存され、すべてのユーザーが使用できます。</value>
+  </data>
+  <data name="Connect" xml:space="preserve">
+    <value>接続</value>
+  </data>
+  <data name="ChangePassword" xml:space="preserve">
+    <value>パスワードを変更...</value>
+  </data>
+  <data name="Forget" xml:space="preserve">
+    <value>削除...</value>
+  </data>
+  <data name="ForgetQuestion" xml:space="preserve">
+    <value>「{0}」を削除しますか?パスワードも削除され、Wi-Fiアイコンのメニューから選ぶまで再び接続されません。</value>
+  </data>
+  <data name="ForgetConfirm" xml:space="preserve">
+    <value>削除</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>閉じる</value>
+  </data>
+  <data name="Help" xml:space="preserve">
+    <value>ヘルプ</value>
+  </data>
+  <data name="HelpText" xml:space="preserve">
+    <value>「状態」には有線とWi-Fiのデバイスと、それぞれの接続先が表示されます。「既知のネットワーク」は、このコンピューターが接続したことのあるWi-Fiネットワークです。自動的に接続するよう設定したネットワークは、範囲内にあれば優先度の高い順に接続されます。すべてのユーザーが使用可能なネットワークのパスワードはNetworkManagerに保存され、そうでないネットワークはあなた専用で、パスワードはキーリングに保存されます。新しいネットワークに接続するには、トレイのWi-Fiアイコンのメニューを使用してください。</value>
+  </data>
+  <data name="KindWifi" xml:space="preserve">
+    <value>Wi-Fi</value>
+  </data>
+  <data name="KindEthernet" xml:space="preserve">
+    <value>有線</value>
+  </data>
+  <data name="StateUnmanaged" xml:space="preserve">
+    <value>管理対象外</value>
+  </data>
+  <data name="StateUnavailable" xml:space="preserve">
+    <value>使用不可</value>
+  </data>
+  <data name="StateDisconnected" xml:space="preserve">
+    <value>切断</value>
+  </data>
+  <data name="StateConnecting" xml:space="preserve">
+    <value>接続中</value>
+  </data>
+  <data name="StateConnected" xml:space="preserve">
+    <value>接続済み</value>
+  </data>
+  <data name="StateDisconnecting" xml:space="preserve">
+    <value>切断中</value>
+  </data>
+  <data name="StateFailed" xml:space="preserve">
+    <value>失敗</value>
+  </data>
+  <data name="NoNetworkManager" xml:space="preserve">
+    <value>NetworkManagerに接続できません: {0}</value>
+  </data>
+  <data name="NoSettingsService" xml:space="preserve">
+    <value>wlRIX設定サービスが応答しないため、トレイアイコンの設定は使用できません: {0}</value>
+  </data>
+  <data name="NoPrompt" xml:space="preserve">
+    <value>パスワードダイアログを起動できません: {0}。wlrix-network-promptはインストールされていますか?</value>
+  </data>
+  <data name="ChangeFailed" xml:space="preserve">
+    <value>変更できませんでした: {0}</value>
+  </data>
+  <data name="OldSettingsService" xml:space="preserve">
+    <value>実行中のwlRIX設定サービスはこのパネルより古く、トレイアイコンの設定を知りません。次のコマンドで再起動してください: systemctl --user restart wlrix-settings-daemon</value>
+  </data>
+</root>

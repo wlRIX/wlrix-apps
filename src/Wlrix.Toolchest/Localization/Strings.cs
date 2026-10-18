@@ -31,6 +31,7 @@ public static class Strings
     public static string LogOutPrompt => Catalog.Get("LogOutPrompt");
     public static string ManageSoftware => Catalog.Get("ManageSoftware");
     public static string DisplayProperties => Catalog.Get("DisplayProperties");
+    public static string NetworkProperties => Catalog.Get("NetworkProperties");
     public static string LoginProperties => Catalog.Get("LoginProperties");
     public static string RestartSystem => Catalog.Get("RestartSystem");
     public static string ShutDownSystem => Catalog.Get("ShutDownSystem");

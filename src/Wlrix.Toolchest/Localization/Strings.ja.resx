@@ -123,6 +123,9 @@
   <data name="DisplayProperties" xml:space="preserve">
     <value>ディスプレイのプロパティ</value>
   </data>
+  <data name="NetworkProperties" xml:space="preserve">
+    <value>ネットワークのプロパティ</value>
+  </data>
   <data name="LoginProperties" xml:space="preserve">
     <value>ログインのプロパティ</value>
   </data>

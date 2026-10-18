@@ -61,7 +61,7 @@ public class MenuTests
         // Three groups: installing software, the machine's own settings, and ending everything
         // running on the box.
         Assert.Equal(
-            [Strings.ManageSoftware, null, Strings.DisplayProperties, Strings.LoginProperties, null,
+            [Strings.ManageSoftware, null, Strings.DisplayProperties, Strings.NetworkProperties, Strings.LoginProperties, null,
                 Strings.RestartSystem, Strings.ShutDownSystem],
             ItemsUnder(Strings.System).Select(item => item.IsSeparator ? null : item.Header));
 

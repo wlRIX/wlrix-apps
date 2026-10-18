@@ -139,6 +139,9 @@ Version {0}</value>
   <data name="DisplayProperties" xml:space="preserve">
     <value>Display Properties</value>
   </data>
+  <data name="NetworkProperties" xml:space="preserve">
+    <value>Network Properties</value>
+  </data>
   <data name="LoginProperties" xml:space="preserve">
     <value>Login Properties</value>
   </data>

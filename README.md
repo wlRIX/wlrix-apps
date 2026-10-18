@@ -25,6 +25,7 @@ library. Apps recreate the IRIX Interactive Desktop surface.
 | `Wlrix.Console`           | app  | Tails the wlRIX component logs, one tab each.                       |
 | `Wlrix.Settings.Keyboard` | app  | Keyboard settings panel.                                            |
 | `Wlrix.Settings.Mouse`    | app  | Mouse Settings, after IRIX's: acceleration, buttons, click speed.   |
+| `Wlrix.Settings.Network`  | app  | Network Settings: device status, the radio, saved Wi-Fi networks.   |
 | `Wlrix.Settings.Windows`  | app  | Window settings panel: focus policy and the 4Dwm flags.             |
 | `Wlrix.Settings.Displays` | app  | Displays panel, after KDE's: arrangement, modes, scale, HDR.        |
 | `Wlrix.Settings.Audio`    | app  | Audio Panel, after IRIX's apanel. Replaces pavucontrol.             |

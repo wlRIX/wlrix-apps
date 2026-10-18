@@ -1,0 +1,124 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Wlrix.Settings.Network.ViewModels"
+        xmlns:svc="using:Wlrix.Settings.Network.Services"
+        xmlns:loc="using:Wlrix.Common.Localization"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="560"
+        Width="560" SizeToContent="Height"
+        x:Class="Wlrix.Settings.Network.Views.MainWindow"
+        x:DataType="vm:NetworkSettingsViewModel"
+        CanResize="False"
+        Title="{loc:Tr WindowTitle}">
+
+    <!-- The panel shape the other wlRIX settings share: a title banner, a bold heading per group,
+         the buttons along the bottom. -->
+    <DockPanel Margin="12">
+
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="12" Margin="0,0,0,12">
+            <Border Width="48" Height="48"
+                    BorderThickness="1"
+                    BorderBrush="{DynamicResource WlrixOuterLine}"
+                    Background="{DynamicResource WlrixSelect}">
+                <!-- Placeholder for the panel icon (a real asset comes from wlrix-assets): an
+                     antenna's arcs. -->
+                <Viewbox Margin="8">
+                    <Canvas Width="32" Height="28">
+                        <Path Data="M 2,10 C 10,2 22,2 30,10 M 7,15 C 12,10 20,10 25,15 M 12,20 C 14,18 18,18 20,20"
+                              Stroke="{DynamicResource WlrixForeground}" StrokeThickness="2.5" />
+                        <Ellipse Canvas.Left="13.5" Canvas.Top="22" Width="5" Height="5"
+                                 Fill="{DynamicResource WlrixForeground}" />
+                    </Canvas>
+                </Viewbox>
+            </Border>
+            <TextBlock Text="{loc:Tr PanelTitle}" FontWeight="Bold" FontSize="14" VerticalAlignment="Center" />
+        </StackPanel>
+
+        <UniformGrid DockPanel.Dock="Bottom" Columns="3" ColumnSpacing="12" Margin="0,12,0,0">
+            <Button Content="{loc:Tr Close}" Click="OnClose" HorizontalAlignment="Stretch" />
+            <Panel />
+            <Button Content="{loc:Tr Help}" HorizontalAlignment="Stretch">
+                <Button.Flyout>
+                    <Flyout>
+                        <TextBlock MaxWidth="320" TextWrapping="Wrap" Text="{loc:Tr HelpText}" />
+                    </Flyout>
+                </Button.Flyout>
+            </Button>
+        </UniformGrid>
+
+        <TextBlock DockPanel.Dock="Bottom" Text="{Binding Status}" TextWrapping="Wrap" Margin="0,8,0,0"
+                   IsVisible="{Binding Status, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+
+        <StackPanel Spacing="6" IsEnabled="{Binding IsReady}">
+
+            <!-- Status: one line per Ethernet or Wi-Fi device. -->
+            <TextBlock Text="{loc:Tr StatusHeading}" FontWeight="Bold" />
+            <Border Margin="6,0,0,0" Padding="6" BorderThickness="1"
+                    BorderBrush="{DynamicResource WlrixOuterLine}"
+                    Background="{DynamicResource WlrixListBackground}">
+                <StackPanel>
+                    <TextBlock Text="{loc:Tr NoDevices}" IsVisible="{Binding !HasDevices}" />
+                    <ItemsControl ItemsSource="{Binding Devices}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="vm:DeviceRow">
+                                <Grid ColumnDefinitions="120,80,110,*" Margin="0,1">
+                                    <TextBlock Grid.Column="0" Text="{Binding Interface}" FontWeight="Bold" />
+                                    <TextBlock Grid.Column="1" Text="{Binding Kind}" />
+                                    <TextBlock Grid.Column="2" Text="{Binding State}" />
+                                    <TextBlock Grid.Column="3" Text="{Binding Detail}" TextTrimming="CharacterEllipsis" />
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Border>
+
+            <!-- Wireless: the radio, and the tray icon. -->
+            <TextBlock Text="{loc:Tr WirelessHeading}" FontWeight="Bold" Margin="0,6,0,0" />
+            <StackPanel Margin="6,0,0,0" Spacing="4">
+                <CheckBox Content="{loc:Tr WirelessEnabled}" IsChecked="{Binding WirelessEnabled}"
+                          IsEnabled="{Binding CanSwitchWireless}" />
+                <TextBlock Text="{loc:Tr HardwareOff}" Margin="24,0,0,0" TextWrapping="Wrap"
+                           IsVisible="{Binding HardwareOff}" />
+                <CheckBox Content="{loc:Tr ShowInTray}" IsChecked="{Binding ShowInTray}"
+                          IsEnabled="{Binding CanSetTrayIcon}" />
+            </StackPanel>
+
+            <!-- Known Networks: the list on the left, the selected one's settings on the right. -->
+            <TextBlock Text="{loc:Tr KnownHeading}" FontWeight="Bold" Margin="0,6,0,0" />
+            <TextBlock Margin="6,0,0,0" Text="{loc:Tr NoKnown}" TextWrapping="Wrap"
+                       IsVisible="{Binding !HasKnown}" />
+            <Grid Margin="6,0,0,0" ColumnDefinitions="200,*" ColumnSpacing="12" IsVisible="{Binding HasKnown}">
+                <ListBox Grid.Column="0" Height="180"
+                         ItemsSource="{Binding Known}" SelectedItem="{Binding Selected}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate x:DataType="svc:KnownNetwork">
+                            <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+
+                <StackPanel Grid.Column="1" Spacing="6" IsEnabled="{Binding HasSelection}">
+                    <CheckBox Content="{loc:Tr AutoConnect}" IsChecked="{Binding AutoConnect}" />
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <TextBlock Text="{loc:Tr Priority}" VerticalAlignment="Center" />
+                        <NumericUpDown Width="110" Minimum="-999" Maximum="999" Increment="1"
+                                       FormatString="0" Value="{Binding Priority}" />
+                    </StackPanel>
+                    <CheckBox Content="{loc:Tr ForEveryone}" IsChecked="{Binding ForEveryone}"
+                              IsEnabled="{Binding CanChangeOwner}" />
+                    <TextBlock Text="{loc:Tr NoKeyring}" TextWrapping="Wrap" Margin="24,0,0,0"
+                               IsVisible="{Binding ShowNoKeyring}" />
+                    <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,6,0,0">
+                        <Button Content="{loc:Tr Connect}" Click="OnConnect" MinWidth="90" />
+                        <Button Content="{loc:Tr ChangePassword}" Click="OnChangePassword"
+                                IsEnabled="{Binding CanChangePassword}" />
+                        <Button Content="{loc:Tr Forget}" Click="OnForget" MinWidth="80" />
+                    </StackPanel>
+                </StackPanel>
+            </Grid>
+
+        </StackPanel>
+    </DockPanel>
+</Window>

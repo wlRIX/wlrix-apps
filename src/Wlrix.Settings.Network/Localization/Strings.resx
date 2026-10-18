@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="WindowTitle" xml:space="preserve">
+    <value>Network Settings</value>
+  </data>
+  <data name="PanelTitle" xml:space="preserve">
+    <value>Network Settings</value>
+  </data>
+  <data name="StatusHeading" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="NoDevices" xml:space="preserve">
+    <value>No Ethernet or Wi-Fi devices.</value>
+  </data>
+  <data name="WirelessHeading" xml:space="preserve">
+    <value>Wireless</value>
+  </data>
+  <data name="WirelessEnabled" xml:space="preserve">
+    <value>Wireless enabled</value>
+  </data>
+  <data name="HardwareOff" xml:space="preserve">
+    <value>Turned off by the hardware switch. Turn it on there first.</value>
+  </data>
+  <data name="ShowInTray" xml:space="preserve">
+    <value>Show the Wi-Fi icon in the tray</value>
+  </data>
+  <data name="KnownHeading" xml:space="preserve">
+    <value>Known Networks</value>
+  </data>
+  <data name="NoKnown" xml:space="preserve">
+    <value>No saved Wi-Fi networks. Join one from the Wi-Fi icon's menu.</value>
+  </data>
+  <data name="AutoConnect" xml:space="preserve">
+    <value>Connect automatically</value>
+  </data>
+  <data name="Priority" xml:space="preserve">
+    <value>Priority:</value>
+  </data>
+  <data name="ForEveryone" xml:space="preserve">
+    <value>Available to all users</value>
+  </data>
+  <data name="NoKeyring" xml:space="preserve">
+    <value>There is no unlocked keyring to keep the password in, so it stays with NetworkManager, where every user can use it.</value>
+  </data>
+  <data name="Connect" xml:space="preserve">
+    <value>Connect</value>
+  </data>
+  <data name="ChangePassword" xml:space="preserve">
+    <value>Change Password...</value>
+  </data>
+  <data name="Forget" xml:space="preserve">
+    <value>Forget...</value>
+  </data>
+  <data name="ForgetQuestion" xml:space="preserve">
+    <value>Forget “{0}”? Its password is removed too, and it will not be joined again until you choose it from the Wi-Fi icon's menu.</value>
+  </data>
+  <data name="ForgetConfirm" xml:space="preserve">
+    <value>Forget</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="Help" xml:space="preserve">
+    <value>Help</value>
+  </data>
+  <data name="HelpText" xml:space="preserve">
+    <value>Status lists the Ethernet and Wi-Fi devices and what each is connected to. Known Networks are the Wi-Fi networks this computer has joined. Those set to connect automatically are joined whenever they are in range, the highest priority first. A network available to all users keeps its password with NetworkManager; one that is not is yours alone, with its password in your keyring. To join a new network, use the Wi-Fi icon's menu in the tray.</value>
+  </data>
+  <data name="KindWifi" xml:space="preserve">
+    <value>Wi-Fi</value>
+  </data>
+  <data name="KindEthernet" xml:space="preserve">
+    <value>Ethernet</value>
+  </data>
+  <data name="StateUnmanaged" xml:space="preserve">
+    <value>Not managed</value>
+  </data>
+  <data name="StateUnavailable" xml:space="preserve">
+    <value>Unavailable</value>
+  </data>
+  <data name="StateDisconnected" xml:space="preserve">
+    <value>Disconnected</value>
+  </data>
+  <data name="StateConnecting" xml:space="preserve">
+    <value>Connecting</value>
+  </data>
+  <data name="StateConnected" xml:space="preserve">
+    <value>Connected</value>
+  </data>
+  <data name="StateDisconnecting" xml:space="preserve">
+    <value>Disconnecting</value>
+  </data>
+  <data name="StateFailed" xml:space="preserve">
+    <value>Failed</value>
+  </data>
+  <data name="NoNetworkManager" xml:space="preserve">
+    <value>NetworkManager could not be reached: {0}</value>
+  </data>
+  <data name="NoSettingsService" xml:space="preserve">
+    <value>The tray icon setting is unavailable, because the wlRIX settings service is not answering: {0}</value>
+  </data>
+  <data name="NoPrompt" xml:space="preserve">
+    <value>The password dialog would not start: {0}. Is wlrix-network-prompt installed?</value>
+  </data>
+  <data name="ChangeFailed" xml:space="preserve">
+    <value>The change was not made: {0}</value>
+  </data>
+  <data name="OldSettingsService" xml:space="preserve">
+    <value>The running wlRIX settings service is older than this panel and does not know the tray icon setting. Restart it with: systemctl --user restart wlrix-settings-daemon</value>
+  </data>
+</root>

@@ -1,0 +1,50 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+        <ApplicationManifest>app.manifest</ApplicationManifest>
+        <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+        <AssemblyName>wlrix-settings-network</AssemblyName>
+        <Version>0.1.0</Version>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <InternalsVisibleTo Include="Wlrix.Settings.Network.Tests" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <!-- Proxies from NetworkManager's and the Secret Service's own introspection, trimmed to
+             what this panel calls. The headers of the XML say where they came from. -->
+        <AdditionalFiles Include="DBusXml/org.freedesktop.NetworkManager.xml"
+                         Namespace="Wlrix.Settings.Network.DBus"
+                         DBusGeneratorMode="Proxy" />
+        <AdditionalFiles Include="DBusXml/org.freedesktop.secrets.xml"
+                         Namespace="Wlrix.Settings.Network.DBus.Secrets"
+                         DBusGeneratorMode="Proxy" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Avalonia" />
+        <PackageReference Include="Avalonia.Desktop" />
+        <PackageReference Include="Avalonia.Wayland" />
+        <PackageReference Include="AvaloniaUI.DiagnosticsSupport">
+            <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
+            <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
+        </PackageReference>
+        <PackageReference Include="ReactiveUI.Avalonia" />
+        <PackageReference Include="Tmds.DBus.Protocol" />
+        <PackageReference Include="Tmds.DBus.Generator" PrivateAssets="all" />
+        <PackageReference Include="Wlrix.Avalonia" />
+        <PackageReference Include="Wlrix.Avalonia.Dialogs" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="../Wlrix.Common/Wlrix.Common.csproj" />
+        <!-- The one wlRIX setting here, the tray icon, lives in network.toml and goes through
+             wlrix-settings-daemon like every other panel's. Everything else is NetworkManager's. -->
+        <ProjectReference Include="../Wlrix.Settings.Client/Wlrix.Settings.Client.csproj" />
+        <!-- Follows the session's color scheme. One call in App.axaml.cs. -->
+        <ProjectReference Include="../Wlrix.Theme/Wlrix.Theme.csproj" />
+    </ItemGroup>
+
+</Project>

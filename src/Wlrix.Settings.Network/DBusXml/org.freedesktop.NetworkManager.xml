@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN"
+ "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
+
+<!--
+    NetworkManager's interfaces, trimmed to the members Network Settings uses.
+
+    Taken from the live introspection, which busctl's introspect verb prints given the bus name
+    org.freedesktop.NetworkManager, an object path, its system switch and its xml-interface
+    switch, run against the root object, a device, an active connection, an IP4Config, the
+    Settings object and one saved connection. Signatures are copied unchanged, so the generated
+    proxies cannot disagree with the daemon about one. Trimmed because the whole API runs to
+    hundreds of members, and none of the rest has any business being reachable from here.
+-->
+
+<node>
+  <interface name="org.freedesktop.NetworkManager">
+    <method name="ActivateConnection">
+      <arg type="o" name="connection" direction="in"/>
+      <arg type="o" name="device" direction="in"/>
+      <arg type="o" name="specific_object" direction="in"/>
+      <arg type="o" name="active_connection" direction="out"/>
+    </method>
+    <property type="ao" name="Devices" access="read"/>
+    <property type="b" name="WirelessEnabled" access="readwrite"/>
+    <property type="b" name="WirelessHardwareEnabled" access="read"/>
+  </interface>
+
+  <interface name="org.freedesktop.NetworkManager.Device">
+    <property type="s" name="Interface" access="read"/>
+    <property type="u" name="DeviceType" access="read"/>
+    <property type="u" name="State" access="read"/>
+    <property type="o" name="ActiveConnection" access="read"/>
+    <property type="o" name="Ip4Config" access="read"/>
+  </interface>
+
+  <interface name="org.freedesktop.NetworkManager.Connection.Active">
+    <property type="o" name="Connection" access="read"/>
+    <property type="s" name="Id" access="read"/>
+  </interface>
+
+  <interface name="org.freedesktop.NetworkManager.IP4Config">
+    <property type="aa{sv}" name="AddressData" access="read"/>
+  </interface>
+
+  <interface name="org.freedesktop.NetworkManager.Settings">
+    <method name="ListConnections">
+      <arg type="ao" name="connections" direction="out"/>
+    </method>
+    <signal name="NewConnection">
+      <arg type="o" name="connection"/>
+    </signal>
+    <signal name="ConnectionRemoved">
+      <arg type="o" name="connection"/>
+    </signal>
+  </interface>
+
+  <interface name="org.freedesktop.NetworkManager.Settings.Connection">
+    <method name="Update">
+      <arg type="a{sa{sv}}" name="properties" direction="in"/>
+    </method>
+    <method name="Delete"/>
+    <method name="GetSettings">
+      <arg type="a{sa{sv}}" name="settings" direction="out"/>
+    </method>
+    <method name="GetSecrets">
+      <arg type="s" name="setting_name" direction="in"/>
+      <arg type="a{sa{sv}}" name="secrets" direction="out"/>
+    </method>
+    <signal name="Updated"/>
+  </interface>
+</node>
