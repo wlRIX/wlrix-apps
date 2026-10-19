@@ -151,11 +151,15 @@
         <GridSplitter Grid.Column="1" Width="6" ResizeDirection="Columns"
                       DragCompleted="OnSidebarResized" />
 
-        <TabControl Grid.Column="2"
-                    Name="TabStrip"
-                    ItemsSource="{Binding Tabs}"
-                    SelectedItem="{Binding ActiveTab}"
-                    Classes.oneTab="{Binding !HasMultipleTabs}">
+        <!-- Tabs along the bottom, as the IRIX icon catalog had them. A notebook rather than a
+             plain TabControl for its keys; the strip itself (tabs that do not fit fold into
+             stacks at either end, with a menu to jump to them) comes with the theme. -->
+        <wlrix:NotebookTabControl Grid.Column="2"
+                                  Name="TabStrip"
+                                  TabStripPlacement="Bottom"
+                                  ItemsSource="{Binding Tabs}"
+                                  SelectedItem="{Binding ActiveTab}"
+                                  Classes.oneTab="{Binding !HasMultipleTabs}">
             <TabControl.ItemTemplate>
                 <DataTemplate x:DataType="vm:TabViewModel">
                     <TextBlock Text="{Binding Title}" />
@@ -191,6 +195,6 @@
                     </ItemsControl>
                 </DataTemplate>
             </TabControl.ContentTemplate>
-        </TabControl>
+        </wlrix:NotebookTabControl>
     </Grid>
 </UserControl>
