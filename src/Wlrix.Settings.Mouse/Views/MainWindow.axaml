@@ -8,8 +8,8 @@
         xmlns:wlrix="https://vic485.xyz/Wlrix.Avalonia"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="340" d:DesignHeight="560"
-        Width="340" SizeToContent="Height"
+        mc:Ignorable="d" d:DesignWidth="360" d:DesignHeight="640"
+        Width="360" SizeToContent="Height"
         x:Class="Wlrix.Settings.Mouse.Views.MainWindow"
         x:DataType="vm:MouseSettingsViewModel"
         CanResize="False"
@@ -59,8 +59,10 @@
 
     <!-- The layout follows IRIX's Mouse Settings panel: a title banner, a bold heading per group,
          the three buttons along the bottom, and under those the line that says what the control
-         under the pointer does. The cursor theme is wlRIX's addition, placed last before the
-         buttons. IRIX's threshold slider is absent: libinput has no threshold. -->
+         under the pointer does. wlRIX adds two things: a Touchpad tab beside the mouse's own
+         settings, and the cursor theme in a panel of its own below them, since it is the same
+         whichever device is pointing. IRIX's threshold slider is absent: libinput has no
+         threshold. -->
     <DockPanel>
 
         <!-- The status line, along the very bottom edge as on the original. -->
@@ -115,122 +117,236 @@
             <TextBlock DockPanel.Dock="Bottom" Text="{Binding Status}" TextWrapping="Wrap" Margin="0,8,0,0"
                        IsVisible="{Binding Status, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
 
-            <StackPanel Spacing="6" IsEnabled="{Binding IsReady}">
+            <StackPanel Spacing="10" IsEnabled="{Binding IsReady}">
 
-                <!-- Mouse Acceleration: five diamonds, Slow to Fast, and the slider behind
-                     Finer Control. -->
-                <TextBlock Text="{loc:Tr MouseAcceleration}" FontWeight="Bold" />
-                <Grid Margin="6,0,0,0" ColumnDefinitions="44,44,44,44,44,*" RowDefinitions="Auto,Auto"
-                      controls:Hint.Text="{loc:Tr HintAcceleration}">
-                    <TextBlock Grid.Row="0" Grid.Column="0" Text="{loc:Tr Slow}" />
-                    <TextBlock Grid.Row="0" Grid.Column="4" Text="{loc:Tr Fast}" />
-                    <TextBlock Grid.Row="0" Grid.Column="5" Text="{loc:Tr FinerControl}"
-                               HorizontalAlignment="Center" />
-                    <RadioButton Grid.Row="1" Grid.Column="0" GroupName="Acceleration"
-                                 Theme="{StaticResource Diamond}"
-                                 IsChecked="{Binding AccelerationPreset, Converter={x:Static conv:PresetConverter.Instance}, ConverterParameter=0}" />
-                    <RadioButton Grid.Row="1" Grid.Column="1" GroupName="Acceleration"
-                                 Theme="{StaticResource Diamond}"
-                                 IsChecked="{Binding AccelerationPreset, Converter={x:Static conv:PresetConverter.Instance}, ConverterParameter=1}" />
-                    <RadioButton Grid.Row="1" Grid.Column="2" GroupName="Acceleration"
-                                 Theme="{StaticResource Diamond}"
-                                 IsChecked="{Binding AccelerationPreset, Converter={x:Static conv:PresetConverter.Instance}, ConverterParameter=2}" />
-                    <RadioButton Grid.Row="1" Grid.Column="3" GroupName="Acceleration"
-                                 Theme="{StaticResource Diamond}"
-                                 IsChecked="{Binding AccelerationPreset, Converter={x:Static conv:PresetConverter.Instance}, ConverterParameter=3}" />
-                    <RadioButton Grid.Row="1" Grid.Column="4" GroupName="Acceleration"
-                                 Theme="{StaticResource Diamond}"
-                                 IsChecked="{Binding AccelerationPreset, Converter={x:Static conv:PresetConverter.Instance}, ConverterParameter=4}" />
-                    <ToggleButton Grid.Row="1" Grid.Column="5" Theme="{StaticResource FinerControlToggle}"
-                                  IsChecked="{Binding ShowAccelerationSlider}"
-                                  controls:Hint.Text="{loc:Tr HintAccelerationFiner}" />
-                </Grid>
-                <Grid Margin="6,0,0,0" ColumnDefinitions="*,Auto" IsVisible="{Binding ShowAccelerationSlider}"
-                      controls:Hint.Text="{loc:Tr HintAccelerationSlider}">
-                    <Slider Grid.Column="0" Minimum="-1" Maximum="1"
-                            SmallChange="0.05" LargeChange="0.25"
-                            TickFrequency="0.05" IsSnapToTickEnabled="True"
-                            Value="{Binding Acceleration}"
-                            ToolTip.Tip="{Binding AccelerationText}" />
-                    <TextBlock Grid.Column="1" Text="{loc:Tr Acceleration}" FontWeight="Bold"
-                               VerticalAlignment="Center" Margin="8,0,0,0" />
-                </Grid>
+                <!-- The top panel: what the pointing device does, a tab per kind of device, with
+                     the tabs hanging below the page as on IRIX's tabbed panels. -->
+                <TabControl x:Name="Pages" TabStripPlacement="Bottom" SelectedIndex="{Binding SelectedTab}"
+                            controls:Hint.Text="{loc:Tr HintTabs}">
+                    <TabItem Header="{loc:Tr TabMouse}">
+                        <StackPanel Spacing="6">
 
-                <!-- Mouse Mapping, with the Test button beside it. -->
-                <TextBlock Text="{loc:Tr MouseMapping}" FontWeight="Bold" Margin="0,6,0,0" />
-                <Grid Margin="6,0,0,0" ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto">
-                    <RadioButton Grid.Row="0" Grid.Column="0" GroupName="Mapping"
-                                 Content="{loc:Tr RightHanded}" IsChecked="{Binding RightHanded}"
-                                 controls:Hint.Text="{loc:Tr HintMapping}" />
-                    <RadioButton Grid.Row="1" Grid.Column="0" GroupName="Mapping"
-                                 Content="{loc:Tr LeftHanded}" IsChecked="{Binding LeftHanded}"
-                                 controls:Hint.Text="{loc:Tr HintMapping}" />
-                    <StackPanel Grid.Row="0" Grid.Column="2" Orientation="Horizontal" Spacing="8">
-                        <TextBlock Text="{loc:Tr Test}" FontWeight="Bold" VerticalAlignment="Center" />
-                        <Button Content="{Binding TestLabel}" Click="OnTest" MinWidth="124"
-                                HorizontalContentAlignment="Center"
-                                controls:Hint.Text="{loc:Tr HintTest}" />
+                            <!-- Mouse Acceleration: five diamonds, Slow to Fast, and the slider behind
+                                 Finer Control. -->
+                            <TextBlock Text="{loc:Tr MouseAcceleration}" FontWeight="Bold" />
+                            <Grid Margin="6,0,0,0" ColumnDefinitions="44,44,44,44,44,*" RowDefinitions="Auto,Auto"
+                                  controls:Hint.Text="{loc:Tr HintAcceleration}">
+                                <TextBlock Grid.Row="0" Grid.Column="0" Text="{loc:Tr Slow}" />
+                                <TextBlock Grid.Row="0" Grid.Column="4" Text="{loc:Tr Fast}" />
+                                <TextBlock Grid.Row="0" Grid.Column="5" Text="{loc:Tr FinerControl}"
+                                           HorizontalAlignment="Center" />
+                                <RadioButton Grid.Row="1" Grid.Column="0" GroupName="Acceleration"
+                                             Theme="{StaticResource Diamond}"
+                                             IsChecked="{Binding AccelerationPreset, Converter={x:Static conv:PresetConverter.Instance}, ConverterParameter=0}" />
+                                <RadioButton Grid.Row="1" Grid.Column="1" GroupName="Acceleration"
+                                             Theme="{StaticResource Diamond}"
+                                             IsChecked="{Binding AccelerationPreset, Converter={x:Static conv:PresetConverter.Instance}, ConverterParameter=1}" />
+                                <RadioButton Grid.Row="1" Grid.Column="2" GroupName="Acceleration"
+                                             Theme="{StaticResource Diamond}"
+                                             IsChecked="{Binding AccelerationPreset, Converter={x:Static conv:PresetConverter.Instance}, ConverterParameter=2}" />
+                                <RadioButton Grid.Row="1" Grid.Column="3" GroupName="Acceleration"
+                                             Theme="{StaticResource Diamond}"
+                                             IsChecked="{Binding AccelerationPreset, Converter={x:Static conv:PresetConverter.Instance}, ConverterParameter=3}" />
+                                <RadioButton Grid.Row="1" Grid.Column="4" GroupName="Acceleration"
+                                             Theme="{StaticResource Diamond}"
+                                             IsChecked="{Binding AccelerationPreset, Converter={x:Static conv:PresetConverter.Instance}, ConverterParameter=4}" />
+                                <ToggleButton Grid.Row="1" Grid.Column="5" Theme="{StaticResource FinerControlToggle}"
+                                              IsChecked="{Binding ShowAccelerationSlider}"
+                                              controls:Hint.Text="{loc:Tr HintAccelerationFiner}" />
+                            </Grid>
+                            <Grid Margin="6,0,0,0" ColumnDefinitions="*,Auto" IsVisible="{Binding ShowAccelerationSlider}"
+                                  controls:Hint.Text="{loc:Tr HintAccelerationSlider}">
+                                <Slider Grid.Column="0" Minimum="-1" Maximum="1"
+                                        SmallChange="0.05" LargeChange="0.25"
+                                        TickFrequency="0.05" IsSnapToTickEnabled="True"
+                                        Value="{Binding Acceleration}"
+                                        ToolTip.Tip="{Binding AccelerationText}" />
+                                <TextBlock Grid.Column="1" Text="{loc:Tr Acceleration}" FontWeight="Bold"
+                                           VerticalAlignment="Center" Margin="8,0,0,0" />
+                            </Grid>
+
+                            <!-- Mouse Mapping, with the Test button beside it. -->
+                            <TextBlock Text="{loc:Tr MouseMapping}" FontWeight="Bold" Margin="0,6,0,0" />
+                            <Grid Margin="6,0,0,0" ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto">
+                                <RadioButton Grid.Row="0" Grid.Column="0" GroupName="Mapping"
+                                             Content="{loc:Tr RightHanded}" IsChecked="{Binding RightHanded}"
+                                             controls:Hint.Text="{loc:Tr HintMapping}" />
+                                <RadioButton Grid.Row="1" Grid.Column="0" GroupName="Mapping"
+                                             Content="{loc:Tr LeftHanded}" IsChecked="{Binding LeftHanded}"
+                                             controls:Hint.Text="{loc:Tr HintMapping}" />
+                                <StackPanel Grid.Row="0" Grid.Column="2" Orientation="Horizontal" Spacing="8">
+                                    <TextBlock Text="{loc:Tr Test}" FontWeight="Bold" VerticalAlignment="Center" />
+                                    <Button Content="{Binding TestLabel}" Click="OnTest" MinWidth="124"
+                                            HorizontalContentAlignment="Center"
+                                            controls:Hint.Text="{loc:Tr HintTest}" />
+                                </StackPanel>
+                            </Grid>
+
+                            <!-- Click Speed: three diamonds, Slow to Fast, and the slider behind Finer
+                                 Control. -->
+                            <TextBlock Text="{loc:Tr ClickSpeed}" FontWeight="Bold" Margin="0,6,0,0" />
+                            <Grid Margin="6,0,0,0" ColumnDefinitions="56,56,56,*" RowDefinitions="Auto,Auto"
+                                  controls:Hint.Text="{loc:Tr HintClickSpeed}">
+                                <TextBlock Grid.Row="0" Grid.Column="0" Text="{loc:Tr Slow}" />
+                                <TextBlock Grid.Row="0" Grid.Column="2" Text="{loc:Tr Fast}" />
+                                <TextBlock Grid.Row="0" Grid.Column="3" Text="{loc:Tr FinerControl}"
+                                           HorizontalAlignment="Center" />
+                                <RadioButton Grid.Row="1" Grid.Column="0" GroupName="ClickSpeed"
+                                             Theme="{StaticResource Diamond}"
+                                             IsChecked="{Binding ClickSpeedPreset, Converter={x:Static conv:PresetConverter.Instance}, ConverterParameter=0}" />
+                                <RadioButton Grid.Row="1" Grid.Column="1" GroupName="ClickSpeed"
+                                             Theme="{StaticResource Diamond}"
+                                             IsChecked="{Binding ClickSpeedPreset, Converter={x:Static conv:PresetConverter.Instance}, ConverterParameter=1}" />
+                                <RadioButton Grid.Row="1" Grid.Column="2" GroupName="ClickSpeed"
+                                             Theme="{StaticResource Diamond}"
+                                             IsChecked="{Binding ClickSpeedPreset, Converter={x:Static conv:PresetConverter.Instance}, ConverterParameter=2}" />
+                                <ToggleButton Grid.Row="1" Grid.Column="3" Theme="{StaticResource FinerControlToggle}"
+                                              IsChecked="{Binding ShowClickSpeedSlider}"
+                                              controls:Hint.Text="{loc:Tr HintClickSpeedFiner}" />
+                            </Grid>
+                            <Slider Margin="6,0,96,0" IsVisible="{Binding ShowClickSpeedSlider}"
+                                    Minimum="{Binding ClickSpeedMinimum}" Maximum="{Binding ClickSpeedMaximum}"
+                                    SmallChange="10" LargeChange="100"
+                                    TickFrequency="10" IsSnapToTickEnabled="True"
+                                    Value="{Binding ClickSpeedPosition}"
+                                    ToolTip.Tip="{Binding ClickSpeedText}"
+                                    controls:Hint.Text="{loc:Tr HintClickSpeed}" />
+
+                        </StackPanel>
+                    </TabItem>
+                    <TabItem Header="{loc:Tr TabTouchpad}">
+                        <StackPanel Spacing="6">
+
+                            <!-- Touchpad Acceleration: the same row as the mouse's. -->
+                            <TextBlock Text="{loc:Tr TouchpadAcceleration}" FontWeight="Bold" />
+                            <Grid Margin="6,0,0,0" ColumnDefinitions="44,44,44,44,44,*" RowDefinitions="Auto,Auto"
+                                  controls:Hint.Text="{loc:Tr HintTouchpadAcceleration}">
+                                <TextBlock Grid.Row="0" Grid.Column="0" Text="{loc:Tr Slow}" />
+                                <TextBlock Grid.Row="0" Grid.Column="4" Text="{loc:Tr Fast}" />
+                                <TextBlock Grid.Row="0" Grid.Column="5" Text="{loc:Tr FinerControl}"
+                                           HorizontalAlignment="Center" />
+                                <RadioButton Grid.Row="1" Grid.Column="0" GroupName="TouchpadAcceleration"
+                                             Theme="{StaticResource Diamond}"
+                                             IsChecked="{Binding TouchpadAccelerationPreset, Converter={x:Static conv:PresetConverter.Instance}, ConverterParameter=0}" />
+                                <RadioButton Grid.Row="1" Grid.Column="1" GroupName="TouchpadAcceleration"
+                                             Theme="{StaticResource Diamond}"
+                                             IsChecked="{Binding TouchpadAccelerationPreset, Converter={x:Static conv:PresetConverter.Instance}, ConverterParameter=1}" />
+                                <RadioButton Grid.Row="1" Grid.Column="2" GroupName="TouchpadAcceleration"
+                                             Theme="{StaticResource Diamond}"
+                                             IsChecked="{Binding TouchpadAccelerationPreset, Converter={x:Static conv:PresetConverter.Instance}, ConverterParameter=2}" />
+                                <RadioButton Grid.Row="1" Grid.Column="3" GroupName="TouchpadAcceleration"
+                                             Theme="{StaticResource Diamond}"
+                                             IsChecked="{Binding TouchpadAccelerationPreset, Converter={x:Static conv:PresetConverter.Instance}, ConverterParameter=3}" />
+                                <RadioButton Grid.Row="1" Grid.Column="4" GroupName="TouchpadAcceleration"
+                                             Theme="{StaticResource Diamond}"
+                                             IsChecked="{Binding TouchpadAccelerationPreset, Converter={x:Static conv:PresetConverter.Instance}, ConverterParameter=4}" />
+                                <ToggleButton Grid.Row="1" Grid.Column="5" Theme="{StaticResource FinerControlToggle}"
+                                              IsChecked="{Binding ShowTouchpadAccelerationSlider}"
+                                              controls:Hint.Text="{loc:Tr HintAccelerationFiner}" />
+                            </Grid>
+                            <Grid Margin="6,0,0,0" ColumnDefinitions="*,Auto" IsVisible="{Binding ShowTouchpadAccelerationSlider}"
+                                  controls:Hint.Text="{loc:Tr HintTouchpadAccelerationSlider}">
+                                <Slider Grid.Column="0" Minimum="-1" Maximum="1"
+                                        SmallChange="0.05" LargeChange="0.25"
+                                        TickFrequency="0.05" IsSnapToTickEnabled="True"
+                                        Value="{Binding TouchpadAcceleration}"
+                                        ToolTip.Tip="{Binding TouchpadAccelerationText}" />
+                                <TextBlock Grid.Column="1" Text="{loc:Tr Acceleration}" FontWeight="Bold"
+                                           VerticalAlignment="Center" Margin="8,0,0,0" />
+                            </Grid>
+
+                            <!-- Tapping: drag and drag lock only mean something with tapping on. -->
+                            <TextBlock Text="{loc:Tr Tapping}" FontWeight="Bold" Margin="0,6,0,0" />
+                            <StackPanel Margin="6,0,0,0" Spacing="2">
+                                <CheckBox Content="{loc:Tr TapToClick}" IsChecked="{Binding Tap}"
+                                          controls:Hint.Text="{loc:Tr HintTap}" />
+                                <CheckBox Content="{loc:Tr TapAndDrag}" IsChecked="{Binding TapDrag}"
+                                          IsEnabled="{Binding Tap}" Margin="18,0,0,0"
+                                          controls:Hint.Text="{loc:Tr HintTapDrag}" />
+                                <CheckBox Content="{loc:Tr DragLock}" IsChecked="{Binding DragLock}"
+                                          IsEnabled="{Binding Tap}" Margin="18,0,0,0"
+                                          controls:Hint.Text="{loc:Tr HintDragLock}" />
+                            </StackPanel>
+
+                            <!-- Scrolling: the method as a pair of diamonds, then the direction. -->
+                            <TextBlock Text="{loc:Tr Scrolling}" FontWeight="Bold" Margin="0,6,0,0" />
+                            <StackPanel Margin="6,0,0,0" Spacing="2">
+                                <StackPanel Orientation="Horizontal" Spacing="16"
+                                            controls:Hint.Text="{loc:Tr HintScroll}">
+                                    <RadioButton GroupName="Scroll" Content="{loc:Tr TwoFingers}"
+                                                 IsChecked="{Binding TwoFingerScroll}" />
+                                    <RadioButton GroupName="Scroll" Content="{loc:Tr RightEdge}"
+                                                 IsChecked="{Binding EdgeScroll}" />
+                                </StackPanel>
+                                <CheckBox Content="{loc:Tr NaturalScrolling}" IsChecked="{Binding NaturalScroll}"
+                                          controls:Hint.Text="{loc:Tr HintNaturalScroll}" />
+                            </StackPanel>
+
+                            <!-- Secondary Click, for pads with no separate buttons. -->
+                            <TextBlock Text="{loc:Tr SecondaryClick}" FontWeight="Bold" Margin="0,6,0,0" />
+                            <StackPanel Margin="6,0,0,0" Spacing="2"
+                                        controls:Hint.Text="{loc:Tr HintSecondaryClick}">
+                                <RadioButton GroupName="SecondaryClick" Content="{loc:Tr TouchpadDefault}"
+                                             IsChecked="{Binding SecondaryClickChoice, Converter={x:Static conv:PresetConverter.Instance}, ConverterParameter=0}" />
+                                <RadioButton GroupName="SecondaryClick" Content="{loc:Tr TwoFingerPress}"
+                                             IsChecked="{Binding SecondaryClickChoice, Converter={x:Static conv:PresetConverter.Instance}, ConverterParameter=1}" />
+                                <RadioButton GroupName="SecondaryClick" Content="{loc:Tr BottomRightCorner}"
+                                             IsChecked="{Binding SecondaryClickChoice, Converter={x:Static conv:PresetConverter.Instance}, ConverterParameter=2}" />
+                            </StackPanel>
+
+                            <StackPanel Margin="0,6,0,0" Spacing="2">
+                                <CheckBox Content="{loc:Tr WhileTyping}" IsChecked="{Binding DisableWhileTyping}"
+                                          controls:Hint.Text="{loc:Tr HintWhileTyping}" />
+                                <CheckBox Content="{loc:Tr WithMouse}" IsChecked="{Binding DisableWithMouse}"
+                                          controls:Hint.Text="{loc:Tr HintWithMouse}" />
+                            </StackPanel>
+
+                            <!-- Said, not hidden: the settings still apply to a pad plugged in later. -->
+                            <TextBlock Text="{loc:Tr NoTouchpad}" TextWrapping="Wrap" FontStyle="Italic"
+                                       Margin="0,6,0,0" IsVisible="{Binding !HasTouchpad}" />
+
+                        </StackPanel>
+                    </TabItem>
+                </TabControl>
+
+                <!-- The bottom panel: the cursor theme, which is the same whatever is pointing. -->
+                <wlrix:BevelBorder Bevel="Raised" BevelThickness="2" OuterLineThickness="1"
+                                   Background="{DynamicResource WlrixFace}"
+                                   LightBrush="{DynamicResource WlrixTopShadow}"
+                                   DarkBrush="{DynamicResource WlrixBottomShadow}"
+                                   OuterLineBrush="{DynamicResource WlrixOuterLine}"
+                                   Padding="8">
+                    <StackPanel Spacing="6">
+                        <!-- Cursor Theme: wlRIX's addition, with a row of the theme's own pointers. -->
+                        <TextBlock Text="{loc:Tr CursorTheme}" FontWeight="Bold" />
+                        <StackPanel Margin="6,0,0,0" Spacing="6" controls:Hint.Text="{loc:Tr HintCursorTheme}">
+                            <ComboBox HorizontalAlignment="Stretch"
+                                      ItemsSource="{Binding Themes}" SelectedItem="{Binding SelectedTheme}">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate x:DataType="svc:CursorTheme">
+                                        <TextBlock Text="{Binding Display}" TextTrimming="CharacterEllipsis" />
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                            <Border BorderThickness="1" BorderBrush="{DynamicResource WlrixOuterLine}"
+                                    Background="{DynamicResource WlrixFace}" Padding="6" MinHeight="46">
+                                <ItemsControl ItemsSource="{Binding Preview}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <StackPanel Orientation="Horizontal" Spacing="14" />
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate x:DataType="Bitmap">
+                                            <Image Source="{Binding}" Stretch="None"
+                                                   RenderOptions.BitmapInterpolationMode="None" />
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </Border>
+                        </StackPanel>
                     </StackPanel>
-                </Grid>
-
-                <!-- Click Speed: three diamonds, Slow to Fast, and the slider behind Finer
-                     Control. -->
-                <TextBlock Text="{loc:Tr ClickSpeed}" FontWeight="Bold" Margin="0,6,0,0" />
-                <Grid Margin="6,0,0,0" ColumnDefinitions="56,56,56,*" RowDefinitions="Auto,Auto"
-                      controls:Hint.Text="{loc:Tr HintClickSpeed}">
-                    <TextBlock Grid.Row="0" Grid.Column="0" Text="{loc:Tr Slow}" />
-                    <TextBlock Grid.Row="0" Grid.Column="2" Text="{loc:Tr Fast}" />
-                    <TextBlock Grid.Row="0" Grid.Column="3" Text="{loc:Tr FinerControl}"
-                               HorizontalAlignment="Center" />
-                    <RadioButton Grid.Row="1" Grid.Column="0" GroupName="ClickSpeed"
-                                 Theme="{StaticResource Diamond}"
-                                 IsChecked="{Binding ClickSpeedPreset, Converter={x:Static conv:PresetConverter.Instance}, ConverterParameter=0}" />
-                    <RadioButton Grid.Row="1" Grid.Column="1" GroupName="ClickSpeed"
-                                 Theme="{StaticResource Diamond}"
-                                 IsChecked="{Binding ClickSpeedPreset, Converter={x:Static conv:PresetConverter.Instance}, ConverterParameter=1}" />
-                    <RadioButton Grid.Row="1" Grid.Column="2" GroupName="ClickSpeed"
-                                 Theme="{StaticResource Diamond}"
-                                 IsChecked="{Binding ClickSpeedPreset, Converter={x:Static conv:PresetConverter.Instance}, ConverterParameter=2}" />
-                    <ToggleButton Grid.Row="1" Grid.Column="3" Theme="{StaticResource FinerControlToggle}"
-                                  IsChecked="{Binding ShowClickSpeedSlider}"
-                                  controls:Hint.Text="{loc:Tr HintClickSpeedFiner}" />
-                </Grid>
-                <Slider Margin="6,0,96,0" IsVisible="{Binding ShowClickSpeedSlider}"
-                        Minimum="{Binding ClickSpeedMinimum}" Maximum="{Binding ClickSpeedMaximum}"
-                        SmallChange="10" LargeChange="100"
-                        TickFrequency="10" IsSnapToTickEnabled="True"
-                        Value="{Binding ClickSpeedPosition}"
-                        ToolTip.Tip="{Binding ClickSpeedText}"
-                        controls:Hint.Text="{loc:Tr HintClickSpeed}" />
-
-                <!-- Cursor Theme: wlRIX's addition, with a row of the theme's own pointers. -->
-                <TextBlock Text="{loc:Tr CursorTheme}" FontWeight="Bold" Margin="0,6,0,0" />
-                <StackPanel Margin="6,0,0,0" Spacing="6" controls:Hint.Text="{loc:Tr HintCursorTheme}">
-                    <ComboBox HorizontalAlignment="Stretch"
-                              ItemsSource="{Binding Themes}" SelectedItem="{Binding SelectedTheme}">
-                        <ComboBox.ItemTemplate>
-                            <DataTemplate x:DataType="svc:CursorTheme">
-                                <TextBlock Text="{Binding Display}" TextTrimming="CharacterEllipsis" />
-                            </DataTemplate>
-                        </ComboBox.ItemTemplate>
-                    </ComboBox>
-                    <Border BorderThickness="1" BorderBrush="{DynamicResource WlrixOuterLine}"
-                            Background="{DynamicResource WlrixFace}" Padding="6" MinHeight="46">
-                        <ItemsControl ItemsSource="{Binding Preview}">
-                            <ItemsControl.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <StackPanel Orientation="Horizontal" Spacing="14" />
-                                </ItemsPanelTemplate>
-                            </ItemsControl.ItemsPanel>
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate x:DataType="Bitmap">
-                                    <Image Source="{Binding}" Stretch="None"
-                                           RenderOptions.BitmapInterpolationMode="None" />
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-                    </Border>
-                </StackPanel>
+                </wlrix:BevelBorder>
 
             </StackPanel>
 

@@ -24,7 +24,7 @@ library. Apps recreate the IRIX Interactive Desktop surface.
 | `Wlrix.Desks`             | app  | Virtual-desktop (Rooms) overview and switcher.                      |
 | `Wlrix.Console`           | app  | Tails the wlRIX component logs, one tab each.                       |
 | `Wlrix.Settings.Keyboard` | app  | Keyboard settings panel.                                            |
-| `Wlrix.Settings.Mouse`    | app  | Mouse Settings, after IRIX's: acceleration, buttons, click speed.   |
+| `Wlrix.Settings.Mouse`    | app  | Mouse Settings, after IRIX's: acceleration, buttons, click speed, touchpad. |
 | `Wlrix.Settings.Network`  | app  | Network Settings: device status, the radio, saved Wi-Fi networks.   |
 | `Wlrix.Settings.Windows`  | app  | Window settings panel: focus policy and the 4Dwm flags.             |
 | `Wlrix.Settings.Displays` | app  | Displays panel, after KDE's: arrangement, modes, scale, HDR.        |
@@ -267,7 +267,11 @@ here, a sound per keypress, is not worth the latency.
 ## Mouse
 
 `Wlrix.Settings.Mouse` is IRIX's Mouse Settings panel. Everything it sets is in `compositor.toml`, written through
-`wlrix-settings-daemon`:
+`wlrix-settings-daemon`. The top panel has a tab per kind of device, hanging below it, and the cursor theme has a panel of
+its own underneath, since it is the same whatever is pointing. Both tabs are kept the height of the taller, so switching
+does not resize the window. `wlrix-settings-mouse --touchpad` opens on the Touchpad tab.
+
+The **Mouse** tab:
 
 - **Mouse Acceleration** is `compositor.mouse.acceleration`, libinput's pointer speed from -1 to 1. The five diamonds are
   -1, -0.5, 0, 0.5 and 1; **Finer Control** shows a slider for the values between them. IRIX's *Threshold* slider is
@@ -283,7 +287,25 @@ here, a sound per keypress, is not worth the latency.
   where an XCursor loader looks, with a row of each theme's pointers. It is written only when it is changed, so a file
   that names no theme keeps following `XCURSOR_THEME`.
 
-Under the nested compositor there is no libinput, and the host decides acceleration and button mapping.
+The **Touchpad** tab, wlRIX's own, is `compositor.touchpad.*`. Mouse Mapping and Click Speed apply to touchpads too:
+they belong to the person, not the device.
+
+- **Touchpad Acceleration**, the same diamonds and Finer Control as the mouse's, kept separate because the two are
+  rarely right at one value.
+- **Tapping**: tap to click (on by default, since a pad with no buttons is unusable without it; two fingers is the
+  secondary click, three the middle), tap and drag, and drag lock. The last two are grayed out with tapping off.
+- **Scrolling**: two fingers or the right edge, and natural scrolling.
+- **Secondary Click**, for pads with no separate buttons: the pad's own default, a two-finger press, or the bottom-right
+  corner. The pad's own default removes the key, leaving libinput to choose per model; scroll does the same while it
+  matches the default.
+- **Disable while typing**, and **Turn off while a mouse is connected**.
+
+Whether there is a touchpad comes from udev's database (`ID_INPUT_TOUCHPAD=1` in `/run/udev/data/c13:*`, which anyone
+can read), since libinput's devices belong to the compositor. With none, the tab says so and its settings still apply
+to one connected later.
+
+Under the nested compositor there is no libinput, and the host decides acceleration, button mapping and everything on
+the Touchpad tab.
 
 ## Phones
 

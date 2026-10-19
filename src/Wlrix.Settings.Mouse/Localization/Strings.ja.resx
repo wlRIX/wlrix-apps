@@ -70,7 +70,7 @@
     <value>ヘルプ</value>
   </data>
   <data name="HelpText" xml:space="preserve">
-    <value>「マウスの加速」はポインタの移動の速さを設定します。「詳細設定」を押すと、プリセットの間の値を選べるスライダーが表示されます。「ボタンの割り当て」は左手用にボタンを入れ替えます。「クリックの速さ」は2回のクリックをダブルクリックとみなす間隔で、テストボタンをクリックまたはダブルクリックして試せます。変更はすぐに適用され、「リセット」はこのウィンドウを開いたときの設定に戻します。</value>
+    <value>「マウスの加速」はポインタの移動の速さを設定します。「詳細設定」を押すと、プリセットの間の値を選べるスライダーが表示されます。「ボタンの割り当て」は左手用にボタンを入れ替えます。「クリックの速さ」は2回のクリックをダブルクリックとみなす間隔で、テストボタンをクリックまたはダブルクリックして試せます。変更はすぐに適用され、「リセット」はこのウィンドウを開いたときの設定に戻します。「タッチパッド」タブでは、タップ、スクロール、ボタンのないタッチパッドでの副ボタンのクリックを設定します。「ボタンの割り当て」と「クリックの速さ」はタッチパッドにも適用されます。</value>
   </data>
   <data name="HintAcceleration" xml:space="preserve">
     <value>ポインタの移動の速さ</value>
@@ -116,5 +116,92 @@
   </data>
   <data name="FileInvalid" xml:space="preserve">
     <value>{0} が正しくないため、最後に有効だった値を表示しています。</value>
+  </data>
+  <data name="TabMouse" xml:space="preserve">
+    <value>マウス</value>
+  </data>
+  <data name="TabTouchpad" xml:space="preserve">
+    <value>タッチパッド</value>
+  </data>
+  <data name="TouchpadAcceleration" xml:space="preserve">
+    <value>タッチパッドの加速：</value>
+  </data>
+  <data name="Tapping" xml:space="preserve">
+    <value>タップ：</value>
+  </data>
+  <data name="TapToClick" xml:space="preserve">
+    <value>タップでクリック</value>
+  </data>
+  <data name="TapAndDrag" xml:space="preserve">
+    <value>タップしてドラッグ</value>
+  </data>
+  <data name="DragLock" xml:space="preserve">
+    <value>ドラッグロック</value>
+  </data>
+  <data name="Scrolling" xml:space="preserve">
+    <value>スクロール：</value>
+  </data>
+  <data name="TwoFingers" xml:space="preserve">
+    <value>2本指</value>
+  </data>
+  <data name="RightEdge" xml:space="preserve">
+    <value>右端</value>
+  </data>
+  <data name="NaturalScrolling" xml:space="preserve">
+    <value>ナチュラルスクロール</value>
+  </data>
+  <data name="SecondaryClick" xml:space="preserve">
+    <value>副ボタンのクリック：</value>
+  </data>
+  <data name="TouchpadDefault" xml:space="preserve">
+    <value>タッチパッドの既定</value>
+  </data>
+  <data name="TwoFingerPress" xml:space="preserve">
+    <value>2本指で押す</value>
+  </data>
+  <data name="BottomRightCorner" xml:space="preserve">
+    <value>右下の隅を押す</value>
+  </data>
+  <data name="WhileTyping" xml:space="preserve">
+    <value>入力中は無効にする</value>
+  </data>
+  <data name="WithMouse" xml:space="preserve">
+    <value>マウス接続中は無効にする</value>
+  </data>
+  <data name="NoTouchpad" xml:space="preserve">
+    <value>このコンピュータにタッチパッドが見つかりません。後で接続したタッチパッドに適用されます。</value>
+  </data>
+  <data name="HintTouchpadAcceleration" xml:space="preserve">
+    <value>タッチパッドでのポインタの移動の速さ</value>
+  </data>
+  <data name="HintTouchpadAccelerationSlider" xml:space="preserve">
+    <value>ドラッグしてプリセットの間のタッチパッドの加速を設定します</value>
+  </data>
+  <data name="HintTap" xml:space="preserve">
+    <value>1本指のタップでクリック、2本指で副ボタン、3本指で中ボタン</value>
+  </data>
+  <data name="HintTapDrag" xml:space="preserve">
+    <value>タップしてからもう一度触れて動かすとドラッグします</value>
+  </data>
+  <data name="HintDragLock" xml:space="preserve">
+    <value>ドラッグ中に指を離してもすぐには終わりません</value>
+  </data>
+  <data name="HintScroll" xml:space="preserve">
+    <value>2本指でどこでも、または1本指で右端に沿ってスクロールします</value>
+  </data>
+  <data name="HintNaturalScroll" xml:space="preserve">
+    <value>スマートフォンのように内容が指の動きに従います</value>
+  </data>
+  <data name="HintSecondaryClick" xml:space="preserve">
+    <value>ボタンのないタッチパッドを押し込んだときの動作</value>
+  </data>
+  <data name="HintWhileTyping" xml:space="preserve">
+    <value>キーを押した直後はタッチパッドを無視します</value>
+  </data>
+  <data name="HintWithMouse" xml:space="preserve">
+    <value>マウスが接続されている間はタッチパッドを無視します</value>
+  </data>
+  <data name="HintTabs" xml:space="preserve">
+    <value>マウスとタッチパッドの設定。ボタンの割り当てとクリックの速さは両方に適用されます。</value>
   </data>
 </root>

@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
@@ -13,6 +14,30 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
         Hint.Changed += OnHint;
+        Opened += (_, _) => EvenOutPages();
+    }
+
+    /// <summary>
+    /// Give every tab's page the height of the tallest, so switching tabs does not resize the
+    /// window and move the buttons out from under the pointer -- IRIX's tabbed panels kept one
+    /// size. A tab control measures only the page showing, so the others are measured here, at
+    /// the width the showing one was given.
+    /// </summary>
+    private void EvenOutPages()
+    {
+        var tabs = this.FindControl<TabControl>("Pages")!;
+        var pages = tabs.Items.OfType<TabItem>().Select(item => item.Content).OfType<Control>().ToList();
+        var width = (tabs.SelectedContent as Control)?.Bounds.Width ?? 0;
+        if (width <= 0)
+            return;
+        var tallest = 0.0;
+        foreach (var page in pages)
+        {
+            page.Measure(new Size(width, double.PositiveInfinity));
+            tallest = Math.Max(tallest, page.DesiredSize.Height);
+        }
+        foreach (var page in pages)
+            page.MinHeight = tallest;
     }
 
     protected override void OnClosed(EventArgs e)

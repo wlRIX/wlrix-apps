@@ -70,7 +70,7 @@
     <value>Help</value>
   </data>
   <data name="HelpText" xml:space="preserve">
-    <value>Mouse Acceleration sets how quickly the pointer moves; Finer Control shows a slider for values between the presets. Mouse Mapping swaps the buttons for a left hand. Click Speed is how quickly two clicks must come to count as a double click: click or double-click the Test button to try it. Changes apply as you make them, and Reset restores the settings from when this window opened.</value>
+    <value>Mouse Acceleration sets how quickly the pointer moves; Finer Control shows a slider for values between the presets. Mouse Mapping swaps the buttons for a left hand. Click Speed is how quickly two clicks must come to count as a double click: click or double-click the Test button to try it. Changes apply as you make them, and Reset restores the settings from when this window opened. The Touchpad tab sets tapping, scrolling and how a touchpad with no buttons does the secondary click; Mouse Mapping and Click Speed apply to touchpads too.</value>
   </data>
   <data name="HintAcceleration" xml:space="preserve">
     <value>How fast the pointer moves</value>
@@ -116,5 +116,92 @@
   </data>
   <data name="FileInvalid" xml:space="preserve">
     <value>{0} is not valid; showing the last good values.</value>
+  </data>
+  <data name="TabMouse" xml:space="preserve">
+    <value>Mouse</value>
+  </data>
+  <data name="TabTouchpad" xml:space="preserve">
+    <value>Touchpad</value>
+  </data>
+  <data name="TouchpadAcceleration" xml:space="preserve">
+    <value>Touchpad Acceleration:</value>
+  </data>
+  <data name="Tapping" xml:space="preserve">
+    <value>Tapping:</value>
+  </data>
+  <data name="TapToClick" xml:space="preserve">
+    <value>Tap to click</value>
+  </data>
+  <data name="TapAndDrag" xml:space="preserve">
+    <value>Tap and drag</value>
+  </data>
+  <data name="DragLock" xml:space="preserve">
+    <value>Drag lock</value>
+  </data>
+  <data name="Scrolling" xml:space="preserve">
+    <value>Scrolling:</value>
+  </data>
+  <data name="TwoFingers" xml:space="preserve">
+    <value>Two fingers</value>
+  </data>
+  <data name="RightEdge" xml:space="preserve">
+    <value>Right edge</value>
+  </data>
+  <data name="NaturalScrolling" xml:space="preserve">
+    <value>Natural scrolling</value>
+  </data>
+  <data name="SecondaryClick" xml:space="preserve">
+    <value>Secondary Click:</value>
+  </data>
+  <data name="TouchpadDefault" xml:space="preserve">
+    <value>Touchpad's own default</value>
+  </data>
+  <data name="TwoFingerPress" xml:space="preserve">
+    <value>Two-finger press</value>
+  </data>
+  <data name="BottomRightCorner" xml:space="preserve">
+    <value>Bottom-right corner</value>
+  </data>
+  <data name="WhileTyping" xml:space="preserve">
+    <value>Disable while typing</value>
+  </data>
+  <data name="WithMouse" xml:space="preserve">
+    <value>Turn off while a mouse is connected</value>
+  </data>
+  <data name="NoTouchpad" xml:space="preserve">
+    <value>No touchpad was found on this computer. These settings apply to one connected later.</value>
+  </data>
+  <data name="HintTouchpadAcceleration" xml:space="preserve">
+    <value>How fast the pointer moves on the touchpad</value>
+  </data>
+  <data name="HintTouchpadAccelerationSlider" xml:space="preserve">
+    <value>Drag to set the touchpad acceleration between the presets</value>
+  </data>
+  <data name="HintTap" xml:space="preserve">
+    <value>Tap with one finger to click, two for the secondary button, three for the middle</value>
+  </data>
+  <data name="HintTapDrag" xml:space="preserve">
+    <value>Tap, then touch again and move to drag</value>
+  </data>
+  <data name="HintDragLock" xml:space="preserve">
+    <value>Lifting the finger during a drag does not end it straight away</value>
+  </data>
+  <data name="HintScroll" xml:space="preserve">
+    <value>Scroll with two fingers anywhere, or one finger along the right edge</value>
+  </data>
+  <data name="HintNaturalScroll" xml:space="preserve">
+    <value>Content follows your fingers, as on a phone</value>
+  </data>
+  <data name="HintSecondaryClick" xml:space="preserve">
+    <value>What pressing down a touchpad with no separate buttons does</value>
+  </data>
+  <data name="HintWhileTyping" xml:space="preserve">
+    <value>Ignore the touchpad for a moment after each key press</value>
+  </data>
+  <data name="HintWithMouse" xml:space="preserve">
+    <value>Ignore the touchpad while a mouse is plugged in</value>
+  </data>
+  <data name="HintTabs" xml:space="preserve">
+    <value>Mouse and touchpad settings. Button mapping and click speed apply to both.</value>
   </data>
 </root>

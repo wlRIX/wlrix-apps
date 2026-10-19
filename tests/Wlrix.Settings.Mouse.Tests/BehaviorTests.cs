@@ -224,3 +224,46 @@ public class CursorThemesTests : IDisposable
         Assert.Null(CursorThemes.Find(search, "nonesuch", "default"));
     }
 }
+
+public class TouchpadTests
+{
+    [Fact]
+    public void TappingIsOnByDefault()
+    {
+        // The compositor's default, which the tab has to show for an untouched file: a pad with
+        // no buttons is unusable without it.
+        Assert.True(TouchpadValues.Defaults.Tap);
+        Assert.True(TouchpadValues.Defaults.DisableWhileTyping);
+        Assert.Null(TouchpadValues.Defaults.Scroll);
+        Assert.Null(TouchpadValues.Defaults.SecondaryClick);
+    }
+
+    [Fact]
+    public void AUdevRecordNamesATouchpadByItsTag()
+    {
+        Assert.True(Touchpads.IsTouchpad("S:input/by-path/x\nE:ID_INPUT=1\nE:ID_INPUT_TOUCHPAD=1\nG:seat\n"));
+        Assert.False(Touchpads.IsTouchpad("E:ID_INPUT=1\nE:ID_INPUT_MOUSE=1\n"));
+        Assert.False(Touchpads.IsTouchpad("E:ID_INPUT_TOUCHPAD_INTEGRATION=internal\n"));
+    }
+
+    [Fact]
+    public void OnlyInputDeviceRecordsAreRead()
+    {
+        var directory = Directory.CreateTempSubdirectory("wlrix-mouse-udev-");
+        try
+        {
+            Assert.False(Touchpads.Present(directory.FullName));
+            // A block device's record with the tag is not an input device.
+            File.WriteAllText(Path.Combine(directory.FullName, "b8:0"), "E:ID_INPUT_TOUCHPAD=1\n");
+            File.WriteAllText(Path.Combine(directory.FullName, "c13:64"), "E:ID_INPUT_MOUSE=1\n");
+            Assert.False(Touchpads.Present(directory.FullName));
+            File.WriteAllText(Path.Combine(directory.FullName, "c13:65"), "E:ID_INPUT_TOUCHPAD=1\n");
+            Assert.True(Touchpads.Present(directory.FullName));
+        }
+        finally
+        {
+            directory.Delete(recursive: true);
+        }
+        Assert.False(Touchpads.Present(directory.FullName), "no directory, no touchpad");
+    }
+}

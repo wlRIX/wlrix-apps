@@ -29,7 +29,11 @@ public partial class App : Application
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            var model = new MouseSettingsViewModel();
+            // `--touchpad` opens on the Touchpad tab, for a launcher that means the touchpad.
+            var model = new MouseSettingsViewModel
+            {
+                SelectedTab = desktop.Args?.Contains("--touchpad") == true ? 1 : 0,
+            };
             desktop.MainWindow = new MainWindow { DataContext = model };
 
             // Shown first and filled in when the daemon answers, as the other panels do.

@@ -21,6 +21,10 @@ namespace Wlrix.Settings.Mouse.ViewModels;
 /// slider drag writes once; <see cref="Reset"/> puts back what was in force when the window
 /// opened.
 ///
+/// The Touchpad tab is wlRIX's own -- IRIX had no touchpads -- and writes <c>[touchpad]</c> the
+/// same way. Handedness and the double-click time stay on the Mouse tab and apply to both: they
+/// are the person's, not the device's.
+///
 /// IRIX's acceleration panel also had a <em>threshold</em> slider. libinput has no threshold --
 /// its acceleration is a curve over pointer speed rather than a step at one -- so it is not here
 /// rather than being a slider that does nothing.
@@ -31,6 +35,22 @@ public sealed class MouseSettingsViewModel : ViewModelBase, IDisposable
     private const string LeftHandedKey = "compositor.mouse.left_handed";
     private const string DoubleClickKey = "compositor.mouse.double_click_ms";
     private const string ThemeKey = "compositor.cursor.theme";
+    private const string TouchpadAccelerationKey = "compositor.touchpad.acceleration";
+    private const string TapKey = "compositor.touchpad.tap";
+    private const string TapDragKey = "compositor.touchpad.tap_drag";
+    private const string DragLockKey = "compositor.touchpad.drag_lock";
+    private const string NaturalScrollKey = "compositor.touchpad.natural_scroll";
+    private const string DisableWhileTypingKey = "compositor.touchpad.disable_while_typing";
+    private const string DisableWithMouseKey = "compositor.touchpad.disable_with_mouse";
+    private const string ScrollKey = "compositor.touchpad.scroll";
+    private const string SecondaryClickKey = "compositor.touchpad.secondary_click";
+
+    /// <summary>The scroll method a touchpad uses when the file names none: two fingers, on any
+    /// pad that can sense them.</summary>
+    private const string DefaultScroll = "two-finger";
+
+    /// <summary><c>secondary_click</c>'s values, by the diamond after "the pad's own".</summary>
+    private static readonly string[] SecondaryClicks = ["fingers", "corner"];
 
     /// <summary>The size the cursor previews are read at: <c>sgi</c>'s only one.</summary>
     private const int PreviewSize = 32;
@@ -68,6 +88,7 @@ public sealed class MouseSettingsViewModel : ViewModelBase, IDisposable
     private bool _openLeftHanded;
     private int _openDoubleClick = 400;
     private string? _openThemeInFile;
+    private TouchpadValues _openTouchpad;
 
     // The theme the file names right now, or null. Written only when the selection differs from
     // it, so moving a slider does not pin a theme the user never chose into their file.
@@ -87,6 +108,15 @@ public sealed class MouseSettingsViewModel : ViewModelBase, IDisposable
     private IReadOnlyList<CursorTheme> _themes;
     private CursorTheme? _selectedTheme;
     private IReadOnlyList<Bitmap> _preview = [];
+
+    // The Touchpad tab. The two choices that may be absent from the file are kept twice, as with
+    // the theme: what the file says, and what it should say once the next commit is done, so a
+    // choice of "the pad's own" removes the key rather than writing one down.
+    private TouchpadValues _touchpad = TouchpadValues.Defaults;
+    private string? _scrollInFile;
+    private string? _secondaryInFile;
+    private bool _showTouchpadAccelerationSlider;
+    private int _selectedTab;
 
     /// <summary>
     /// Builds the window's model without touching the daemon, so the XAML designer and a session
@@ -249,6 +279,116 @@ public sealed class MouseSettingsViewModel : ViewModelBase, IDisposable
         }
     }
 
+    /// <summary>Which tab of the top panel is showing: 0 Mouse, 1 Touchpad.</summary>
+    public int SelectedTab
+    {
+        get => _selectedTab;
+        set => this.RaiseAndSetIfChanged(ref _selectedTab, value);
+    }
+
+    /// <summary>Whether this computer has a touchpad. The tab is there either way.</summary>
+    public bool HasTouchpad { get; } = Touchpads.Present();
+
+    /// <summary>libinput's pointer speed for touchpads, -1 to 1.</summary>
+    public double TouchpadAcceleration
+    {
+        get => _touchpad.Acceleration;
+        set => SetTouchpad(_touchpad with { Acceleration = value });
+    }
+
+    /// <summary>Which touchpad acceleration diamond is lit, or -1 for a value between them.</summary>
+    public int TouchpadAccelerationPreset
+    {
+        get => Presets.IndexOf(Presets.Acceleration, _touchpad.Acceleration);
+        set
+        {
+            if (value >= 0 && value < Presets.Acceleration.Count)
+                TouchpadAcceleration = Presets.Acceleration[value];
+        }
+    }
+
+    /// <summary>The touchpad acceleration, for the slider's tooltip.</summary>
+    public string TouchpadAccelerationText => _touchpad.Acceleration.ToString("+0.00;-0.00;0.00");
+
+    /// <summary>Whether the touchpad acceleration slider is showing.</summary>
+    public bool ShowTouchpadAccelerationSlider
+    {
+        get => _showTouchpadAccelerationSlider;
+        set => this.RaiseAndSetIfChanged(ref _showTouchpadAccelerationSlider, value);
+    }
+
+    public bool Tap
+    {
+        get => _touchpad.Tap;
+        set => SetTouchpad(_touchpad with { Tap = value });
+    }
+
+    public bool TapDrag
+    {
+        get => _touchpad.TapDrag;
+        set => SetTouchpad(_touchpad with { TapDrag = value });
+    }
+
+    public bool DragLock
+    {
+        get => _touchpad.DragLock;
+        set => SetTouchpad(_touchpad with { DragLock = value });
+    }
+
+    public bool NaturalScroll
+    {
+        get => _touchpad.NaturalScroll;
+        set => SetTouchpad(_touchpad with { NaturalScroll = value });
+    }
+
+    public bool DisableWhileTyping
+    {
+        get => _touchpad.DisableWhileTyping;
+        set => SetTouchpad(_touchpad with { DisableWhileTyping = value });
+    }
+
+    public bool DisableWithMouse
+    {
+        get => _touchpad.DisableWithMouse;
+        set => SetTouchpad(_touchpad with { DisableWithMouse = value });
+    }
+
+    /// <summary>Two-finger scrolling, the first of the pair of scrolling diamonds.</summary>
+    public bool TwoFingerScroll
+    {
+        get => (_touchpad.Scroll ?? DefaultScroll) == "two-finger";
+        set
+        {
+            if (value)
+                SetTouchpad(_touchpad with { Scroll = "two-finger" });
+        }
+    }
+
+    /// <summary>Scrolling along the right edge, the other of the pair.</summary>
+    public bool EdgeScroll
+    {
+        get => _touchpad.Scroll == "edge";
+        set
+        {
+            if (value)
+                SetTouchpad(_touchpad with { Scroll = "edge" });
+        }
+    }
+
+    /// <summary>
+    /// Which secondary-click diamond is lit: 0 the pad's own, 1 a two-finger press, 2 the
+    /// bottom-right corner.
+    /// </summary>
+    public int SecondaryClickChoice
+    {
+        get => _touchpad.SecondaryClick is { } named ? Array.IndexOf(SecondaryClicks, named) + 1 : 0;
+        set
+        {
+            if (value >= 0 && value <= SecondaryClicks.Length)
+                SetTouchpad(_touchpad with { SecondaryClick = value == 0 ? null : SecondaryClicks[value - 1] });
+        }
+    }
+
     /// <summary>Whether the settings have loaded and the controls mean anything yet.</summary>
     public bool IsReady
     {
@@ -293,6 +433,7 @@ public sealed class MouseSettingsViewModel : ViewModelBase, IDisposable
             _openLeftHanded = _leftHanded;
             _openDoubleClick = _doubleClickMs;
             _openThemeInFile = _themeInFile;
+            _openTouchpad = _touchpad;
 
             await _client.WatchAsync().ConfigureAwait(true);
             _client.Changed += OnChangedElsewhere;
@@ -341,6 +482,7 @@ public sealed class MouseSettingsViewModel : ViewModelBase, IDisposable
         LeftHanded = _openLeftHanded;
         DoubleClickMs = _openDoubleClick;
         SelectedTheme = FindTheme(_openThemeInFile ?? EnvironmentTheme());
+        SetTouchpad(_openTouchpad);
         _loading = false;
         _ = CommitAsync(resetTheme: _openThemeInFile is null && _themeInFile is not null);
     }
@@ -414,19 +556,54 @@ public sealed class MouseSettingsViewModel : ViewModelBase, IDisposable
             [AccelerationKey] = Math.Round(_acceleration, 2),
             [LeftHandedKey] = _leftHanded,
             [DoubleClickKey] = (long)_doubleClickMs,
+            [TouchpadAccelerationKey] = Math.Round(_touchpad.Acceleration, 2),
+            [TapKey] = _touchpad.Tap,
+            [TapDragKey] = _touchpad.TapDrag,
+            [DragLockKey] = _touchpad.DragLock,
+            [NaturalScrollKey] = _touchpad.NaturalScroll,
+            [DisableWhileTypingKey] = _touchpad.DisableWhileTyping,
+            [DisableWithMouseKey] = _touchpad.DisableWithMouse,
         };
         if (!resetTheme && _selectedTheme is { } theme && theme.Name != _themeInFile)
             values[ThemeKey] = theme.Name;
+
+        // The two that may be absent: written when they changed to a value, removed when they
+        // changed to "the pad's own".
+        var removals = new List<string>();
+        if (resetTheme)
+            removals.Add(ThemeKey);
+        foreach (var (key, wanted, inFile) in new[]
+                 {
+                     (ScrollKey, _touchpad.Scroll, _scrollInFile),
+                     (SecondaryClickKey, _touchpad.SecondaryClick, _secondaryInFile),
+                 })
+        {
+            if (wanted == inFile)
+                continue;
+            if (wanted is null)
+                removals.Add(key);
+            else
+                values[key] = wanted;
+        }
 
         try
         {
             var result = await _client.SetManyAsync(values).ConfigureAwait(true);
             if (values.TryGetValue(ThemeKey, out var written))
                 _themeInFile = (string)written;
-            if (resetTheme)
+            if (values.TryGetValue(ScrollKey, out var scroll))
+                _scrollInFile = (string)scroll;
+            if (values.TryGetValue(SecondaryClickKey, out var secondary))
+                _secondaryInFile = (string)secondary;
+            foreach (var key in removals)
             {
-                await _client.ResetAsync(ThemeKey).ConfigureAwait(true);
-                _themeInFile = null;
+                await _client.ResetAsync(key).ConfigureAwait(true);
+                switch (key)
+                {
+                    case ThemeKey: _themeInFile = null; break;
+                    case ScrollKey: _scrollInFile = null; break;
+                    case SecondaryClickKey: _secondaryInFile = null; break;
+                }
             }
             Status = result.Advice ?? string.Empty;
         }
@@ -475,12 +652,58 @@ public sealed class MouseSettingsViewModel : ViewModelBase, IDisposable
         if (values.TryGetValue(DoubleClickKey, out var click) && click is not null)
             DoubleClickMs = (int)AsNumber(click, _doubleClickMs);
 
+        var touchpad = _touchpad;
+        if (values.TryGetValue(TouchpadAccelerationKey, out var touchAcceleration))
+            touchpad = touchpad with { Acceleration = Math.Clamp(AsNumber(touchAcceleration, 0.0), -1.0, 1.0) };
+        touchpad = touchpad with
+        {
+            Tap = AsBool(values, TapKey, touchpad.Tap),
+            TapDrag = AsBool(values, TapDragKey, touchpad.TapDrag),
+            DragLock = AsBool(values, DragLockKey, touchpad.DragLock),
+            NaturalScroll = AsBool(values, NaturalScrollKey, touchpad.NaturalScroll),
+            DisableWhileTyping = AsBool(values, DisableWhileTypingKey, touchpad.DisableWhileTyping),
+            DisableWithMouse = AsBool(values, DisableWithMouseKey, touchpad.DisableWithMouse),
+        };
+        if (values.ContainsKey(ScrollKey))
+        {
+            _scrollInFile = values[ScrollKey] as string is { Length: > 0 } scroll ? scroll : null;
+            touchpad = touchpad with { Scroll = _scrollInFile };
+        }
+        if (values.ContainsKey(SecondaryClickKey))
+        {
+            _secondaryInFile = values[SecondaryClickKey] as string is { Length: > 0 } secondary ? secondary : null;
+            touchpad = touchpad with { SecondaryClick = _secondaryInFile };
+        }
+        SetTouchpad(touchpad);
+
         if (values.ContainsKey(ThemeKey))
         {
             _themeInFile = values[ThemeKey] as string is { Length: > 0 } named ? named : null;
             SelectedTheme = FindTheme(_themeInFile ?? EnvironmentTheme());
         }
     }
+
+    /// <summary>Change the Touchpad tab's values, tell every control bound to them, and commit.</summary>
+    private void SetTouchpad(TouchpadValues values)
+    {
+        if (values == _touchpad)
+            return;
+        _touchpad = values;
+        foreach (var name in TouchpadProperties)
+            this.RaisePropertyChanged(name);
+        ScheduleCommit();
+    }
+
+    private static readonly string[] TouchpadProperties =
+    [
+        nameof(TouchpadAcceleration), nameof(TouchpadAccelerationPreset), nameof(TouchpadAccelerationText),
+        nameof(Tap), nameof(TapDrag), nameof(DragLock), nameof(NaturalScroll),
+        nameof(DisableWhileTyping), nameof(DisableWithMouse),
+        nameof(TwoFingerScroll), nameof(EdgeScroll), nameof(SecondaryClickChoice),
+    ];
+
+    private static bool AsBool(IReadOnlyDictionary<string, object?> values, string key, bool fallback) =>
+        values.TryGetValue(key, out var value) && value is bool flag ? flag : fallback;
 
     /// <summary>
     /// What the desktop is drawing when the file names no theme: what the session put in this
@@ -563,4 +786,24 @@ internal static class ClickSpeedSlider
 
     public static int TimeAt(double position, int minimum, int maximum) =>
         Math.Clamp((int)Math.Round(minimum + maximum - position), minimum, maximum);
+}
+
+/// <summary>
+/// Everything on the Touchpad tab, as one value so Reset can put it all back at once. The
+/// defaults are the compositor's: tapping on, the rest libinput's.
+/// </summary>
+internal readonly record struct TouchpadValues(
+    double Acceleration,
+    bool Tap,
+    bool TapDrag,
+    bool DragLock,
+    bool NaturalScroll,
+    bool DisableWhileTyping,
+    bool DisableWithMouse,
+    string? Scroll,
+    string? SecondaryClick)
+{
+    public static TouchpadValues Defaults { get; } =
+        new(0.0, Tap: true, TapDrag: true, DragLock: false, NaturalScroll: false,
+            DisableWhileTyping: true, DisableWithMouse: false, Scroll: null, SecondaryClick: null);
 }
