@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="WindowTitle" xml:space="preserve">
+    <value>Power Settings</value>
+  </data>
+  <data name="PanelTitle" xml:space="preserve">
+    <value>Power Settings</value>
+  </data>
+  <data name="WhenLidClosed" xml:space="preserve">
+    <value>When the Lid Is Closed:</value>
+  </data>
+  <data name="OnBattery" xml:space="preserve">
+    <value>On battery:</value>
+  </data>
+  <data name="PluggedIn" xml:space="preserve">
+    <value>Plugged in:</value>
+  </data>
+  <data name="WithMonitor" xml:space="preserve">
+    <value>With another monitor:</value>
+  </data>
+  <data name="Suspend" xml:space="preserve">
+    <value>Suspend</value>
+  </data>
+  <data name="Hibernate" xml:space="preserve">
+    <value>Hibernate</value>
+  </data>
+  <data name="LockScreen" xml:space="preserve">
+    <value>Lock the screen</value>
+  </data>
+  <data name="TurnScreenOff" xml:space="preserve">
+    <value>Turn the screen off</value>
+  </data>
+  <data name="DoNothing" xml:space="preserve">
+    <value>Do nothing</value>
+  </data>
+  <data name="NoLid" xml:space="preserve">
+    <value>This computer has no lid. These settings apply if it is used on one that does.</value>
+  </data>
+  <data name="Sleep" xml:space="preserve">
+    <value>Sleep:</value>
+  </data>
+  <data name="LockBeforeSleep" xml:space="preserve">
+    <value>Lock the screen before sleeping</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="Reset" xml:space="preserve">
+    <value>Reset ...</value>
+  </data>
+  <data name="Help" xml:space="preserve">
+    <value>Help</value>
+  </data>
+  <data name="HelpText" xml:space="preserve">
+    <value>When the Lid Is Closed sets what closing the lid does: on battery, plugged in, and with another monitor or a dock connected. Lock the screen locks and turns the screen off but stays awake; if the computer cannot hibernate, it is locked instead. With another monitor, the laptop's own screen turns off and its windows move to the other monitors, whatever is chosen. Lock the screen before sleeping locks the session before every suspend, so it never wakes unlocked. Changes apply at once; Reset restores the settings from when this window opened.</value>
+  </data>
+  <data name="HintOnBattery" xml:space="preserve">
+    <value>What closing the lid does while running on battery</value>
+  </data>
+  <data name="HintPluggedIn" xml:space="preserve">
+    <value>What closing the lid does while plugged in</value>
+  </data>
+  <data name="HintWithMonitor" xml:space="preserve">
+    <value>What closing the lid does with another monitor or a dock; the laptop's screen turns off either way</value>
+  </data>
+  <data name="HintLockBeforeSleep" xml:space="preserve">
+    <value>Lock the session before every suspend, so it never wakes unlocked</value>
+  </data>
+  <data name="HintClose" xml:space="preserve">
+    <value>Close this window</value>
+  </data>
+  <data name="HintReset" xml:space="preserve">
+    <value>Restore the settings from when this window opened</value>
+  </data>
+  <data name="HintHelp" xml:space="preserve">
+    <value>Explain these settings</value>
+  </data>
+  <data name="NoSettingsService" xml:space="preserve">
+    <value>No settings service: {0}</value>
+  </data>
+  <data name="FileInvalid" xml:space="preserve">
+    <value>{0} is not valid; showing the last good values.</value>
+  </data>
+</root>

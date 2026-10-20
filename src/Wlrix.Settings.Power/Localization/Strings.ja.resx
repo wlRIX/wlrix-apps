@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="WindowTitle" xml:space="preserve">
+    <value>電源の設定</value>
+  </data>
+  <data name="PanelTitle" xml:space="preserve">
+    <value>電源の設定</value>
+  </data>
+  <data name="WhenLidClosed" xml:space="preserve">
+    <value>ふたを閉じたとき：</value>
+  </data>
+  <data name="OnBattery" xml:space="preserve">
+    <value>バッテリー駆動時：</value>
+  </data>
+  <data name="PluggedIn" xml:space="preserve">
+    <value>電源接続時：</value>
+  </data>
+  <data name="WithMonitor" xml:space="preserve">
+    <value>別のモニタ接続時：</value>
+  </data>
+  <data name="Suspend" xml:space="preserve">
+    <value>サスペンド</value>
+  </data>
+  <data name="Hibernate" xml:space="preserve">
+    <value>ハイバネート</value>
+  </data>
+  <data name="LockScreen" xml:space="preserve">
+    <value>画面をロック</value>
+  </data>
+  <data name="TurnScreenOff" xml:space="preserve">
+    <value>画面をオフにする</value>
+  </data>
+  <data name="DoNothing" xml:space="preserve">
+    <value>何もしない</value>
+  </data>
+  <data name="NoLid" xml:space="preserve">
+    <value>このコンピュータにはふたがありません。ふたのあるコンピュータで使う場合に適用されます。</value>
+  </data>
+  <data name="Sleep" xml:space="preserve">
+    <value>スリープ：</value>
+  </data>
+  <data name="LockBeforeSleep" xml:space="preserve">
+    <value>スリープする前に画面をロックする</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>閉じる</value>
+  </data>
+  <data name="Reset" xml:space="preserve">
+    <value>リセット...</value>
+  </data>
+  <data name="Help" xml:space="preserve">
+    <value>ヘルプ</value>
+  </data>
+  <data name="HelpText" xml:space="preserve">
+    <value>「ふたを閉じたとき」は、バッテリー駆動時、電源接続時、別のモニタやドックの接続時に、ふたを閉じると何をするかを設定します。「画面をロック」はロックして画面をオフにしますが、スリープはしません。ハイバネートできない場合はロックします。別のモニタが接続されているときは、どれを選んでもノートパソコンの画面はオフになり、そのウィンドウは他のモニタに移ります。「スリープする前に画面をロックする」は、サスペンドの前に毎回セッションをロックし、ロックされていない状態で復帰しないようにします。変更はすぐに適用され、「リセット」はこのウィンドウを開いたときの設定に戻します。</value>
+  </data>
+  <data name="HintOnBattery" xml:space="preserve">
+    <value>バッテリー駆動中にふたを閉じたときの動作</value>
+  </data>
+  <data name="HintPluggedIn" xml:space="preserve">
+    <value>電源に接続中にふたを閉じたときの動作</value>
+  </data>
+  <data name="HintWithMonitor" xml:space="preserve">
+    <value>別のモニタやドックの接続中にふたを閉じたときの動作。どの場合もノートパソコンの画面はオフになります</value>
+  </data>
+  <data name="HintLockBeforeSleep" xml:space="preserve">
+    <value>サスペンドの前に毎回セッションをロックし、ロックされていない状態で復帰しないようにします</value>
+  </data>
+  <data name="HintClose" xml:space="preserve">
+    <value>このウィンドウを閉じます</value>
+  </data>
+  <data name="HintReset" xml:space="preserve">
+    <value>このウィンドウを開いたときの設定に戻します</value>
+  </data>
+  <data name="HintHelp" xml:space="preserve">
+    <value>これらの設定について説明します</value>
+  </data>
+  <data name="NoSettingsService" xml:space="preserve">
+    <value>設定サービスがありません：{0}</value>
+  </data>
+  <data name="FileInvalid" xml:space="preserve">
+    <value>{0} が正しくないため、最後に有効だった値を表示しています。</value>
+  </data>
+</root>

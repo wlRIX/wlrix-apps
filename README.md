@@ -25,6 +25,7 @@ library. Apps recreate the IRIX Interactive Desktop surface.
 | `Wlrix.Console`           | app  | Tails the wlRIX component logs, one tab each.                       |
 | `Wlrix.Settings.Keyboard` | app  | Keyboard settings panel.                                            |
 | `Wlrix.Settings.Mouse`    | app  | Mouse Settings, after IRIX's: acceleration, buttons, click speed, touchpad. |
+| `Wlrix.Settings.Power`    | app  | Power Settings, wlRIX's own: what closing the lid does, lock before sleep. |
 | `Wlrix.Settings.Network`  | app  | Network Settings: device status, the radio, saved Wi-Fi networks.   |
 | `Wlrix.Settings.Windows`  | app  | Window settings panel: focus policy and the 4Dwm flags.             |
 | `Wlrix.Settings.Displays` | app  | Displays panel, after KDE's: arrangement, modes, scale, HDR.        |
@@ -306,6 +307,23 @@ to one connected later.
 
 Under the nested compositor there is no libinput, and the host decides acceleration, button mapping and everything on
 the Touchpad tab.
+
+## Power
+
+`Wlrix.Settings.Power` (`wlrix-settings-power`, Toolchest → System → Power Properties) is wlRIX's own; IRIX ran on
+workstations with no lid. Everything it sets is in `idle.toml`, written through `wlrix-settings-daemon`, and acted on
+by `wlrix-idle`, which holds logind's lid inhibitor so the person's choice wins over `/etc/systemd/logind.conf`:
+
+- **When the Lid Is Closed** is `idle.lid.on_battery`, `idle.lid.on_ac` and `idle.lid.docked`: suspend, hibernate,
+  lock the screen (lock and turn it off, stay awake), turn the screen off, or do nothing. *With another monitor* is
+  logind's own test, a dock or more than one display; the compositor switches the laptop's panel off then whatever is
+  chosen. A machine that cannot hibernate is locked instead. On a computer with no lid (no `/proc/acpi/button/lid/*`)
+  the panel says so, and the settings still apply on one that has.
+- **Lock the screen before sleeping** is `idle.before_sleep.lock`, on by default: every suspend, from the lid or
+  anywhere else, locks first.
+
+Changes apply at once; there is nothing to drag. The daemon checks a write with the *installed* `wlrix-idle
+--check-config`, so install `wlrix-idle` before using the panel, or the `[lid]` keys are refused.
 
 ## Phones
 

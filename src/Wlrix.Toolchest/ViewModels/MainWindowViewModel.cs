@@ -40,6 +40,7 @@ public sealed class MainWindowViewModel : ViewModelBase
     private const string MouseProgram = "wlrix-settings-mouse";
     private const string DisplaysProgram = "wlrix-settings-displays";
     private const string NetworkProgram = "wlrix-settings-network";
+    private const string PowerProgram = "wlrix-settings-power";
     private const string LoginProgram = "wlrix-settings-login";
 
     /// <summary>
@@ -155,6 +156,7 @@ public sealed class MainWindowViewModel : ViewModelBase
             // The machine's own settings, as IRIX's System menu had them.
             Launch(Strings.DisplayProperties, DisplaysProgram),
             Launch(Strings.NetworkProperties, NetworkProgram),
+            Launch(Strings.PowerProperties, PowerProgram),
             Launch(Strings.LoginProperties, LoginProgram),
             MenuNode.Separator(),
             // Neither acts: both open the Shut Down System dialog, which is where the machine

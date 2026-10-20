@@ -1,0 +1,139 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Wlrix.Settings.Power.ViewModels"
+        xmlns:loc="using:Wlrix.Common.Localization"
+        xmlns:controls="using:Wlrix.Settings.Power.Controls"
+        xmlns:wlrix="https://vic485.xyz/Wlrix.Avalonia"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="380" d:DesignHeight="380"
+        Width="380" SizeToContent="Height"
+        x:Class="Wlrix.Settings.Power.Views.MainWindow"
+        x:DataType="vm:PowerSettingsViewModel"
+        CanResize="False"
+        Title="{loc:Tr WindowTitle}">
+
+    <Design.DataContext>
+        <vm:PowerSettingsViewModel />
+    </Design.DataContext>
+
+    <Window.Resources>
+        <DataTemplate x:Key="Choice" x:DataType="vm:LidChoice">
+            <TextBlock Text="{Binding Label}" />
+        </DataTemplate>
+    </Window.Resources>
+
+    <!-- Laid out as the other settings panels are, after IRIX's: a title banner, a raised panel
+         per group with a bold heading, the three buttons along the bottom, and under those the
+         line that says what the control under the pointer does. -->
+    <DockPanel>
+
+        <TextBlock x:Name="HintLine" DockPanel.Dock="Bottom" Margin="6,2,6,4"
+                   TextWrapping="Wrap" MinHeight="16" />
+
+        <DockPanel Margin="12,12,12,4" LastChildFill="True">
+
+            <!-- Title banner: icon slot plus the panel name. -->
+            <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="12" Margin="0,0,0,12">
+                <Border Width="48" Height="48"
+                        BorderThickness="1"
+                        BorderBrush="{DynamicResource WlrixOuterLine}"
+                        Background="{DynamicResource WlrixSelect}">
+                    <!-- Placeholder for the panel icon (a real asset comes from wlrix-assets): a
+                         battery with a plug's bolt across it. -->
+                    <Viewbox Margin="8">
+                        <Canvas Width="36" Height="20">
+                            <Path Data="M 1,1 L 31,1 L 31,19 L 1,19 Z M 31,6 L 35,6 L 35,14 L 31,14"
+                                  Fill="{DynamicResource WlrixFace}"
+                                  Stroke="{DynamicResource WlrixForeground}" StrokeThickness="1.5" />
+                            <Path Data="M 18,3 L 10,11 L 16,11 L 13,17 L 22,8 L 16,8 Z"
+                                  Fill="{DynamicResource WlrixForeground}" />
+                        </Canvas>
+                    </Viewbox>
+                </Border>
+                <TextBlock Text="{loc:Tr PanelTitle}" FontWeight="Bold" FontSize="14"
+                           VerticalAlignment="Center" />
+            </StackPanel>
+
+            <!-- Close / Reset ... / Help. -->
+            <UniformGrid DockPanel.Dock="Bottom" Columns="3" ColumnSpacing="12" Margin="0,12,0,0">
+                <Button Content="{loc:Tr Close}" Click="OnClose" HorizontalAlignment="Stretch"
+                        controls:Hint.Text="{loc:Tr HintClose}" />
+                <Button Content="{loc:Tr Reset}" Click="OnReset" HorizontalAlignment="Stretch"
+                        IsEnabled="{Binding IsReady}"
+                        controls:Hint.Text="{loc:Tr HintReset}" />
+                <Button Content="{loc:Tr Help}" HorizontalAlignment="Stretch"
+                        controls:Hint.Text="{loc:Tr HintHelp}">
+                    <Button.Flyout>
+                        <Flyout>
+                            <TextBlock MaxWidth="300" TextWrapping="Wrap" Text="{loc:Tr HelpText}" />
+                        </Flyout>
+                    </Button.Flyout>
+                </Button>
+            </UniformGrid>
+
+            <!-- What became of the last change, when it is worth saying. -->
+            <TextBlock DockPanel.Dock="Bottom" Text="{Binding Status}" TextWrapping="Wrap" Margin="0,8,0,0"
+                       IsVisible="{Binding Status, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+
+            <StackPanel Spacing="10" IsEnabled="{Binding IsReady}">
+
+                <!-- The lid: one list per situation, labels right-aligned against them. -->
+                <wlrix:BevelBorder Bevel="Raised" BevelThickness="2" OuterLineThickness="1"
+                                   Background="{DynamicResource WlrixFace}"
+                                   LightBrush="{DynamicResource WlrixTopShadow}"
+                                   DarkBrush="{DynamicResource WlrixBottomShadow}"
+                                   OuterLineBrush="{DynamicResource WlrixOuterLine}"
+                                   Padding="8">
+                    <StackPanel Spacing="6">
+                        <TextBlock Text="{loc:Tr WhenLidClosed}" FontWeight="Bold" />
+                        <Grid Margin="6,0,0,0" ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto"
+                              ColumnSpacing="8" RowSpacing="6">
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="{loc:Tr OnBattery}"
+                                       HorizontalAlignment="Right" VerticalAlignment="Center" />
+                            <ComboBox Grid.Row="0" Grid.Column="1" HorizontalAlignment="Stretch"
+                                      ItemsSource="{Binding Choices}" SelectedItem="{Binding OnBattery}"
+                                      ItemTemplate="{StaticResource Choice}"
+                                      controls:Hint.Text="{loc:Tr HintOnBattery}" />
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="{loc:Tr PluggedIn}"
+                                       HorizontalAlignment="Right" VerticalAlignment="Center" />
+                            <ComboBox Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch"
+                                      ItemsSource="{Binding Choices}" SelectedItem="{Binding OnAc}"
+                                      ItemTemplate="{StaticResource Choice}"
+                                      controls:Hint.Text="{loc:Tr HintPluggedIn}" />
+                            <TextBlock Grid.Row="2" Grid.Column="0" Text="{loc:Tr WithMonitor}"
+                                       HorizontalAlignment="Right" VerticalAlignment="Center" />
+                            <ComboBox Grid.Row="2" Grid.Column="1" HorizontalAlignment="Stretch"
+                                      ItemsSource="{Binding Choices}" SelectedItem="{Binding Docked}"
+                                      ItemTemplate="{StaticResource Choice}"
+                                      controls:Hint.Text="{loc:Tr HintWithMonitor}" />
+                        </Grid>
+                        <!-- Said, not hidden: the file is the same on every machine the person
+                             logs in to. -->
+                        <TextBlock Text="{loc:Tr NoLid}" TextWrapping="Wrap" FontStyle="Italic"
+                                   IsVisible="{Binding !HasLid}" />
+                    </StackPanel>
+                </wlrix:BevelBorder>
+
+                <!-- Sleep: locking before every suspend, from the lid or the Shut Down dialog. -->
+                <wlrix:BevelBorder Bevel="Raised" BevelThickness="2" OuterLineThickness="1"
+                                   Background="{DynamicResource WlrixFace}"
+                                   LightBrush="{DynamicResource WlrixTopShadow}"
+                                   DarkBrush="{DynamicResource WlrixBottomShadow}"
+                                   OuterLineBrush="{DynamicResource WlrixOuterLine}"
+                                   Padding="8">
+                    <StackPanel Spacing="6">
+                        <TextBlock Text="{loc:Tr Sleep}" FontWeight="Bold" />
+                        <CheckBox Margin="6,0,0,0" Content="{loc:Tr LockBeforeSleep}"
+                                  IsChecked="{Binding LockBeforeSleep}"
+                                  controls:Hint.Text="{loc:Tr HintLockBeforeSleep}" />
+                    </StackPanel>
+                </wlrix:BevelBorder>
+
+            </StackPanel>
+
+        </DockPanel>
+
+    </DockPanel>
+
+</Window>

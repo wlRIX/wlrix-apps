@@ -126,6 +126,9 @@
   <data name="NetworkProperties" xml:space="preserve">
     <value>ネットワークのプロパティ</value>
   </data>
+  <data name="PowerProperties" xml:space="preserve">
+    <value>電源のプロパティ</value>
+  </data>
   <data name="LoginProperties" xml:space="preserve">
     <value>ログインのプロパティ</value>
   </data>
