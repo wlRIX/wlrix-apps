@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="WindowTitle" xml:space="preserve">
+    <value>Bluetooth Pairing</value>
+  </data>
+  <data name="PairHeading" xml:space="preserve">
+    <value>Pair with {0}</value>
+  </data>
+  <data name="AuthorizeHeading" xml:space="preserve">
+    <value>Allow {0} to connect?</value>
+  </data>
+  <data name="ConfirmDescription" xml:space="preserve">
+    <value>Check that {0} shows this number, then choose Pair.</value>
+  </data>
+  <data name="DisplayDescription" xml:space="preserve">
+    <value>Type this number on {0}, then press Enter on it.</value>
+  </data>
+  <data name="PinDescription" xml:space="preserve">
+    <value>Enter the PIN for {0}. It is often printed on the device or in its manual; many devices use 0000.</value>
+  </data>
+  <data name="PasskeyDescription" xml:space="preserve">
+    <value>Enter the passkey {0} shows.</value>
+  </data>
+  <data name="AuthorizeDescription" xml:space="preserve">
+    <value>{0} wants to connect to this computer.</value>
+  </data>
+  <data name="AuthorizeServiceDescription" xml:space="preserve">
+    <value>{0} wants to use {1} on this computer.</value>
+  </data>
+  <data name="CodeLabel" xml:space="preserve">
+    <value>Code:</value>
+  </data>
+  <data name="Pair" xml:space="preserve">
+    <value>Pair</value>
+  </data>
+  <data name="Allow" xml:space="preserve">
+    <value>Allow</value>
+  </data>
+  <data name="Deny" xml:space="preserve">
+    <value>Deny</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Service_audio" xml:space="preserve">
+    <value>audio</value>
+  </data>
+  <data name="Service_media_controls" xml:space="preserve">
+    <value>media controls</value>
+  </data>
+  <data name="Service_calls" xml:space="preserve">
+    <value>calls</value>
+  </data>
+  <data name="Service_input" xml:space="preserve">
+    <value>input</value>
+  </data>
+  <data name="Service_file_transfer" xml:space="preserve">
+    <value>file transfer</value>
+  </data>
+  <data name="Service_network" xml:space="preserve">
+    <value>the network</value>
+  </data>
+  <data name="Service_contacts_and_messages" xml:space="preserve">
+    <value>contacts and messages</value>
+  </data>
+</root>

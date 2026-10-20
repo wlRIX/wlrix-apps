@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="WindowTitle" xml:space="preserve">
+    <value>Bluetoothのペアリング</value>
+  </data>
+  <data name="PairHeading" xml:space="preserve">
+    <value>{0} とペアリング</value>
+  </data>
+  <data name="AuthorizeHeading" xml:space="preserve">
+    <value>{0} の接続を許可しますか？</value>
+  </data>
+  <data name="ConfirmDescription" xml:space="preserve">
+    <value>{0} にこの番号が表示されていることを確認してから、「ペアリング」を選んでください。</value>
+  </data>
+  <data name="DisplayDescription" xml:space="preserve">
+    <value>{0} でこの番号を入力し、{0} のEnterキーを押してください。</value>
+  </data>
+  <data name="PinDescription" xml:space="preserve">
+    <value>{0} のPINを入力してください。多くの場合、本体や説明書に記載されています。0000 を使う機器も多くあります。</value>
+  </data>
+  <data name="PasskeyDescription" xml:space="preserve">
+    <value>{0} に表示されているパスキーを入力してください。</value>
+  </data>
+  <data name="AuthorizeDescription" xml:space="preserve">
+    <value>{0} がこのコンピュータへの接続を求めています。</value>
+  </data>
+  <data name="AuthorizeServiceDescription" xml:space="preserve">
+    <value>{0} がこのコンピュータの{1}を使おうとしています。</value>
+  </data>
+  <data name="CodeLabel" xml:space="preserve">
+    <value>コード：</value>
+  </data>
+  <data name="Pair" xml:space="preserve">
+    <value>ペアリング</value>
+  </data>
+  <data name="Allow" xml:space="preserve">
+    <value>許可</value>
+  </data>
+  <data name="Deny" xml:space="preserve">
+    <value>拒否</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>キャンセル</value>
+  </data>
+  <data name="Service_audio" xml:space="preserve">
+    <value>オーディオ</value>
+  </data>
+  <data name="Service_media_controls" xml:space="preserve">
+    <value>メディアの操作</value>
+  </data>
+  <data name="Service_calls" xml:space="preserve">
+    <value>通話</value>
+  </data>
+  <data name="Service_input" xml:space="preserve">
+    <value>入力</value>
+  </data>
+  <data name="Service_file_transfer" xml:space="preserve">
+    <value>ファイル転送</value>
+  </data>
+  <data name="Service_network" xml:space="preserve">
+    <value>ネットワーク</value>
+  </data>
+  <data name="Service_contacts_and_messages" xml:space="preserve">
+    <value>連絡先とメッセージ</value>
+  </data>
+</root>

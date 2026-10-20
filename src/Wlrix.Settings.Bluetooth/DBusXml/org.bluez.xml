@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN"
+ "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
+
+<!--
+    BlueZ's interfaces, trimmed to the members Bluetooth Settings uses.
+
+    Signatures as BlueZ 5.87 documents them in doc/org.bluez.Adapter.rst and
+    doc/org.bluez.Device.rst, and as its introspection prints them. Everything the panel reads
+    comes from one GetManagedObjects; these proxies are for what it changes.
+-->
+
+<node>
+  <interface name="org.freedesktop.DBus.ObjectManager">
+    <method name="GetManagedObjects">
+      <arg type="a{oa{sa{sv}}}" name="objects" direction="out"/>
+    </method>
+  </interface>
+
+  <interface name="org.bluez.Adapter1">
+    <method name="StartDiscovery"/>
+    <method name="StopDiscovery"/>
+    <method name="RemoveDevice">
+      <arg type="o" name="device" direction="in"/>
+    </method>
+    <property type="b" name="Powered" access="readwrite"/>
+    <property type="b" name="Discoverable" access="readwrite"/>
+  </interface>
+
+  <interface name="org.bluez.Device1">
+    <method name="Connect"/>
+    <method name="Disconnect"/>
+    <method name="Pair"/>
+    <method name="CancelPairing"/>
+    <property type="b" name="Trusted" access="readwrite"/>
+  </interface>
+</node>

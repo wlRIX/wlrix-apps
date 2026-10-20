@@ -27,6 +27,7 @@ library. Apps recreate the IRIX Interactive Desktop surface.
 | `Wlrix.Settings.Mouse`    | app  | Mouse Settings, after IRIX's: acceleration, buttons, click speed, touchpad. |
 | `Wlrix.Settings.Power`    | app  | Power Settings, wlRIX's own: what closing the lid does, lock before sleep. |
 | `Wlrix.Settings.Network`  | app  | Network Settings: device status, the radio, saved Wi-Fi networks.   |
+| `Wlrix.Settings.Bluetooth` | app | Bluetooth Settings, wlRIX's own: the adapter, pairing and forgetting devices. |
 | `Wlrix.Settings.Windows`  | app  | Window settings panel: focus policy and the 4Dwm flags.             |
 | `Wlrix.Settings.Displays` | app  | Displays panel, after KDE's: arrangement, modes, scale, HDR.        |
 | `Wlrix.Settings.Audio`    | app  | Audio Panel, after IRIX's apanel. Replaces pavucontrol.             |
@@ -35,6 +36,7 @@ library. Apps recreate the IRIX Interactive Desktop surface.
 | `Wlrix.Settings.Login`    | app  | Login Settings: the greeter's keyboard, color scheme and displays.  |
 | `Wlrix.Pinentry`          | app  | The pinentry gpg-agent asks for passphrases with. IRIX-styled.      |
 | `Wlrix.NetworkPrompt`     | app  | The Wi-Fi password dialog `wlrix-network` puts up. One question.    |
+| `Wlrix.BluetoothPrompt`   | app  | The pairing dialog `wlrix-bluetooth` puts up: confirm, PIN, passkey, allow. |
 | `Wlrix.PolkitAgent`       | app  | The polkit authentication agent: the password dialog for pkexec & co. |
 | `Wlrix.Shutdown`          | app  | The Shut Down System dialog, behind the Toolchest's two items.      |
 | `Wlrix.SourcePicker`      | app  | The screen-share picker `xdg-desktop-portal-wlrix` puts up.         |
@@ -307,6 +309,21 @@ to one connected later.
 
 Under the nested compositor there is no libinput, and the host decides acceleration, button mapping and everything on
 the Touchpad tab.
+
+## Bluetooth
+
+`Wlrix.Settings.Bluetooth` (`wlrix-settings-bluetooth`, Toolchest → System → Bluetooth Properties, and the last row
+of the Bluetooth icon's menu) talks to bluetoothd directly, as Network Settings talks to NetworkManager. **This
+Computer** switches the radio (grayed out at a hardware switch), makes the computer visible to other devices, and has
+the tray-icon checkbox (`bluetooth.indicator`, through the settings daemon). **Devices** lists paired devices first,
+then the ones a search finds -- one runs for as long as the window is open and Bluetooth is on -- leaving out nameless
+beacons. **Pair** pairs, then trusts and connects the device; **Forget** asks first. The state is read again every
+second, one `GetManagedObjects` for everything.
+
+Pairing questions do not come to the panel: bluetoothd puts them to the default agent, which is `wlrix-bluetooth`,
+and it shows `Wlrix.BluetoothPrompt` (`wlrix-bluetooth-prompt`) -- one line of JSON in, one out, as the network
+prompt does. Its modes are *confirm* (does the device show this number?), *display* (type this on the keyboard being
+paired, closed by the daemon when it is done), *pin*, *passkey* and *authorize*.
 
 ## Power
 

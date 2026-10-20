@@ -126,6 +126,9 @@
   <data name="NetworkProperties" xml:space="preserve">
     <value>ネットワークのプロパティ</value>
   </data>
+  <data name="BluetoothProperties" xml:space="preserve">
+    <value>Bluetoothのプロパティ</value>
+  </data>
   <data name="PowerProperties" xml:space="preserve">
     <value>電源のプロパティ</value>
   </data>

@@ -1,0 +1,60 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Wlrix.BluetoothPrompt.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="440"
+        x:Class="Wlrix.BluetoothPrompt.Views.PairingWindow"
+        x:DataType="vm:PairingViewModel"
+        Width="440" SizeToContent="Height"
+        CanResize="False"
+        Topmost="True"
+        WindowStartupLocation="CenterScreen"
+        Title="{Binding Title}">
+
+    <!-- The IRIX dialog shape the network prompt, the pinentry and the polkit agent share: an icon
+         slot and a heading, the body indented past the icon, the buttons along the bottom. -->
+
+    <Design.DataContext>
+        <vm:PairingViewModel />
+    </Design.DataContext>
+
+    <StackPanel Margin="16" Spacing="12">
+
+        <StackPanel Orientation="Horizontal" Spacing="12">
+            <Border Width="48" Height="48"
+                    BorderThickness="1"
+                    BorderBrush="{DynamicResource WlrixOuterLine}"
+                    Background="{DynamicResource WlrixSelect}">
+                <!-- Placeholder for the panel icon (a real asset comes from wlrix-assets): the
+                     Bluetooth rune. -->
+                <Viewbox Margin="10">
+                    <Path Data="M 4,8 L 16,20 L 10,26 L 10,2 L 16,8 L 4,20"
+                          Stroke="{DynamicResource WlrixForeground}" StrokeThickness="2"
+                          StrokeJoin="Round" StrokeLineCap="Round" />
+                </Viewbox>
+            </Border>
+            <TextBlock Text="{Binding Heading}" FontWeight="Bold" FontSize="16"
+                       TextWrapping="Wrap" MaxWidth="340" VerticalAlignment="Center" />
+        </StackPanel>
+
+        <StackPanel Margin="60,0,0,0" Spacing="10">
+            <TextBlock Text="{Binding Description}" TextWrapping="Wrap" />
+
+            <!-- The number to compare or type, large enough to read from across a desk. -->
+            <TextBlock Text="{Binding Code}" FontSize="28" FontWeight="Bold"
+                       HorizontalAlignment="Center" Margin="0,4"
+                       IsVisible="{Binding ShowsCode}" />
+
+            <TextBox x:Name="EntryBox" Text="{Binding Entry}" IsVisible="{Binding AsksForEntry}" />
+        </StackPanel>
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10">
+            <Button Content="{Binding CancelLabel}" MinWidth="92" Click="OnCancel" IsCancel="True" />
+            <Button Content="{Binding AcceptLabel}" MinWidth="92" Click="OnAccept" IsDefault="True"
+                    IsVisible="{Binding HasAccept}" IsEnabled="{Binding CanAccept}" />
+        </StackPanel>
+
+    </StackPanel>
+
+</Window>

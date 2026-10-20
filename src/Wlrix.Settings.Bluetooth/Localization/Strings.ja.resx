@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="WindowTitle" xml:space="preserve">
+    <value>Bluetoothの設定</value>
+  </data>
+  <data name="PanelTitle" xml:space="preserve">
+    <value>Bluetoothの設定</value>
+  </data>
+  <data name="ComputerHeading" xml:space="preserve">
+    <value>このコンピュータ：</value>
+  </data>
+  <data name="BluetoothEnabled" xml:space="preserve">
+    <value>Bluetoothを有効にする</value>
+  </data>
+  <data name="HardwareOff" xml:space="preserve">
+    <value>ハードウェアスイッチでオフになっています。</value>
+  </data>
+  <data name="ShownAs" xml:space="preserve">
+    <value>他の機器には {0} と表示されます</value>
+  </data>
+  <data name="Visible" xml:space="preserve">
+    <value>他の機器から見えるようにする</value>
+  </data>
+  <data name="ShowInTray" xml:space="preserve">
+    <value>トレイにBluetoothアイコンを表示する</value>
+  </data>
+  <data name="DevicesHeading" xml:space="preserve">
+    <value>機器：</value>
+  </data>
+  <data name="Searching" xml:space="preserve">
+    <value>機器を検索しています...</value>
+  </data>
+  <data name="NoDevices" xml:space="preserve">
+    <value>機器がありません。ペアリングしたい機器を検出可能にしてください。多くの機器は電源ボタンかBluetoothボタンを長押しするとペアリングモードになります。</value>
+  </data>
+  <data name="TurnedOff" xml:space="preserve">
+    <value>Bluetoothはオフです。</value>
+  </data>
+  <data name="StateConnected" xml:space="preserve">
+    <value>接続済み</value>
+  </data>
+  <data name="StateConnectedBattery" xml:space="preserve">
+    <value>接続済み、{0}%</value>
+  </data>
+  <data name="StatePaired" xml:space="preserve">
+    <value>ペアリング済み</value>
+  </data>
+  <data name="StateNew" xml:space="preserve">
+    <value>未ペアリング</value>
+  </data>
+  <data name="Pair" xml:space="preserve">
+    <value>ペアリング</value>
+  </data>
+  <data name="Connect" xml:space="preserve">
+    <value>接続</value>
+  </data>
+  <data name="Disconnect" xml:space="preserve">
+    <value>切断</value>
+  </data>
+  <data name="Forget" xml:space="preserve">
+    <value>削除</value>
+  </data>
+  <data name="Pairing" xml:space="preserve">
+    <value>{0} とペアリングしています... 表示される確認に答えてください。</value>
+  </data>
+  <data name="Connecting" xml:space="preserve">
+    <value>{0} に接続しています...</value>
+  </data>
+  <data name="PairFailed" xml:space="preserve">
+    <value>{0} とのペアリングに失敗しました：{1}</value>
+  </data>
+  <data name="ConnectFailed" xml:space="preserve">
+    <value>{0} への接続に失敗しました：{1}</value>
+  </data>
+  <data name="ChangeFailed" xml:space="preserve">
+    <value>変更できませんでした：{0}</value>
+  </data>
+  <data name="ForgetQuestion" xml:space="preserve">
+    <value>{0} を削除しますか？使うには再度ペアリングが必要になります。</value>
+  </data>
+  <data name="ForgetConfirm" xml:space="preserve">
+    <value>削除</value>
+  </data>
+  <data name="NoBluez" xml:space="preserve">
+    <value>Bluetoothを利用できません：{0}</value>
+  </data>
+  <data name="NoAdapter" xml:space="preserve">
+    <value>このコンピュータにはBluetoothアダプタがありません。</value>
+  </data>
+  <data name="NoSettingsService" xml:space="preserve">
+    <value>設定サービスがありません：{0}</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>閉じる</value>
+  </data>
+  <data name="Help" xml:space="preserve">
+    <value>ヘルプ</value>
+  </data>
+  <data name="HelpText" xml:space="preserve">
+    <value>「Bluetoothを有効にする」は無線をオン・オフします。「他の機器から見えるようにする」を選ぶと、スマートフォンや他のコンピュータからこのコンピュータを見つけられます。機器の一覧には、ペアリング済みの機器のあとに、このウィンドウを開いている間に見つかった機器が表示されます。「ペアリング」を押すと別のウィンドウで確認が表示されます（多くの場合、両方に同じ番号が表示されているかどうか）。ペアリングした機器は信頼済みとなり、接続されます。「削除」はペアリングを解除します。ペアリング済みの機器はトレイのBluetoothアイコンからも接続できます。</value>
+  </data>
+  <data name="DisconnectFailed" xml:space="preserve">
+    <value>{0} を切断できませんでした：{1}</value>
+  </data>
+  <data name="ForgetFailed" xml:space="preserve">
+    <value>{0} を削除できませんでした：{1}</value>
+  </data>
+</root>

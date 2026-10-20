@@ -62,7 +62,8 @@ public class MenuTests
         // running on the box.
         Assert.Equal(
             [Strings.ManageSoftware, null,
-                Strings.DisplayProperties, Strings.NetworkProperties, Strings.PowerProperties,
+                Strings.DisplayProperties, Strings.NetworkProperties, Strings.BluetoothProperties,
+                Strings.PowerProperties,
                 Strings.LoginProperties, null,
                 Strings.RestartSystem, Strings.ShutDownSystem],
             ItemsUnder(Strings.System).Select(item => item.IsSeparator ? null : item.Header));

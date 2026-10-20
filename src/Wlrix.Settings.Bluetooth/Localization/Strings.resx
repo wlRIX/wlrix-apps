@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="WindowTitle" xml:space="preserve">
+    <value>Bluetooth Settings</value>
+  </data>
+  <data name="PanelTitle" xml:space="preserve">
+    <value>Bluetooth Settings</value>
+  </data>
+  <data name="ComputerHeading" xml:space="preserve">
+    <value>This Computer:</value>
+  </data>
+  <data name="BluetoothEnabled" xml:space="preserve">
+    <value>Bluetooth Enabled</value>
+  </data>
+  <data name="HardwareOff" xml:space="preserve">
+    <value>Turned off by the hardware switch.</value>
+  </data>
+  <data name="ShownAs" xml:space="preserve">
+    <value>Shown to other devices as {0}</value>
+  </data>
+  <data name="Visible" xml:space="preserve">
+    <value>Visible to other devices</value>
+  </data>
+  <data name="ShowInTray" xml:space="preserve">
+    <value>Show the Bluetooth icon in the tray</value>
+  </data>
+  <data name="DevicesHeading" xml:space="preserve">
+    <value>Devices:</value>
+  </data>
+  <data name="Searching" xml:space="preserve">
+    <value>Searching for devices...</value>
+  </data>
+  <data name="NoDevices" xml:space="preserve">
+    <value>No devices. Make the device you want to pair visible -- most enter pairing mode by holding their power or Bluetooth button.</value>
+  </data>
+  <data name="TurnedOff" xml:space="preserve">
+    <value>Bluetooth is off.</value>
+  </data>
+  <data name="StateConnected" xml:space="preserve">
+    <value>Connected</value>
+  </data>
+  <data name="StateConnectedBattery" xml:space="preserve">
+    <value>Connected, {0}%</value>
+  </data>
+  <data name="StatePaired" xml:space="preserve">
+    <value>Paired</value>
+  </data>
+  <data name="StateNew" xml:space="preserve">
+    <value>Not paired</value>
+  </data>
+  <data name="Pair" xml:space="preserve">
+    <value>Pair</value>
+  </data>
+  <data name="Connect" xml:space="preserve">
+    <value>Connect</value>
+  </data>
+  <data name="Disconnect" xml:space="preserve">
+    <value>Disconnect</value>
+  </data>
+  <data name="Forget" xml:space="preserve">
+    <value>Forget</value>
+  </data>
+  <data name="Pairing" xml:space="preserve">
+    <value>Pairing with {0}... Answer the question that appears.</value>
+  </data>
+  <data name="Connecting" xml:space="preserve">
+    <value>Connecting to {0}...</value>
+  </data>
+  <data name="PairFailed" xml:space="preserve">
+    <value>Pairing with {0} failed: {1}</value>
+  </data>
+  <data name="ConnectFailed" xml:space="preserve">
+    <value>Connecting to {0} failed: {1}</value>
+  </data>
+  <data name="ChangeFailed" xml:space="preserve">
+    <value>The change failed: {0}</value>
+  </data>
+  <data name="ForgetQuestion" xml:space="preserve">
+    <value>Forget {0}? It will have to be paired again to be used.</value>
+  </data>
+  <data name="ForgetConfirm" xml:space="preserve">
+    <value>Forget</value>
+  </data>
+  <data name="NoBluez" xml:space="preserve">
+    <value>Bluetooth is not available: {0}</value>
+  </data>
+  <data name="NoAdapter" xml:space="preserve">
+    <value>This computer has no Bluetooth adapter.</value>
+  </data>
+  <data name="NoSettingsService" xml:space="preserve">
+    <value>No settings service: {0}</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="Help" xml:space="preserve">
+    <value>Help</value>
+  </data>
+  <data name="HelpText" xml:space="preserve">
+    <value>Bluetooth Enabled switches the radio. Visible to other devices lets a phone or another computer find this one. The Devices list shows paired devices first, then the ones the search finds while this window is open. Pair asks a question in its own window -- usually whether both show the same number -- and a paired device is trusted and connected. Forget unpairs it. Paired devices can also be connected from the Bluetooth icon in the tray.</value>
+  </data>
+  <data name="DisconnectFailed" xml:space="preserve">
+    <value>Disconnecting {0} failed: {1}</value>
+  </data>
+  <data name="ForgetFailed" xml:space="preserve">
+    <value>Forgetting {0} failed: {1}</value>
+  </data>
+</root>

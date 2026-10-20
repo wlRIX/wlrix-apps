@@ -15,6 +15,7 @@
         <Project Path="src/Wlrix.Settings.Outputs/Wlrix.Settings.Outputs.csproj" />
         <Project Path="src/Wlrix.Settings.Displays/Wlrix.Settings.Displays.csproj" />
         <Project Path="src/Wlrix.Settings.Audio/Wlrix.Settings.Audio.csproj" />
+        <Project Path="src/Wlrix.Settings.Bluetooth/Wlrix.Settings.Bluetooth.csproj" />
         <Project Path="src/Wlrix.Settings.Sound/Wlrix.Settings.Sound.csproj" />
         <Project Path="src/Wlrix.Settings.Login.Core/Wlrix.Settings.Login.Core.csproj" />
         <Project Path="src/Wlrix.Settings.Login.Helper/Wlrix.Settings.Login.Helper.csproj" />
@@ -22,6 +23,7 @@
         <Project Path="src/Wlrix.Shutdown/Wlrix.Shutdown.csproj" />
         <Project Path="src/Wlrix.PolkitAgent/Wlrix.PolkitAgent.csproj" />
         <Project Path="src/Wlrix.NetworkPrompt/Wlrix.NetworkPrompt.csproj" />
+        <Project Path="src/Wlrix.BluetoothPrompt/Wlrix.BluetoothPrompt.csproj" />
         <Project Path="src/Wlrix.Pinentry/Wlrix.Pinentry.csproj" />
         <Project Path="src/Wlrix.SourcePicker/Wlrix.SourcePicker.csproj" />
         <Project Path="src/Wlrix.SoftwareManager/Wlrix.SoftwareManager.csproj" />
@@ -56,9 +58,11 @@
         <Project Path="tests/Wlrix.Settings.Power.Tests/Wlrix.Settings.Power.Tests.csproj" />
         <Project Path="tests/Wlrix.Settings.Network.Tests/Wlrix.Settings.Network.Tests.csproj" />
         <Project Path="tests/Wlrix.Settings.Audio.Tests/Wlrix.Settings.Audio.Tests.csproj" />
+        <Project Path="tests/Wlrix.Settings.Bluetooth.Tests/Wlrix.Settings.Bluetooth.Tests.csproj" />
         <Project Path="tests/Wlrix.Settings.Login.Tests/Wlrix.Settings.Login.Tests.csproj" />
         <Project Path="tests/Wlrix.PolkitAgent.Tests/Wlrix.PolkitAgent.Tests.csproj" />
         <Project Path="tests/Wlrix.NetworkPrompt.Tests/Wlrix.NetworkPrompt.Tests.csproj" />
+        <Project Path="tests/Wlrix.BluetoothPrompt.Tests/Wlrix.BluetoothPrompt.Tests.csproj" />
         <Project Path="tests/Wlrix.Pinentry.Tests/Wlrix.Pinentry.Tests.csproj" />
     </Folder>
 </Solution>

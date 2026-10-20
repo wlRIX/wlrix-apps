@@ -1,0 +1,106 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Wlrix.Settings.Bluetooth.ViewModels"
+        xmlns:loc="using:Wlrix.Common.Localization"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="520"
+        Width="520" SizeToContent="Height"
+        x:Class="Wlrix.Settings.Bluetooth.Views.MainWindow"
+        x:DataType="vm:BluetoothSettingsViewModel"
+        CanResize="False"
+        Title="{loc:Tr WindowTitle}">
+
+    <!-- The panel shape Network Settings has, its sibling in Toolchest → System: a title banner, a
+         bold heading per group, the buttons along the bottom. -->
+    <DockPanel Margin="12">
+
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="12" Margin="0,0,0,12">
+            <Border Width="48" Height="48"
+                    BorderThickness="1"
+                    BorderBrush="{DynamicResource WlrixOuterLine}"
+                    Background="{DynamicResource WlrixSelect}">
+                <!-- Placeholder for the panel icon (a real asset comes from wlrix-assets): the
+                     Bluetooth rune. -->
+                <Viewbox Margin="10">
+                    <Path Data="M 4,8 L 16,20 L 10,26 L 10,2 L 16,8 L 4,20"
+                          Stroke="{DynamicResource WlrixForeground}" StrokeThickness="2"
+                          StrokeJoin="Round" StrokeLineCap="Round" />
+                </Viewbox>
+            </Border>
+            <TextBlock Text="{loc:Tr PanelTitle}" FontWeight="Bold" FontSize="14" VerticalAlignment="Center" />
+        </StackPanel>
+
+        <UniformGrid DockPanel.Dock="Bottom" Columns="3" ColumnSpacing="12" Margin="0,12,0,0">
+            <Button Content="{loc:Tr Close}" Click="OnClose" HorizontalAlignment="Stretch" />
+            <Panel />
+            <Button Content="{loc:Tr Help}" HorizontalAlignment="Stretch">
+                <Button.Flyout>
+                    <Flyout>
+                        <TextBlock MaxWidth="320" TextWrapping="Wrap" Text="{loc:Tr HelpText}" />
+                    </Flyout>
+                </Button.Flyout>
+            </Button>
+        </UniformGrid>
+
+        <TextBlock DockPanel.Dock="Bottom" Text="{Binding Status}" TextWrapping="Wrap" Margin="0,8,0,0"
+                   IsVisible="{Binding Status, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+
+        <StackPanel Spacing="6" IsEnabled="{Binding IsReady}">
+
+            <!-- This Computer: the radio, how it is seen, and the tray icon. -->
+            <TextBlock Text="{loc:Tr ComputerHeading}" FontWeight="Bold" />
+            <StackPanel Margin="6,0,0,0" Spacing="4" IsEnabled="{Binding HasAdapter}">
+                <CheckBox Content="{loc:Tr BluetoothEnabled}" IsChecked="{Binding Powered}"
+                          IsEnabled="{Binding CanSwitch}" />
+                <TextBlock Text="{loc:Tr HardwareOff}" Margin="24,0,0,0" TextWrapping="Wrap"
+                           IsVisible="{Binding HardwareOff}" />
+                <CheckBox Content="{loc:Tr Visible}" IsChecked="{Binding Visible}" IsEnabled="{Binding IsOn}" />
+                <TextBlock Text="{Binding ShownAs}" Margin="24,0,0,0" TextTrimming="CharacterEllipsis" />
+                <CheckBox Content="{loc:Tr ShowInTray}" IsChecked="{Binding ShowInTray}"
+                          IsEnabled="{Binding CanSetTrayIcon}" />
+            </StackPanel>
+
+            <!-- Devices: paired ones first, then what the search finds. -->
+            <StackPanel Orientation="Horizontal" Spacing="12" Margin="0,6,0,0">
+                <TextBlock Text="{loc:Tr DevicesHeading}" FontWeight="Bold" />
+                <TextBlock Text="{loc:Tr Searching}" FontStyle="Italic" IsVisible="{Binding Searching}" />
+            </StackPanel>
+            <Grid Margin="6,0,0,0" ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                <Panel Grid.Column="0" Height="200">
+                    <ListBox ItemsSource="{Binding Devices}" SelectedItem="{Binding Selected}"
+                             IsVisible="{Binding IsOn}">
+                        <!-- Rows the list's width, so each state lines up at the right edge. -->
+                        <ListBox.Styles>
+                            <Style Selector="ListBoxItem">
+                                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                            </Style>
+                        </ListBox.Styles>
+                        <ListBox.ItemTemplate>
+                            <DataTemplate x:DataType="vm:DeviceRow">
+                                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                                    <TextBlock Grid.Column="0" Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
+                                    <TextBlock Grid.Column="1" Text="{Binding State}" />
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                    <TextBlock Text="{loc:Tr NoDevices}" TextWrapping="Wrap" Margin="8"
+                               IsVisible="{Binding ShowNoDevices}" />
+                    <TextBlock Text="{loc:Tr TurnedOff}" Margin="8" IsVisible="{Binding ShowTurnedOff}" />
+                </Panel>
+                <StackPanel Grid.Column="1" Spacing="6" MinWidth="100">
+                    <Button Content="{loc:Tr Pair}" Click="OnPair" HorizontalAlignment="Stretch"
+                            IsEnabled="{Binding CanPair}" />
+                    <Button Content="{loc:Tr Connect}" Click="OnConnect" HorizontalAlignment="Stretch"
+                            IsEnabled="{Binding CanConnect}" />
+                    <Button Content="{loc:Tr Disconnect}" Click="OnDisconnect" HorizontalAlignment="Stretch"
+                            IsEnabled="{Binding CanDisconnect}" />
+                    <Button Content="{loc:Tr Forget}" Click="OnForget" HorizontalAlignment="Stretch"
+                            IsEnabled="{Binding CanForget}" />
+                </StackPanel>
+            </Grid>
+
+        </StackPanel>
+    </DockPanel>
+</Window>
