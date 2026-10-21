@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
+using System.Collections.ObjectModel;
 using Avalonia.Threading;
 using ReactiveUI;
 using Wlrix.Settings.Client;
@@ -13,7 +14,9 @@ namespace Wlrix.Settings.Power.ViewModels;
 /// Everything it shows lives in <c>idle.toml</c> and goes through <c>wlrix-settings-daemon</c>:
 /// <c>[lid]</c> for what closing the lid does, and <c>[before_sleep] lock</c> for locking before
 /// the machine sleeps. <c>wlrix-idle</c> acts on both, holding logind's lid inhibitor so the
-/// person's choice wins over <c>logind.conf</c>. A change is committed as soon as it is made --
+/// person's choice wins over <c>logind.conf</c>. When Idle is <c>[plugged_in]</c> and
+/// <c>[on_battery]</c>, the two profiles <c>wlrix-idle</c> switches between with the power source.
+/// A change is committed as soon as it is made --
 /// there is nothing to drag -- and <see cref="Reset"/> puts back what was in force when the
 /// window opened.
 /// </summary>
@@ -38,6 +41,36 @@ public sealed class PowerSettingsViewModel : ViewModelBase, IDisposable
 
     // What was in force when the window opened, for Reset.
     private (LidChoice Battery, LidChoice Ac, LidChoice Docked, bool Lock) _open;
+    private (Dictionary<string, object> Plugged, Dictionary<string, object> Battery, bool Inherits) _openIdle;
+
+    /// <summary>
+    /// No <c>[on_battery]</c> in the file: the plugged-in profile applies on battery too, so the
+    /// battery column shows it, and the section is written only once the column is changed.
+    /// </summary>
+    private bool _batteryInherits = true;
+
+    public PowerSettingsViewModel()
+    {
+        Durations = new ObservableCollection<DurationChoice>(DurationChoice.Presets.Select(DurationChoice.Of));
+        PluggedIn = new IdleProfile("plugged_in", Durations, OnProfileChanged);
+        OnBatteryProfile = new IdleProfile("on_battery", Durations, OnProfileChanged);
+    }
+
+    /// <summary>The lengths the When Idle lists offer, with any odd one a file holds.</summary>
+    public ObservableCollection<DurationChoice> Durations { get; }
+
+    public IdleProfile PluggedIn { get; }
+
+    public IdleProfile OnBatteryProfile { get; }
+
+    /// <summary>Whether the On battery column is shown: only on a computer with a battery.</summary>
+    public bool HasBattery { get; } = Battery.Present();
+
+    public bool BatteryInherits
+    {
+        get => _batteryInherits;
+        private set => this.RaiseAndSetIfChanged(ref _batteryInherits, value);
+    }
 
     /// <summary>The actions the three lists offer.</summary>
     public IReadOnlyList<LidChoice> Choices => LidChoice.All;
@@ -100,11 +133,14 @@ public sealed class PowerSettingsViewModel : ViewModelBase, IDisposable
         {
             _client = await SettingsClient.ConnectAsync().ConfigureAwait(true);
             var values = await _client.GetAllAsync("idle").ConfigureAwait(true);
+            var sources = await _client.SourcesAsync("idle").ConfigureAwait(true);
 
             _loading = true;
+            BatteryInherits = Inherits(sources);
             Apply(values);
             _loading = false;
             _open = (_onBattery, _onAc, _docked, _lockBeforeSleep);
+            _openIdle = (PluggedIn.Values(), OnBatteryProfile.Values(), BatteryInherits);
 
             await _client.WatchAsync().ConfigureAwait(true);
             _client.Changed += OnChangedElsewhere;
@@ -129,9 +165,36 @@ public sealed class PowerSettingsViewModel : ViewModelBase, IDisposable
         OnAc = _open.Ac;
         Docked = _open.Docked;
         LockBeforeSleep = _open.Lock;
+        PluggedIn.ShowFrom(_openIdle.Plugged.ToDictionary(pair => pair.Key, pair => (object?)pair.Value));
+        OnBatteryProfile.ShowFrom(_openIdle.Battery.ToDictionary(pair => pair.Key, pair => (object?)pair.Value));
+        var removeBattery = _openIdle.Inherits && !BatteryInherits;
+        BatteryInherits = _openIdle.Inherits;
         _loading = false;
+        _ = CommitAsync(removeBattery);
+    }
+
+    /// <summary>A When Idle list or checkbox was changed.</summary>
+    private void OnProfileChanged(IdleProfile profile)
+    {
+        if (_loading || !IsReady)
+            return;
+        if (profile == OnBatteryProfile)
+        {
+            BatteryInherits = false;
+        }
+        else if (BatteryInherits)
+        {
+            // Still following: show what will apply on battery.
+            _loading = true;
+            OnBatteryProfile.ShowLike(PluggedIn);
+            _loading = false;
+        }
         Commit();
     }
+
+    /// <summary>Whether every battery key is at its default, which is "no <c>[on_battery]</c>".</summary>
+    private bool Inherits(IReadOnlyDictionary<string, string> sources) =>
+        OnBatteryProfile.Keys.All(key => !sources.TryGetValue(key, out var source) || source == "default");
 
     public void Dispose()
     {
@@ -159,7 +222,7 @@ public sealed class PowerSettingsViewModel : ViewModelBase, IDisposable
         _ = CommitAsync();
     }
 
-    private async Task CommitAsync()
+    private async Task CommitAsync(bool removeBattery = false)
     {
         if (_client is null)
             return;
@@ -170,9 +233,18 @@ public sealed class PowerSettingsViewModel : ViewModelBase, IDisposable
             [DockedKey] = _docked.Value,
             [LockKey] = _lockBeforeSleep,
         };
+        foreach (var (key, value) in PluggedIn.Values())
+            values[key] = value;
+        if (!BatteryInherits)
+        {
+            foreach (var (key, value) in OnBatteryProfile.Values())
+                values[key] = value;
+        }
         try
         {
             var result = await _client.SetManyAsync(values).ConfigureAwait(true);
+            if (removeBattery)
+                await _client.ResetAsync([.. OnBatteryProfile.Keys]).ConfigureAwait(true);
             Status = result.Advice ?? string.Empty;
         }
         catch (Exception e)
@@ -186,9 +258,14 @@ public sealed class PowerSettingsViewModel : ViewModelBase, IDisposable
         // The echo of our own write, which the daemon sends to everyone including us.
         if (e.Origin == _client?.UniqueName)
             return;
-        Dispatcher.UIThread.Post(() =>
+        Dispatcher.UIThread.Post(async () =>
         {
+            var sources = _client is null
+                ? null
+                : await _client.SourcesAsync("idle").ConfigureAwait(true);
             _loading = true;
+            if (sources is not null)
+                BatteryInherits = Inherits(sources);
             Apply(e.Values);
             _loading = false;
         });
@@ -208,5 +285,10 @@ public sealed class PowerSettingsViewModel : ViewModelBase, IDisposable
             Docked = LidChoice.Find(docked as string, "nothing");
         if (values.TryGetValue(LockKey, out var locks) && locks is bool lockBeforeSleep)
             LockBeforeSleep = lockBeforeSleep;
+        PluggedIn.ShowFrom(values);
+        if (BatteryInherits)
+            OnBatteryProfile.ShowLike(PluggedIn);
+        else
+            OnBatteryProfile.ShowFrom(values);
     }
 }

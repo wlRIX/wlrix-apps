@@ -50,6 +50,7 @@ public class LocalizationTests
         string[] keys =
         [
             "Suspend", "Hibernate", "LockScreen", "TurnScreenOff", "DoNothing",
+            "Never", "OneMinute", "Minutes", "OneHour", "Hours", "Seconds",
             "NoSettingsService", "FileInvalid",
         ];
         var catalog = Catalog(file);

@@ -20,6 +20,18 @@ public static class Strings
     public static string TurnScreenOff => Catalog.Get("TurnScreenOff");
     public static string DoNothing => Catalog.Get("DoNothing");
 
+    /// <summary>An idle time as the When Idle lists show it: Never, minutes, or hours.</summary>
+    public static string Duration(long seconds) => seconds switch
+    {
+        0 => Catalog.Get("Never"),
+        3600 => Catalog.Get("OneHour"),
+        < 60 => Catalog.Format("Seconds", seconds),
+        60 => Catalog.Get("OneMinute"),
+        _ when seconds % 3600 == 0 => Catalog.Format("Hours", seconds / 3600),
+        _ when seconds % 60 == 0 => Catalog.Format("Minutes", seconds / 60),
+        _ => Catalog.Format("Seconds", seconds),
+    };
+
     /// <summary>There is no settings service to write through; <paramref name="detail"/> is why.</summary>
     public static string NoSettingsService(string detail) =>
         Catalog.Format("NoSettingsService", detail);

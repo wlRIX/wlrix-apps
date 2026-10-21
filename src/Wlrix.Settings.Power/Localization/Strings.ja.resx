@@ -64,7 +64,7 @@
     <value>ヘルプ</value>
   </data>
   <data name="HelpText" xml:space="preserve">
-    <value>「ふたを閉じたとき」は、バッテリー駆動時、電源接続時、別のモニタやドックの接続時に、ふたを閉じると何をするかを設定します。「画面をロック」はロックして画面をオフにしますが、スリープはしません。ハイバネートできない場合はロックします。別のモニタが接続されているときは、どれを選んでもノートパソコンの画面はオフになり、そのウィンドウは他のモニタに移ります。「スリープする前に画面をロックする」は、サスペンドの前に毎回セッションをロックし、ロックされていない状態で復帰しないようにします。変更はすぐに適用され、「リセット」はこのウィンドウを開いたときの設定に戻します。</value>
+    <value>「ふたを閉じたとき」は、バッテリー駆動時、電源接続時、別のモニタやドックの接続時に、ふたを閉じると何をするかを設定します。「画面をロック」はロックして画面をオフにしますが、スリープはしません。ハイバネートできない場合はロックします。別のモニタが接続されているときは、どれを選んでもノートパソコンの画面はオフになり、そのウィンドウは他のモニタに移ります。「スリープする前に画面をロックする」は、サスペンドの前に毎回セッションをロックし、ロックされていない状態で復帰しないようにします。変更はすぐに適用され、「リセット」はこのウィンドウを開いたときの設定に戻します。「操作がないとき」は、入力がない状態でどれだけ待ってから画面を暗くし、画面をオフにし、スリープするかを設定します。電源接続時とバッテリー駆動時の列があり、電源の切り替わりに合わせて使われます。動画の再生中はどれも行いません。</value>
   </data>
   <data name="HintOnBattery" xml:space="preserve">
     <value>バッテリー駆動中にふたを閉じたときの動作</value>
@@ -92,5 +92,59 @@
   </data>
   <data name="FileInvalid" xml:space="preserve">
     <value>{0} が正しくないため、最後に有効だった値を表示しています。</value>
+  </data>
+  <data name="WhenIdle" xml:space="preserve">
+    <value>操作がないとき：</value>
+  </data>
+  <data name="PluggedInColumn" xml:space="preserve">
+    <value>電源接続時</value>
+  </data>
+  <data name="OnBatteryColumn" xml:space="preserve">
+    <value>バッテリー駆動時</value>
+  </data>
+  <data name="DimAfter" xml:space="preserve">
+    <value>画面を暗くする：</value>
+  </data>
+  <data name="ScreenOffAfter" xml:space="preserve">
+    <value>画面をオフにする：</value>
+  </data>
+  <data name="LockWithIt" xml:space="preserve">
+    <value>同時にロックする</value>
+  </data>
+  <data name="SleepAfter" xml:space="preserve">
+    <value>スリープ：</value>
+  </data>
+  <data name="BatteryInherits" xml:space="preserve">
+    <value>バッテリー駆動時の設定は、変更するまで電源接続時と同じです。</value>
+  </data>
+  <data name="Never" xml:space="preserve">
+    <value>しない</value>
+  </data>
+  <data name="OneMinute" xml:space="preserve">
+    <value>1分</value>
+  </data>
+  <data name="Minutes" xml:space="preserve">
+    <value>{0}分</value>
+  </data>
+  <data name="OneHour" xml:space="preserve">
+    <value>1時間</value>
+  </data>
+  <data name="Hours" xml:space="preserve">
+    <value>{0}時間</value>
+  </data>
+  <data name="Seconds" xml:space="preserve">
+    <value>{0}秒</value>
+  </data>
+  <data name="HintDim" xml:space="preserve">
+    <value>入力がない状態がどれだけ続いたら画面を暗くするか。ノートパソコンではバックライトも暗くなります。何か入力すると元に戻ります。</value>
+  </data>
+  <data name="HintScreenOff" xml:space="preserve">
+    <value>入力がない状態がどれだけ続いたらモニタをオフにするか</value>
+  </data>
+  <data name="HintLockWithIt" xml:space="preserve">
+    <value>操作がなくモニタがオフになるときにセッションをロックします</value>
+  </data>
+  <data name="HintSleep" xml:space="preserve">
+    <value>入力がない状態がどれだけ続いたらコンピュータをスリープするか。動画の再生中はどれも行いません。</value>
   </data>
 </root>

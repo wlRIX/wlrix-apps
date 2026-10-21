@@ -64,7 +64,7 @@
     <value>Help</value>
   </data>
   <data name="HelpText" xml:space="preserve">
-    <value>When the Lid Is Closed sets what closing the lid does: on battery, plugged in, and with another monitor or a dock connected. Lock the screen locks and turns the screen off but stays awake; if the computer cannot hibernate, it is locked instead. With another monitor, the laptop's own screen turns off and its windows move to the other monitors, whatever is chosen. Lock the screen before sleeping locks the session before every suspend, so it never wakes unlocked. Changes apply at once; Reset restores the settings from when this window opened.</value>
+    <value>When the Lid Is Closed sets what closing the lid does: on battery, plugged in, and with another monitor or a dock connected. Lock the screen locks and turns the screen off but stays awake; if the computer cannot hibernate, it is locked instead. With another monitor, the laptop's own screen turns off and its windows move to the other monitors, whatever is chosen. Lock the screen before sleeping locks the session before every suspend, so it never wakes unlocked. Changes apply at once; Reset restores the settings from when this window opened. When Idle sets how long the computer waits without input before dimming, turning the screen off and sleeping -- one column plugged in, one on battery, used as the computer switches between them. A video playing holds all of them off.</value>
   </data>
   <data name="HintOnBattery" xml:space="preserve">
     <value>What closing the lid does while running on battery</value>
@@ -92,5 +92,59 @@
   </data>
   <data name="FileInvalid" xml:space="preserve">
     <value>{0} is not valid; showing the last good values.</value>
+  </data>
+  <data name="WhenIdle" xml:space="preserve">
+    <value>When Idle:</value>
+  </data>
+  <data name="PluggedInColumn" xml:space="preserve">
+    <value>Plugged in</value>
+  </data>
+  <data name="OnBatteryColumn" xml:space="preserve">
+    <value>On battery</value>
+  </data>
+  <data name="DimAfter" xml:space="preserve">
+    <value>Dim the screen:</value>
+  </data>
+  <data name="ScreenOffAfter" xml:space="preserve">
+    <value>Turn the screen off:</value>
+  </data>
+  <data name="LockWithIt" xml:space="preserve">
+    <value>Lock with it</value>
+  </data>
+  <data name="SleepAfter" xml:space="preserve">
+    <value>Sleep:</value>
+  </data>
+  <data name="BatteryInherits" xml:space="preserve">
+    <value>On battery follows plugged in until it is changed.</value>
+  </data>
+  <data name="Never" xml:space="preserve">
+    <value>Never</value>
+  </data>
+  <data name="OneMinute" xml:space="preserve">
+    <value>1 minute</value>
+  </data>
+  <data name="Minutes" xml:space="preserve">
+    <value>{0} minutes</value>
+  </data>
+  <data name="OneHour" xml:space="preserve">
+    <value>1 hour</value>
+  </data>
+  <data name="Hours" xml:space="preserve">
+    <value>{0} hours</value>
+  </data>
+  <data name="Seconds" xml:space="preserve">
+    <value>{0} seconds</value>
+  </data>
+  <data name="HintDim" xml:space="preserve">
+    <value>How long without input before the screen fades dark; on a laptop the backlight dims too. Any input brings it back.</value>
+  </data>
+  <data name="HintScreenOff" xml:space="preserve">
+    <value>How long without input before the monitors switch off</value>
+  </data>
+  <data name="HintLockWithIt" xml:space="preserve">
+    <value>Lock the session when the monitors switch off for being idle</value>
+  </data>
+  <data name="HintSleep" xml:space="preserve">
+    <value>How long without input before the computer sleeps. A video playing holds all of these off.</value>
   </data>
 </root>

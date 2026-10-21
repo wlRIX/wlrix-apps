@@ -25,7 +25,7 @@ library. Apps recreate the IRIX Interactive Desktop surface.
 | `Wlrix.Console`           | app  | Tails the wlRIX component logs, one tab each.                       |
 | `Wlrix.Settings.Keyboard` | app  | Keyboard settings panel.                                            |
 | `Wlrix.Settings.Mouse`    | app  | Mouse Settings, after IRIX's: acceleration, buttons, click speed, touchpad. |
-| `Wlrix.Settings.Power`    | app  | Power Settings, wlRIX's own: what closing the lid does, lock before sleep. |
+| `Wlrix.Settings.Power`    | app  | Power Settings, wlRIX's own: the lid, idle profiles, lock before sleep. |
 | `Wlrix.Settings.Network`  | app  | Network Settings: device status, the radio, saved Wi-Fi networks.   |
 | `Wlrix.Settings.Bluetooth` | app | Bluetooth Settings, wlRIX's own: the adapter, pairing and forgetting devices. |
 | `Wlrix.Settings.Windows`  | app  | Window settings panel: focus policy and the 4Dwm flags.             |
@@ -336,6 +336,12 @@ by `wlrix-idle`, which holds logind's lid inhibitor so the person's choice wins 
   logind's own test, a dock or more than one display; the compositor switches the laptop's panel off then whatever is
   chosen. A machine that cannot hibernate is locked instead. On a computer with no lid (no `/proc/acpi/button/lid/*`)
   the panel says so, and the settings still apply on one that has.
+- **When Idle** is `idle.plugged_in.*` and `idle.on_battery.*`, the two profiles `wlrix-idle` switches between as the
+  power source changes: when to dim, when to turn the screen off and whether to lock then, and when to sleep, each from
+  one minute to an hour or Never, plus any odd value a hand-edited file holds. The On battery column is shown only on
+  a computer with a battery (`/sys/class/power_supply`, a `Battery` not scoped to a device). Until it is changed it
+  follows the plugged-in column -- that is what applies with no `[on_battery]` in the file -- and the section is written
+  only once it is.
 - **Lock the screen before sleeping** is `idle.before_sleep.lock`, on by default: every suspend, from the lid or
   anywhere else, locks first.
 
