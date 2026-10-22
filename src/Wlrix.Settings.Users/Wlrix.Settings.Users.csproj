@@ -1,0 +1,49 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+        <ApplicationManifest>app.manifest</ApplicationManifest>
+        <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+        <AssemblyName>wlrix-settings-users</AssemblyName>
+        <Version>0.1.0</Version>
+        <!-- `[LibraryImport]` for libxcrypt's `crypt` and libc's `getuid`. -->
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <InternalsVisibleTo Include="Wlrix.Settings.Users.Tests" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <!-- Proxies for AccountsService and fprintd, trimmed to what this panel calls; the XML
+             headers say where they came from. -->
+        <AdditionalFiles Include="DBusXml/org.freedesktop.Accounts.xml"
+                         Namespace="Wlrix.Settings.Users.DBus"
+                         DBusGeneratorMode="Proxy" />
+        <AdditionalFiles Include="DBusXml/net.reactivated.Fprint.xml"
+                         Namespace="Wlrix.Settings.Users.DBus.Fprint"
+                         DBusGeneratorMode="Proxy" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Avalonia" />
+        <PackageReference Include="Avalonia.Desktop" />
+        <PackageReference Include="Avalonia.Wayland" />
+        <PackageReference Include="AvaloniaUI.DiagnosticsSupport">
+            <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
+            <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
+        </PackageReference>
+        <PackageReference Include="ReactiveUI.Avalonia" />
+        <PackageReference Include="Tmds.DBus.Protocol" />
+        <PackageReference Include="Tmds.DBus.Generator" PrivateAssets="all" />
+        <PackageReference Include="Wlrix.Avalonia" />
+        <PackageReference Include="Wlrix.Avalonia.Dialogs" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="../Wlrix.Common/Wlrix.Common.csproj" />
+        <!-- Follows the session's color scheme. One call in App.axaml.cs. -->
+        <ProjectReference Include="../Wlrix.Theme/Wlrix.Theme.csproj" />
+    </ItemGroup>
+
+</Project>

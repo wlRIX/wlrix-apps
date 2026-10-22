@@ -33,7 +33,7 @@ public sealed class MainWindowViewModel : ViewModelBase
 
     // The rest of the desktop's settings panels, by installed name. Desktop → Customize holds the
     // ones about the person's own desktop; System holds the ones about the machine, which ask for
-    // an administrator's password (Login) or affect every monitor (Display).
+    // an administrator's password (Login, User Accounts) or affect every monitor (Display).
     private const string WindowsProgram = "wlrix-settings-windows";
     private const string SchemesProgram = "wlrix-settings-schemes";
     private const string KeyboardProgram = "wlrix-settings-keyboard";
@@ -42,6 +42,7 @@ public sealed class MainWindowViewModel : ViewModelBase
     private const string NetworkProgram = "wlrix-settings-network";
     private const string PowerProgram = "wlrix-settings-power";
     private const string BluetoothProgram = "wlrix-settings-bluetooth";
+    private const string UsersProgram = "wlrix-settings-users";
     private const string LoginProgram = "wlrix-settings-login";
 
     /// <summary>
@@ -159,6 +160,7 @@ public sealed class MainWindowViewModel : ViewModelBase
             Launch(Strings.NetworkProperties, NetworkProgram),
             Launch(Strings.BluetoothProperties, BluetoothProgram),
             Launch(Strings.PowerProperties, PowerProgram),
+            Launch(Strings.UserAccounts, UsersProgram),
             Launch(Strings.LoginProperties, LoginProgram),
             MenuNode.Separator(),
             // Neither acts: both open the Shut Down System dialog, which is where the machine

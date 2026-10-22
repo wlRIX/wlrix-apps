@@ -132,6 +132,9 @@
   <data name="PowerProperties" xml:space="preserve">
     <value>電源のプロパティ</value>
   </data>
+  <data name="UserAccounts" xml:space="preserve">
+    <value>ユーザーアカウント</value>
+  </data>
   <data name="LoginProperties" xml:space="preserve">
     <value>ログインのプロパティ</value>
   </data>

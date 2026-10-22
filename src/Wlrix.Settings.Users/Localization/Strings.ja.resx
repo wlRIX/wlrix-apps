@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="WindowTitle" xml:space="preserve">
+    <value>ユーザーアカウント</value>
+  </data>
+  <data name="PanelTitle" xml:space="preserve">
+    <value>ユーザーアカウント</value>
+  </data>
+  <data name="AddNew" xml:space="preserve">
+    <value>新規追加...</value>
+  </data>
+  <data name="YourAccount" xml:space="preserve">
+    <value>あなたのアカウント</value>
+  </data>
+  <data name="OtherAccounts" xml:space="preserve">
+    <value>その他のアカウント</value>
+  </data>
+  <data name="NameLabel" xml:space="preserve">
+    <value>名前：</value>
+  </data>
+  <data name="UserNameLabel" xml:space="preserve">
+    <value>ユーザー名：</value>
+  </data>
+  <data name="AccountTypeLabel" xml:space="preserve">
+    <value>アカウントの種類：</value>
+  </data>
+  <data name="EmailLabel" xml:space="preserve">
+    <value>メールアドレス：</value>
+  </data>
+  <data name="Standard" xml:space="preserve">
+    <value>標準</value>
+  </data>
+  <data name="Administrator" xml:space="preserve">
+    <value>管理者</value>
+  </data>
+  <data name="ChangePassword" xml:space="preserve">
+    <value>パスワードを変更...</value>
+  </data>
+  <data name="FingerprintsButton" xml:space="preserve">
+    <value>指紋...</value>
+  </data>
+  <data name="DeleteUser" xml:space="preserve">
+    <value>ユーザーを削除...</value>
+  </data>
+  <data name="ChangePicture" xml:space="preserve">
+    <value>クリックして画像を変更</value>
+  </data>
+  <data name="OwnUserNameNote" xml:space="preserve">
+    <value>ログイン中は自分のユーザー名を変更できません。</value>
+  </data>
+  <data name="LastAdmin" xml:space="preserve">
+    <value>唯一の管理者で、rootにログインできないため、管理者のままにする必要があります。</value>
+  </data>
+  <data name="Reset" xml:space="preserve">
+    <value>リセット</value>
+  </data>
+  <data name="Apply" xml:space="preserve">
+    <value>適用</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>閉じる</value>
+  </data>
+  <data name="ApplyQuestion" xml:space="preserve">
+    <value>{0} への変更を適用しますか？</value>
+  </data>
+  <data name="ApplyConfirm" xml:space="preserve">
+    <value>適用</value>
+  </data>
+  <data name="Discard" xml:space="preserve">
+    <value>破棄</value>
+  </data>
+  <data name="NoAccountsService" xml:space="preserve">
+    <value>AccountsServiceを利用できません：{0}</value>
+  </data>
+  <data name="ChangeFailed" xml:space="preserve">
+    <value>変更できませんでした：{0}</value>
+  </data>
+  <data name="NotAuthorized" xml:space="preserve">
+    <value>権限がありません。管理者のパスワードが必要です。</value>
+  </data>
+  <data name="NameEmpty" xml:space="preserve">
+    <value>ユーザー名が必要です。</value>
+  </data>
+  <data name="NameTooLong" xml:space="preserve">
+    <value>ユーザー名は{0}文字以内です。</value>
+  </data>
+  <data name="NameBadStart" xml:space="preserve">
+    <value>ユーザー名は小文字か下線で始まります。</value>
+  </data>
+  <data name="NameBadCharacter" xml:space="preserve">
+    <value>ユーザー名に使えるのは小文字、数字、- と _ だけです。</value>
+  </data>
+  <data name="NameTaken" xml:space="preserve">
+    <value>そのユーザー名はすでに使われています。</value>
+  </data>
+  <data name="PictureTitle" xml:space="preserve">
+    <value>画像を選択</value>
+  </data>
+  <data name="ChooseFile" xml:space="preserve">
+    <value>ファイルを選択...</value>
+  </data>
+  <data name="RemovePicture" xml:space="preserve">
+    <value>削除</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>キャンセル</value>
+  </data>
+  <data name="FilterImages" xml:space="preserve">
+    <value>画像</value>
+  </data>
+  <data name="PasswordTitle" xml:space="preserve">
+    <value>パスワードを変更</value>
+  </data>
+  <data name="PasswordHeading" xml:space="preserve">
+    <value>{0} のパスワードを変更</value>
+  </data>
+  <data name="NewPassword" xml:space="preserve">
+    <value>新しいパスワード：</value>
+  </data>
+  <data name="ConfirmPassword" xml:space="preserve">
+    <value>確認：</value>
+  </data>
+  <data name="PasswordsDiffer" xml:space="preserve">
+    <value>パスワードが一致しません。</value>
+  </data>
+  <data name="PasswordEmpty" xml:space="preserve">
+    <value>パスワードが必要です。</value>
+  </data>
+  <data name="ShowPassword" xml:space="preserve">
+    <value>パスワードを表示</value>
+  </data>
+  <data name="SetPassword" xml:space="preserve">
+    <value>パスワードを変更</value>
+  </data>
+  <data name="AddTitle" xml:space="preserve">
+    <value>ユーザーを追加</value>
+  </data>
+  <data name="FullNameLabel" xml:space="preserve">
+    <value>氏名：</value>
+  </data>
+  <data name="Create" xml:space="preserve">
+    <value>作成</value>
+  </data>
+  <data name="DeleteTitle" xml:space="preserve">
+    <value>ユーザーを削除</value>
+  </data>
+  <data name="DeleteQuestion" xml:space="preserve">
+    <value>アカウント {0} を削除しますか？</value>
+  </data>
+  <data name="DeleteFiles" xml:space="preserve">
+    <value>ホームフォルダー {0} も削除する</value>
+  </data>
+  <data name="DeleteFilesNote" xml:space="preserve">
+    <value>残した場合、フォルダーは管理者が後で確認・削除できるように残ります。</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>削除</value>
+  </data>
+  <data name="FingerprintTitle" xml:space="preserve">
+    <value>指紋</value>
+  </data>
+  <data name="FingerprintHeading" xml:space="preserve">
+    <value>{0} の指紋</value>
+  </data>
+  <data name="Reader" xml:space="preserve">
+    <value>リーダー：{0}</value>
+  </data>
+  <data name="NoFingers" xml:space="preserve">
+    <value>登録されている指紋はありません。</value>
+  </data>
+  <data name="AddFinger" xml:space="preserve">
+    <value>追加...</value>
+  </data>
+  <data name="DeleteFinger" xml:space="preserve">
+    <value>削除</value>
+  </data>
+  <data name="DeleteAllFingers" xml:space="preserve">
+    <value>すべて削除</value>
+  </data>
+  <data name="FingerLabel" xml:space="preserve">
+    <value>指：</value>
+  </data>
+  <data name="StartEnroll" xml:space="preserve">
+    <value>開始</value>
+  </data>
+  <data name="StopEnroll" xml:space="preserve">
+    <value>中止</value>
+  </data>
+  <data name="Done" xml:space="preserve">
+    <value>完了</value>
+  </data>
+  <data name="TouchReader" xml:space="preserve">
+    <value>{0}でリーダーに触れてください。</value>
+  </data>
+  <data name="EnrollProgress" xml:space="preserve">
+    <value>{0} / {1}</value>
+  </data>
+  <data name="Enrolled" xml:space="preserve">
+    <value>登録しました。</value>
+  </data>
+  <data name="ReaderBusy" xml:space="preserve">
+    <value>リーダーを開けませんでした：{0}</value>
+  </data>
+  <data name="Finger_right_index_finger" xml:space="preserve">
+    <value>右手の人差し指</value>
+  </data>
+  <data name="Finger_left_index_finger" xml:space="preserve">
+    <value>左手の人差し指</value>
+  </data>
+  <data name="Finger_right_thumb" xml:space="preserve">
+    <value>右手の親指</value>
+  </data>
+  <data name="Finger_left_thumb" xml:space="preserve">
+    <value>左手の親指</value>
+  </data>
+  <data name="Finger_right_middle_finger" xml:space="preserve">
+    <value>右手の中指</value>
+  </data>
+  <data name="Finger_left_middle_finger" xml:space="preserve">
+    <value>左手の中指</value>
+  </data>
+  <data name="Finger_right_ring_finger" xml:space="preserve">
+    <value>右手の薬指</value>
+  </data>
+  <data name="Finger_left_ring_finger" xml:space="preserve">
+    <value>左手の薬指</value>
+  </data>
+  <data name="Finger_right_little_finger" xml:space="preserve">
+    <value>右手の小指</value>
+  </data>
+  <data name="Finger_left_little_finger" xml:space="preserve">
+    <value>左手の小指</value>
+  </data>
+  <data name="Enroll_enroll_stage_passed" xml:space="preserve">
+    <value>読み取りました。指を離して、もう一度触れてください。</value>
+  </data>
+  <data name="Enroll_enroll_retry_scan" xml:space="preserve">
+    <value>読み取れませんでした。もう一度触れてください。</value>
+  </data>
+  <data name="Enroll_enroll_swipe_too_short" xml:space="preserve">
+    <value>短すぎます。もう一度。</value>
+  </data>
+  <data name="Enroll_enroll_finger_not_centered" xml:space="preserve">
+    <value>指をリーダーの中央に置いてください。</value>
+  </data>
+  <data name="Enroll_enroll_remove_and_retry" xml:space="preserve">
+    <value>指を離して、もう一度。</value>
+  </data>
+  <data name="Enroll_enroll_completed" xml:space="preserve">
+    <value>登録しました。</value>
+  </data>
+  <data name="Enroll_enroll_failed" xml:space="preserve">
+    <value>登録に失敗しました。もう一度試してください。</value>
+  </data>
+  <data name="Enroll_enroll_data_full" xml:space="preserve">
+    <value>リーダーにこれ以上の指紋を保存できません。</value>
+  </data>
+  <data name="Enroll_enroll_duplicate" xml:space="preserve">
+    <value>その指紋はすでに登録されています。</value>
+  </data>
+  <data name="Enroll_enroll_disconnected" xml:space="preserve">
+    <value>リーダーが切断されました。</value>
+  </data>
+  <data name="Enroll_enroll_unknown_error" xml:space="preserve">
+    <value>リーダーでエラーが発生しました。</value>
+  </data>
+  <data name="HelpText" xml:space="preserve">
+    <value>一覧には、自分のアカウントの後に他のアカウントが表示されます。名前、ユーザー名、アカウントの種類、メールアドレスの変更は「適用」でまとめて反映されます。画像をクリックすると別の画像を選べます。自分のユーザー名、種類、削除は他の管理者が行います。rootにログインできない場合、最後の管理者は管理者のままになります。他のアカウントの変更には管理者のパスワードが必要です。</value>
+  </data>
+  <data name="Help" xml:space="preserve">
+    <value>ヘルプ</value>
+  </data>
+</root>

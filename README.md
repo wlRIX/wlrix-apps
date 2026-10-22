@@ -34,6 +34,7 @@ library. Apps recreate the IRIX Interactive Desktop surface.
 | `Wlrix.Settings.Sound`    | app  | System & Desktop Sounds panel, for `wlrix-sound`.                   |
 | `Wlrix.Settings.Schemes`  | app  | Color scheme browser, after IRIX's. One Apply, whole desktop.       |
 | `Wlrix.Settings.Login`    | app  | Login Settings: the greeter's keyboard, color scheme and displays.  |
+| `Wlrix.Settings.Users`    | app  | User Accounts, after KDE's Users page: pictures, passwords, fingerprints. |
 | `Wlrix.Pinentry`          | app  | The pinentry gpg-agent asks for passphrases with. IRIX-styled.      |
 | `Wlrix.NetworkPrompt`     | app  | The Wi-Fi password dialog `wlrix-network` puts up. One question.    |
 | `Wlrix.BluetoothPrompt`   | app  | The pairing dialog `wlrix-bluetooth` puts up: confirm, PIN, passkey, allow. |
@@ -217,6 +218,29 @@ as the compositor reports them through `Wlrix.Settings.Outputs` — and, like ev
 dotnet run --project src/Wlrix.Settings.Login -- --demo   # made-up displays
 dotnet run --project src/Wlrix.Settings.Login.Helper -- --check write --layout jp --palette gotham
 ```
+
+## User Accounts
+
+`Wlrix.Settings.Users` (`wlrix-settings-users`, Toolchest → System → User Accounts) is modeled on KDE's Users page in
+IRIX dress. It keeps nothing of its own: every account is AccountsService's (`org.freedesktop.Accounts`), and polkit,
+through `wlrix-polkit-agent`, asks for whatever password a change needs.
+
+- **The list** has *Your Account* first, then *Other Accounts*, each with a square picture -- or the initials on a
+  colored square when there is none -- the full name and the login name. **Add New...** asks for a full name, a login
+  name suggested from it until typed over, the account type and a password.
+- **Name, Username, Account type, Email** collect until **Apply** writes them together; **Reset** drops them. Leaving
+  an account with changes pending asks whether to apply them first.
+- **Your own account** cannot change its login name or account type, or delete itself.
+- **At least one administrator** stays: demoting or deleting the last unlocked one is refused, unless root clearly
+  works (AccountsService reports it unlocked, with an ordinary password). A locked root, Ubuntu's `*`, keeps the rule.
+- **The picture** is clicked to change: a stock picture from `share/wlrix/avatars` (`wlrix-assets`; a person adds
+  their own in `~/.local/share/wlrix/avatars`), any image file, center-cropped to a 256 px square, or **Remove**. For
+  your own account `~/.face.icon` and `~/.face` are written too, which the greeter and the lock screen read first.
+- **Change Password...** hashes here, with libxcrypt's default method (yescrypt), and hands AccountsService the hash.
+- **Fingerprints...** is shown for your own account when fprintd is running and has a reader. It lists the enrolled
+  fingers, deletes one or all, and enrolls another, touch by touch with fprintd's retry messages. The reader is
+  claimed only while the dialog is open.
+- **Delete User...** asks whether to delete the home directory too; Cancel is the default.
 
 ## Passphrases
 

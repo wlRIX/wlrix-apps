@@ -1,0 +1,58 @@
+<views:FingerprintDialogBase xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Wlrix.Settings.Users.ViewModels"
+        xmlns:views="using:Wlrix.Settings.Users.Views"
+        xmlns:loc="using:Wlrix.Common.Localization"
+        x:Class="Wlrix.Settings.Users.Views.FingerprintDialog"
+        x:DataType="vm:FingerprintModel"
+        Width="440"
+        Title="{loc:Tr FingerprintTitle}">
+    <StackPanel Margin="16" Spacing="10">
+        <TextBlock x:Name="Heading" FontWeight="Bold" FontSize="14" TextWrapping="Wrap" />
+        <TextBlock Text="{Binding ReaderLine}" />
+
+        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+            <Panel Grid.Column="0" Height="180">
+                <ListBox ItemsSource="{Binding Enrolled}" SelectedItem="{Binding Selected}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate x:DataType="vm:FingerRow">
+                            <TextBlock Text="{Binding Label}" />
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+                <TextBlock Text="{loc:Tr NoFingers}" Margin="8" TextWrapping="Wrap" IsVisible="{Binding HasNone}" />
+            </Panel>
+            <StackPanel Grid.Column="1" Spacing="6" MinWidth="100">
+                <Button Content="{loc:Tr AddFinger}" HorizontalAlignment="Stretch" Click="OnAdd" IsEnabled="{Binding CanAdd}" />
+                <Button Content="{loc:Tr DeleteFinger}" HorizontalAlignment="Stretch" Click="OnDelete" IsEnabled="{Binding CanDelete}" />
+                <Button Content="{loc:Tr DeleteAllFingers}" HorizontalAlignment="Stretch" Click="OnDeleteAll" IsEnabled="{Binding CanDeleteAll}" />
+            </StackPanel>
+        </Grid>
+
+        <!-- Add: which finger, then a touch at a time. -->
+        <StackPanel Spacing="8" IsVisible="{Binding Choosing}">
+            <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="8">
+                <TextBlock Grid.Column="0" Text="{loc:Tr FingerLabel}" VerticalAlignment="Center" />
+                <ComboBox Grid.Column="1" HorizontalAlignment="Stretch" IsEnabled="{Binding !Enrolling}"
+                          ItemsSource="{Binding Available}" SelectedItem="{Binding ToEnroll}">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate x:DataType="vm:FingerRow">
+                            <TextBlock Text="{Binding Label}" />
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+                <Button x:Name="Start" Grid.Column="2" Content="{loc:Tr StartEnroll}" Click="OnStart" IsEnabled="{Binding CanStart}" />
+                <Button Grid.Column="3" Content="{loc:Tr StopEnroll}" Click="OnStop" />
+            </Grid>
+            <ProgressBar Minimum="0" Maximum="1" Value="{Binding ProgressValue}" IsVisible="{Binding Enrolling}" />
+            <TextBlock Text="{Binding Progress}" IsVisible="{Binding Enrolling}" />
+        </StackPanel>
+
+        <TextBlock Text="{Binding Message}" TextWrapping="Wrap"
+                   IsVisible="{Binding Message, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Content="{loc:Tr Done}" MinWidth="92" Click="OnCancel" IsCancel="True" IsDefault="True" />
+        </StackPanel>
+    </StackPanel>
+</views:FingerprintDialogBase>

@@ -17,6 +17,7 @@
         <Project Path="src/Wlrix.Settings.Audio/Wlrix.Settings.Audio.csproj" />
         <Project Path="src/Wlrix.Settings.Bluetooth/Wlrix.Settings.Bluetooth.csproj" />
         <Project Path="src/Wlrix.Settings.Sound/Wlrix.Settings.Sound.csproj" />
+        <Project Path="src/Wlrix.Settings.Users/Wlrix.Settings.Users.csproj" />
         <Project Path="src/Wlrix.Settings.Login.Core/Wlrix.Settings.Login.Core.csproj" />
         <Project Path="src/Wlrix.Settings.Login.Helper/Wlrix.Settings.Login.Helper.csproj" />
         <Project Path="src/Wlrix.Settings.Login/Wlrix.Settings.Login.csproj" />
@@ -54,6 +55,7 @@
         <Project Path="tests/Wlrix.Writer.Tests/Wlrix.Writer.Tests.csproj" />
         <Project Path="tests/Wlrix.Settings.Displays.Tests/Wlrix.Settings.Displays.Tests.csproj" />
         <Project Path="tests/Wlrix.Settings.Sound.Tests/Wlrix.Settings.Sound.Tests.csproj" />
+        <Project Path="tests/Wlrix.Settings.Users.Tests/Wlrix.Settings.Users.Tests.csproj" />
         <Project Path="tests/Wlrix.Settings.Mouse.Tests/Wlrix.Settings.Mouse.Tests.csproj" />
         <Project Path="tests/Wlrix.Settings.Power.Tests/Wlrix.Settings.Power.Tests.csproj" />
         <Project Path="tests/Wlrix.Settings.Network.Tests/Wlrix.Settings.Network.Tests.csproj" />

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN"
+ "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
+
+<!--
+    AccountsService's two interfaces, trimmed to the members User Accounts uses.
+
+    Taken from the copies AccountsService 26 installs, /usr/share/dbus-1/interfaces/
+    org.freedesktop.Accounts.xml and org.freedesktop.Accounts.User.xml, with signatures
+    unchanged so the generated proxies cannot disagree with the daemon about one.
+-->
+
+<node>
+  <interface name="org.freedesktop.Accounts">
+    <method name="ListCachedUsers">
+      <arg name="users" direction="out" type="ao"/>
+    </method>
+    <method name="FindUserById">
+      <arg name="id" direction="in" type="x"/>
+      <arg name="user" direction="out" type="o"/>
+    </method>
+    <method name="FindUserByName">
+      <arg name="name" direction="in" type="s"/>
+      <arg name="user" direction="out" type="o"/>
+    </method>
+    <method name="CreateUser">
+      <arg name="name" direction="in" type="s"/>
+      <arg name="fullname" direction="in" type="s"/>
+      <arg name="accountType" direction="in" type="i"/>
+      <arg name="user" direction="out" type="o"/>
+    </method>
+    <method name="DeleteUser">
+      <arg name="id" direction="in" type="x"/>
+      <arg name="removeFiles" direction="in" type="b"/>
+    </method>
+  </interface>
+
+  <interface name="org.freedesktop.Accounts.User">
+    <method name="SetUserName">
+      <arg name="name" direction="in" type="s"/>
+    </method>
+    <method name="SetRealName">
+      <arg name="name" direction="in" type="s"/>
+    </method>
+    <method name="SetEmail">
+      <arg name="email" direction="in" type="s"/>
+    </method>
+    <method name="SetIconFile">
+      <arg name="filename" direction="in" type="s"/>
+    </method>
+    <method name="SetAccountType">
+      <arg name="accountType" direction="in" type="i"/>
+    </method>
+    <method name="SetPasswordMode">
+      <arg name="mode" direction="in" type="i"/>
+    </method>
+    <method name="SetPassword">
+      <arg name="password" direction="in" type="s"/>
+      <arg name="hint" direction="in" type="s"/>
+    </method>
+    <property name="Uid" type="t" access="read"/>
+    <property name="UserName" type="s" access="read"/>
+    <property name="RealName" type="s" access="read"/>
+    <property name="AccountType" type="i" access="read"/>
+    <property name="Email" type="s" access="read"/>
+    <property name="IconFile" type="s" access="read"/>
+    <property name="HomeDirectory" type="s" access="read"/>
+    <property name="Locked" type="b" access="read"/>
+    <property name="PasswordMode" type="i" access="read"/>
+    <property name="SystemAccount" type="b" access="read"/>
+    <property name="LocalAccount" type="b" access="read"/>
+    <signal name="Changed"/>
+  </interface>
+</node>

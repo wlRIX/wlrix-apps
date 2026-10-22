@@ -1,0 +1,31 @@
+<views:PictureDialogBase xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:views="using:Wlrix.Settings.Users.Views"
+        xmlns:loc="using:Wlrix.Common.Localization"
+        x:Class="Wlrix.Settings.Users.Views.PictureDialog"
+        Width="420"
+        Title="{loc:Tr PictureTitle}">
+    <StackPanel Margin="16" Spacing="12">
+        <TextBlock Text="{loc:Tr PictureTitle}" FontWeight="Bold" FontSize="14" />
+        <!-- The stock pictures, a click each. -->
+        <ItemsControl x:Name="Stock">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <WrapPanel ItemWidth="94" ItemHeight="94" />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="views:StockPicture">
+                    <Button Padding="0" Margin="3" Click="OnStock" Tag="{Binding File}">
+                        <Image Source="{Binding Image}" Width="80" Height="80" Stretch="UniformToFill" />
+                    </Button>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+        <Grid ColumnDefinitions="Auto,Auto,*,Auto" ColumnSpacing="10">
+            <Button Grid.Column="0" Content="{loc:Tr ChooseFile}" Click="OnFile" />
+            <Button Grid.Column="1" Content="{loc:Tr RemovePicture}" Click="OnRemove" />
+            <Button Grid.Column="3" Content="{loc:Tr Cancel}" MinWidth="92" Click="OnCancel" IsCancel="True" />
+        </Grid>
+    </StackPanel>
+</views:PictureDialogBase>

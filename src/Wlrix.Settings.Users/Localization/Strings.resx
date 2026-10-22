@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="WindowTitle" xml:space="preserve">
+    <value>User Accounts</value>
+  </data>
+  <data name="PanelTitle" xml:space="preserve">
+    <value>User Accounts</value>
+  </data>
+  <data name="AddNew" xml:space="preserve">
+    <value>Add New...</value>
+  </data>
+  <data name="YourAccount" xml:space="preserve">
+    <value>Your Account</value>
+  </data>
+  <data name="OtherAccounts" xml:space="preserve">
+    <value>Other Accounts</value>
+  </data>
+  <data name="NameLabel" xml:space="preserve">
+    <value>Name:</value>
+  </data>
+  <data name="UserNameLabel" xml:space="preserve">
+    <value>Username:</value>
+  </data>
+  <data name="AccountTypeLabel" xml:space="preserve">
+    <value>Account type:</value>
+  </data>
+  <data name="EmailLabel" xml:space="preserve">
+    <value>Email address:</value>
+  </data>
+  <data name="Standard" xml:space="preserve">
+    <value>Standard</value>
+  </data>
+  <data name="Administrator" xml:space="preserve">
+    <value>Administrator</value>
+  </data>
+  <data name="ChangePassword" xml:space="preserve">
+    <value>Change Password...</value>
+  </data>
+  <data name="FingerprintsButton" xml:space="preserve">
+    <value>Fingerprints...</value>
+  </data>
+  <data name="DeleteUser" xml:space="preserve">
+    <value>Delete User...</value>
+  </data>
+  <data name="ChangePicture" xml:space="preserve">
+    <value>Click to change the picture</value>
+  </data>
+  <data name="OwnUserNameNote" xml:space="preserve">
+    <value>Your own username cannot be changed while you are logged in with it.</value>
+  </data>
+  <data name="LastAdmin" xml:space="preserve">
+    <value>This is the only administrator, and root cannot be logged in to, so it must stay an administrator.</value>
+  </data>
+  <data name="Reset" xml:space="preserve">
+    <value>Reset</value>
+  </data>
+  <data name="Apply" xml:space="preserve">
+    <value>Apply</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="ApplyQuestion" xml:space="preserve">
+    <value>Apply the changes to {0} before leaving it?</value>
+  </data>
+  <data name="ApplyConfirm" xml:space="preserve">
+    <value>Apply</value>
+  </data>
+  <data name="Discard" xml:space="preserve">
+    <value>Discard</value>
+  </data>
+  <data name="NoAccountsService" xml:space="preserve">
+    <value>AccountsService is not available: {0}</value>
+  </data>
+  <data name="ChangeFailed" xml:space="preserve">
+    <value>The change was not made: {0}</value>
+  </data>
+  <data name="NotAuthorized" xml:space="preserve">
+    <value>Not authorized. An administrator's password is needed for that.</value>
+  </data>
+  <data name="NameEmpty" xml:space="preserve">
+    <value>A username is needed.</value>
+  </data>
+  <data name="NameTooLong" xml:space="preserve">
+    <value>A username can be at most {0} characters.</value>
+  </data>
+  <data name="NameBadStart" xml:space="preserve">
+    <value>A username starts with a lowercase letter or an underscore.</value>
+  </data>
+  <data name="NameBadCharacter" xml:space="preserve">
+    <value>A username can only hold lowercase letters, digits, - and _.</value>
+  </data>
+  <data name="NameTaken" xml:space="preserve">
+    <value>That username is already in use.</value>
+  </data>
+  <data name="PictureTitle" xml:space="preserve">
+    <value>Choose a Picture</value>
+  </data>
+  <data name="ChooseFile" xml:space="preserve">
+    <value>Choose File...</value>
+  </data>
+  <data name="RemovePicture" xml:space="preserve">
+    <value>Remove</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="FilterImages" xml:space="preserve">
+    <value>Pictures</value>
+  </data>
+  <data name="PasswordTitle" xml:space="preserve">
+    <value>Change Password</value>
+  </data>
+  <data name="PasswordHeading" xml:space="preserve">
+    <value>Change the password for {0}</value>
+  </data>
+  <data name="NewPassword" xml:space="preserve">
+    <value>New password:</value>
+  </data>
+  <data name="ConfirmPassword" xml:space="preserve">
+    <value>Confirm:</value>
+  </data>
+  <data name="PasswordsDiffer" xml:space="preserve">
+    <value>The passwords do not match.</value>
+  </data>
+  <data name="PasswordEmpty" xml:space="preserve">
+    <value>A password is needed.</value>
+  </data>
+  <data name="ShowPassword" xml:space="preserve">
+    <value>Show password</value>
+  </data>
+  <data name="SetPassword" xml:space="preserve">
+    <value>Change Password</value>
+  </data>
+  <data name="AddTitle" xml:space="preserve">
+    <value>Add User</value>
+  </data>
+  <data name="FullNameLabel" xml:space="preserve">
+    <value>Full name:</value>
+  </data>
+  <data name="Create" xml:space="preserve">
+    <value>Create</value>
+  </data>
+  <data name="DeleteTitle" xml:space="preserve">
+    <value>Delete User</value>
+  </data>
+  <data name="DeleteQuestion" xml:space="preserve">
+    <value>Delete the account {0}?</value>
+  </data>
+  <data name="DeleteFiles" xml:space="preserve">
+    <value>Also delete the home folder, {0}</value>
+  </data>
+  <data name="DeleteFilesNote" xml:space="preserve">
+    <value>Kept, the folder stays for an administrator to look through or remove later.</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="FingerprintTitle" xml:space="preserve">
+    <value>Fingerprints</value>
+  </data>
+  <data name="FingerprintHeading" xml:space="preserve">
+    <value>Fingerprints for {0}</value>
+  </data>
+  <data name="Reader" xml:space="preserve">
+    <value>Reader: {0}</value>
+  </data>
+  <data name="NoFingers" xml:space="preserve">
+    <value>No fingerprints are enrolled.</value>
+  </data>
+  <data name="AddFinger" xml:space="preserve">
+    <value>Add...</value>
+  </data>
+  <data name="DeleteFinger" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="DeleteAllFingers" xml:space="preserve">
+    <value>Delete All</value>
+  </data>
+  <data name="FingerLabel" xml:space="preserve">
+    <value>Finger:</value>
+  </data>
+  <data name="StartEnroll" xml:space="preserve">
+    <value>Start</value>
+  </data>
+  <data name="StopEnroll" xml:space="preserve">
+    <value>Stop</value>
+  </data>
+  <data name="Done" xml:space="preserve">
+    <value>Done</value>
+  </data>
+  <data name="TouchReader" xml:space="preserve">
+    <value>Touch the reader with your {0}.</value>
+  </data>
+  <data name="EnrollProgress" xml:space="preserve">
+    <value>{0} of {1}</value>
+  </data>
+  <data name="Enrolled" xml:space="preserve">
+    <value>Enrolled.</value>
+  </data>
+  <data name="ReaderBusy" xml:space="preserve">
+    <value>The reader could not be opened: {0}</value>
+  </data>
+  <data name="Finger_right_index_finger" xml:space="preserve">
+    <value>Right index finger</value>
+  </data>
+  <data name="Finger_left_index_finger" xml:space="preserve">
+    <value>Left index finger</value>
+  </data>
+  <data name="Finger_right_thumb" xml:space="preserve">
+    <value>Right thumb</value>
+  </data>
+  <data name="Finger_left_thumb" xml:space="preserve">
+    <value>Left thumb</value>
+  </data>
+  <data name="Finger_right_middle_finger" xml:space="preserve">
+    <value>Right middle finger</value>
+  </data>
+  <data name="Finger_left_middle_finger" xml:space="preserve">
+    <value>Left middle finger</value>
+  </data>
+  <data name="Finger_right_ring_finger" xml:space="preserve">
+    <value>Right ring finger</value>
+  </data>
+  <data name="Finger_left_ring_finger" xml:space="preserve">
+    <value>Left ring finger</value>
+  </data>
+  <data name="Finger_right_little_finger" xml:space="preserve">
+    <value>Right little finger</value>
+  </data>
+  <data name="Finger_left_little_finger" xml:space="preserve">
+    <value>Left little finger</value>
+  </data>
+  <data name="Enroll_enroll_stage_passed" xml:space="preserve">
+    <value>Got it. Lift your finger and touch again.</value>
+  </data>
+  <data name="Enroll_enroll_retry_scan" xml:space="preserve">
+    <value>That did not read. Touch the reader again.</value>
+  </data>
+  <data name="Enroll_enroll_swipe_too_short" xml:space="preserve">
+    <value>Too short. Try again.</value>
+  </data>
+  <data name="Enroll_enroll_finger_not_centered" xml:space="preserve">
+    <value>Center your finger on the reader.</value>
+  </data>
+  <data name="Enroll_enroll_remove_and_retry" xml:space="preserve">
+    <value>Lift your finger and try again.</value>
+  </data>
+  <data name="Enroll_enroll_completed" xml:space="preserve">
+    <value>Enrolled.</value>
+  </data>
+  <data name="Enroll_enroll_failed" xml:space="preserve">
+    <value>Enrolling failed. Try again.</value>
+  </data>
+  <data name="Enroll_enroll_data_full" xml:space="preserve">
+    <value>The reader has no room for more fingerprints.</value>
+  </data>
+  <data name="Enroll_enroll_duplicate" xml:space="preserve">
+    <value>That fingerprint is already enrolled.</value>
+  </data>
+  <data name="Enroll_enroll_disconnected" xml:space="preserve">
+    <value>The reader was disconnected.</value>
+  </data>
+  <data name="Enroll_enroll_unknown_error" xml:space="preserve">
+    <value>The reader reported an error.</value>
+  </data>
+  <data name="HelpText" xml:space="preserve">
+    <value>The list has your own account first, then everyone else's. Select one to see it; changes to the name, username, account type and email are made together with Apply. Click the picture to choose another. Your own username, account type and deletion are left to another administrator, and the last administrator stays one unless root can be logged in to. Changing someone else's account asks for an administrator's password.</value>
+  </data>
+  <data name="Help" xml:space="preserve">
+    <value>Help</value>
+  </data>
+</root>

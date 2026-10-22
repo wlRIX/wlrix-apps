@@ -148,6 +148,9 @@ Version {0}</value>
   <data name="PowerProperties" xml:space="preserve">
     <value>Power Properties</value>
   </data>
+  <data name="UserAccounts" xml:space="preserve">
+    <value>User Accounts</value>
+  </data>
   <data name="LoginProperties" xml:space="preserve">
     <value>Login Properties</value>
   </data>

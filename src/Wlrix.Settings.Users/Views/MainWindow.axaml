@@ -1,0 +1,163 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Wlrix.Settings.Users.ViewModels"
+        xmlns:loc="using:Wlrix.Common.Localization"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="680" d:DesignHeight="580"
+        Width="680" Height="580" MinWidth="600" MinHeight="520"
+        x:Class="Wlrix.Settings.Users.Views.MainWindow"
+        x:DataType="vm:UsersViewModel"
+        Title="{loc:Tr WindowTitle}">
+
+    <!-- Laid out after KDE's Users page — the accounts on the left, the selected one on the right,
+         Reset and Apply along the bottom — in the panel shape the other wlRIX settings share: a
+         title banner, bold headings, Motif controls. Pictures are square, as everything in the
+         desktop is. -->
+    <DockPanel Margin="12">
+
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="12" Margin="0,0,0,12">
+            <Border Width="48" Height="48"
+                    BorderThickness="1"
+                    BorderBrush="{DynamicResource WlrixOuterLine}"
+                    Background="{DynamicResource WlrixSelect}">
+                <!-- Placeholder for the panel icon (a real asset comes from wlrix-assets): two
+                     people, one behind the other. -->
+                <Viewbox Margin="8">
+                    <Canvas Width="32" Height="28">
+                        <Ellipse Canvas.Left="15" Canvas.Top="1" Width="10" Height="10"
+                                 Stroke="{DynamicResource WlrixForeground}" StrokeThickness="1.5" />
+                        <Path Data="M 12,26 C 12,17 16,14 20,14 C 24,14 28,17 28,26"
+                              Stroke="{DynamicResource WlrixForeground}" StrokeThickness="1.5" />
+                        <Ellipse Canvas.Left="5" Canvas.Top="6" Width="10" Height="10"
+                                 Fill="{DynamicResource WlrixSelect}"
+                                 Stroke="{DynamicResource WlrixForeground}" StrokeThickness="1.5" />
+                        <Path Data="M 1,28 C 1,22 5,19 10,19 C 15,19 19,22 19,28 Z"
+                              Fill="{DynamicResource WlrixSelect}"
+                              Stroke="{DynamicResource WlrixForeground}" StrokeThickness="1.5" />
+                    </Canvas>
+                </Viewbox>
+            </Border>
+            <TextBlock Text="{loc:Tr PanelTitle}" FontWeight="Bold" FontSize="14" VerticalAlignment="Center" />
+        </StackPanel>
+
+        <Grid DockPanel.Dock="Bottom" ColumnDefinitions="Auto,Auto,*,Auto,Auto" ColumnSpacing="12" Margin="0,12,0,0">
+            <Button Grid.Column="0" Content="{loc:Tr Close}" Click="OnClose" MinWidth="90" />
+            <Button Grid.Column="1" Content="{loc:Tr Help}" MinWidth="90">
+                <Button.Flyout>
+                    <Flyout>
+                        <TextBlock MaxWidth="340" TextWrapping="Wrap" Text="{loc:Tr HelpText}" />
+                    </Flyout>
+                </Button.Flyout>
+            </Button>
+            <Button Grid.Column="3" Content="{loc:Tr Reset}" Click="OnReset" MinWidth="90"
+                    IsEnabled="{Binding IsDirty}" />
+            <Button Grid.Column="4" Content="{loc:Tr Apply}" Click="OnApply" MinWidth="90"
+                    IsEnabled="{Binding CanApply}" />
+        </Grid>
+
+        <TextBlock DockPanel.Dock="Bottom" Text="{Binding Status}" TextWrapping="Wrap" Margin="0,8,0,0"
+                   IsVisible="{Binding Status, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+
+        <Grid ColumnDefinitions="240,*" ColumnSpacing="12" IsEnabled="{Binding IsReady}">
+
+            <!-- The accounts. -->
+            <DockPanel Grid.Column="0">
+                <Button DockPanel.Dock="Top" Content="{loc:Tr AddNew}" Click="OnAdd"
+                        HorizontalAlignment="Right" Margin="0,0,0,6" MinWidth="90" />
+                <ListBox ItemsSource="{Binding Accounts}" SelectedItem="{Binding Selected}">
+                    <ListBox.Styles>
+                        <Style Selector="ListBoxItem">
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                        </Style>
+                    </ListBox.Styles>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate x:DataType="vm:AccountRow">
+                            <StackPanel Spacing="4">
+                                <TextBlock Text="{Binding Heading}" FontWeight="Bold" Margin="0,4,0,2"
+                                           IsVisible="{Binding HasHeading}" />
+                                <Grid ColumnDefinitions="40,*" ColumnSpacing="8">
+                                    <Border Grid.Column="0" Width="40" Height="40" BorderThickness="1"
+                                            BorderBrush="{DynamicResource WlrixOuterLine}"
+                                            Background="{Binding InitialsBrush}">
+                                        <Panel>
+                                            <TextBlock Text="{Binding Initials}" FontWeight="Bold" FontSize="15"
+                                                       Foreground="White"
+                                                       HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                       IsVisible="{Binding !HasPicture}" />
+                                            <Image Source="{Binding Picture}" Stretch="UniformToFill"
+                                                   IsVisible="{Binding HasPicture}" />
+                                        </Panel>
+                                    </Border>
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding DisplayName}" FontWeight="Bold"
+                                                   TextTrimming="CharacterEllipsis" />
+                                        <TextBlock Text="{Binding UserName}" TextTrimming="CharacterEllipsis" />
+                                    </StackPanel>
+                                </Grid>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </DockPanel>
+
+            <!-- The selected account. -->
+            <ScrollViewer Grid.Column="1" IsVisible="{Binding HasSelection}">
+                <StackPanel Spacing="10" Margin="0,0,4,0">
+                    <TextBlock Text="{Binding Heading}" FontWeight="Bold" FontSize="14" />
+
+                    <!-- The picture, square; a click chooses another. -->
+                    <Button HorizontalAlignment="Center" Padding="0" Click="OnPicture"
+                            IsEnabled="{Binding CanEdit}" ToolTip.Tip="{loc:Tr ChangePicture}">
+                        <Border Width="112" Height="112" Background="{Binding InitialsBrush}">
+                            <Panel>
+                                <TextBlock Text="{Binding Initials}" FontWeight="Bold" FontSize="40"
+                                           Foreground="White"
+                                           HorizontalAlignment="Center" VerticalAlignment="Center"
+                                           IsVisible="{Binding !HasPicture}" />
+                                <Image Source="{Binding Picture}" Stretch="UniformToFill"
+                                       IsVisible="{Binding HasPicture}" />
+                            </Panel>
+                        </Border>
+                    </Button>
+
+                    <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto"
+                          ColumnSpacing="8" RowSpacing="8">
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="{loc:Tr NameLabel}"
+                                   HorizontalAlignment="Right" VerticalAlignment="Center" />
+                        <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Name}" IsEnabled="{Binding CanEdit}" />
+
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="{loc:Tr UserNameLabel}"
+                                   HorizontalAlignment="Right" VerticalAlignment="Center" />
+                        <StackPanel Grid.Row="1" Grid.Column="1" Spacing="4">
+                            <TextBox Text="{Binding UserName}" IsEnabled="{Binding CanEditUserName}"
+                                     ToolTip.Tip="{loc:Tr OwnUserNameNote}" />
+                            <TextBlock Text="{Binding UserNameProblem}" TextWrapping="Wrap"
+                                       IsVisible="{Binding UserNameProblem, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                        </StackPanel>
+
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text="{loc:Tr AccountTypeLabel}"
+                                   HorizontalAlignment="Right" VerticalAlignment="Center" />
+                        <ComboBox Grid.Row="2" Grid.Column="1" MinWidth="160"
+                                  ItemsSource="{Binding AccountTypes}" SelectedIndex="{Binding AccountType}"
+                                  IsEnabled="{Binding CanEditAccountType}" />
+
+                        <TextBlock Grid.Row="3" Grid.Column="0" Text="{loc:Tr EmailLabel}"
+                                   HorizontalAlignment="Right" VerticalAlignment="Center" />
+                        <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding Email}" IsEnabled="{Binding CanEdit}" />
+
+                        <StackPanel Grid.Row="4" Grid.Column="1" Spacing="8">
+                            <Button Content="{loc:Tr ChangePassword}" Click="OnPassword" IsEnabled="{Binding CanEdit}" />
+                            <Button Content="{loc:Tr FingerprintsButton}" Click="OnFingerprints"
+                                    IsVisible="{Binding ShowFingerprints}" IsEnabled="{Binding CanEdit}" />
+                            <Button Content="{loc:Tr DeleteUser}" Click="OnDelete" Margin="0,12,0,0"
+                                    IsEnabled="{Binding CanDelete}" />
+                            <TextBlock Text="{loc:Tr LastAdmin}" TextWrapping="Wrap"
+                                       IsVisible="{Binding ShowLastAdmin}" />
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
+    </DockPanel>
+</Window>

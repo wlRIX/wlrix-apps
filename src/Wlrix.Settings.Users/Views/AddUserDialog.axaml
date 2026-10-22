@@ -1,0 +1,37 @@
+<views:AddUserDialogBase xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Wlrix.Settings.Users.ViewModels"
+        xmlns:views="using:Wlrix.Settings.Users.Views"
+        xmlns:loc="using:Wlrix.Common.Localization"
+        x:Class="Wlrix.Settings.Users.Views.AddUserDialog"
+        x:DataType="vm:AddUserModel"
+        Width="440"
+        Title="{loc:Tr AddTitle}">
+    <StackPanel Margin="16" Spacing="12">
+        <TextBlock Text="{loc:Tr AddTitle}" FontWeight="Bold" FontSize="14" />
+        <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto"
+              ColumnSpacing="8" RowSpacing="8">
+            <TextBlock Grid.Row="0" Text="{loc:Tr FullNameLabel}" VerticalAlignment="Center" HorizontalAlignment="Right" />
+            <TextBox Grid.Row="0" Grid.Column="1" x:Name="First" Text="{Binding FullName}" />
+            <TextBlock Grid.Row="1" Text="{loc:Tr UserNameLabel}" VerticalAlignment="Center" HorizontalAlignment="Right" />
+            <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding UserName}" />
+            <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding UserNameProblem}" TextWrapping="Wrap"
+                       IsVisible="{Binding UserNameProblem, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+            <TextBlock Grid.Row="3" Text="{loc:Tr AccountTypeLabel}" VerticalAlignment="Center" HorizontalAlignment="Right" />
+            <ComboBox Grid.Row="3" Grid.Column="1" MinWidth="160"
+                      ItemsSource="{Binding AccountTypes}" SelectedIndex="{Binding AccountType}" />
+            <TextBlock Grid.Row="4" Text="{loc:Tr NewPassword}" VerticalAlignment="Center" HorizontalAlignment="Right" />
+            <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding Password}" PasswordChar="{Binding MaskChar}" />
+            <TextBlock Grid.Row="5" Text="{loc:Tr ConfirmPassword}" VerticalAlignment="Center" HorizontalAlignment="Right" />
+            <TextBox Grid.Row="5" Grid.Column="1" Text="{Binding Confirm}" PasswordChar="{Binding MaskChar}" />
+            <TextBlock Grid.Row="6" Grid.Column="1" Text="{Binding PasswordProblem}" TextWrapping="Wrap"
+                       IsVisible="{Binding PasswordProblem, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+            <CheckBox Grid.Row="7" Grid.Column="1" Content="{loc:Tr ShowPassword}" IsChecked="{Binding ShowPassword}" />
+        </Grid>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10">
+            <Button Content="{loc:Tr Cancel}" MinWidth="92" Click="OnCancel" IsCancel="True" />
+            <Button Content="{loc:Tr Create}" MinWidth="92" Click="OnOk" IsDefault="True"
+                    IsEnabled="{Binding CanFinish}" />
+        </StackPanel>
+    </StackPanel>
+</views:AddUserDialogBase>
