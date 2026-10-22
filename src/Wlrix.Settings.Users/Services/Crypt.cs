@@ -12,7 +12,27 @@ namespace Wlrix.Settings.Users.Services;
 /// </remarks>
 internal static partial class Crypt
 {
-    private const string Library = "libcrypt.so.2";
+    private const string Library = "libcrypt";
+
+    /// <summary>
+    /// libxcrypt's soname, by how it was built: <c>.so.2</c> without the glibc compatibility
+    /// layer (Arch), <c>.so.1</c> with it (Debian, Ubuntu, Fedora). Both have <c>crypt_gensalt</c>.
+    /// </summary>
+    private static readonly string[] Sonames = ["libcrypt.so.2", "libcrypt.so.1"];
+
+    static Crypt() => NativeLibrary.SetDllImportResolver(typeof(Crypt).Assembly, Resolve);
+
+    private static IntPtr Resolve(string name, System.Reflection.Assembly assembly, DllImportSearchPath? path)
+    {
+        if (name != Library)
+            return IntPtr.Zero;
+        foreach (var soname in Sonames)
+        {
+            if (NativeLibrary.TryLoad(soname, assembly, path, out var handle))
+                return handle;
+        }
+        return IntPtr.Zero;
+    }
 
     [LibraryImport(Library, EntryPoint = "crypt_gensalt", StringMarshalling = StringMarshalling.Utf8)]
     private static partial IntPtr GenSalt(string? prefix, ulong count, IntPtr randomBytes, int byteCount);
