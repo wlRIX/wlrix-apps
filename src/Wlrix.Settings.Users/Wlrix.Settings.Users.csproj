@@ -42,6 +42,8 @@
 
     <ItemGroup>
         <ProjectReference Include="../Wlrix.Common/Wlrix.Common.csproj" />
+        <!-- lock.toml's unlock.fingerprint, through wlrix-settings-daemon. -->
+        <ProjectReference Include="../Wlrix.Settings.Client/Wlrix.Settings.Client.csproj" />
         <!-- Follows the session's color scheme. One call in App.axaml.cs. -->
         <ProjectReference Include="../Wlrix.Theme/Wlrix.Theme.csproj" />
     </ItemGroup>

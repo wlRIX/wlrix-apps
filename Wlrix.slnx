@@ -18,6 +18,7 @@
         <Project Path="src/Wlrix.Settings.Bluetooth/Wlrix.Settings.Bluetooth.csproj" />
         <Project Path="src/Wlrix.Settings.Sound/Wlrix.Settings.Sound.csproj" />
         <Project Path="src/Wlrix.Settings.Users/Wlrix.Settings.Users.csproj" />
+        <Project Path="src/Wlrix.Settings.Users.Helper/Wlrix.Settings.Users.Helper.csproj" />
         <Project Path="src/Wlrix.Settings.Login.Core/Wlrix.Settings.Login.Core.csproj" />
         <Project Path="src/Wlrix.Settings.Login.Helper/Wlrix.Settings.Login.Helper.csproj" />
         <Project Path="src/Wlrix.Settings.Login/Wlrix.Settings.Login.csproj" />

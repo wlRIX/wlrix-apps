@@ -25,7 +25,11 @@ public partial class FingerprintDialog : FingerprintDialogBase
         AvaloniaXamlLoader.Load(this);
         DataContext = _model;
         this.FindControl<TextBlock>("Heading")!.Text = Strings.Catalog.Format("FingerprintHeading", account);
-        Opened += async (_, _) => await _model.OpenAsync();
+        Opened += async (_, _) =>
+        {
+            await _model.OpenAsync();
+            await _model.Uses.LoadAsync();
+        };
         Closed += async (_, _) => await _model.DisposeAsync();
     }
 

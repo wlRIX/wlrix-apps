@@ -282,4 +282,25 @@
   <data name="Help" xml:space="preserve">
     <value>Help</value>
   </data>
+  <data name="UseFor" xml:space="preserve">
+    <value>Use a fingerprint for:</value>
+  </data>
+  <data name="UseUnlock" xml:space="preserve">
+    <value>Unlocking the screen</value>
+  </data>
+  <data name="UseSudo" xml:space="preserve">
+    <value>sudo in a terminal</value>
+  </data>
+  <data name="UsePolkit" xml:space="preserve">
+    <value>Administrator password prompts</value>
+  </data>
+  <data name="UseMachineNote" xml:space="preserve">
+    <value>These two apply to everyone on this computer with a finger enrolled, and changing them asks for an administrator's password. The password still works: it is asked for when the reader times out.</value>
+  </data>
+  <data name="UseBySystem" xml:space="preserve">
+    <value>This computer's PAM configuration already asks for a fingerprint for sudo and administrator prompts.</value>
+  </data>
+  <data name="HelperFailed" xml:space="preserve">
+    <value>The change could not be made.</value>
+  </data>
 </root>

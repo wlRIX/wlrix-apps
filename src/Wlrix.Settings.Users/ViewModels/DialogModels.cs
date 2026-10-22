@@ -172,6 +172,9 @@ internal sealed class FingerprintModel : ViewModelBase, IAsyncDisposable
 
     public ObservableCollection<FingerRow> Enrolled { get; } = [];
 
+    /// <summary>The switches under the list: where a finger is accepted.</summary>
+    public FingerprintUses Uses { get; } = new();
+
     /// <summary>The fingers not enrolled yet, for Add.</summary>
     public ObservableCollection<FingerRow> Available { get; } = [];
 
@@ -394,5 +397,186 @@ internal sealed class FingerprintModel : ViewModelBase, IAsyncDisposable
         if (_reader is not null)
             await _reader.DisposeAsync().ConfigureAwait(true);
         _reader = null;
+        Uses.Dispose();
     }
+}
+
+/// <summary>
+/// Where a fingerprint is accepted, under the Fingerprints list: the lock screen for this person
+/// (<c>lock.toml</c>, through the settings daemon), and <c>sudo</c> and administrator prompts for
+/// everyone (the PAM stacks, through <c>wlrix-users-helper</c>). Each switch acts at once and
+/// then shows what is actually so, which after a dismissed password dialog is what was there before.
+/// </summary>
+internal sealed class FingerprintUses : ViewModelBase, IDisposable
+{
+    private const string UnlockKey = "lock.unlock.fingerprint";
+
+    private readonly PamFingerprint _pam;
+    private readonly Func<PamTarget, bool, Task<HelperResult>> _helper;
+    private Wlrix.Settings.Client.SettingsClient? _settings;
+    private bool _unlock;
+    private bool _canUnlock;
+    private FingerprintUse _sudo = FingerprintUse.Missing;
+    private FingerprintUse _polkit = FingerprintUse.Missing;
+    private bool _busy;
+    private string _message = string.Empty;
+
+    /// <summary>
+    /// The switch being changed and what it was asked to become, reported until the answer: the
+    /// binding only updates the box when the value it reads changes, so reading back "off" after
+    /// a refused "on" has to follow a moment of "on".
+    /// </summary>
+    private (PamTarget Target, bool Value)? _asked;
+
+    /// <summary>The same, for <see cref="Unlock"/>.</summary>
+    private bool? _unlockAsked;
+
+    // WLRIX_USERS_PAM_ROOT reads the PAM files from under another directory, for looking at the
+    // switches on a machine without pam_fprintd. The helper, which writes, never honors it.
+    public FingerprintUses() : this(
+        new PamFingerprint(Environment.GetEnvironmentVariable("WLRIX_USERS_PAM_ROOT") is { Length: > 0 } root ? root : "/"),
+        UsersHelper.SetFingerprintAsync)
+    {
+    }
+
+    internal FingerprintUses(PamFingerprint pam, Func<PamTarget, bool, Task<HelperResult>> helper)
+    {
+        _pam = pam;
+        _helper = helper;
+        Available = pam.ModuleInstalled();
+    }
+
+    /// <summary>pam_fprintd is installed. Without it none of this means anything, and the group is hidden.</summary>
+    public bool Available { get; }
+
+    public bool Unlock
+    {
+        get => _unlockAsked ?? _unlock;
+        set
+        {
+            if (value != _unlock)
+                _ = SetUnlockAsync(value);
+        }
+    }
+
+    public bool CanUnlock => _canUnlock && !_busy;
+
+    public bool Sudo
+    {
+        get => _asked is (PamTarget.Sudo, var asked) ? asked : _sudo is FingerprintUse.On or FingerprintUse.BySystem;
+        set
+        {
+            if (value != Sudo)
+                _ = SetMachineAsync(PamTarget.Sudo, value);
+        }
+    }
+
+    public bool CanSudo => _sudo is FingerprintUse.On or FingerprintUse.Off && !_busy;
+
+    public bool Polkit
+    {
+        get => _asked is (PamTarget.Polkit, var asked) ? asked : _polkit is FingerprintUse.On or FingerprintUse.BySystem;
+        set
+        {
+            if (value != Polkit)
+                _ = SetMachineAsync(PamTarget.Polkit, value);
+        }
+    }
+
+    public bool CanPolkit => _polkit is FingerprintUse.On or FingerprintUse.Off && !_busy;
+
+    /// <summary>No change under way. For tests.</summary>
+    internal bool Settled => _asked is null && _unlockAsked is null && !_busy;
+
+    /// <summary>The shared stack already asks for a finger, so the two machine switches are not ours.</summary>
+    public bool BySystem => _sudo == FingerprintUse.BySystem || _polkit == FingerprintUse.BySystem;
+
+    public string Message
+    {
+        get => _message;
+        private set => this.RaiseAndSetIfChanged(ref _message, value);
+    }
+
+    public async Task LoadAsync()
+    {
+        ReadMachine();
+        try
+        {
+            _settings = await Wlrix.Settings.Client.SettingsClient.ConnectAsync().ConfigureAwait(true);
+            _unlock = await _settings.GetAsync(UnlockKey).ConfigureAwait(true) is not false;
+            _canUnlock = true;
+        }
+        catch (Exception error) when (error is Tmds.DBus.Protocol.DBusExceptionBase or IOException or InvalidOperationException)
+        {
+            // No settings daemon: the lock screen's default, on, is what applies, and there is
+            // nothing to change it through.
+            _unlock = true;
+            _canUnlock = false;
+        }
+        RaiseAll();
+    }
+
+    private async Task SetUnlockAsync(bool value)
+    {
+        if (_settings is null)
+            return;
+        _unlockAsked = value;
+        // Out of the CheckBox's own write-back first: a change notified from inside it is
+        // ignored, and the box would keep a tick the file does not have.
+        await Task.Yield();
+        _busy = true;
+        RaiseAll();
+        try
+        {
+            // The lock screen reads it the next time it starts; "not running" is the expected outcome.
+            await _settings.SetAsync(UnlockKey, value).ConfigureAwait(true);
+            _unlock = value;
+        }
+        catch (Tmds.DBus.Protocol.DBusExceptionBase error)
+        {
+            Message = error.Message;
+        }
+        _busy = false;
+        _unlockAsked = null;
+        RaiseAll();
+    }
+
+    private async Task SetMachineAsync(PamTarget target, bool value)
+    {
+        _asked = (target, value);
+        // See SetUnlockAsync. The helper also answers at once when it is not installed.
+        await Task.Yield();
+        _busy = true;
+        Message = string.Empty;
+        RaiseAll();
+        var result = await _helper(target, value).ConfigureAwait(true);
+        Message = result.Outcome switch
+        {
+            HelperOutcome.Succeeded or HelperOutcome.NotAuthorized => string.Empty,
+            _ => result.Message ?? Strings.Catalog.Get("HelperFailed"),
+        };
+        _busy = false;
+        _asked = null;
+        // Whatever happened, show what the files say now.
+        ReadMachine();
+        RaiseAll();
+    }
+
+    private void ReadMachine()
+    {
+        _sudo = _pam.State(PamTarget.Sudo);
+        _polkit = _pam.State(PamTarget.Polkit);
+    }
+
+    private void RaiseAll()
+    {
+        foreach (var name in new[]
+                 {
+                     nameof(Unlock), nameof(CanUnlock), nameof(Sudo), nameof(CanSudo), nameof(Polkit),
+                     nameof(CanPolkit), nameof(BySystem),
+                 })
+            this.RaisePropertyChanged(name);
+    }
+
+    public void Dispose() => _settings?.Dispose();
 }

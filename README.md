@@ -20,6 +20,7 @@ library. Apps recreate the IRIX Interactive Desktop surface.
 | `Wlrix.Settings.Login.Core` | lib | The login screen's settings and their validation. No UI.           |
 | `Wlrix.Packages.Helper`   | exe  | `wlrix-pkg-helper` — the privileged half, run through `pkexec`.     |
 | `Wlrix.Settings.Login.Helper` | exe | `wlrix-login-helper` — writes `/etc/wlrix/greeter.toml` as root. |
+| `Wlrix.Settings.Users.Helper` | exe | `wlrix-users-helper` — adds or removes pam_fprintd in `sudo` and `polkit-1`. |
 | `Wlrix.Toolchest`         | app  | IRIX-style menu launcher anchored top-left of the desktop.          |
 | `Wlrix.Desks`             | app  | Virtual-desktop (Rooms) overview and switcher.                      |
 | `Wlrix.Console`           | app  | Tails the wlRIX component logs, one tab each.                       |
@@ -239,7 +240,17 @@ through `wlrix-polkit-agent`, asks for whatever password a change needs.
 - **Change Password...** hashes here, with libxcrypt's default method (yescrypt), and hands AccountsService the hash.
 - **Fingerprints...** is shown for your own account when fprintd is running and has a reader. It lists the enrolled
   fingers, deletes one or all, and enrolls another, touch by touch with fprintd's retry messages. The reader is
-  claimed only while the dialog is open.
+  claimed only while the dialog is open. Under the list, when pam_fprintd is installed, **Use a fingerprint for**:
+  - *Unlocking the screen* is this person's `lock.toml` `[unlock] fingerprint`, through the settings daemon. The lock
+    screen takes the finger and the password at the same time (see wlrix-lock's README).
+  - *sudo in a terminal* and *Administrator password prompts* are for the whole machine, and ask for an
+    administrator's password: `wlrix-users-helper`, through pkexec (`com.wlrix.settings.users.fingerprint`), adds a
+    marker comment and `-auth sufficient pam_fprintd.so` just before the first auth line of `/etc/pam.d/sudo` (and
+    `sudo-i` when it has a stack of its own) or `/etc/pam.d/polkit-1`, or removes every pam_fprintd line again. The
+    finger is asked for first; the password follows a timeout, three mismatches or Ctrl+C. The `-` makes PAM skip the
+    line if fprintd is uninstalled later. A service only in `/usr/lib/pam.d` is copied to `/etc/pam.d` to be edited,
+    and the copy is removed when turning it off makes it the vendor's again. When `system-auth` or `common-auth`
+    already loads pam_fprintd, both switches show on and grayed: that is the system's setting, not this panel's.
 - **Delete User...** asks whether to delete the home directory too; Cancel is the default.
 
 ## Passphrases

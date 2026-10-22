@@ -282,4 +282,25 @@
   <data name="Help" xml:space="preserve">
     <value>ヘルプ</value>
   </data>
+  <data name="UseFor" xml:space="preserve">
+    <value>指紋を使う場面：</value>
+  </data>
+  <data name="UseUnlock" xml:space="preserve">
+    <value>画面のロック解除</value>
+  </data>
+  <data name="UseSudo" xml:space="preserve">
+    <value>ターミナルでの sudo</value>
+  </data>
+  <data name="UsePolkit" xml:space="preserve">
+    <value>管理者パスワードの確認</value>
+  </data>
+  <data name="UseMachineNote" xml:space="preserve">
+    <value>この 2 つは指紋を登録したこのコンピューターの全ユーザーに適用され、変更には管理者のパスワードが必要です。パスワードも引き続き使えます。リーダーがタイムアウトすると入力を求められます。</value>
+  </data>
+  <data name="UseBySystem" xml:space="preserve">
+    <value>このコンピューターの PAM 設定は、sudo と管理者の確認ですでに指紋を求めています。</value>
+  </data>
+  <data name="HelperFailed" xml:space="preserve">
+    <value>変更できませんでした。</value>
+  </data>
 </root>

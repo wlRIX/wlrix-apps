@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <AssemblyName>wlrix-users-helper</AssemblyName>
+        <Version>0.1.0</Version>
+        <!-- Runs as root under pkexec. Nothing here should be a surprise at run time. -->
+        <InvariantGlobalization>true</InvariantGlobalization>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <!-- The PAM edit itself, shared with User Accounts as a source file rather than a
+             reference to the whole panel, so the two cannot disagree about what it does and the
+             program running as root carries no Avalonia. -->
+        <Compile Include="..\Wlrix.Settings.Users\Services\PamFingerprint.cs" Link="PamFingerprint.cs" />
+    </ItemGroup>
+
+</Project>

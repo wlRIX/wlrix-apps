@@ -51,6 +51,19 @@
         <TextBlock Text="{Binding Message}" TextWrapping="Wrap"
                    IsVisible="{Binding Message, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
 
+        <!-- Where a finger is accepted. Hidden without pam_fprintd. -->
+        <StackPanel Spacing="4" IsVisible="{Binding Uses.Available}">
+            <Separator Margin="0,2" />
+            <TextBlock Text="{loc:Tr UseFor}" FontWeight="Bold" />
+            <CheckBox Content="{loc:Tr UseUnlock}" IsChecked="{Binding Uses.Unlock}" IsEnabled="{Binding Uses.CanUnlock}" />
+            <CheckBox Content="{loc:Tr UseSudo}" IsChecked="{Binding Uses.Sudo}" IsEnabled="{Binding Uses.CanSudo}" />
+            <CheckBox Content="{loc:Tr UsePolkit}" IsChecked="{Binding Uses.Polkit}" IsEnabled="{Binding Uses.CanPolkit}" />
+            <TextBlock Text="{loc:Tr UseMachineNote}" TextWrapping="Wrap" FontSize="11" IsVisible="{Binding !Uses.BySystem}" />
+            <TextBlock Text="{loc:Tr UseBySystem}" TextWrapping="Wrap" FontSize="11" IsVisible="{Binding Uses.BySystem}" />
+            <TextBlock Text="{Binding Uses.Message}" TextWrapping="Wrap"
+                       IsVisible="{Binding Uses.Message, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+        </StackPanel>
+
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
             <Button Content="{loc:Tr Done}" MinWidth="92" Click="OnCancel" IsCancel="True" IsDefault="True" />
         </StackPanel>
