@@ -89,6 +89,17 @@ public sealed class PamFingerprintTests : IDisposable
     }
 
     [Fact]
+    public void CachyOSHardwareDetectionsLineCountsAsOnAndComesOffWhole()
+    {
+        // chwd's fprint profile (profiles/usb/fprint) puts this before the first auth line of
+        // /etc/pam.d/sudo when it finds a reader, marked by the trailing comment.
+        var chwd = ArchSudo.Replace("auth\t\tinclude", "auth sufficient pam_fprintd.so # chwd-fprintd\nauth\t\tinclude", StringComparison.Ordinal);
+        Assert.True(PamFingerprint.LoadsFprintd(chwd));
+        Assert.Equal(chwd, PamFingerprint.Enable(chwd));
+        Assert.Equal(ArchSudo, PamFingerprint.Disable(chwd));
+    }
+
+    [Fact]
     public void ACommentedOutLineIsNotTheFingerprint()
     {
         var commented = ArchSudo.Replace("#%PAM-1.0\n", "#%PAM-1.0\n#auth sufficient pam_fprintd.so\n", StringComparison.Ordinal);
