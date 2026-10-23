@@ -1,5 +1,6 @@
 using ResvgSharp;
 using SkiaSharp;
+using Wlrix.Icons;
 
 namespace Wlrix.Files.Core.Thumbnails;
 
@@ -125,7 +126,9 @@ public sealed class SvgThumbnailer : IThumbnailer
         Task.Run<byte[]?>(() =>
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var svg = File.ReadAllText(localPath);
+            // IRIX-era exports -- the wlRIX icons' sources among them -- predate the SVG
+            // namespace, which resvg insists on; see LegacySvg.
+            var svg = LegacySvg.WithNamespace(File.ReadAllText(localPath));
             try
             {
                 // Answers encoded PNG bytes, which is exactly what the cache stores, so nothing
@@ -134,9 +137,8 @@ public sealed class SvgThumbnailer : IThumbnailer
             }
             catch (ResvgSharp.Exceptions.ResvgException)
             {
-                // resvg will not parse every file that calls itself SVG -- an old one without
-                // the SVG namespace is the common case -- and that file has no thumbnail, as a
-                // PNG that will not decode has none.
+                // resvg will not parse every file that calls itself SVG, and that file has no
+                // thumbnail, as a PNG that will not decode has none.
                 return null;
             }
         }, cancellationToken);

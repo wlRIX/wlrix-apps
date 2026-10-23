@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
+using System.Collections.Concurrent;
 using ResvgSharp;
 using SkiaSharp;
 using Wlrix.IconCatalog.Models;
@@ -25,8 +26,17 @@ public enum CarpetStyle
 /// The composition is <c>wlrix-desktop</c>'s (<c>ui/paint.rs</c>), so a launcher looks the same
 /// in the catalog as on the desktop: the carpet fills the square, lying flat when the
 /// application is not running and standing upright when it is, and carries the state tint; the
-/// symbol stands on it untinted, at the same place in both carpet states, so starting an
-/// application turns the carpet under a symbol that stays put.
+/// symbol stands on it at the same place in both carpet states, so starting an application
+/// turns the carpet under a symbol that stays put.
+///
+/// <para>
+/// How the symbol stands on the carpet depends on how it was drawn. An IRIX drawing is in the
+/// carpet's own frame (<see cref="LegacySvg.IsCarpetFrame(string)"/>) and is laid over it 1:1,
+/// in register, and tinted with it -- that is the IRIX composition, and what lets a symbol draw
+/// on the carpet itself. Anything else, an application's ordinary theme icon, keeps its own
+/// colors and is shrunk to <see cref="SymbolScale"/> and stood on the carpet at
+/// <see cref="SymbolBaseline"/>.
+/// </para>
 ///
 /// <para>
 /// Plain Skia and resvg, with no Avalonia, so it can be tested without a display. Output is PNG
@@ -43,6 +53,11 @@ public sealed class CarpetRenderer
 
     private readonly IconLoader _loader;
     private readonly Dictionary<(CarpetStyle, bool Running), string> _carpets = [];
+
+    // Whether a resolved symbol file is in the carpet frame. Renders run on the thread pool,
+    // several at once, hence concurrent; the theme's files do not change under a running app
+    // often enough to be worth watching.
+    private readonly ConcurrentDictionary<string, bool> _registered = new(StringComparer.Ordinal);
 
     public CarpetRenderer(IconLoader loader)
     {
@@ -95,8 +110,8 @@ public sealed class CarpetRenderer
             return null;
         }
 
-        // The carpet takes the tint, not the symbol: it is wlRIX's own artwork, so the IRIX
-        // rule applies exactly, while an application's icon keeps the colors it was drawn in.
+        // The carpet always takes the tint: it is wlRIX's own artwork, so the IRIX rule applies
+        // exactly. The symbol takes it only if it is an IRIX drawing too, below.
         if (carpet is null || IconStatePainter.Apply(carpet, state, colors) is not { } tinted)
             return null;
 
@@ -105,12 +120,38 @@ public sealed class CarpetRenderer
             ? [runningIcon, .. icon.IconNames]
             : icon.IconNames;
         var symbolSize = (int)MathF.Round(size * SymbolScale);
-        var symbol = names.Count > 0 ? _loader.Render(names, symbolSize) : null;
+        var (symbol, registered) = Symbol(names, size, symbolSize);
 
-        return Compose(tinted, symbol, size, symbolSize);
+        // An IRIX symbol is tinted with its carpet, as the IRIX icon catalog drew it: a selected
+        // keyboard's white body turns yellow along with the carpet under it. Its checkerboard
+        // lines up with the carpet's, the two being the same size. An ordinary theme icon keeps
+        // the colors it was drawn in, which the tint would only muddy.
+        if (registered && symbol is not null)
+            symbol = IconStatePainter.Apply(symbol, state, colors);
+
+        return Compose(tinted, symbol, size, registered ? null : symbolSize);
     }
 
-    private static byte[]? Compose(byte[] carpet, byte[]? symbol, int size, int symbolSize)
+    /// <summary>
+    /// The first of <paramref name="names"/> that resolves, rendered for its frame: full size if
+    /// it is drawn in register with the carpet, shrunk otherwise.
+    /// </summary>
+    private (byte[]? Png, bool Registered) Symbol(IReadOnlyList<string> names, int size, int symbolSize)
+    {
+        foreach (var name in names)
+        {
+            if (_loader.Theme.Lookup(name, symbolSize) is not { } path)
+                continue;
+            var registered = _registered.GetOrAdd(path, LegacySvg.IsCarpetFrameFile);
+            return (_loader.Render(name, registered ? size : symbolSize), registered);
+        }
+        return (null, false);
+    }
+
+    /// <param name="symbolSize">
+    /// The shrunk symbol's size, or null for one in the carpet's frame, drawn over it 1:1.
+    /// </param>
+    private static byte[]? Compose(byte[] carpet, byte[]? symbol, int size, int? symbolSize)
     {
         // No symbol at all: the carpet alone still says running or not.
         if (symbol is null)
@@ -132,8 +173,9 @@ public sealed class CarpetRenderer
         {
             if (symbolImage is not null)
             {
-                var bottom = MathF.Round(size * SymbolBaseline);
-                var destination = SKRect.Create((size - symbolSize) / 2, bottom - symbolSize, symbolSize, symbolSize);
+                var destination = symbolSize is { } shrunk
+                    ? SKRect.Create((size - shrunk) / 2, MathF.Round(size * SymbolBaseline) - shrunk, shrunk, shrunk)
+                    : SKRect.Create(0, 0, size, size);
                 canvas.DrawImage(symbolImage, destination, new SKSamplingOptions(SKFilterMode.Linear, SKMipmapMode.Linear));
             }
         }
@@ -150,23 +192,7 @@ public sealed class CarpetRenderer
         if (stream is null)
             return null;
         using var reader = new StreamReader(stream);
-        return WithSvgNamespace(reader.ReadToEnd());
-    }
-
-    /// <summary>
-    /// Declares the SVG namespace on a drawing that does not.
-    /// </summary>
-    /// <remarks>
-    /// The carpets are IRIX-era exports, written against a 2000 working draft that predates the
-    /// namespace, and the resvg behind ResvgSharp refuses a root element outside it. Declaring it
-    /// here keeps the files byte for byte the ones wlrix-desktop draws.
-    /// </remarks>
-    internal static string WithSvgNamespace(string svg)
-    {
-        const string Namespace = "http://www.w3.org/2000/svg";
-        if (svg.Contains(Namespace, StringComparison.Ordinal))
-            return svg;
-        var root = svg.IndexOf("<svg", StringComparison.Ordinal);
-        return root < 0 ? svg : svg.Insert(root + "<svg".Length, $" xmlns=\"{Namespace}\"");
+        // The carpets are IRIX exports too, kept byte for byte the ones wlrix-desktop draws.
+        return LegacySvg.WithNamespace(reader.ReadToEnd());
     }
 }

@@ -22,6 +22,10 @@ bindir := usrdir / 'bin'
 # to the host, which resolves through it because the apphost reads /proc/self/exe.
 libdir := usrdir / 'lib' / 'wlrix'
 appsdir := usrdir / 'share' / 'applications'
+# An application's own icon, named for its application id, goes into hicolor -- the theme every
+# other theme inherits -- so it shows whatever icon theme is chosen. The wlrix theme in
+# wlrix-assets can still draw its own under the same name and win.
+appiconsdir := usrdir / 'share' / 'icons' / 'hicolor' / 'scalable' / 'apps'
 
 # The applications with a desktop entry, as `<project>:<installed name>:<entry>`.
 #
@@ -120,7 +124,21 @@ install-desktop:
       desktop="${entry##*:}"
       install -Dm0644 "src/$project/data/$desktop" '{{appsdir}}'"/$desktop"
       echo "installed {{appsdir}}/$desktop"
+      for icon in "src/$project/data/icons/"*.svg; do
+          [ -e "$icon" ] || continue
+          install -Dm0644 "$icon" '{{appiconsdir}}'"/$(basename "$icon")"
+          echo "installed {{appiconsdir}}/$(basename "$icon")"
+      done
   done
+
+  # GTK reads hicolor through its icon cache when there is one, and a cache that predates an
+  # icon hides it from every GTK application until it is rebuilt. wlRIX's own loaders walk the
+  # directories and do not need this.
+  if [ -z '{{rootdir}}' ] && command -v gtk-update-icon-cache >/dev/null \
+      && [ -e '{{usrdir}}/share/icons/hicolor/icon-theme.cache' ]; then
+      gtk-update-icon-cache -qtf '{{usrdir}}/share/icons/hicolor'
+      echo "updated the hicolor icon cache"
+  fi
 
   # The step that actually makes `xdg-open backup.tar.gz` work. Without it the entries are on
   # disk and nothing has indexed their MimeType=, so every lookup still misses. Skipped when
@@ -138,12 +156,17 @@ uninstall:
   #!/usr/bin/env bash
   set -euo pipefail
   for entry in {{apps}}; do
+      project="${entry%%:*}"
       rest="${entry#*:}"
       name="${rest%%:*}"
       desktop="${entry##*:}"
       rm -f "{{bindir}}/$name"
       rm -rf "{{libdir}}/$name"
       rm -f '{{appsdir}}'"/$desktop"
+      for icon in "src/$project/data/icons/"*.svg; do
+          [ -e "$icon" ] || continue
+          rm -f '{{appiconsdir}}'"/$(basename "$icon")"
+      done
       echo "removed $name"
   done
   if [ -z '{{rootdir}}' ] && command -v update-desktop-database >/dev/null; then

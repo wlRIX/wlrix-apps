@@ -299,14 +299,27 @@ public class ThumbnailTests
     }
 
     [Fact]
-    public async Task AnSvgResvgCannotParseRendersNothingRatherThanThrowing()
+    public async Task AnIrixExportWithoutTheSvgNamespaceStillGetsAThumbnail()
     {
-        // The shape of the old icon sets: no SVG namespace. An exception from here once ended
-        // the thumbnail worker, and with it every thumbnail for the rest of the session.
+        // The shape of the IRIX icon sets, the wlRIX icons' sources among them: no namespace,
+        // which resvg alone refuses.
         using var dir = new TemporaryDirectory();
         var path = Path.Combine(dir.Path, "old.svg");
         File.WriteAllText(path,
-            """<svg width="50pt" height="50pt" viewBox="0 0 50 50"><path d="M0 0L50 50"/></svg>""");
+            """<svg width="50pt" height="50pt" viewBox="0 0 50 50"><path d="M0 0L50 50" stroke="#000"/></svg>""");
+
+        var png = await new SvgThumbnailer().RenderAsync(path, 64, None);
+        Assert.NotNull(png);
+    }
+
+    [Fact]
+    public async Task AnSvgResvgCannotParseRendersNothingRatherThanThrowing()
+    {
+        // An exception from here once ended the thumbnail worker, and with it every thumbnail
+        // for the rest of the session.
+        using var dir = new TemporaryDirectory();
+        var path = Path.Combine(dir.Path, "broken.svg");
+        File.WriteAllText(path, """<svg xmlns="http://www.w3.org/2000/svg"><path d="M0 0L50 50"/>""");
 
         Assert.Null(await new SvgThumbnailer().RenderAsync(path, 64, None));
     }

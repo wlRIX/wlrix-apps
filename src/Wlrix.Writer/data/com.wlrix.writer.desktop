@@ -6,6 +6,7 @@ GenericName=Text Editor
 GenericName[ja]=テキストエディタ
 Comment=Edit text files
 Comment[ja]=テキストファイルを編集します
+Icon=com.wlrix.writer
 Categories=Utility;TextEditor;
 
 # %F, not %f: the window holds many files, one per tab, and a second launch hands its files to
@@ -13,6 +14,11 @@ Categories=Utility;TextEditor;
 Exec=wlrix-writer %F
 TryExec=wlrix-writer
 Terminal=false
+
+# The symbol while the editor is running, as IRIX allowed: the closed one erases the lines on
+# the magic carpet's paper, the running one writes on the carpet stood upright. A wlRIX
+# extension, read by wlrix-desktop and the icon catalog; the X- prefix keeps the file valid.
+X-WLRIX-Running-Icon=com.wlrix.writer-running
 
 # Matches the Wayland app id set in Program.BuildAvaloniaApp, which is how `wlrix-desktop`
 # finds the running window.

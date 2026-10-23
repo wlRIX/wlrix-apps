@@ -118,7 +118,8 @@ public sealed class IconLoader(XdgIconTheme theme)
 
     private static byte[]? RenderSvg(string path, int size)
     {
-        var svg = File.ReadAllText(path);
+        // IRIX-era exports carry no namespace, which resvg requires; see LegacySvg.
+        var svg = LegacySvg.WithNamespace(File.ReadAllText(path));
         // resvg returns PNG bytes at exactly the size asked for, which is already the shape
         // this method promises -- no decode and re-encode in between.
         return Resvg.RenderToPng(svg, new ResvgOptions { Width = size, Height = size });
