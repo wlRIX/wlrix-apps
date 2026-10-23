@@ -8,14 +8,11 @@ using ZLogger;
 
 namespace Wlrix.Toolchest.Services;
 
-/// <summary>Launches application entries (and a bare terminal for the Desktop stub).</summary>
+/// <summary>Launches the wlRIX programs the menus name, and a bare terminal.</summary>
 public interface IAppLauncher
 {
     /// <summary>Raised (with a user-facing message) when a launch fails.</summary>
     event Action<string>? LaunchFailed;
-
-    /// <summary>Launches <paramref name="exec"/> (a <c>.desktop</c> Exec value), optionally in a terminal.</summary>
-    void Launch(string displayName, string exec, bool terminal);
 
     /// <summary>
     /// Launches <paramref name="program"/> from the <c>PATH</c> by name, with
@@ -32,32 +29,6 @@ public interface IAppLauncher
 public sealed class AppLauncher(ILogger<AppLauncher> logger) : IAppLauncher
 {
     public event Action<string>? LaunchFailed;
-
-    public void Launch(string displayName, string exec, bool terminal)
-    {
-        if (ExecParser.Parse(exec) is not { } parsed || parsed.File.Length == 0)
-        {
-            Fail(displayName, Strings.NoRunnableCommand(exec));
-            return;
-        }
-
-        var (file, args) = parsed;
-
-        if (!terminal)
-        {
-            Start(displayName, file, args);
-            return;
-        }
-
-        // Terminal apps: run as `<terminal> -e <program> <args…>` (best-effort; -e is common).
-        if (ResolveTerminal() is not { } term)
-        {
-            Fail(displayName, Strings.NoTerminalForApp);
-            return;
-        }
-
-        Start(displayName, term, TerminalEmulator.Wrap(file, args));
-    }
 
     public void Run(string displayName, string program, params string[] args)
     {

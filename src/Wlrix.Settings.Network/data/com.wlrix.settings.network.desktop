@@ -1,0 +1,21 @@
+[Desktop Entry]
+Type=Application
+Name=Network Settings
+Name[ja]=ネットワーク設定
+Comment=Connect to wired and wireless networks
+Comment[ja]=有線と無線のネットワークに接続します
+Icon=preferences-system-network
+Categories=Settings;HardwareSettings;
+Keywords=network;wifi;wireless;ethernet;internet;connection;
+Exec=wlrix-settings-network
+TryExec=wlrix-settings-network
+Terminal=false
+
+# One of wlRIX's control panels: the icon catalog files it on its ControlPanels page and stands
+# it on the control panel carpet. A wlRIX extension; the X- prefix keeps the file valid elsewhere.
+X-WLRIX-ControlPanel=true
+
+# Matches the Wayland app id set in Program.BuildAvaloniaApp. `wlrix-desktop` looks a running
+# window up by StartupWMClass first, and wlrix-compositor frames the window by the same id.
+StartupWMClass=com.wlrix.settings.network
+StartupNotify=false

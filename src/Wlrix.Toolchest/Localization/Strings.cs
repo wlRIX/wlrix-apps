@@ -15,7 +15,8 @@ public static class Strings
     public static string Toolchest => Catalog.Get("Toolchest");
     public static string Desktop => Catalog.Get("Desktop");
     public static string System => Catalog.Get("System");
-    public static string Applications => Catalog.Get("Applications");
+    public static string Find => Catalog.Get("Find");
+    public static string IconCatalog => Catalog.Get("IconCatalog");
     public static string Help => Catalog.Get("Help");
     public static string Customize => Catalog.Get("Customize");
     public static string Windows => Catalog.Get("Windows");
@@ -39,10 +40,6 @@ public static class Strings
     public static string RestartSystem => Catalog.Get("RestartSystem");
     public static string ShutDownSystem => Catalog.Get("ShutDownSystem");
     public static string AboutToolchest => Catalog.Get("AboutToolchest");
-    public static string Loading => Catalog.Get("Loading");
-
-    /// <summary>The localized display name for a <see cref="Applications.MainCategory"/> id.</summary>
-    public static string Category(string id) => Catalog.Get($"Category_{id}");
 
     /// <summary>The About dialog body, with the version substituted in.</summary>
     public static string AboutMessage(string version) => Catalog.Format("AboutMessage", version);
@@ -50,11 +47,7 @@ public static class Strings
     // What a failed launch says. These reach a MessageDialog, not just the log — see
     // AppLauncher.Fail, which does both.
 
-    public static string NoTerminalForApp => Catalog.Get("NoTerminalForApp");
     public static string NoTerminal => Catalog.Get("NoTerminal");
-
-    /// <summary>The desktop entry's <c>Exec=</c> had nothing runnable in it.</summary>
-    public static string NoRunnableCommand(string exec) => Catalog.Format("NoRunnableCommand", exec);
 
     /// <summary>The program a launcher names is not on the PATH.</summary>
     public static string NotInstalled(string program) => Catalog.Format("NotInstalled", program);

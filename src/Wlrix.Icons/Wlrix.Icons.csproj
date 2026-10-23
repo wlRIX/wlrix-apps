@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <Version>0.1.0</Version>
+    </PropertyGroup>
+    <ItemGroup>
+        <!-- Deliberately no Avalonia reference. The file manager, the file chooser and the
+             icon catalog all draw icons the same way, and the file chooser's library has to
+             stay testable with no display; see Wlrix.Files.Core. -->
+        <PackageReference Include="SkiaSharp" />
+        <PackageReference Include="SkiaSharp.NativeAssets.Linux" />
+        <PackageReference Include="ResvgSharp" />
+    </ItemGroup>
+</Project>

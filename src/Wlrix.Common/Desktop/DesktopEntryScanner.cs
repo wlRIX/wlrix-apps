@@ -32,7 +32,7 @@ public sealed class DesktopEntryScanner
                 DesktopEntry? entry;
                 try
                 {
-                    entry = DesktopEntryParser.Parse(id, File.ReadLines(file));
+                    entry = DesktopEntryParser.Parse(id, File.ReadLines(file), file);
                 }
                 catch (IOException)
                 {
@@ -64,8 +64,11 @@ public sealed class DesktopEntryScanner
         return true;
     }
 
-    // XDG_DATA_HOME (default ~/.local/share) first, then XDG_DATA_DIRS in order — each /applications.
-    private static IEnumerable<string> ApplicationDirectories()
+    /// <summary>
+    /// Every <c>applications</c> directory, highest precedence first: <c>XDG_DATA_HOME</c>
+    /// (default <c>~/.local/share</c>), then <c>XDG_DATA_DIRS</c> in order. Some may not exist.
+    /// </summary>
+    public static IEnumerable<string> ApplicationDirectories()
     {
         var home = Environment.GetEnvironmentVariable("XDG_DATA_HOME");
         if (string.IsNullOrEmpty(home))

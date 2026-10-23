@@ -1,5 +1,5 @@
 using SkiaSharp;
-using Wlrix.Files.Core.Icons;
+using Wlrix.Icons;
 using Xunit;
 
 namespace Wlrix.Files.Core.Tests;

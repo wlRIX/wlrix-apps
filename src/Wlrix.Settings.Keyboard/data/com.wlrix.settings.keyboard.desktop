@@ -1,0 +1,21 @@
+[Desktop Entry]
+Type=Application
+Name=Keyboard Settings
+Name[ja]=キーボードの設定
+Comment=Set the keyboard layout, key repeat and shortcuts
+Comment[ja]=キーボード配列、キーリピート、ショートカットを設定します
+Icon=preferences-desktop-keyboard
+Categories=Settings;HardwareSettings;
+Keywords=keyboard;layout;repeat;shortcut;input;
+Exec=wlrix-settings-keyboard
+TryExec=wlrix-settings-keyboard
+Terminal=false
+
+# One of wlRIX's control panels: the icon catalog files it on its ControlPanels page and stands
+# it on the control panel carpet. A wlRIX extension; the X- prefix keeps the file valid elsewhere.
+X-WLRIX-ControlPanel=true
+
+# Matches the Wayland app id set in Program.BuildAvaloniaApp. `wlrix-desktop` looks a running
+# window up by StartupWMClass first, and wlrix-compositor frames the window by the same id.
+StartupWMClass=com.wlrix.settings.keyboard
+StartupNotify=false

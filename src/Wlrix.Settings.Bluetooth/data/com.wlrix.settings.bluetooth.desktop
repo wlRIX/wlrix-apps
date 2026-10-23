@@ -1,0 +1,21 @@
+[Desktop Entry]
+Type=Application
+Name=Bluetooth Settings
+Name[ja]=Bluetoothの設定
+Comment=Pair and connect Bluetooth devices
+Comment[ja]=Bluetoothデバイスをペアリングして接続します
+Icon=bluetooth
+Categories=Settings;HardwareSettings;
+Keywords=bluetooth;pair;device;wireless;headphones;controller;
+Exec=wlrix-settings-bluetooth
+TryExec=wlrix-settings-bluetooth
+Terminal=false
+
+# One of wlRIX's control panels: the icon catalog files it on its ControlPanels page and stands
+# it on the control panel carpet. A wlRIX extension; the X- prefix keeps the file valid elsewhere.
+X-WLRIX-ControlPanel=true
+
+# Matches the Wayland app id set in Program.BuildAvaloniaApp. `wlrix-desktop` looks a running
+# window up by StartupWMClass first, and wlrix-compositor frames the window by the same id.
+StartupWMClass=com.wlrix.settings.bluetooth
+StartupNotify=false

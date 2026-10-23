@@ -1,6 +1,6 @@
 using Tomlyn;
 using Tomlyn.Model;
-using Wlrix.Files.Core.Icons;
+using Wlrix.Icons;
 using Wlrix.Files.Core.State;
 
 namespace Wlrix.Files.Core.Config;

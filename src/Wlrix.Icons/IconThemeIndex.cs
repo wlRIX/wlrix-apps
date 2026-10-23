@@ -1,4 +1,4 @@
-namespace Wlrix.Files.Core.Icons;
+namespace Wlrix.Icons;
 
 /// <summary>How a theme directory's size is interpreted.</summary>
 public enum IconSizeType

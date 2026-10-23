@@ -4,7 +4,7 @@ using Avalonia.Markup.Xaml;
 using Wlrix.Common.Localization;
 using Wlrix.Files.Core.Config;
 using Wlrix.Files.Core.Filesystems;
-using Wlrix.Files.Core.Icons;
+using Wlrix.Icons;
 using Wlrix.Files.Core.Mime;
 using Wlrix.Files.Core.Platform;
 using Wlrix.Files.Core.Portal;

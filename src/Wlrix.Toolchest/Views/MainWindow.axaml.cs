@@ -22,7 +22,6 @@ public partial class MainWindow : Window
         vm.ShowAbout += OnShowAbout;
         vm.ShowError += OnShowError;
         vm.ConfirmLogOut += OnConfirmLogOut;
-        _ = vm.LoadAsync();
     }
 
     protected override void OnClosed(EventArgs e)

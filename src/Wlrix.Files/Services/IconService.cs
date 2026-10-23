@@ -2,7 +2,7 @@ using System.Collections.Concurrent;
 using Avalonia.Media.Imaging;
 using Avalonia.Threading;
 using Wlrix.Files.Core;
-using Wlrix.Files.Core.Icons;
+using Wlrix.Icons;
 using Wlrix.Files.Core.Mime;
 
 namespace Wlrix.Files.Services;

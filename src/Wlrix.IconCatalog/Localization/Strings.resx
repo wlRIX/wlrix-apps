@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AppName" xml:space="preserve">
+    <value>Icon Catalog</value>
+  </data>
+  <data name="Title" xml:space="preserve">
+    <value>Icon Catalog: {0} (Page {1} of {2})</value>
+  </data>
+  <data name="MenuPage" xml:space="preserve">
+    <value>_Page</value>
+  </data>
+  <data name="PageNew" xml:space="preserve">
+    <value>_New</value>
+  </data>
+  <data name="PageRename" xml:space="preserve">
+    <value>_Rename</value>
+  </data>
+  <data name="PageRemove" xml:space="preserve">
+    <value>R_emove</value>
+  </data>
+  <data name="PageUp" xml:space="preserve">
+    <value>_Up</value>
+  </data>
+  <data name="PageDown" xml:space="preserve">
+    <value>_Down</value>
+  </data>
+  <data name="PageExit" xml:space="preserve">
+    <value>E_xit</value>
+  </data>
+  <data name="MenuSelected" xml:space="preserve">
+    <value>_Selected</value>
+  </data>
+  <data name="SelectedOpen" xml:space="preserve">
+    <value>_Open</value>
+  </data>
+  <data name="SelectedRemove" xml:space="preserve">
+    <value>R_emove</value>
+  </data>
+  <data name="SelectedSelectAll" xml:space="preserve">
+    <value>Select _All</value>
+  </data>
+  <data name="MenuHelp" xml:space="preserve">
+    <value>_Help</value>
+  </data>
+  <data name="HelpProductInfo" xml:space="preserve">
+    <value>_Product Information</value>
+  </data>
+  <data name="AboutTitle" xml:space="preserve">
+    <value>Product Information</value>
+  </data>
+  <data name="About" xml:space="preserve">
+    <value>Icon Catalog {0}
+
+Starts the applications and control panels installed on this system. Drag files or launchers onto a page to keep icons of your own.</value>
+  </data>
+  <data name="IconsShown" xml:space="preserve">
+    <value>{0} icon(s) shown</value>
+  </data>
+  <data name="TabsHint" xml:space="preserve">
+    <value>Click on tabs to change catalog pages.</value>
+  </data>
+  <data name="NoPages" xml:space="preserve">
+    <value>Nothing is installed that the catalog can show.</value>
+  </data>
+  <data name="NewPageTitle" xml:space="preserve">
+    <value>New Page</value>
+  </data>
+  <data name="NewPagePrompt" xml:space="preserve">
+    <value>Name of the new page:</value>
+  </data>
+  <data name="RenamePageTitle" xml:space="preserve">
+    <value>Rename Page</value>
+  </data>
+  <data name="RenamePagePrompt" xml:space="preserve">
+    <value>New name for “{0}”:</value>
+  </data>
+  <data name="RemovePageTitle" xml:space="preserve">
+    <value>Remove Page</value>
+  </data>
+  <data name="RemovePageConfirm" xml:space="preserve">
+    <value>Remove the page “{0}” and its icons?
+The applications themselves stay installed.</value>
+  </data>
+  <data name="DialogOk" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="DialogCancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="ErrorTitle" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="NoRunnableCommand" xml:space="preserve">
+    <value>“{0}” has no runnable command.</value>
+  </data>
+  <data name="NoTerminalForApp" xml:space="preserve">
+    <value>No terminal emulator was found to run this application.</value>
+  </data>
+  <data name="CouldNotStart" xml:space="preserve">
+    <value>Could not start “{0}”.
+{1}</value>
+  </data>
+  <data name="Page_ControlPanels" xml:space="preserve">
+    <value>ControlPanels</value>
+  </data>
+  <data name="Page_AudioVideo" xml:space="preserve">
+    <value>Media</value>
+  </data>
+  <data name="Page_Development" xml:space="preserve">
+    <value>Development</value>
+  </data>
+  <data name="Page_Education" xml:space="preserve">
+    <value>Education</value>
+  </data>
+  <data name="Page_Game" xml:space="preserve">
+    <value>Games</value>
+  </data>
+  <data name="Page_Graphics" xml:space="preserve">
+    <value>Graphics</value>
+  </data>
+  <data name="Page_Network" xml:space="preserve">
+    <value>Internet</value>
+  </data>
+  <data name="Page_Office" xml:space="preserve">
+    <value>Office</value>
+  </data>
+  <data name="Page_Science" xml:space="preserve">
+    <value>Science</value>
+  </data>
+  <data name="Page_System" xml:space="preserve">
+    <value>System</value>
+  </data>
+  <data name="Page_Utility" xml:space="preserve">
+    <value>Utilities</value>
+  </data>
+  <data name="Page_Other" xml:space="preserve">
+    <value>Other</value>
+  </data>
+</root>

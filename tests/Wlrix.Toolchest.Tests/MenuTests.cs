@@ -7,7 +7,7 @@ namespace Wlrix.Toolchest.Tests;
 /// <summary>
 /// The Toolchest's shape. Built through the design-time constructor, which takes no services:
 /// the commands are closures that are never run here, so the tree can be inspected without a
-/// launcher, a catalog or a display.
+/// launcher or a display.
 /// </summary>
 public class MenuTests
 {
@@ -22,10 +22,18 @@ public class MenuTests
         ItemsUnder(header).Where(item => !item.IsSeparator).Select(item => item.Header);
 
     [Fact]
-    public void TheToolchestIsDesktopSystemApplicationsHelp()
+    public void TheToolchestIsDesktopFindSystemHelp()
     {
-        Assert.Equal([Strings.Desktop, Strings.System, Strings.Applications, Strings.Help],
+        Assert.Equal([Strings.Desktop, Strings.Find, Strings.System, Strings.Help],
             Menu.TopLevel.Select(top => top.Header));
+    }
+
+    [Fact]
+    public void FindOpensTheIconCatalog()
+    {
+        var item = Assert.Single(ItemsUnder(Strings.Find));
+        Assert.Equal(Strings.IconCatalog, item.Header);
+        Assert.NotNull(item.Command);
     }
 
     [Fact]

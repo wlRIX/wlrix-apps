@@ -1,0 +1,190 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Wlrix.IconCatalog.ViewModels"
+        xmlns:controls="using:Wlrix.IconCatalog.Controls"
+        xmlns:loc="using:Wlrix.Common.Localization"
+        xmlns:wlrix="https://vic485.xyz/Wlrix.Avalonia"
+        x:Class="Wlrix.IconCatalog.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Title="{Binding Title}"
+        Width="640" Height="470" MinWidth="320" MinHeight="240">
+    <!-- The accelerators. A MenuItem's InputGesture only draws the shortcut; these run it. -->
+    <Window.KeyBindings>
+        <KeyBinding Gesture="Ctrl+N" Command="{Binding NewPage}" />
+        <KeyBinding Gesture="Ctrl+R" Command="{Binding RenamePage}" />
+        <KeyBinding Gesture="PageUp" Command="{Binding PageUp}" />
+        <KeyBinding Gesture="PageDown" Command="{Binding PageDown}" />
+        <KeyBinding Gesture="Ctrl+Q" Command="{Binding Exit}" />
+        <KeyBinding Gesture="Ctrl+O" Command="{Binding OpenSelected}" />
+        <KeyBinding Gesture="Ctrl+A" Command="{Binding SelectAll}" />
+    </Window.KeyBindings>
+
+    <!--
+        No SystemDecorations or ExtendClientArea: the compositor draws the 4Dwm frame, and a
+        window that draws its own would get two.
+    -->
+
+    <Window.Styles>
+        <!-- State shows on the icon, not the label, by the rule the desktop and the file manager
+             follow: each icon carries its four renders and these pick one, so moving the pointer
+             costs no render at all. Selection wins over hover by coming later. -->
+        <Style Selector="Image.state.hover, Image.state.selected, Image.state.selectedInactive">
+            <Setter Property="IsVisible" Value="False" />
+        </Style>
+        <Style Selector="ListBoxItem:pointerover Image.state.rest">
+            <Setter Property="IsVisible" Value="False" />
+        </Style>
+        <Style Selector="ListBoxItem:pointerover Image.state.hover">
+            <Setter Property="IsVisible" Value="True" />
+        </Style>
+        <Style Selector="ListBoxItem:selected Image.state.rest, ListBoxItem:selected Image.state.hover">
+            <Setter Property="IsVisible" Value="False" />
+        </Style>
+        <Style Selector="ListBoxItem:selected Image.state.selected">
+            <Setter Property="IsVisible" Value="True" />
+        </Style>
+
+        <!-- A selection in a window without the keyboard is knocked back as IRIX did it, the way
+             Wlrix.Files does: by the window's own IsActive. -->
+        <Style Selector="ListBox.inactive ListBoxItem:selected Image.state.selected">
+            <Setter Property="IsVisible" Value="False" />
+        </Style>
+        <Style Selector="ListBox.inactive ListBoxItem:selected Image.state.selectedInactive">
+            <Setter Property="IsVisible" Value="True" />
+        </Style>
+
+        <!-- The label is never highlighted. The theme repaints selected text in the color meant
+             to sit on a highlight; with no highlight behind it, that would read as dimmed. -->
+        <Style Selector="ListBoxItem:selected TextBlock.label">
+            <Setter Property="Foreground" Value="{DynamicResource WlrixViewForeground}" />
+        </Style>
+    </Window.Styles>
+
+    <DockPanel>
+        <wlrix:MenuBar DockPanel.Dock="Top">
+            <MenuItem Header="{loc:Tr MenuPage}">
+                <MenuItem Header="{loc:Tr PageNew}" InputGesture="Ctrl+N" Command="{Binding NewPage}" />
+                <MenuItem Header="{loc:Tr PageRename}" InputGesture="Ctrl+R" Command="{Binding RenamePage}" />
+                <MenuItem Header="{loc:Tr PageRemove}" Command="{Binding RemovePage}" />
+                <Separator />
+                <MenuItem Header="{loc:Tr PageUp}" InputGesture="PageUp" Command="{Binding PageUp}" />
+                <MenuItem Header="{loc:Tr PageDown}" InputGesture="PageDown" Command="{Binding PageDown}" />
+                <Separator />
+                <MenuItem Header="{loc:Tr PageExit}" InputGesture="Ctrl+Q" Command="{Binding Exit}" />
+            </MenuItem>
+            <MenuItem Header="{loc:Tr MenuSelected}">
+                <MenuItem Header="{loc:Tr SelectedOpen}" InputGesture="Ctrl+O" Command="{Binding OpenSelected}" />
+                <MenuItem Header="{loc:Tr SelectedRemove}" Command="{Binding RemoveSelected}" />
+                <MenuItem Header="{loc:Tr SelectedSelectAll}" InputGesture="Ctrl+A" Command="{Binding SelectAll}" />
+            </MenuItem>
+            <MenuItem Header="{loc:Tr MenuHelp}" DockPanel.Dock="Right">
+                <MenuItem Header="{loc:Tr HelpProductInfo}" Command="{Binding ProductInformation}" />
+            </MenuItem>
+        </wlrix:MenuBar>
+
+        <!-- Status line, hand-rolled as in Wlrix.Files: Avalonia has no StatusBar control. -->
+        <wlrix:BevelBorder DockPanel.Dock="Bottom"
+                           Bevel="Sunken"
+                           BevelThickness="1"
+                           Background="{DynamicResource WlrixPanel}"
+                           LightBrush="{DynamicResource WlrixPanelTopShadow}"
+                           DarkBrush="{DynamicResource WlrixPanelBottomShadow}"
+                           Padding="6,3">
+            <TextBlock Text="{Binding Status}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+        </wlrix:BevelBorder>
+
+        <!-- The pages, with their tabs along the bottom as IRIX had them. The notebook's strip
+             folds tabs that do not fit into stacks at either end, with a menu to jump to them. -->
+        <wlrix:NotebookTabControl Name="Notebook"
+                                  Margin="4,4,4,4"
+                                  TabStripPlacement="Bottom"
+                                  ItemsSource="{Binding Pages}"
+                                  SelectedItem="{Binding CurrentPage}">
+            <TabControl.ItemTemplate>
+                <DataTemplate x:DataType="vm:PageViewModel">
+                    <TextBlock Text="{Binding Name}" />
+                </DataTemplate>
+            </TabControl.ItemTemplate>
+            <TabControl.ContentTemplate>
+                <DataTemplate x:DataType="vm:PageViewModel">
+                    <!-- The icon panel's own color, IRIX's AlternateBackground5, which the
+                         scheme carries as the read-write panel color. -->
+                    <Panel Background="{DynamicResource WlrixReadWritePanel}">
+                        <ListBox Name="IconView"
+                                 Classes="icons"
+                                 Classes.inactive="{Binding !$parent[Window].IsActive}"
+                                 Background="Transparent"
+                                 ItemsSource="{Binding Icons}"
+                                 SelectedItems="{Binding Selection}"
+                                 SelectionMode="Multiple"
+                                 DragDrop.AllowDrop="True"
+                                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                 ScrollViewer.VerticalScrollBarVisibility="Auto">
+                            <ListBox.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <controls:StaggeredIconPanel CellWidth="104" CellHeight="104"
+                                                                 CellGap="8" CellMargin="12" />
+                                </ItemsPanelTemplate>
+                            </ListBox.ItemsPanel>
+                            <ListBox.ItemContainerTheme>
+                                <ControlTheme TargetType="ListBoxItem" BasedOn="{StaticResource {x:Type ListBoxItem}}">
+                                    <!-- The container fills its cell so the whole cell is a hit
+                                         target, but paints nothing: state shows on the icon. -->
+                                    <Setter Property="Padding" Value="0" />
+                                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                    <Setter Property="VerticalContentAlignment" Value="Stretch" />
+                                    <Setter Property="Background" Value="Transparent" />
+                                    <Setter Property="Template">
+                                        <ControlTemplate>
+                                            <Border Background="{TemplateBinding Background}">
+                                                <ContentPresenter Content="{TemplateBinding Content}"
+                                                                  ContentTemplate="{TemplateBinding ContentTemplate}" />
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Setter>
+                                </ControlTheme>
+                            </ListBox.ItemContainerTheme>
+                            <ListBox.ItemTemplate>
+                                <DataTemplate x:DataType="vm:IconViewModel">
+                                    <StackPanel Spacing="2">
+                                        <!-- The images take no presses, the panel around them
+                                             does: Avalonia raises DoubleTapped only when both
+                                             presses land on the same element, and the first press
+                                             swaps which image is showing. See Wlrix.Files. -->
+                                        <Panel Width="64" Height="64" Background="Transparent"
+                                               HorizontalAlignment="Center">
+                                            <Image Classes="state rest" Source="{Binding Rest}" IsHitTestVisible="False" />
+                                            <Image Classes="state hover" Source="{Binding Hover}" IsHitTestVisible="False" />
+                                            <Image Classes="state selected" Source="{Binding Selected}" IsHitTestVisible="False" />
+                                            <Image Classes="state selectedInactive" Source="{Binding SelectedInactive}" IsHitTestVisible="False" />
+                                        </Panel>
+                                        <TextBlock Classes="label"
+                                                   Text="{Binding Name}"
+                                                   Foreground="{DynamicResource WlrixViewForeground}"
+                                                   FontStyle="Italic"
+                                                   TextAlignment="Center"
+                                                   TextWrapping="Wrap"
+                                                   TextTrimming="CharacterEllipsis"
+                                                   MaxWidth="104"
+                                                   MaxLines="2"
+                                                   HorizontalAlignment="Center" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+
+                        <!-- The rubber band, over the cells and out of layout. -->
+                        <Canvas Name="BandLayer" IsHitTestVisible="False" ClipToBounds="True">
+                            <Rectangle Name="Band"
+                                       IsVisible="False"
+                                       Fill="{DynamicResource WlrixSelection}"
+                                       Opacity="0.3"
+                                       Stroke="{DynamicResource WlrixSelection}"
+                                       StrokeThickness="1" />
+                        </Canvas>
+                    </Panel>
+                </DataTemplate>
+            </TabControl.ContentTemplate>
+        </wlrix:NotebookTabControl>
+    </DockPanel>
+</Window>

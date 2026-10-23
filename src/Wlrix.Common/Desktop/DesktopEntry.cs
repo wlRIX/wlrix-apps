@@ -78,6 +78,26 @@ public sealed class DesktopEntry
     /// </remarks>
     public string? StartupWmClass { get; init; }
 
+    /// <summary>
+    /// <c>X-WLRIX-Running-Icon</c>: a different symbol to show while the application is
+    /// running, as IRIX allowed.
+    /// </summary>
+    /// <remarks>
+    /// A wlRIX extension, read the same way by <c>wlrix-desktop</c>. The <c>X-</c> prefix is
+    /// the spec's own reservation, so the file stays valid elsewhere.
+    /// </remarks>
+    public string? RunningIcon { get; init; }
+
+    /// <summary>
+    /// <c>X-WLRIX-ControlPanel</c>: whether this is one of wlRIX's own control panels.
+    /// </summary>
+    /// <remarks>
+    /// The icon catalog files these on its ControlPanels page and stands them on the control
+    /// panel carpet rather than the generic one. <c>Categories=Settings</c> alone cannot say
+    /// this: every desktop's settings tools declare it.
+    /// </remarks>
+    public bool IsControlPanel { get; init; }
+
     /// <summary>The extra verbs from <c>Actions=</c>, in the order declared.</summary>
     public IReadOnlyList<DesktopAction> Actions { get; init; } = [];
 

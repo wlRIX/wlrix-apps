@@ -81,6 +81,7 @@ public static class Strings
     public static string OperationFailed(int count) => Catalog.Format("OperationFailed", count);
 
     /// <summary>The dismissing verb on a dialog. Not OperationCancel, which is "abort a job".</summary>
+    public static string DialogOk => Catalog.Get("DialogOk");
     public static string DialogCancel => Catalog.Get("DialogCancel");
 
     /// <summary>The title of both confirmations that stand between a double-click and a program.</summary>

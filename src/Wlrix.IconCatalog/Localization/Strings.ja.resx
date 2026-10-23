@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AppName" xml:space="preserve">
+    <value>アイコンカタログ</value>
+  </data>
+  <data name="Title" xml:space="preserve">
+    <value>アイコンカタログ: {0} ({2} ページ中 {1} ページ目)</value>
+  </data>
+  <data name="MenuPage" xml:space="preserve">
+    <value>ページ (_P)</value>
+  </data>
+  <data name="PageNew" xml:space="preserve">
+    <value>新規 (_N)</value>
+  </data>
+  <data name="PageRename" xml:space="preserve">
+    <value>名前の変更 (_R)</value>
+  </data>
+  <data name="PageRemove" xml:space="preserve">
+    <value>削除 (_E)</value>
+  </data>
+  <data name="PageUp" xml:space="preserve">
+    <value>上へ (_U)</value>
+  </data>
+  <data name="PageDown" xml:space="preserve">
+    <value>下へ (_D)</value>
+  </data>
+  <data name="PageExit" xml:space="preserve">
+    <value>終了 (_X)</value>
+  </data>
+  <data name="MenuSelected" xml:space="preserve">
+    <value>選択 (_S)</value>
+  </data>
+  <data name="SelectedOpen" xml:space="preserve">
+    <value>開く (_O)</value>
+  </data>
+  <data name="SelectedRemove" xml:space="preserve">
+    <value>削除 (_E)</value>
+  </data>
+  <data name="SelectedSelectAll" xml:space="preserve">
+    <value>すべて選択 (_A)</value>
+  </data>
+  <data name="MenuHelp" xml:space="preserve">
+    <value>ヘルプ (_H)</value>
+  </data>
+  <data name="HelpProductInfo" xml:space="preserve">
+    <value>製品情報 (_P)</value>
+  </data>
+  <data name="AboutTitle" xml:space="preserve">
+    <value>製品情報</value>
+  </data>
+  <data name="About" xml:space="preserve">
+    <value>アイコンカタログ {0}
+
+このシステムにインストールされているアプリケーションとコントロールパネルを起動します。ファイルやランチャーをページにドラッグすると、独自のアイコンを置いておけます。</value>
+  </data>
+  <data name="IconsShown" xml:space="preserve">
+    <value>{0} 個のアイコンを表示</value>
+  </data>
+  <data name="TabsHint" xml:space="preserve">
+    <value>タブをクリックしてカタログのページを切り替えます。</value>
+  </data>
+  <data name="NoPages" xml:space="preserve">
+    <value>カタログに表示できるものがインストールされていません。</value>
+  </data>
+  <data name="NewPageTitle" xml:space="preserve">
+    <value>新規ページ</value>
+  </data>
+  <data name="NewPagePrompt" xml:space="preserve">
+    <value>新しいページの名前:</value>
+  </data>
+  <data name="RenamePageTitle" xml:space="preserve">
+    <value>ページ名の変更</value>
+  </data>
+  <data name="RenamePagePrompt" xml:space="preserve">
+    <value>「{0}」の新しい名前:</value>
+  </data>
+  <data name="RemovePageTitle" xml:space="preserve">
+    <value>ページの削除</value>
+  </data>
+  <data name="RemovePageConfirm" xml:space="preserve">
+    <value>ページ「{0}」とそのアイコンを削除しますか?
+アプリケーション自体はインストールされたままです。</value>
+  </data>
+  <data name="DialogOk" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="DialogCancel" xml:space="preserve">
+    <value>キャンセル</value>
+  </data>
+  <data name="ErrorTitle" xml:space="preserve">
+    <value>エラー</value>
+  </data>
+  <data name="NoRunnableCommand" xml:space="preserve">
+    <value>「{0}」には実行できるコマンドがありません。</value>
+  </data>
+  <data name="NoTerminalForApp" xml:space="preserve">
+    <value>このアプリケーションを実行する端末エミュレータが見つかりません。</value>
+  </data>
+  <data name="CouldNotStart" xml:space="preserve">
+    <value>「{0}」を起動できませんでした。
+{1}</value>
+  </data>
+  <data name="Page_ControlPanels" xml:space="preserve">
+    <value>コントロールパネル</value>
+  </data>
+  <data name="Page_AudioVideo" xml:space="preserve">
+    <value>メディア</value>
+  </data>
+  <data name="Page_Development" xml:space="preserve">
+    <value>開発</value>
+  </data>
+  <data name="Page_Education" xml:space="preserve">
+    <value>教育</value>
+  </data>
+  <data name="Page_Game" xml:space="preserve">
+    <value>ゲーム</value>
+  </data>
+  <data name="Page_Graphics" xml:space="preserve">
+    <value>グラフィックス</value>
+  </data>
+  <data name="Page_Network" xml:space="preserve">
+    <value>インターネット</value>
+  </data>
+  <data name="Page_Office" xml:space="preserve">
+    <value>オフィス</value>
+  </data>
+  <data name="Page_Science" xml:space="preserve">
+    <value>科学</value>
+  </data>
+  <data name="Page_System" xml:space="preserve">
+    <value>システム</value>
+  </data>
+  <data name="Page_Utility" xml:space="preserve">
+    <value>ユーティリティ</value>
+  </data>
+  <data name="Page_Other" xml:space="preserve">
+    <value>その他</value>
+  </data>
+</root>

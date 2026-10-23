@@ -1,0 +1,51 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+        <ApplicationManifest>app.manifest</ApplicationManifest>
+        <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+        <AssemblyName>wlrix-icon-catalog</AssemblyName>
+        <Version>0.1.0</Version>
+        <!-- NWayland's generated bindings and runtime interop are unsafe. -->
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <!-- The magic carpets, read through the assembly's manifest rather than as Avalonia
+             resources so the renderer, which is plain Skia, can be tested with no display.
+             Should the control panel pair go missing, control panels fall back to the
+             generic carpet. -->
+        <EmbeddedResource Include="Assets\Carpets\*.svg" LogicalName="Carpets.%(Filename)%(Extension)" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Avalonia" />
+        <PackageReference Include="Avalonia.Desktop" />
+        <PackageReference Include="Avalonia.Wayland" />
+        <PackageReference Include="AvaloniaUI.DiagnosticsSupport">
+            <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
+            <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
+        </PackageReference>
+        <PackageReference Include="ReactiveUI.Avalonia" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+        <PackageReference Include="ZLogger" />
+        <PackageReference Include="Wlrix.Avalonia" />
+        <PackageReference Include="Wlrix.Avalonia.Dialogs" />
+        <!-- NWayland runtime, pinned to the version Avalonia.Wayland binds to. It ships the
+             ext-foreign-toplevel-list-v1 bindings, which is how the catalog learns what is
+             running: the protocol wlrix-desktop already reads for its own carpets. -->
+        <PackageReference Include="NWayland" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <!-- The localized strings, .desktop parsing, launching and the single-instance guard. -->
+        <ProjectReference Include="../Wlrix.Common/Wlrix.Common.csproj" />
+        <!-- The icon theme and the IRIX state tints, shared with the file manager. -->
+        <ProjectReference Include="../Wlrix.Icons/Wlrix.Icons.csproj" />
+        <!-- Follows the session's color scheme. One call in App.axaml.cs. -->
+        <ProjectReference Include="../Wlrix.Theme/Wlrix.Theme.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <InternalsVisibleTo Include="Wlrix.IconCatalog.Tests" />
+    </ItemGroup>
+</Project>

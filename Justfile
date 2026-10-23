@@ -1,12 +1,12 @@
 #!/usr/bin/env just --justfile
 #
-# Packaging for the wlRIX applications that own a file type, or belong in the Applications menu.
+# Packaging for the wlRIX applications that own a file type, or belong in the Icon Catalog.
 #
 # Most of the C# applications are launched by name from the Toolchest and the session, and the
 # epoch's `install-cs` installs those. The ones here additionally register a `.desktop` entry,
-# because something on the system opens files with them or because the Toolchest's Applications
-# menu is built from desktop entries -- the clock is only reachable there. Adding one is a line in
-# `apps` and a `data/*.desktop` beside the project.
+# because something on the system opens files with them or because the Icon Catalog is built
+# from desktop entries -- the clock is only reachable there, and the control panels are what fill
+# its ControlPanels page. Adding one is a line in `apps` and a `data/*.desktop` beside the project.
 #
 # The epoch installs the payloads for every C# application, including these; `install-desktop`
 # is the half it delegates back here, so the entries have one source of truth. `install` does
@@ -34,8 +34,18 @@ apps := "Wlrix.Archiver:wlrix-archiver:com.wlrix.archiver.desktop \
          Wlrix.Settings.Displays:wlrix-settings-displays:com.wlrix.settings.displays.desktop \
          Wlrix.Settings.Audio:wlrix-settings-audio:com.wlrix.settings.audio.desktop \
          Wlrix.Settings.Login:wlrix-settings-login:com.wlrix.settings.login.desktop \
+         Wlrix.Settings.Sound:wlrix-settings-sound:com.wlrix.settings.sound.desktop \
+         Wlrix.Settings.Keyboard:wlrix-settings-keyboard:com.wlrix.settings.keyboard.desktop \
+         Wlrix.Settings.Mouse:wlrix-settings-mouse:com.wlrix.settings.mouse.desktop \
+         Wlrix.Settings.Windows:wlrix-settings-windows:com.wlrix.settings.windows.desktop \
+         Wlrix.Settings.Schemes:wlrix-settings-schemes:com.wlrix.settings.schemes.desktop \
+         Wlrix.Settings.Network:wlrix-settings-network:com.wlrix.settings.network.desktop \
+         Wlrix.Settings.Power:wlrix-settings-power:com.wlrix.settings.power.desktop \
+         Wlrix.Settings.Bluetooth:wlrix-settings-bluetooth:com.wlrix.settings.bluetooth.desktop \
+         Wlrix.Settings.Users:wlrix-settings-users:com.wlrix.settings.users.desktop \
          Wlrix.ImageView:wlrix-imageview:com.wlrix.imageview.desktop \
-         Wlrix.Writer:wlrix-writer:com.wlrix.writer.desktop"
+         Wlrix.Writer:wlrix-writer:com.wlrix.writer.desktop \
+         Wlrix.IconCatalog:wlrix-icon-catalog:com.wlrix.iconcatalog.desktop"
 
 # List available recipes.
 default:

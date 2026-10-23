@@ -15,7 +15,8 @@ library. Apps recreate the IRIX Interactive Desktop surface.
 | `Wlrix.Settings.Client`   | lib  | Reads and writes wlRIX settings, through `wlrix-settings-daemon`.   |
 | `Wlrix.Theme`             | lib  | Keeps an app drawing in the session's color scheme. One call.       |
 | `Wlrix.Packages`          | lib  | The system package managers behind one interface. No UI.            |
-| `Wlrix.Files.Core`        | lib  | Files, listings, MIME, icons and thumbnails. No Avalonia at all.    |
+| `Wlrix.Icons`             | lib  | The XDG icon theme and IRIX's icon state tints. No Avalonia at all. |
+| `Wlrix.Files.Core`        | lib  | Files, listings, MIME and thumbnails. No Avalonia at all.           |
 | `Wlrix.Settings.Outputs`  | lib  | The connected displays, over wlr-output-management. No UI.          |
 | `Wlrix.Settings.Login.Core` | lib | The login screen's settings and their validation. No UI.           |
 | `Wlrix.Packages.Helper`   | exe  | `wlrix-pkg-helper` — the privileged half, run through `pkexec`.     |
@@ -50,15 +51,16 @@ library. Apps recreate the IRIX Interactive Desktop surface.
 | `Wlrix.ClipboardHistory`  | app  | The clipboard history popup, after KDE's. `Super+V` opens it.       |
 | `Wlrix.ImageView`         | app  | The image viewer, after IRIX's imgview. Reads and writes SGI files. |
 | `Wlrix.Writer`            | app  | The text editor, after NEdit, with tabs and a side-by-side split.   |
+| `Wlrix.IconCatalog`       | app  | The Icon Catalog, after IRIX's: applications and control panels on notebook pages. |
 
 Every project with tests has a `<project>.Tests` beside it under `tests/`. More apps (a terminal, among others) get
 added as sibling projects.
 
 ## Installing
 
-`wlrix-apps` had no packaging until the archiver needed to be an `xdg-open` handler; the
-`Justfile` covers that one application so far, and the others are still launched by name from the Toolchest and the
-session.
+`wlrix-apps` had no packaging until the archiver needed to be an `xdg-open` handler. The `Justfile` covers the
+applications with a desktop entry: those that open files, and those the Icon Catalog shows, the control panels among
+them. The others are still launched by name from the Toolchest and the session.
 
 ```
 just publish            # Linux-only, framework-dependent
@@ -181,6 +183,31 @@ used one carried its own template.
 
 `Program` also names a default font family. AvaloniaEdit asks for one while it is being
 constructed, and on a system where fontconfig gives Skia no default, Avalonia's `$Default` throws.
+
+## Icon Catalog
+
+`Wlrix.IconCatalog` (`wlrix-icon-catalog`, Toolchest → Find → Icon Catalog) replaced the Toolchest's
+Applications menu. Its notebook pages, tabs along the bottom as IRIX had them, come in two kinds:
+
+- **System pages** fill themselves from the installed desktop entries: ControlPanels first, then one page per
+  freedesktop main category. An application is on every page its categories name, so Steam is under both Games and
+  Internet. A category with nothing in it has no tab.
+- **Custom pages** are the user's, made, renamed and removed from the Page menu.
+
+**Drop anything on any page.** A launcher, a program or a document dragged from Files or the desktop stays on that
+page. On a system page, Selected ▸ Remove hides an installed application there, and dropping it back un-hides it.
+What the user changed is kept in `~/.local/share/wlrix/icon-catalog/state.json`. An icon whose application has been
+uninstalled is skipped but remembered, so it comes back if the application does.
+
+**Installs and removals show up on their own.** Every `applications` directory is watched with inotify, and a burst of
+changes is one rescan half a second after it settles.
+
+**Icons stand on the desktop's magic carpet**, flat when the application is not running and upright when it is,
+tinted by the same rule as Files: stippled at rest, white under the pointer, yellow when selected, and knocked back
+when the window does not have the keyboard. Running state comes from `ext-foreign-toplevel-list-v1`, matched the way
+`wlrix-desktop` matches it, plus the processes the catalog started itself. wlRIX's own settings panels mark themselves
+`X-WLRIX-ControlPanel=true` in their desktop entries and stand on the control panel carpet. Every second row of the
+grid is pushed right by half a cell, as in IRIX's catalog.
 
 ## Managing software
 

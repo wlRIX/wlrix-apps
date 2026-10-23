@@ -113,6 +113,8 @@ public static class DesktopEntryParser
             Keywords = main.Keywords,
             Path = main.Value("Path"),
             StartupWmClass = main.Value("StartupWMClass"),
+            RunningIcon = main.Value("X-WLRIX-Running-Icon"),
+            IsControlPanel = main.Bool("X-WLRIX-ControlPanel"),
             Actions = actions,
             FilePath = filePath
         };

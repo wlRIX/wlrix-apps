@@ -1,10 +1,7 @@
 using System.Collections.ObjectModel;
 using Avalonia.Threading;
-using Microsoft.Extensions.Logging;
-using Wlrix.Toolchest.Applications;
 using Wlrix.Toolchest.Localization;
 using Wlrix.Toolchest.Services;
-using ZLogger;
 
 namespace Wlrix.Toolchest.ViewModels;
 
@@ -27,6 +24,13 @@ public sealed class MainWindowViewModel : ViewModelBase
     /// History. The same program <c>Super+V</c> starts.
     /// </summary>
     private const string ClipboardHistoryProgram = "wlrix-clipboard-history";
+
+    /// <summary>
+    /// The installed name of the Icon Catalog, launched by Find → Icon Catalog. It replaced the
+    /// Applications menu: its pages follow installs and removals, and an application can be on
+    /// more than one of them.
+    /// </summary>
+    private const string IconCatalogProgram = "wlrix-icon-catalog";
 
     /// <summary>The installed name of the Software Manager, launched by System → Manage Software.</summary>
     private const string SoftwareManagerProgram = "wlrix-software-manager";
@@ -58,34 +62,23 @@ public sealed class MainWindowViewModel : ViewModelBase
     /// </summary>
     private const string RestartFlag = "--restart";
 
-    private readonly IApplicationCatalog _catalog;
     private readonly IAppLauncher _launcher;
     private readonly ISessionService _session;
-    private readonly ILogger<MainWindowViewModel> _logger;
 
-    public MainWindowViewModel(IApplicationCatalog catalog, IAppLauncher launcher,
-        ISessionService session, ILogger<MainWindowViewModel> logger)
+    public MainWindowViewModel(IAppLauncher launcher, ISessionService session)
     {
-        _catalog = catalog;
         _launcher = launcher;
         _session = session;
-        _logger = logger;
         _launcher.LaunchFailed += OnLaunchFailed;
-        BuildTopLevel(LoadingApplications());
+        BuildTopLevel();
     }
 
-    /// <summary>Design-time constructor: a small static tree for the previewer.</summary>
+    /// <summary>Design-time constructor, for the previewer and the menu tests.</summary>
     public MainWindowViewModel()
     {
-        _catalog = null!;
         _launcher = null!;
         _session = null!;
-        _logger = null!;
-        BuildTopLevel(new MenuNode(Strings.Applications,
-        [
-            new MenuNode(Strings.Category("Network"), [new MenuNode("Firefox"), new MenuNode("Thunderbird")]),
-            new MenuNode(Strings.Category("Utility"), [new MenuNode("Files"), new MenuNode("Text Editor")]),
-        ]));
+        BuildTopLevel();
     }
 
     /// <summary>Raised (UI thread) to show the About dialog with the given message.</summary>
@@ -105,25 +98,11 @@ public sealed class MainWindowViewModel : ViewModelBase
 
     public string Title => Strings.Toolchest;
 
-    /// <summary>Loads (and caches) the application catalog, then fills the Applications submenu.</summary>
-    public async Task LoadAsync()
-    {
-        try
-        {
-            var catalog = await _catalog.LoadAsync();
-            Dispatcher.UIThread.Post(() => BuildTopLevel(BuildApplications(catalog)));
-        }
-        catch (Exception ex)
-        {
-            _logger.ZLogError(ex, $"Failed to load the application catalog.");
-        }
-    }
-
     /// <summary>A menu item that starts <paramref name="program"/>, named <paramref name="label"/>.</summary>
     private MenuNode Launch(string label, string program) =>
         new(label, command: new RelayCommand(() => _launcher.Run(label, program)));
 
-    private void BuildTopLevel(MenuNode applications)
+    private void BuildTopLevel()
     {
         TopLevel.Clear();
         TopLevel.Add(new MenuNode(Strings.Desktop,
@@ -151,6 +130,9 @@ public sealed class MainWindowViewModel : ViewModelBase
             MenuNode.Separator(),
             new MenuNode(Strings.LogOut, command: new RelayCommand(() => _ = LogOutAsync())),
         ]));
+        // IRIX's Find menu, where the Icon Catalog lived. The catalog is what the Applications
+        // menu used to be, and more: a page per category, control panels, the user's own.
+        TopLevel.Add(new MenuNode(Strings.Find, [Launch(Strings.IconCatalog, IconCatalogProgram)]));
         TopLevel.Add(new MenuNode(Strings.System,
         [
             Launch(Strings.ManageSoftware, SoftwareManagerProgram),
@@ -173,29 +155,8 @@ public sealed class MainWindowViewModel : ViewModelBase
             new MenuNode(Strings.ShutDownSystem,
                 command: new RelayCommand(() => _launcher.Run(Strings.ShutDownSystem, ShutdownProgram))),
         ]));
-        TopLevel.Add(applications);
         TopLevel.Add(new MenuNode(Strings.Help,
             [new MenuNode(Strings.AboutToolchest, command: new RelayCommand(RaiseAbout))]));
-    }
-
-    private static MenuNode LoadingApplications() =>
-        new(Strings.Applications, [new MenuNode(Strings.Loading, isEnabled: false)]);
-
-    private MenuNode BuildApplications(Catalog catalog)
-    {
-        if (catalog.Categories.Count == 0)
-            return LoadingApplications();
-
-        var categories = catalog.Categories
-            .Select(category => new MenuNode(
-                Strings.Category(category.Id),
-                category.Apps
-                    .Select(app => new MenuNode(app.Name,
-                        command: new RelayCommand(() => _launcher.Launch(app.Name, app.Exec, app.Terminal))))
-                    .ToList()))
-            .ToList();
-
-        return new MenuNode(Strings.Applications, categories);
     }
 
     /// <summary>

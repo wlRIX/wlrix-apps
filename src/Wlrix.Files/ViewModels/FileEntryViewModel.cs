@@ -2,7 +2,7 @@ using System.ComponentModel;
 using System.Globalization;
 using Avalonia.Media.Imaging;
 using Wlrix.Files.Core;
-using Wlrix.Files.Core.Icons;
+using Wlrix.Icons;
 using Wlrix.Files.Core.Thumbnails;
 using Wlrix.Files.Localization;
 using Wlrix.Files.Services;

@@ -132,7 +132,7 @@ public partial class MainWindow : Window
         (DataContext as MainWindowViewModel)?.CancelOperation();
 
     private Task<string?> OnPrompt(string title, string prompt, string initial, bool selectExtension) =>
-        PromptDialog.ShowAsync(this, title, prompt, initial, selectExtension);
+        PromptDialog.ShowAsync(this, title, prompt, initial, selectExtension, Strings.DialogOk, Strings.DialogCancel);
 
     private async Task<bool> OnConfirm(string title, string message) =>
         await MessageDialog.ShowAsync(this, DialogType.Question, message,

@@ -28,7 +28,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <!-- Decoding icons and, later, thumbnails. Skia is already in every app's output
+        <!-- Rendering thumbnails. Skia is already in every app's output
              through Avalonia; pinning the same version keeps it to one native library. -->
         <PackageReference Include="SkiaSharp" />
         <PackageReference Include="SkiaSharp.NativeAssets.Linux" />
@@ -46,5 +46,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Wlrix.Common\Wlrix.Common.csproj" />
+        <!-- The icon theme and the IRIX state tints, shared with the icon catalog. -->
+        <ProjectReference Include="..\Wlrix.Icons\Wlrix.Icons.csproj" />
     </ItemGroup>
 </Project>

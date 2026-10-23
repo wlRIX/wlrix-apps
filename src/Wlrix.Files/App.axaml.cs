@@ -11,7 +11,7 @@ using Wlrix.Common.Desktop;
 using Wlrix.Common.Localization;
 using Wlrix.Files.Core;
 using Wlrix.Files.Core.Dnd;
-using Wlrix.Files.Core.Icons;
+using Wlrix.Icons;
 using Wlrix.Files.Core.Mime;
 using Wlrix.Files.Core.Mtp;
 using Wlrix.Files.Core.Operations;

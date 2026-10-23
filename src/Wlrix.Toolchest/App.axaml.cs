@@ -5,7 +5,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Wlrix.Common;
 using Wlrix.Common.Localization;
 using Wlrix.Theme;
-using Wlrix.Toolchest.Applications;
 using Wlrix.Toolchest.Localization;
 using Wlrix.Toolchest.Services;
 using Wlrix.Toolchest.ViewModels;
@@ -38,7 +37,6 @@ public partial class App : Application
         {
             var services = new ServiceCollection();
             services.AddZLogger("toolchest");
-            services.AddSingleton<IApplicationCatalog, ApplicationCatalog>();
             services.AddSingleton<IAppLauncher, AppLauncher>();
             services.AddSingleton<ISessionService, SessionService>();
             services.AddTransient<MainWindowViewModel>();

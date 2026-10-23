@@ -9,10 +9,9 @@ namespace Wlrix.Archiver.Views;
 
 /// <summary>Asks for an archive's password.</summary>
 /// <remarks>
-/// A masked cousin of wlRIX Files' PromptDialog, and the second application to want an input
-/// dialog — which by that file's own note is the moment the shape earns promotion into
-/// <c>Wlrix.Avalonia.Dialogs</c>, where only <c>MessageDialog</c> lives today. Left here for now
-/// because moving it is a theme release rather than an edit.
+/// A masked cousin of <c>Wlrix.Avalonia.Dialogs.PromptDialog</c>, which moved there from wlRIX
+/// Files. This one stays in the app: it also asks how to encrypt, which no other application
+/// needs.
 ///
 /// <para>
 /// Nothing remembers what is typed beyond the window that asked: no keyring entry, no file. An

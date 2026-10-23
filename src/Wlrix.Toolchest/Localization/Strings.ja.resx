@@ -18,11 +18,14 @@
   <data name="Desktop" xml:space="preserve">
     <value>デスクトップ</value>
   </data>
+  <data name="Find" xml:space="preserve">
+    <value>検索</value>
+  </data>
+  <data name="IconCatalog" xml:space="preserve">
+    <value>アイコンカタログ</value>
+  </data>
   <data name="System" xml:space="preserve">
     <value>システム</value>
-  </data>
-  <data name="Applications" xml:space="preserve">
-    <value>アプリケーション</value>
   </data>
   <data name="Help" xml:space="preserve">
     <value>ヘルプ</value>
@@ -62,48 +65,9 @@
   <data name="AboutToolchest" xml:space="preserve">
     <value>ツールチェストについて</value>
   </data>
-  <data name="Loading" xml:space="preserve">
-    <value>読み込み中…</value>
-  </data>
   <data name="AboutMessage" xml:space="preserve">
     <value>wlRIX ツールチェスト
 バージョン {0}</value>
-  </data>
-  <data name="Category_AudioVideo" xml:space="preserve">
-    <value>サウンドとビデオ</value>
-  </data>
-  <data name="Category_Development" xml:space="preserve">
-    <value>開発</value>
-  </data>
-  <data name="Category_Education" xml:space="preserve">
-    <value>教育</value>
-  </data>
-  <data name="Category_Game" xml:space="preserve">
-    <value>ゲーム</value>
-  </data>
-  <data name="Category_Graphics" xml:space="preserve">
-    <value>グラフィックス</value>
-  </data>
-  <data name="Category_Network" xml:space="preserve">
-    <value>インターネット</value>
-  </data>
-  <data name="Category_Office" xml:space="preserve">
-    <value>オフィス</value>
-  </data>
-  <data name="Category_Science" xml:space="preserve">
-    <value>科学</value>
-  </data>
-  <data name="Category_Settings" xml:space="preserve">
-    <value>設定</value>
-  </data>
-  <data name="Category_System" xml:space="preserve">
-    <value>システム</value>
-  </data>
-  <data name="Category_Utility" xml:space="preserve">
-    <value>アクセサリ</value>
-  </data>
-  <data name="Category_Other" xml:space="preserve">
-    <value>その他</value>
   </data>
   <data name="Windows" xml:space="preserve">
     <value>ウィンドウ</value>

@@ -1,7 +1,7 @@
 using ResvgSharp;
 using SkiaSharp;
 
-namespace Wlrix.Files.Core.Icons;
+namespace Wlrix.Icons;
 
 /// <summary>
 /// Resolves an icon name and renders it, at a size, as PNG bytes.

@@ -1,6 +1,6 @@
 using SkiaSharp;
 
-namespace Wlrix.Files.Core.Icons;
+namespace Wlrix.Icons;
 
 /// <summary>Which state an icon is in: at rest, under the pointer, or selected.</summary>
 public enum IconState

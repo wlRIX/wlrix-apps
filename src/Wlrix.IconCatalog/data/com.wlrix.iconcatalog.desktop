@@ -1,0 +1,17 @@
+[Desktop Entry]
+Type=Application
+Name=Icon Catalog
+Name[ja]=アイコンカタログ
+Comment=Find and start applications and control panels
+Comment[ja]=アプリケーションとコントロールパネルを探して起動します
+Icon=system-file-manager
+Categories=Utility;
+Keywords=applications;launcher;programs;control panels;
+Exec=wlrix-icon-catalog
+TryExec=wlrix-icon-catalog
+Terminal=false
+
+# Matches the Wayland app id set in Program.BuildAvaloniaApp. `wlrix-desktop` looks a running
+# window up by StartupWMClass first, and wlrix-compositor frames the window by the same id.
+StartupWMClass=com.wlrix.iconcatalog
+StartupNotify=false

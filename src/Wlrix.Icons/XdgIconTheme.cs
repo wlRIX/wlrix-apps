@@ -1,4 +1,4 @@
-namespace Wlrix.Files.Core.Icons;
+namespace Wlrix.Icons;
 
 /// <summary>
 /// Turns an icon name into a file, per the freedesktop Icon Theme Specification.
@@ -142,7 +142,7 @@ public sealed class XdgIconTheme
 
     /// <summary>The first of several candidate names that resolves.</summary>
     /// <remarks>
-    /// What <see cref="Mime.SharedMimeDatabase.IconNamesFor"/> produces is a most-specific-first
+    /// What Wlrix.Files.Core's <c>SharedMimeDatabase.IconNamesFor</c> produces is a most-specific-first
     /// list, and this walks it: <c>text-markdown</c> if the theme has it, else the generic
     /// hint, else <c>text-x-generic</c>.
     /// </remarks>

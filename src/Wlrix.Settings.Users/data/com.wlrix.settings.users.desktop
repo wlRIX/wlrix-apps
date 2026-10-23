@@ -1,0 +1,21 @@
+[Desktop Entry]
+Type=Application
+Name=User Accounts
+Name[ja]=ユーザーアカウント
+Comment=Change your account's picture, password and fingerprint sign-in
+Comment[ja]=アカウントの画像、パスワード、指紋サインインを変更します
+Icon=system-users
+Categories=Settings;System;
+Keywords=user;account;password;fingerprint;picture;avatar;
+Exec=wlrix-settings-users
+TryExec=wlrix-settings-users
+Terminal=false
+
+# One of wlRIX's control panels: the icon catalog files it on its ControlPanels page and stands
+# it on the control panel carpet. A wlRIX extension; the X- prefix keeps the file valid elsewhere.
+X-WLRIX-ControlPanel=true
+
+# Matches the Wayland app id set in Program.BuildAvaloniaApp. `wlrix-desktop` looks a running
+# window up by StartupWMClass first, and wlrix-compositor frames the window by the same id.
+StartupWMClass=com.wlrix.settings.users
+StartupNotify=false

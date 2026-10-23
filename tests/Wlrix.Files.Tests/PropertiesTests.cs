@@ -2,7 +2,7 @@ using Wlrix.Files.Core;
 using System.Globalization;
 using Avalonia.Threading;
 using System.Reactive.Linq;
-using Wlrix.Files.Core.Icons;
+using Wlrix.Icons;
 using Wlrix.Files.Core.Metadata;
 using Wlrix.Files.Core.Mime;
 using Wlrix.Files.Core.Platform;

@@ -1,0 +1,21 @@
+[Desktop Entry]
+Type=Application
+Name=Color Scheme Browser
+Name[ja]=カラー・スキーム・ブラウザ
+Comment=Choose the desktop's color scheme
+Comment[ja]=デスクトップのカラースキームを選びます
+Icon=preferences-desktop-theme
+Categories=Settings;DesktopSettings;
+Keywords=color;colour;scheme;theme;appearance;dark;
+Exec=wlrix-settings-schemes
+TryExec=wlrix-settings-schemes
+Terminal=false
+
+# One of wlRIX's control panels: the icon catalog files it on its ControlPanels page and stands
+# it on the control panel carpet. A wlRIX extension; the X- prefix keeps the file valid elsewhere.
+X-WLRIX-ControlPanel=true
+
+# Matches the Wayland app id set in Program.BuildAvaloniaApp. `wlrix-desktop` looks a running
+# window up by StartupWMClass first, and wlrix-compositor frames the window by the same id.
+StartupWMClass=com.wlrix.settings.schemes
+StartupNotify=false

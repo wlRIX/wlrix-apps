@@ -5,5 +5,8 @@
     
     <ItemGroup>
         <PackageReference Include="ZLogger" />
+        <!-- The single-instance guard in Instance/. Already in every Avalonia app's output
+             through Avalonia.FreeDesktop, so this adds nothing to what ships. -->
+        <PackageReference Include="Tmds.DBus.Protocol" />
     </ItemGroup>
 </Project>
