@@ -1,0 +1,23 @@
+[Desktop Entry]
+Type=Application
+Name=Software Manager
+Name[ja]=ソフトウェアマネージャ
+GenericName=Package Manager
+GenericName[ja]=パッケージマネージャ
+Comment=Install, update and remove software
+Comment[ja]=ソフトウェアのインストール、更新、削除を行います
+Icon=com.wlrix.softwaremanager
+Categories=System;PackageManager;
+Keywords=software;install;update;upgrade;remove;package;packages;
+Exec=wlrix-software-manager
+TryExec=wlrix-software-manager
+Terminal=false
+
+# The symbol while it is running, as IRIX's swmgr had: its .exec.open drawing. A wlRIX
+# extension, read by wlrix-desktop and the icon catalog; the X- prefix keeps the file valid.
+X-WLRIX-Running-Icon=com.wlrix.softwaremanager-running
+
+# Matches the Wayland app id set in Program.BuildAvaloniaApp. `wlrix-desktop` looks a running
+# window up by StartupWMClass first, and wlrix-compositor frames the window by the same id.
+StartupWMClass=com.wlrix.softwaremanager
+StartupNotify=false

@@ -1,37 +1,46 @@
 <?xml version="1.0" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20000303 Stylable//EN"
 	"http://www.w3.org/TR/2000/03/WD-SVG-20000303/DTD/svg-20000303-stylable.dtd">
-<svg xmlns="http://www.w3.org/2000/svg" width="50pt" height="50pt" viewBox="0 0 50 50" xml:space="preserve">
+<svg width="50pt" height="50pt" viewBox="0 0 50 50" xml:space="preserve">
 <g transform="scale(0.5)">
-	<g id="Mouse Cord In Front of Backdrop" style="fill-rule:nonzero;clip-rule:nonzero;fill:#C0C0C0;stroke:none;stroke-miterlimit:4;fill-opacity:50%;">
-		<path d="M51.30 42.3L51.30 40L53.90 40.1L56.20 40.1L58.00 40.6L59.10 41.3L59.60 42.5L59.70 44.2L58.90 45.2L57.60 46.2L54.70 47.1L52.20 47.8L49.80 48.7L48.90 49.5L48.60 50.4L48.60 51.2L49.30 52.2L50.80 53.2L53.70 54.3L55.20 54.9L55.60 55.4L55.50 56.7L54.20 57.5L52.80 57.5L51.60 57.1L49.90 56.6L48.60 56L46.60 54.8L45.70 53.8L45.20 53.3L44.70 51.9L44.80 50.8L44.80 49.9L45.20 48.9L45.90 47.8L46.80 46.9L48.20 46.1L49.90 45.5L51.20 45.2L54.10 44.6L56.00 44.1L56.70 43.6L56.80 43.1L56.30 42.7L55.60 42.4L53.70 42.2z"/>
+	<g id="Path_0" style="fill-rule:nonzero;clip-rule:nonzero;fill:#FFFFFF;stroke:none;stroke-miterlimit:4;fill-opacity:100%;">
+		<path d="M27.40 32.2L36.08 36.74L32.30 39.77L23.42 35.43z"/>
 	</g>
-	<g id="Mouse Body" style="fill-rule:none;clip-rule:nonzero;fill:#FFFFFF;stroke:#000000;stroke-miterlimit:4;fill-opacity:100%;">
-		<path d="M60.80 79L60.10 79.1L59.40 78.9L39.70 65.4L39.00 64.8L38.90 63.9L38.90 61.9L39.00 61.1L39.40 60.4L39.90 60L40.60 59.6L59.90 53.5L61.20 53.3L62.40 53.2L70.30 54.7L71.30 55L72.30 55.5L80.60 60.7L81.50 61.2L81.90 62.1L82.00 63.5L82.00 71.3L81.80 72.2L81.20 72.6z"/>
+	<g id="Path_0" style="fill-rule:none;clip-rule:nonzero;fill:#FFFFFF;stroke:#000000;stroke-miterlimit:4;fill-opacity:100%;">
+		<path d="M26.48 47.03L30.80 40.74L39.40 34.4L44.50 32.94L52.55 30.82L62.73 31.03L78.71 38.93L86.76 49.14L86.69 56.48L84.40 62.4L77.92 67.31L70.06 69.67L60.19 69.73L26.53 52.68z"/>
 	</g>
-	<g id="Far Button" style="fill-rule:nonzero;clip-rule:nonzero;fill:#a8a8a8;stroke:none;stroke-miterlimit:4;fill-opacity:100%;">
-		<path d="M64.10 56.4L60.00 55.6L59.70 55.2L60.20 54.8L61.50 54.6L62.60 54.7L67.00 55.5L67.40 55.9L67.00 56.3L65.80 56.6z"/>
+	<g id="Path_2" style="fill-rule:nonzero;clip-rule:nonzero;fill:#a8a8a8;stroke:none;stroke-miterlimit:4;fill-opacity:100%;">
+		<path d="M30.21 46.27L37.19 45.37L52.00 52.09L59.85 61.32L59.27 67.13L30.21 52.53z"/>
 	</g>
-	<g id="outline" style="fill-rule:none;clip-rule:nonzero;fill:none;stroke:#000000;stroke-miterlimit:4;fill-opacity:100%;">
-		<path d="M67.40 55.9L67.00 56.3L65.80 56.6L64.10 56.4L60.00 55.6L59.70 55.2"/>
+	<g id="Path_8" style="fill-rule:nonzero;clip-rule:nonzero;fill:#a8a8a8;stroke:none;stroke-miterlimit:4;fill-opacity:100%;">
+		<path d="M59.27 67.13L59.85 61.32L68.69 62.79L68.67 66.87z"/>
 	</g>
-	<g id="Mid Button" style="fill-rule:nonzero;clip-rule:nonzero;fill:#a8a8a8;stroke:none;stroke-miterlimit:4;fill-opacity:100%;">
-		<path d="M57.50 58.6L53.00 57.8L52.80 57.3L53.30 56.8L54.70 56.7L55.90 56.7L60.40 57.6L61.20 58L60.70 58.5L59.30 58.7z"/>
+	<g id="Path_8" style="fill-rule:nonzero;clip-rule:nonzero;fill:#a8a8a8;stroke:none;stroke-miterlimit:4;fill-opacity:100%;">
+		<path d="M68.67 66.87L68.69 62.79L77.72 61.03L77.33 64.66z"/>
 	</g>
-	<g id="outline" style="fill-rule:none;clip-rule:nonzero;fill:none;stroke:#000000;stroke-miterlimit:4;fill-opacity:100%;">
-		<path d="M61.20 58L60.70 58.5L59.30 58.7L57.50 58.6L53.00 57.8L52.80 57.3"/>
+	<g id="Path_5" style="fill-rule:none;clip-rule:nonzero;fill:none;stroke:#000000;stroke-miterlimit:4;fill-opacity:100%;">
+		<path d="M48.86 39.92L41.08 38.05L35.99 37.52"/>
 	</g>
-	<g id="Near Button" style="fill-rule:nonzero;clip-rule:nonzero;fill:#a8a8a8;stroke:none;stroke-miterlimit:4;fill-opacity:100%;">
-		<path d="M50.40 60.8L46.20 59.9L45.90 59.6L46.30 59.2L47.80 58.9L49.00 59L53.30 59.9L54.00 60.3L53.50 60.8L52.20 61z"/>
+	<g id="Path_6" style="fill-rule:none;clip-rule:nonzero;fill:none;stroke:#000000;stroke-miterlimit:4;fill-opacity:100%;">
+		<path d="M34.11 41.21L34.32 43.12L37.08 43.33L39.20 41.64"/>
 	</g>
-	<g id="outline" style="fill-rule:none;clip-rule:nonzero;fill:none;stroke:#000000;stroke-miterlimit:4;fill-opacity:100%;">
-		<path d="M54.00 60.3L53.50 60.8L52.20 61L50.40 60.8L46.20 59.9L45.90 59.6"/>
+	<g id="Path_7" style="fill-rule:none;clip-rule:nonzero;fill:none;stroke:#000000;stroke-miterlimit:4;fill-opacity:100%;">
+		<path d="M57.37 35.34L49.59 33.47L44.50 32.94"/>
 	</g>
-	<g id="Side Edge of Mouse Body" style="fill-rule:none;clip-rule:nonzero;fill:none;stroke:#000000;stroke-miterlimit:4;fill-opacity:100%;">
-		<path d="M41.50 60.9L51.40 63.6L52.40 64L58.70 67.8L59.50 68.4L60.00 69.4L60.20 70.8L60.20 78"/>
+	<g id="Path_8" style="fill-rule:none;clip-rule:nonzero;fill:none;stroke:#000000;stroke-miterlimit:4;fill-opacity:100%;">
+		<path d="M41.99 50.56L42.02 47.3L48.86 39.92L57.37 35.34L66.92 33.04"/>
 	</g>
-	<g id="Front Edge of Mouse Body" style="fill-rule:none;clip-rule:nonzero;fill:none;stroke:#000000;stroke-miterlimit:4;fill-opacity:100%;">
-		<path d="M75.60 63.5L61.80 67.9L61.00 68.3L60.70 68.9"/>
+	<g id="Path_9" style="fill-rule:none;clip-rule:nonzero;fill:none;stroke:#000000;stroke-miterlimit:4;fill-opacity:100%;">
+		<path d="M54.88 30.55L55.94 31.82L57.64 31.82L59.97 30.98"/>
+	</g>
+	<g id="Path_10" style="fill-rule:none;clip-rule:nonzero;fill:none;stroke:#000000;stroke-miterlimit:4;fill-opacity:100%;">
+		<path d="M36.60 36.8L27.40 32.2"/>
+	</g>
+	<g id="Path_11" style="fill-rule:none;clip-rule:nonzero;fill:none;stroke:#000000;stroke-miterlimit:4;fill-opacity:100%;">
+		<path d="M32.30 39.77L23.42 35.43"/>
+	</g>
+	<g id="Path_8" style="fill-rule:nonzero;clip-rule:nonzero;fill:#a8a8a8;stroke:none;stroke-miterlimit:4;fill-opacity:100%;">
+		<path d="M77.33 64.66L77.72 61.03L83.61 57.1L83.42 60.44z"/>
 	</g>
 </g>
 </svg>

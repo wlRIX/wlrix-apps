@@ -49,7 +49,8 @@ apps := "Wlrix.Archiver:wlrix-archiver:com.wlrix.archiver.desktop \
          Wlrix.Settings.Users:wlrix-settings-users:com.wlrix.settings.users.desktop \
          Wlrix.ImageView:wlrix-imageview:com.wlrix.imageview.desktop \
          Wlrix.Writer:wlrix-writer:com.wlrix.writer.desktop \
-         Wlrix.IconCatalog:wlrix-icon-catalog:com.wlrix.iconcatalog.desktop"
+         Wlrix.IconCatalog:wlrix-icon-catalog:com.wlrix.iconcatalog.desktop \
+         Wlrix.SoftwareManager:wlrix-software-manager:com.wlrix.softwaremanager.desktop"
 
 # List available recipes.
 default:
