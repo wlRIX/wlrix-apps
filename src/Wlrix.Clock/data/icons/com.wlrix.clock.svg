@@ -1,0 +1,61 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20000303 Stylable//EN"
+	"http://www.w3.org/TR/2000/03/WD-SVG-20000303/DTD/svg-20000303-stylable.dtd">
+<svg xmlns="http://www.w3.org/2000/svg" width="50pt" height="50pt" viewBox="0 0 50 50" xml:space="preserve">
+<g transform="scale(0.5)">
+	<g id="Clock Body" style="fill-rule:none;clip-rule:nonzero;fill:#FFFFFF;stroke:#000000;stroke-miterlimit:4;fill-opacity:100%;">
+		<path d="M44.00 75L34.00 70L34.00 21L74.00 1L84.00 6L84.00 55z"/>
+	</g>
+	<g id="Outlines" style="fill-rule:none;clip-rule:nonzero;fill:none;stroke:#000000;stroke-miterlimit:4;fill-opacity:100%;">
+		<path d="M44.00 75L44.00 60"/>
+	</g>
+	<g id="Path_2" style="fill-rule:none;clip-rule:nonzero;fill:none;stroke:#000000;stroke-miterlimit:4;fill-opacity:100%;">
+		<path d="M44.00 26L34.00 21"/>
+	</g>
+	<g id="Path_3" style="fill-rule:none;clip-rule:nonzero;fill:none;stroke:#000000;stroke-miterlimit:4;fill-opacity:100%;">
+		<path d="M44.00 26L84.00 6"/>
+	</g>
+	<g id="Clock Numbers" style="fill-rule:nonzero;clip-rule:nonzero;fill:#f80000;stroke:none;stroke-miterlimit:4;fill-opacity:100%;">
+		<path d="M63.00 61L63.00 58L65.00 57L65.00 60z"/>
+	</g>
+	<g id="Path_5" style="fill-rule:none;clip-rule:nonzero;fill:none;stroke:#000000;stroke-miterlimit:4;fill-opacity:100%;">
+		<path d="M57.00 61L58.00 57"/>
+	</g>
+	<g id="Path_6" style="fill-rule:none;clip-rule:nonzero;fill:none;stroke:#000000;stroke-miterlimit:4;fill-opacity:100%;">
+		<path d="M49.00 56L51.00 53"/>
+	</g>
+	<g id="Path_7" style="fill-rule:nonzero;clip-rule:nonzero;fill:#f80000;stroke:none;stroke-miterlimit:4;fill-opacity:100%;">
+		<path d="M47.00 49L47.00 47L50.00 46L50.00 48z"/>
+	</g>
+	<g id="Path_8" style="fill-rule:none;clip-rule:nonzero;fill:none;stroke:#000000;stroke-miterlimit:4;fill-opacity:100%;">
+		<path d="M47.80 37.1L51.00 37.8"/>
+	</g>
+	<g id="Path_9" style="fill-rule:none;clip-rule:nonzero;fill:none;stroke:#000000;stroke-miterlimit:4;fill-opacity:100%;">
+		<path d="M54.60 25.5L56.20 28.2"/>
+	</g>
+	<g id="Path_10" style="fill-rule:nonzero;clip-rule:nonzero;fill:#f80000;stroke:none;stroke-miterlimit:4;fill-opacity:100%;">
+		<path d="M62.00 21L64.00 20L64.00 24L62.00 25z"/>
+	</g>
+	<g id="Path_11" style="fill-rule:none;clip-rule:nonzero;fill:none;stroke:#000000;stroke-miterlimit:4;fill-opacity:100%;">
+		<path d="M70.30 20.4L69.10 23.8"/>
+	</g>
+	<g id="Path_12" style="fill-rule:none;clip-rule:nonzero;fill:none;stroke:#000000;stroke-miterlimit:4;fill-opacity:100%;">
+		<path d="M77.00 24.7L74.70 27.2"/>
+	</g>
+	<g id="Path_13" style="fill-rule:nonzero;clip-rule:nonzero;fill:#f80000;stroke:none;stroke-miterlimit:4;fill-opacity:100%;">
+		<path d="M76.00 35L76.00 33L78.00 32L78.00 34z"/>
+	</g>
+	<g id="Path_14" style="fill-rule:none;clip-rule:nonzero;fill:none;stroke:#000000;stroke-miterlimit:4;fill-opacity:100%;">
+		<path d="M78.20 43.5L74.70 43"/>
+	</g>
+	<g id="Path_15" style="fill-rule:none;clip-rule:nonzero;fill:none;stroke:#000000;stroke-miterlimit:4;fill-opacity:100%;">
+		<path d="M72.00 55.4L70.50 52.9"/>
+	</g>
+	<g id="Small Hand" style="fill-rule:none;clip-rule:nonzero;fill:#000000;stroke:#000000;stroke-miterlimit:4;fill-opacity:75%;">
+		<path d="M65.40 42.1L53.30 45.4L64.50 37.1z"/>
+	</g>
+	<g id="Big Hand" style="fill-rule:none;clip-rule:nonzero;fill:#000000;stroke:#000000;stroke-miterlimit:4;fill-opacity:75%;">
+		<path d="M61.80 42.9L63.50 25.4L65.50 41.9z"/>
+	</g>
+</g>
+</svg>

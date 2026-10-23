@@ -4,6 +4,7 @@ Name=wlRIX Clock
 Name[ja]=wlRIX 時計
 Comment=An analog clock for the desktop
 Comment[ja]=デスクトップ用のアナログ時計
+Icon=com.wlrix.clock
 Categories=Utility;Clock;
 Exec=wlrix-clock
 TryExec=wlrix-clock

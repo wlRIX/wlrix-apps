@@ -2,7 +2,7 @@
 Type=Application
 Name=Displays
 Comment=Arrange displays and set their resolution, scale, orientation and HDR
-Icon=preferences-desktop-display
+Icon=com.wlrix.settings.displays
 Categories=Settings;HardwareSettings;
 Keywords=monitor;screen;resolution;refresh;scale;rotation;HDR;VRR;
 Exec=wlrix-settings-displays

@@ -1,0 +1,25 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20000303 Stylable//EN"
+	"http://www.w3.org/TR/2000/03/WD-SVG-20000303/DTD/svg-20000303-stylable.dtd">
+<svg xmlns="http://www.w3.org/2000/svg" width="50pt" height="50pt" viewBox="0 0 50 50" xml:space="preserve">
+<g transform="scale(0.5)">
+	<g id="Circle" style="fill-rule:none;clip-rule:nonzero;fill:#000000;stroke:#000000;stroke-miterlimit:4;fill-opacity:75%;">
+		<path d="M56.78 7.7L56.78 7.7L66.10 8.34L71.48 14.89L71.48 25.61L66.10 37.62L56.78 47.7L46.01 53.15L36.69 52.52L31.31 45.96L31.31 35.24L36.69 23.24L46.01 13.15z"/>
+	</g>
+	<g id="Path_1" style="fill-rule:none;clip-rule:nonzero;fill:none;stroke:#883888;stroke-miterlimit:4;fill-opacity:75%;">
+		<path d="M55.20 54.6L62.40 51.2L72.40 41.2L77.40 28.7L77.50 23.76"/>
+	</g>
+	<g id="Path_2" style="fill-rule:none;clip-rule:nonzero;fill:none;stroke:#883888;stroke-miterlimit:4;fill-opacity:75%;">
+		<path d="M60.00 65L71.84 56.56L82.60 45.8L87.98 32.34L88.28 22.24"/>
+	</g>
+	<g id="Path_3" style="fill-rule:none;clip-rule:nonzero;fill:none;stroke:#883888;stroke-miterlimit:4;fill-opacity:75%;">
+		<path d="M63.40 76L81.68 62.72L93.20 51.2L98.96 36.8L98.96 19.52"/>
+	</g>
+	<g id="Circle" style="fill-rule:none;clip-rule:nonzero;fill:#7c7e7c;stroke:#000000;stroke-miterlimit:4;fill-opacity:75%;">
+		<path d="M56.28 23.69L58.00 29.2L53.31 36.25L46.90 37.78L45.18 32.27L49.87 25.23z"/>
+	</g>
+	<g id="Path_5" style="fill-rule:nonzero;clip-rule:nonzero;fill:#FFFFFF;stroke:none;stroke-miterlimit:4;fill-opacity:100%;">
+		<path d="M52.59 24.58L57.59 27.08L52.59 29.58z"/>
+	</g>
+</g>
+</svg>

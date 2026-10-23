@@ -1,0 +1,28 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20000303 Stylable//EN"
+	"http://www.w3.org/TR/2000/03/WD-SVG-20000303/DTD/svg-20000303-stylable.dtd">
+<svg xmlns="http://www.w3.org/2000/svg" width="50pt" height="50pt" viewBox="0 0 50 50" xml:space="preserve">
+<g transform="scale(0.5)">
+	<g id="Monitor Stand" style="fill-rule:none;clip-rule:nonzero;fill:#c0c498;stroke:#000000;stroke-miterlimit:4;">
+		<path d="M40.26 74.4L30.40 69.47L30.40 67.01L32.87 65.77L58.75 57.15L58.75 59.61L63.68 62.08z"/>
+	</g>
+	<g id="Monitor Back" style="fill-rule:none;clip-rule:nonzero;fill:#c0c498;stroke:#000000;stroke-miterlimit:4;">
+		<path d="M25.47 55.91L20.79 48.15L20.54 33.73L21.78 30.03L39.03 21.4L40.88 21.03L49.14 21.16z"/>
+	</g>
+	<g id="Monitor Shell" style="fill-rule:none;clip-rule:nonzero;fill:#c0c498;stroke:#000000;stroke-miterlimit:4;">
+		<path d="M41.50 67.01L37.18 67.87L35.09 67.25L27.82 63.56L25.47 59.61L25.47 37.43L25.84 34.84L29.05 31.63L50.25 20.42L52.10 19.93L55.05 20.42L63.43 24.98L64.67 26.58L64.91 31.26L64.91 49.75L64.05 53.7L61.95 55.79z"/>
+	</g>
+	<g id="Screen" style="fill-rule:none;clip-rule:nonzero;fill:#f8fc7c;stroke:#000000;stroke-miterlimit:4;">
+		<path d="M38.96 60.83L38.96 43.58L39.20 41.36L40.31 40L50.54 34.95L50.62 43.1L50.62 43.1L50.70 51.97L50.73 54.68L50.62 57.39L40.44 62.68L39.33 62.43z"/>
+	</g>
+	<g id="Keyboard" style="fill-rule:none;clip-rule:nonzero;fill:#b4e0b4;stroke:#000000;stroke-miterlimit:4;">
+		<path d="M51.60 84.38L50.00 85L48.40 84.63L37.68 78.71L36.69 77.85L36.32 76.62L36.81 74.89L38.05 73.78L66.52 58.5L68.49 58.01L70.34 58.75L73.78 61.04L78.88 70.11L76.05 72.47z"/>
+	</g>
+	<g id="Keyboard Edge" style="fill-rule:none;clip-rule:nonzero;fill:none;stroke:#000000;stroke-miterlimit:4;fill-opacity:100%;">
+		<path d="M40.39 76.13L49.63 83.77L49.88 84.38L49.26 84.88"/>
+	</g>
+	<g id="Screen" style="fill-rule:none;clip-rule:nonzero;fill:#7c7ef8;stroke:#000000;stroke-miterlimit:4;fill-opacity:100%;">
+		<path d="M50.54 34.95L58.47 31.56L60.78 32.29L60.94 35.25L60.94 48.07L60.94 51.77L58.47 53.62L50.62 57.39z"/>
+	</g>
+</g>
+</svg>

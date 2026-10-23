@@ -1,0 +1,25 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20000303 Stylable//EN"
+	"http://www.w3.org/TR/2000/03/WD-SVG-20000303/DTD/svg-20000303-stylable.dtd">
+<svg xmlns="http://www.w3.org/2000/svg" width="50pt" height="50pt" viewBox="0 0 50 50" xml:space="preserve">
+<g transform="scale(0.5)">
+	<g id="User Torso" style="fill-rule:none;clip-rule:nonzero;fill:#b48c8c;stroke:#000000;stroke-miterlimit:4;">
+		<path d="M74.57 63.7L70.28 64.59L66.75 63.04L65.65 61.28L63.34 51.8L63.67 47.07L67.19 46.41L69.84 51.03L70.61 47.73L72.81 42.99L76.67 40.13L84.93 36.82L88.79 36.49L92.20 38.8L94.52 47.29L93.09 52.25L90.00 55z"/>
+	</g>
+	<g id="User Torso" style="fill-rule:none;clip-rule:nonzero;fill:#388c88;stroke:#000000;stroke-miterlimit:4;">
+		<path d="M46.49 53.96L42.19 54.84L38.67 53.3L37.56 51.54L35.25 42.06L35.58 37.32L39.11 36.66L41.75 41.29L42.52 37.98L44.73 33.24L48.58 30.38L56.85 27.07L60.70 26.74L62.80 27.63L64.12 29.06L66.43 37.54L65.00 42.5L60.59 45.81z"/>
+	</g>
+	<g id="User Head" style="fill-rule:none;clip-rule:nonzero;fill:#886260;stroke:#000000;stroke-miterlimit:4;">
+		<path d="M44.84 26.35L41.53 21.94L40.43 16.43L42.63 10.92L47.04 7.95L50.35 8.72L53.65 13.12L54.20 18.63L52.55 24.14L48.14 26.9z"/>
+	</g>
+	<g id="User Head" style="fill-rule:none;clip-rule:nonzero;fill:#c0c498;stroke:#000000;stroke-miterlimit:4;">
+		<path d="M22.68 60.16L19.37 55.75L18.27 50.24L20.47 44.73L24.88 41.76L28.19 42.53L31.49 46.94L32.04 52.45L30.39 57.96L25.98 60.71z"/>
+	</g>
+	<g id="User Torso" style="fill-rule:none;clip-rule:nonzero;fill:#3862b4;stroke:#000000;stroke-miterlimit:4;">
+		<path d="M25.39 86.27L21.09 87.15L19.11 86.71L16.46 83.85L14.15 74.37L14.48 69.64L18.01 68.97L20.65 73.6L21.42 70.3L23.62 65.56L27.48 62.69L35.74 59.39L39.60 59.06L43.02 61.37L45.11 66.88L45.00 72.5L42.47 76.47z"/>
+	</g>
+	<g id="User Head" style="fill-rule:none;clip-rule:nonzero;fill:#dcb6b4;stroke:#000000;stroke-miterlimit:4;">
+		<path d="M74.46 37.59L72.26 37.04L68.95 32.63L67.85 27.12L70.06 21.61L74.46 18.64L77.77 19.41L81.08 23.82L81.63 29.33L79.97 34.84L77.77 37.04z"/>
+	</g>
+</g>
+</svg>

@@ -2,7 +2,7 @@
 Type=Application
 Name=Login Settings
 Comment=Set the login screen's keyboard layout, color scheme and displays
-Icon=preferences-system-login
+Icon=com.wlrix.settings.login
 Categories=Settings;System;
 Keywords=login;greeter;display manager;keyboard;layout;scheme;monitor;
 Exec=wlrix-settings-login
