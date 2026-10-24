@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="WindowTitle" xml:space="preserve">
+    <value>国際コントロール・パネル</value>
+  </data>
+  <data name="PanelTitle" xml:space="preserve">
+    <value>国際設定とタイムゾーン</value>
+  </data>
+  <data name="Country" xml:space="preserve">
+    <value>国:</value>
+  </data>
+  <data name="Language" xml:space="preserve">
+    <value>言語:</value>
+  </data>
+  <data name="KeyboardLayout" xml:space="preserve">
+    <value>キーボード:</value>
+  </data>
+  <data name="TimeZone" xml:space="preserve">
+    <value>タイムゾーン:</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>キャンセル</value>
+  </data>
+  <data name="SetSystem" xml:space="preserve">
+    <value>システムに設定</value>
+  </data>
+  <data name="SetPersonal" xml:space="preserve">
+    <value>個人に設定</value>
+  </data>
+  <data name="Ok" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="OkCancelHint" xml:space="preserve">
+    <value>選択内容でよければ「OK」を、変更せずに閉じるには「キャンセル」を押してください。</value>
+  </data>
+  <data name="Show" xml:space="preserve">
+    <value>表示:</value>
+  </data>
+  <data name="FilterHint" xml:space="preserve">
+    <value>入力して一覧を絞り込み</value>
+  </data>
+  <data name="ChooseCountryPrompt" xml:space="preserve">
+    <value>「国」ボタンで国を選択してください</value>
+  </data>
+  <data name="CountryTitle" xml:space="preserve">
+    <value>国</value>
+  </data>
+  <data name="CountryHeading" xml:space="preserve">
+    <value>国の選択</value>
+  </data>
+  <data name="CountryExplanation" xml:space="preserve">
+    <value>お住まいの国を選んでください。その国に合った言語、キーボード、タイムゾーンが設定され、ほかのダイアログではその国で使われるものが最初に表示されます。</value>
+  </data>
+  <data name="LanguageTitle" xml:space="preserve">
+    <value>言語</value>
+  </data>
+  <data name="LanguageHeading" xml:space="preserve">
+    <value>言語と書式</value>
+  </data>
+  <data name="LanguageExplanation" xml:space="preserve">
+    <value>言語はプログラムの表示に使われます。書式は日付、時刻、数値、通貨、用紙サイズ、単位の書き方で、別のものを選ばない限り言語に合わせたものになります。</value>
+  </data>
+  <data name="LanguageList" xml:space="preserve">
+    <value>言語</value>
+  </data>
+  <data name="FormatsList" xml:space="preserve">
+    <value>書式</value>
+  </data>
+  <data name="FormatsPreview" xml:space="preserve">
+    <value>例:</value>
+  </data>
+  <data name="SameAsLanguage" xml:space="preserve">
+    <value>言語と同じ</value>
+  </data>
+  <data name="NotGenerated" xml:space="preserve">
+    <value>(未インストール)</value>
+  </data>
+  <data name="GenerateNote" xml:space="preserve">
+    <value>「未インストール」の言語は「システムに設定」または「個人に設定」を押したときにこのコンピューター用に作成されます。管理者のパスワードが必要です。</value>
+  </data>
+  <data name="KeyboardTitle" xml:space="preserve">
+    <value>キーボード</value>
+  </data>
+  <data name="KeyboardHeading" xml:space="preserve">
+    <value>キーボードの選択</value>
+  </data>
+  <data name="KeyboardExplanation" xml:space="preserve">
+    <value>入力に使うレイアウトを選んでください。最初のレイアウトがセッション開始時に使われます。2 つ以上ある場合は、切り替えキーで切り替えられます。</value>
+  </data>
+  <data name="LayoutsInUse" xml:space="preserve">
+    <value>使用中のレイアウト</value>
+  </data>
+  <data name="Variant" xml:space="preserve">
+    <value>バリエーション:</value>
+  </data>
+  <data name="DefaultVariant" xml:space="preserve">
+    <value>標準</value>
+  </data>
+  <data name="AddLayout" xml:space="preserve">
+    <value>&lt; 追加</value>
+  </data>
+  <data name="RemoveLayout" xml:space="preserve">
+    <value>削除</value>
+  </data>
+  <data name="MoveUp" xml:space="preserve">
+    <value>上へ</value>
+  </data>
+  <data name="MoveDown" xml:space="preserve">
+    <value>下へ</value>
+  </data>
+  <data name="Model" xml:space="preserve">
+    <value>キーボードの機種:</value>
+  </data>
+  <data name="SwitchKey" xml:space="preserve">
+    <value>レイアウトの切り替え:</value>
+  </data>
+  <data name="NoSwitchKey" xml:space="preserve">
+    <value>切り替えキーなし</value>
+  </data>
+  <data name="TimeZoneTitle" xml:space="preserve">
+    <value>タイムゾーン</value>
+  </data>
+  <data name="TimeZoneHeading" xml:space="preserve">
+    <value>タイムゾーンの選択</value>
+  </data>
+  <data name="TimeZoneExplanation" xml:space="preserve">
+    <value>このコンピューターのタイムゾーンを選んでください。すべての利用者に適用されるため、「システムに設定」で設定します。</value>
+  </data>
+  <data name="DateAndTime" xml:space="preserve">
+    <value>日付と時刻 (すぐに適用されます)</value>
+  </data>
+  <data name="DateAndTimeExplanation" xml:space="preserve">
+    <value>変更には管理者のパスワードが必要で、すぐに反映されます。キャンセルしても元に戻りません。</value>
+  </data>
+  <data name="UseNtp" xml:space="preserve">
+    <value>ネットワークから時刻を自動で合わせる (NTP)</value>
+  </data>
+  <data name="Date" xml:space="preserve">
+    <value>日付:</value>
+  </data>
+  <data name="Time" xml:space="preserve">
+    <value>時刻:</value>
+  </data>
+  <data name="SetClock" xml:space="preserve">
+    <value>時計を設定</value>
+  </data>
+  <data name="BadDateTime" xml:space="preserve">
+    <value>日付は 2026-10-24、時刻は 14:30:00 の形で入力してください。</value>
+  </data>
+  <data name="NtpUnavailable" xml:space="preserve">
+    <value>自動の時刻合わせは使えません: NTP サービスがインストールされていません。</value>
+  </data>
+  <data name="NtpSynchronized" xml:space="preserve">
+    <value>時計は同期されています。</value>
+  </data>
+  <data name="NtpWaiting" xml:space="preserve">
+    <value>ネットワークの時刻を待っています。</value>
+  </data>
+  <data name="NtpOff" xml:space="preserve">
+    <value>時計は手動で設定されています。</value>
+  </data>
+  <data name="ForCountry" xml:space="preserve">
+    <value>{0} 向け</value>
+  </data>
+  <data name="AllEntries" xml:space="preserve">
+    <value>すべて</value>
+  </data>
+  <data name="LanguageAtNextLogin" xml:space="preserve">
+    <value>言語は次回のログインから有効になります。</value>
+  </data>
+  <data name="TimeZoneIsSystemWide" xml:space="preserve">
+    <value>タイムゾーンはコンピューター全体の設定です。変更するには「システムに設定」を使ってください。</value>
+  </data>
+  <data name="Saved" xml:space="preserve">
+    <value>保存しました。</value>
+  </data>
+  <data name="NotAuthorized" xml:space="preserve">
+    <value>変更されませんでした: 管理者のパスワードが入力されませんでした。</value>
+  </data>
+  <data name="ClockSet" xml:space="preserve">
+    <value>時計を設定しました。</value>
+  </data>
+  <data name="CouldNotRead" xml:space="preserve">
+    <value>{0} を読み込めませんでした: {1}</value>
+  </data>
+  <data name="CouldNotWrite" xml:space="preserve">
+    <value>{0} に書き込めませんでした: {1}</value>
+  </data>
+  <data name="NoSettingsService" xml:space="preserve">
+    <value>設定サービスがありません: {0}</value>
+  </data>
+  <data name="NoSystemServices" xml:space="preserve">
+    <value>システムの言語・時刻サービスが応答しませんでした: {0}</value>
+  </data>
+  <data name="Generating" xml:space="preserve">
+    <value>{0} をインストールしています...</value>
+  </data>
+  <data name="GenerateFailed" xml:space="preserve">
+    <value>{0} をインストールできませんでした: {1}</value>
+  </data>
+</root>

@@ -27,6 +27,9 @@ public partial class ClockWindow : Window
     /// </summary>
     private readonly TextBlock _tip = new();
 
+    /// <summary>Watches <c>/etc/localtime</c>; see <see cref="WatchTimeZone"/>.</summary>
+    private FileSystemWatcher? _zoneWatcher;
+
     public ClockWindow()
     {
         InitializeComponent();
@@ -46,6 +49,7 @@ public partial class ClockWindow : Window
     protected override void OnOpened(EventArgs e)
     {
         base.OnOpened(e);
+        WatchTimeZone();
         Tick();
     }
 
@@ -53,6 +57,42 @@ public partial class ClockWindow : Window
     {
         base.OnClosed(e);
         _timer.Stop();
+        _zoneWatcher?.Dispose();
+    }
+
+    /// <summary>
+    /// Follow a change of the machine's time zone while running.
+    /// </summary>
+    /// <remarks>
+    /// .NET reads <c>/etc/localtime</c> once and keeps the zone for the life of the process, so a
+    /// clock left running across a change -- the International panel's Set System, or
+    /// <c>timedatectl set-timezone</c> -- would go on showing the old zone's time until the next
+    /// login. timedated replaces the link with a rename, which is what this watches for; the
+    /// directory is watched rather than the file, because the file is replaced, not written.
+    /// </remarks>
+    private void WatchTimeZone()
+    {
+        try
+        {
+            _zoneWatcher = new FileSystemWatcher("/etc", "localtime")
+            {
+                NotifyFilter = NotifyFilters.FileName | NotifyFilters.LastWrite | NotifyFilters.CreationTime,
+            };
+            FileSystemEventHandler changed = (_, _) => Dispatcher.UIThread.Post(() =>
+            {
+                TimeZoneInfo.ClearCachedData();
+                Tick();
+            });
+            _zoneWatcher.Changed += changed;
+            _zoneWatcher.Created += changed;
+            _zoneWatcher.Renamed += (sender, e) => changed(sender, e);
+            _zoneWatcher.EnableRaisingEvents = true;
+        }
+        catch (Exception e) when (e is IOException or UnauthorizedAccessException or ArgumentException)
+        {
+            // No /etc to watch: the clock still runs, it just keeps the zone it started in.
+            _zoneWatcher = null;
+        }
     }
 
     private void InitializeComponent() => AvaloniaXamlLoader.Load(this);

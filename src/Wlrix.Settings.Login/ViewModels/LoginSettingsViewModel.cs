@@ -3,7 +3,6 @@ using Avalonia.Threading;
 using ReactiveUI;
 using Wlrix.Avalonia;
 using Wlrix.Settings.Client;
-using Wlrix.Settings.Keyboard.Services;
 using Wlrix.Settings.Login.Core;
 using Wlrix.Settings.Login.Localization;
 using Wlrix.Settings.Login.Services;

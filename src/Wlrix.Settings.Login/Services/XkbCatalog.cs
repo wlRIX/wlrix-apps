@@ -1,4 +1,4 @@
-namespace Wlrix.Settings.Keyboard.Services;
+namespace Wlrix.Settings.Login.Services;
 
 /// <summary>One selectable xkb entry: its code (what the config stores) and a human name.</summary>
 public sealed record XkbEntry(string Code, string Description)
@@ -8,9 +8,9 @@ public sealed record XkbEntry(string Code, string Description)
 }
 
 /// <summary>
-/// The available keyboard layouts and models, read from xkeyboard-config's rules list
-/// (<c>/usr/share/X11/xkb/rules/evdev.lst</c>) — the same catalog every X/Wayland desktop
-/// draws these from. Falls back to a small built-in set if the list is not installed.
+/// The available keyboard layouts and models for the login screen, read from xkeyboard-config's
+/// rules list (<c>/usr/share/X11/xkb/rules/evdev.lst</c>) — the same catalog every X/Wayland
+/// desktop draws these from. Falls back to a small built-in set if the list is not installed.
 /// </summary>
 public static class XkbCatalog
 {

@@ -2,12 +2,12 @@ using Avalonia.Threading;
 using ReactiveUI;
 using Wlrix.Settings.Client;
 using Wlrix.Settings.Keyboard.Localization;
-using Wlrix.Settings.Keyboard.Services;
 
 namespace Wlrix.Settings.Keyboard.ViewModels;
 
 /// <summary>
-/// Backs the keyboard settings window.
+/// Backs the keyboard settings window: key repeat. The layout and the keyboard model are the
+/// International panel's, which the Layout button opens.
 ///
 /// Each change is committed shortly after the user stops adjusting, so the Test box reflects it
 /// live; slider drags are debounced so a drag writes once, on release. <see cref="Reset"/> puts
@@ -25,20 +25,8 @@ namespace Wlrix.Settings.Keyboard.ViewModels;
 /// </summary>
 public sealed class KeyboardSettingsViewModel : ViewModelBase, IDisposable
 {
-    private const string LayoutKey = "compositor.keyboard.layout";
-    private const string ModelKey = "compositor.keyboard.model";
     private const string DelayKey = "compositor.keyboard.repeat_delay";
     private const string RateKey = "compositor.keyboard.repeat_rate";
-
-    /// <summary>
-    /// Shown until the daemon has been asked, and if it never answers.
-    ///
-    /// <c>layout</c> and <c>model</c> are the two settings with no default the daemon can name:
-    /// absent means "let libxkbcommon decide", which is not a string. So the app supplies
-    /// something to display, and only for those two.
-    /// </summary>
-    private const string FallbackLayout = "us";
-    private const string FallbackModel = "pc105";
 
     private readonly DispatcherTimer _commitTimer;
 
@@ -52,8 +40,6 @@ public sealed class KeyboardSettingsViewModel : ViewModelBase, IDisposable
     private bool _openEnabled;
     private double _openRate;
     private double _openDelay;
-    private string _openLayout = FallbackLayout;
-    private string _openModel = FallbackModel;
 
     // True while loading, or while applying a change that came from somewhere else, so those do
     // not each schedule a commit of their own.
@@ -64,8 +50,6 @@ public sealed class KeyboardSettingsViewModel : ViewModelBase, IDisposable
     private bool _repeatEnabled = true;
     private double _repeatRate = 25;
     private double _repeatDelay = 200;
-    private XkbEntry _selectedLayout;
-    private XkbEntry _selectedModel;
 
     /// <summary>
     /// Builds the window's model without touching the daemon, so the XAML designer and a
@@ -74,19 +58,9 @@ public sealed class KeyboardSettingsViewModel : ViewModelBase, IDisposable
     /// </summary>
     public KeyboardSettingsViewModel()
     {
-        var (layouts, models) = XkbCatalog.Load();
-        Layouts = EnsureContains(layouts, FallbackLayout);
-        Models = EnsureContains(models, FallbackModel);
-        _selectedLayout = FindByCode(Layouts, FallbackLayout);
-        _selectedModel = FindByCode(Models, FallbackModel);
-
         _commitTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(250) };
         _commitTimer.Tick += OnCommitTick;
     }
-
-    public IReadOnlyList<XkbEntry> Layouts { get; private set; }
-
-    public IReadOnlyList<XkbEntry> Models { get; private set; }
 
     /// <summary>Whether keys repeat when held. Off writes a repeat rate of 0.</summary>
     public bool RepeatEnabled
@@ -119,26 +93,6 @@ public sealed class KeyboardSettingsViewModel : ViewModelBase, IDisposable
         {
             this.RaiseAndSetIfChanged(ref _repeatDelay, value);
             this.RaisePropertyChanged(nameof(RepeatDelayText));
-            ScheduleCommit();
-        }
-    }
-
-    public XkbEntry SelectedLayout
-    {
-        get => _selectedLayout;
-        set
-        {
-            this.RaiseAndSetIfChanged(ref _selectedLayout, value);
-            ScheduleCommit();
-        }
-    }
-
-    public XkbEntry SelectedModel
-    {
-        get => _selectedModel;
-        set
-        {
-            this.RaiseAndSetIfChanged(ref _selectedModel, value);
             ScheduleCommit();
         }
     }
@@ -194,8 +148,6 @@ public sealed class KeyboardSettingsViewModel : ViewModelBase, IDisposable
             _openEnabled = _repeatEnabled;
             _openRate = _repeatRate;
             _openDelay = _repeatDelay;
-            _openLayout = _selectedLayout.Code;
-            _openModel = _selectedModel.Code;
 
             await _client.WatchAsync().ConfigureAwait(true);
             _client.Changed += OnChangedElsewhere;
@@ -218,11 +170,12 @@ public sealed class KeyboardSettingsViewModel : ViewModelBase, IDisposable
         RepeatEnabled = _openEnabled;
         RepeatRate = _openRate;
         RepeatDelay = _openDelay;
-        SelectedLayout = FindByCode(Layouts, _openLayout);
-        SelectedModel = FindByCode(Models, _openModel);
         _loading = false;
         _ = CommitAsync();
     }
+
+    /// <summary>The International panel could not be started; <paramref name="detail"/> is why.</summary>
+    public void ReportLaunchFailure(string detail) => Status = Strings.LaunchFailed(detail);
 
     public void Dispose()
     {
@@ -266,8 +219,6 @@ public sealed class KeyboardSettingsViewModel : ViewModelBase, IDisposable
 
         var values = new Dictionary<string, object>
         {
-            [LayoutKey] = _selectedLayout.Code,
-            [ModelKey] = _selectedModel.Code,
             [DelayKey] = (long)Math.Round(_repeatDelay),
             [RateKey] = _repeatEnabled ? (long)Math.Round(_repeatRate) : 0L,
         };
@@ -311,10 +262,10 @@ public sealed class KeyboardSettingsViewModel : ViewModelBase, IDisposable
             Status = Strings.FileInvalid(e.Path));
 
     /// <summary>
-    /// Put whatever of these four settings is present into the controls.
+    /// Put whatever of these settings is present into the controls.
     ///
     /// Used for both the initial load and a change from elsewhere, so a hand-edit that touches
-    /// only the layout leaves the sliders where they are.
+    /// only the delay leaves the rate where it is.
     /// </summary>
     private void Apply(IReadOnlyDictionary<string, object?> values)
     {
@@ -331,20 +282,6 @@ public sealed class KeyboardSettingsViewModel : ViewModelBase, IDisposable
 
         if (values.TryGetValue(DelayKey, out var delay) && delay is not null)
             RepeatDelay = AsNumber(delay, _delayDefault);
-
-        if (values.TryGetValue(LayoutKey, out var layout) && layout is string code)
-        {
-            Layouts = EnsureContains(Layouts, code);
-            this.RaisePropertyChanged(nameof(Layouts));
-            SelectedLayout = FindByCode(Layouts, code);
-        }
-
-        if (values.TryGetValue(ModelKey, out var model) && model is string modelCode)
-        {
-            Models = EnsureContains(Models, modelCode);
-            this.RaisePropertyChanged(nameof(Models));
-            SelectedModel = FindByCode(Models, modelCode);
-        }
     }
 
     private static double AsNumber(object? value, double fallback) => value switch
@@ -354,16 +291,4 @@ public sealed class KeyboardSettingsViewModel : ViewModelBase, IDisposable
         double number => number,
         _ => fallback,
     };
-
-    // Guarantee the current code is selectable even if the catalog does not list it (a hand-set
-    // or comma-separated layout like "jp,us"), so opening never silently drops it.
-    private static IReadOnlyList<XkbEntry> EnsureContains(IReadOnlyList<XkbEntry> entries, string code)
-    {
-        if (string.IsNullOrEmpty(code) || entries.Any(entry => entry.Code == code))
-            return entries;
-        return [new XkbEntry(code, code), .. entries];
-    }
-
-    private static XkbEntry FindByCode(IReadOnlyList<XkbEntry> entries, string code) =>
-        entries.FirstOrDefault(entry => entry.Code == code) ?? entries[0];
 }

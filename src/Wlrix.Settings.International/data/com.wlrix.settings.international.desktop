@@ -1,0 +1,21 @@
+[Desktop Entry]
+Type=Application
+Name=International
+Name[ja]=国際設定
+Comment=Choose the country, language, keyboard layout and time zone
+Comment[ja]=国、言語、キーボード・レイアウト、タイムゾーンを選びます
+Icon=com.wlrix.settings.international
+Categories=Settings;DesktopSettings;
+Keywords=language;locale;region;country;keyboard;layout;time;zone;timezone;clock;date;ntp;
+Exec=wlrix-settings-international
+TryExec=wlrix-settings-international
+Terminal=false
+
+# One of wlRIX's control panels: the icon catalog files it on its ControlPanels page and stands
+# it on the control panel carpet. A wlRIX extension; the X- prefix keeps the file valid elsewhere.
+X-WLRIX-ControlPanel=true
+
+# Matches the Wayland app id set in Program.BuildAvaloniaApp. `wlrix-desktop` looks a running
+# window up by StartupWMClass first, and wlrix-compositor frames the window by the same id.
+StartupWMClass=com.wlrix.settings.international
+StartupNotify=false

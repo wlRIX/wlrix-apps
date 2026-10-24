@@ -42,6 +42,7 @@ public sealed class MainWindowViewModel : ViewModelBase
     private const string BackgroundProgram = "wlrix-settings-background";
     private const string SchemesProgram = "wlrix-settings-schemes";
     private const string KeyboardProgram = "wlrix-settings-keyboard";
+    private const string InternationalProgram = "wlrix-settings-international";
     private const string MouseProgram = "wlrix-settings-mouse";
     private const string DisplaysProgram = "wlrix-settings-displays";
     private const string NetworkProgram = "wlrix-settings-network";
@@ -120,6 +121,7 @@ public sealed class MainWindowViewModel : ViewModelBase
                 MenuNode.Separator(),
                 Launch(Strings.Mouse, MouseProgram),
                 Launch(Strings.Keyboard, KeyboardProgram),
+                Launch(Strings.Language, InternationalProgram),
             ]),
             new MenuNode(Strings.ExtraDesks,
                 command: new RelayCommand(() => _launcher.Run(Strings.ExtraDesks, DesksProgram))),

@@ -30,12 +30,6 @@
   <data name="Milliseconds" xml:space="preserve">
     <value>{0} ms</value>
   </data>
-  <data name="Layout" xml:space="preserve">
-    <value>Layout</value>
-  </data>
-  <data name="Model" xml:space="preserve">
-    <value>Model</value>
-  </data>
   <data name="Test" xml:space="preserve">
     <value>Test:</value>
   </data>
@@ -49,12 +43,21 @@
     <value>Help</value>
   </data>
   <data name="HelpText" xml:space="preserve">
-    <value>Adjust the key repeat speed and delay, and pick a keyboard layout and model. Changes apply as you make them; type in the Test box to try them. Reset restores the settings from when this window opened.</value>
+    <value>Adjust the key repeat speed and delay; Layout... opens the International panel, where the keyboard layout and model are chosen. Changes apply as you make them; type in the Test box to try them. Reset restores the settings from when this window opened.</value>
   </data>
   <data name="NoSettingsService" xml:space="preserve">
     <value>No settings service: {0}</value>
   </data>
   <data name="FileInvalid" xml:space="preserve">
     <value>{0} is not valid; showing the last good values.</value>
+  </data>
+  <data name="LayoutElsewhere" xml:space="preserve">
+    <value>The layout and the keyboard model are set in the International panel.</value>
+  </data>
+  <data name="LayoutButton" xml:space="preserve">
+    <value>Layout...</value>
+  </data>
+  <data name="LaunchFailed" xml:space="preserve">
+    <value>Could not open the International panel: {0}</value>
   </data>
 </root>

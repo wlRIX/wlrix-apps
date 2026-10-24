@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE policyconfig PUBLIC
+ "-//freedesktop//DTD PolicyKit Policy Configuration 1.0//EN"
+ "http://www.freedesktop.org/standards/PolicyKit/1/policyconfig.dtd">
+
+<!--
+    The polkit action behind the wlRIX International panel's privileged half.
+
+    Generating a locale edits /etc/locale.gen and rebuilds the machine's locale archive, which
+    every program on it reads, so it asks for an administrator. Setting the system language,
+    keyboard and time zone are systemd-localed's and systemd-timedated's own actions and are not
+    declared here.
+
+    auth_admin_keep, so that generating a locale and then setting it as the system language in
+    the same visit does not ask for the password twice.
+
+    Installed to $PREFIX/share/polkit-1/actions/.
+-->
+<policyconfig>
+
+    <vendor>wlRIX</vendor>
+    <vendor_url>https://github.com/wlRIX</vendor_url>
+
+    <action id="com.wlrix.settings.international.locale-gen">
+        <description>Generate a language for this computer</description>
+        <message>Authentication is required to make a new language available on this computer.</message>
+        <defaults>
+            <allow_any>auth_admin</allow_any>
+            <allow_inactive>auth_admin</allow_inactive>
+            <allow_active>auth_admin_keep</allow_active>
+        </defaults>
+        <annotate key="org.freedesktop.policykit.exec.path">/usr/bin/wlrix-locale-helper</annotate>
+    </action>
+
+</policyconfig>

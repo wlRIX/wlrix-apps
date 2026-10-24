@@ -1,0 +1,66 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Wlrix.Settings.International.ViewModels"
+        xmlns:svc="using:Wlrix.Settings.International.Services"
+        xmlns:wlrix="https://vic485.xyz/Wlrix.Avalonia"
+        xmlns:loc="using:Wlrix.Common.Localization"
+        x:Class="Wlrix.Settings.International.Views.TimeZoneDialog"
+        x:DataType="vm:InternationalViewModel"
+        Width="640" Height="660" CanResize="False"
+        WindowStartupLocation="CenterOwner"
+        Title="{loc:Tr TimeZoneTitle}">
+
+    <!-- The zone list, staged like the other three dialogs; and under it the clock, which is not
+         staged. IRIX set the clock with `date` and kept it with timeslave or ntpdate; here it is
+         timedated, which does both and asks polkit first. -->
+    <DockPanel Margin="14" LastChildFill="True">
+        <TextBlock DockPanel.Dock="Top" Text="{loc:Tr TimeZoneHeading}" FontWeight="Bold" FontSize="14"
+                   Margin="0,0,0,10" />
+        <TextBlock DockPanel.Dock="Top" Text="{loc:Tr TimeZoneExplanation}" TextWrapping="Wrap"
+                   Margin="0,0,0,10" />
+
+        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right"
+                    Spacing="10" Margin="0,12,0,0">
+            <Button Content="{loc:Tr Ok}" MinWidth="80" Click="OnOk" IsDefault="True" />
+            <Button Content="{loc:Tr Cancel}" MinWidth="80" Click="OnCancel" IsCancel="True" />
+        </StackPanel>
+
+        <!-- Date and time. These apply at once, which the heading says, since everything else
+             in this window waits for OK and then a Set button. -->
+        <wlrix:BevelBorder DockPanel.Dock="Bottom" Margin="0,12,0,0" Padding="10"
+                           Bevel="Sunken" BevelThickness="1" OuterLineThickness="0"
+                           LightBrush="{DynamicResource WlrixTopShadow}"
+                           DarkBrush="{DynamicResource WlrixBottomShadow}">
+            <StackPanel Spacing="8">
+                <TextBlock Text="{loc:Tr DateAndTime}" FontWeight="Bold" />
+                <TextBlock Text="{loc:Tr DateAndTimeExplanation}" TextWrapping="Wrap" />
+                <CheckBox x:Name="NtpBox" Content="{loc:Tr UseNtp}"
+                          IsChecked="{Binding Ntp, Mode=OneWay}"
+                          IsEnabled="{Binding CanApply}"
+                          IsCheckedChanged="OnNtp" />
+                <TextBlock Text="{Binding ClockStatus}" Margin="24,0,0,0" />
+                <Grid ColumnDefinitions="Auto,8,120,16,Auto,8,100,16,Auto">
+                    <TextBlock Grid.Column="0" Text="{loc:Tr Date}" VerticalAlignment="Center" />
+                    <TextBox Grid.Column="2" x:Name="DateBox" IsEnabled="{Binding CanSetClock}" />
+                    <TextBlock Grid.Column="4" Text="{loc:Tr Time}" VerticalAlignment="Center" />
+                    <TextBox Grid.Column="6" x:Name="TimeBox" IsEnabled="{Binding CanSetClock}" />
+                    <Button Grid.Column="8" Content="{loc:Tr SetClock}" Click="OnSetClock"
+                            IsEnabled="{Binding CanSetClock}" />
+                </Grid>
+                <TextBlock x:Name="ClockProblem" TextWrapping="Wrap" IsVisible="False" />
+            </StackPanel>
+        </wlrix:BevelBorder>
+
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="8" Margin="0,0,0,6">
+            <TextBlock Text="{loc:Tr Show}" VerticalAlignment="Center" FontWeight="Bold" />
+            <ComboBox x:Name="Scope" MinWidth="220" SelectionChanged="OnScope" />
+        </StackPanel>
+        <ListBox x:Name="Zones" DoubleTapped="OnDoubleTapped">
+            <ListBox.ItemTemplate>
+                <DataTemplate x:DataType="svc:TimeZoneEntry">
+                    <TextBlock Text="{Binding Display}" />
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+    </DockPanel>
+</Window>

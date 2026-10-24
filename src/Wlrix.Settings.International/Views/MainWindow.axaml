@@ -1,0 +1,138 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Wlrix.Settings.International.ViewModels"
+        xmlns:wlrix="https://vic485.xyz/Wlrix.Avalonia"
+        xmlns:loc="using:Wlrix.Common.Localization"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="860" d:DesignHeight="740"
+        Width="860" Height="740" MinWidth="720" MinHeight="620"
+        x:Class="Wlrix.Settings.International.Views.MainWindow"
+        x:DataType="vm:InternationalViewModel"
+        Title="{loc:Tr WindowTitle}">
+
+    <Design.DataContext>
+        <vm:InternationalViewModel />
+    </Design.DataContext>
+
+    <Window.Styles>
+        <!-- IRIX's big panel buttons: a picture in a thick frame, the frame dark gray at rest,
+             green once the button holds a choice, and yellow under the pointer or the keyboard
+             focus. The yellow rules come last so they win over the green. -->
+        <Style Selector="Button.big">
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+        </Style>
+        <Style Selector="Border.frame">
+            <Setter Property="BorderThickness" Value="6" />
+            <Setter Property="BorderBrush" Value="#606060" />
+            <Setter Property="Background" Value="#606060" />
+            <Setter Property="Width" Value="122" />
+            <Setter Property="Height" Value="116" />
+        </Style>
+        <Style Selector="Border.frame.chosen">
+            <Setter Property="BorderBrush" Value="#00C800" />
+            <Setter Property="Background" Value="#00C800" />
+        </Style>
+        <Style Selector="Button.big:pointerover Border.frame, Button.big:focus-visible Border.frame">
+            <Setter Property="BorderBrush" Value="#F0F000" />
+            <Setter Property="Background" Value="#F0F000" />
+        </Style>
+        <Style Selector="TextBlock.caption">
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="TextAlignment" Value="Center" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="Width" Value="150" />
+        </Style>
+    </Window.Styles>
+
+    <!-- The layout follows IRIX's International Control Panel: a banner, the world map, the
+         country (or the instruction to choose one), four big buttons with what each holds written
+         under it, and Cancel / Set System / Set Personal down the right. -->
+    <DockPanel Margin="12" LastChildFill="True">
+
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="12" Margin="0,0,0,10">
+            <Border Width="52" Height="52" BorderThickness="1"
+                    BorderBrush="{DynamicResource WlrixOuterLine}">
+                <Image Source="{Binding LanguageIcon}" Stretch="Uniform" />
+            </Border>
+            <TextBlock Text="{loc:Tr PanelTitle}" FontWeight="Bold" FontSize="15"
+                       VerticalAlignment="Center" />
+        </StackPanel>
+
+        <Grid DockPanel.Dock="Bottom" ColumnDefinitions="*,*,*,*,Auto" Margin="0,8,0,0">
+            <StackPanel Grid.Column="0" Spacing="4">
+                <Button Classes="big" Click="OnCountry" IsEnabled="{Binding IsReady}">
+                    <Border Classes="frame" Classes.chosen="{Binding CountryChosen}">
+                        <Image Source="{Binding CountryIcon}" Stretch="Uniform" />
+                    </Border>
+                </Button>
+                <TextBlock Classes="caption" HorizontalAlignment="Center" Text="{loc:Tr Country}" />
+                <TextBlock Classes="caption" HorizontalAlignment="Center" Text="{Binding CountryLabel}" />
+            </StackPanel>
+            <StackPanel Grid.Column="1" Spacing="4">
+                <Button Classes="big" Click="OnLanguage" IsEnabled="{Binding IsReady}">
+                    <Border Classes="frame" Classes.chosen="{Binding LanguageChosen}">
+                        <Image Source="{Binding LanguageIcon}" Stretch="Uniform" />
+                    </Border>
+                </Button>
+                <TextBlock Classes="caption" HorizontalAlignment="Center" Text="{loc:Tr Language}" />
+                <TextBlock Classes="caption" HorizontalAlignment="Center" Text="{Binding LanguageLabel}" />
+            </StackPanel>
+            <StackPanel Grid.Column="2" Spacing="4">
+                <Button Classes="big" Click="OnKeyboard" IsEnabled="{Binding IsReady}">
+                    <Border Classes="frame" Classes.chosen="{Binding KeyboardChosen}">
+                        <Image Source="{Binding KeyboardIcon}" Stretch="Uniform" />
+                    </Border>
+                </Button>
+                <TextBlock Classes="caption" HorizontalAlignment="Center" Text="{loc:Tr KeyboardLayout}" />
+                <TextBlock Classes="caption" HorizontalAlignment="Center" Text="{Binding KeyboardLabel}" />
+            </StackPanel>
+            <StackPanel Grid.Column="3" Spacing="4">
+                <Button Classes="big" Click="OnTimeZone" IsEnabled="{Binding IsReady}">
+                    <Border Classes="frame" Classes.chosen="{Binding TimeZoneChosen}">
+                        <Image Source="{Binding TimeZoneIcon}" Stretch="Uniform" />
+                    </Border>
+                </Button>
+                <TextBlock Classes="caption" HorizontalAlignment="Center" Text="{loc:Tr TimeZone}" />
+                <TextBlock Classes="caption" HorizontalAlignment="Center" Text="{Binding TimeZoneLabel}" />
+            </StackPanel>
+            <StackPanel Grid.Column="4" Spacing="8" VerticalAlignment="Bottom" Margin="12,0,0,24">
+                <Button Content="{loc:Tr Cancel}" MinWidth="140" HorizontalContentAlignment="Center" Click="OnCancel" />
+                <Button Content="{loc:Tr SetSystem}" MinWidth="140" HorizontalContentAlignment="Center"
+                        Click="OnSetSystem" IsEnabled="{Binding CanApply}" />
+                <Button Content="{loc:Tr SetPersonal}" MinWidth="140" HorizontalContentAlignment="Center"
+                        Click="OnSetPersonal" IsEnabled="{Binding CanApply}" />
+            </StackPanel>
+        </Grid>
+
+        <!-- What the last Set did, or why it could not. -->
+        <TextBlock DockPanel.Dock="Bottom" TextWrapping="Wrap" Margin="0,6,0,0"
+                   Text="{Binding Status}"
+                   IsVisible="{Binding Status, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+
+        <TextBlock DockPanel.Dock="Bottom" Text="{Binding Prompt}" FontWeight="Bold"
+                   HorizontalAlignment="Center" Margin="0,8,0,0" />
+
+        <!-- The map, with a marker on the chosen time zone's city. The frame is fixed at 2:1, the
+             map's own shape, and scaled to the window as a whole so the marker stays in place. -->
+        <wlrix:BevelBorder Bevel="Sunken" BevelThickness="2" OuterLineThickness="1"
+                           Background="{DynamicResource WlrixPanel}"
+                           LightBrush="{DynamicResource WlrixTopShadow}"
+                           DarkBrush="{DynamicResource WlrixBottomShadow}"
+                           OuterLineBrush="{DynamicResource WlrixOuterLine}">
+            <Viewbox Stretch="Uniform">
+                <Canvas Width="800" Height="400">
+                    <Image Width="800" Height="400" Stretch="Fill" Source="{Binding Map}" />
+                    <Ellipse Width="12" Height="12" Fill="#F0F000" Stroke="Black" StrokeThickness="2"
+                             Canvas.Left="{Binding MarkerLeft}" Canvas.Top="{Binding MarkerTop}"
+                             IsVisible="{Binding HasMarker}" />
+                </Canvas>
+            </Viewbox>
+        </wlrix:BevelBorder>
+
+    </DockPanel>
+
+</Window>

@@ -35,4 +35,13 @@
     <data name="RepeatSpeed" xml:space="preserve">
         <value>リピートの速さ</value>
     </data>
+    <data name="LayoutElsewhere" xml:space="preserve">
+        <value>レイアウトとキーボードの機種は国際設定パネルで設定します。</value>
+    </data>
+    <data name="LayoutButton" xml:space="preserve">
+        <value>レイアウト...</value>
+    </data>
+    <data name="LaunchFailed" xml:space="preserve">
+        <value>国際設定パネルを開けませんでした: {0}</value>
+    </data>
 </root>

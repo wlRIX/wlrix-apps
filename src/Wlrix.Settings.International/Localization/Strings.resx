@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="WindowTitle" xml:space="preserve">
+    <value>International Control Panel</value>
+  </data>
+  <data name="PanelTitle" xml:space="preserve">
+    <value>International and Time Zone Settings</value>
+  </data>
+  <data name="Country" xml:space="preserve">
+    <value>Country:</value>
+  </data>
+  <data name="Language" xml:space="preserve">
+    <value>Language:</value>
+  </data>
+  <data name="KeyboardLayout" xml:space="preserve">
+    <value>Keyboard:</value>
+  </data>
+  <data name="TimeZone" xml:space="preserve">
+    <value>Time Zone:</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="SetSystem" xml:space="preserve">
+    <value>Set System</value>
+  </data>
+  <data name="SetPersonal" xml:space="preserve">
+    <value>Set Personal</value>
+  </data>
+  <data name="Ok" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="OkCancelHint" xml:space="preserve">
+    <value>Press "OK" when you are satisfied with your selection, or "Cancel" to leave without making any changes.</value>
+  </data>
+  <data name="Show" xml:space="preserve">
+    <value>Show:</value>
+  </data>
+  <data name="FilterHint" xml:space="preserve">
+    <value>Type to narrow the list</value>
+  </data>
+  <data name="ChooseCountryPrompt" xml:space="preserve">
+    <value>Please select your country using the "Country" button</value>
+  </data>
+  <data name="CountryTitle" xml:space="preserve">
+    <value>Country</value>
+  </data>
+  <data name="CountryHeading" xml:space="preserve">
+    <value>Country Selection</value>
+  </data>
+  <data name="CountryExplanation" xml:space="preserve">
+    <value>Choose the country you are in. The language, keyboard and time zone suggested for it are filled in for you, and the other dialogs list what is used there first.</value>
+  </data>
+  <data name="LanguageTitle" xml:space="preserve">
+    <value>Language</value>
+  </data>
+  <data name="LanguageHeading" xml:space="preserve">
+    <value>Language and Formats</value>
+  </data>
+  <data name="LanguageExplanation" xml:space="preserve">
+    <value>The language is what programs speak. The formats are how dates, times, numbers, money, paper sizes and units are written, and are the language's own unless you choose others.</value>
+  </data>
+  <data name="LanguageList" xml:space="preserve">
+    <value>Language</value>
+  </data>
+  <data name="FormatsList" xml:space="preserve">
+    <value>Formats</value>
+  </data>
+  <data name="FormatsPreview" xml:space="preserve">
+    <value>Example:</value>
+  </data>
+  <data name="SameAsLanguage" xml:space="preserve">
+    <value>Same as the language</value>
+  </data>
+  <data name="NotGenerated" xml:space="preserve">
+    <value>(not installed)</value>
+  </data>
+  <data name="GenerateNote" xml:space="preserve">
+    <value>A language marked "not installed" is built for this computer when you press Set System or Set Personal, which asks for an administrator's password.</value>
+  </data>
+  <data name="KeyboardTitle" xml:space="preserve">
+    <value>Keyboard</value>
+  </data>
+  <data name="KeyboardHeading" xml:space="preserve">
+    <value>Keyboard Selection</value>
+  </data>
+  <data name="KeyboardExplanation" xml:space="preserve">
+    <value>Choose the layouts you type in. The first is the one each session starts with; with two or more, the switch key moves between them.</value>
+  </data>
+  <data name="LayoutsInUse" xml:space="preserve">
+    <value>Layouts in use</value>
+  </data>
+  <data name="Variant" xml:space="preserve">
+    <value>Variant:</value>
+  </data>
+  <data name="DefaultVariant" xml:space="preserve">
+    <value>Standard</value>
+  </data>
+  <data name="AddLayout" xml:space="preserve">
+    <value>&lt; Add</value>
+  </data>
+  <data name="RemoveLayout" xml:space="preserve">
+    <value>Remove</value>
+  </data>
+  <data name="MoveUp" xml:space="preserve">
+    <value>Move Up</value>
+  </data>
+  <data name="MoveDown" xml:space="preserve">
+    <value>Move Down</value>
+  </data>
+  <data name="Model" xml:space="preserve">
+    <value>Keyboard model:</value>
+  </data>
+  <data name="SwitchKey" xml:space="preserve">
+    <value>Switch layouts with:</value>
+  </data>
+  <data name="NoSwitchKey" xml:space="preserve">
+    <value>No switch key</value>
+  </data>
+  <data name="TimeZoneTitle" xml:space="preserve">
+    <value>Time Zone</value>
+  </data>
+  <data name="TimeZoneHeading" xml:space="preserve">
+    <value>Time Zone Selection</value>
+  </data>
+  <data name="TimeZoneExplanation" xml:space="preserve">
+    <value>Choose the time zone this computer keeps. It applies to everyone who uses it, so it is set with Set System.</value>
+  </data>
+  <data name="DateAndTime" xml:space="preserve">
+    <value>Date and Time (applies immediately)</value>
+  </data>
+  <data name="DateAndTimeExplanation" xml:space="preserve">
+    <value>Changing these asks for an administrator's password and takes effect at once; Cancel does not undo them.</value>
+  </data>
+  <data name="UseNtp" xml:space="preserve">
+    <value>Set the clock automatically from the network (NTP)</value>
+  </data>
+  <data name="Date" xml:space="preserve">
+    <value>Date:</value>
+  </data>
+  <data name="Time" xml:space="preserve">
+    <value>Time:</value>
+  </data>
+  <data name="SetClock" xml:space="preserve">
+    <value>Set Clock</value>
+  </data>
+  <data name="BadDateTime" xml:space="preserve">
+    <value>Write the date as 2026-10-24 and the time as 14:30:00.</value>
+  </data>
+  <data name="NtpUnavailable" xml:space="preserve">
+    <value>Automatic time is not available: no NTP service is installed.</value>
+  </data>
+  <data name="NtpSynchronized" xml:space="preserve">
+    <value>The clock is synchronized.</value>
+  </data>
+  <data name="NtpWaiting" xml:space="preserve">
+    <value>Waiting for the network time.</value>
+  </data>
+  <data name="NtpOff" xml:space="preserve">
+    <value>The clock is set by hand.</value>
+  </data>
+  <data name="ForCountry" xml:space="preserve">
+    <value>For {0}</value>
+  </data>
+  <data name="AllEntries" xml:space="preserve">
+    <value>All</value>
+  </data>
+  <data name="LanguageAtNextLogin" xml:space="preserve">
+    <value>The language takes effect at your next login.</value>
+  </data>
+  <data name="TimeZoneIsSystemWide" xml:space="preserve">
+    <value>The time zone belongs to the whole computer; use Set System to change it.</value>
+  </data>
+  <data name="Saved" xml:space="preserve">
+    <value>Saved.</value>
+  </data>
+  <data name="NotAuthorized" xml:space="preserve">
+    <value>Not changed: the administrator's password was not given.</value>
+  </data>
+  <data name="ClockSet" xml:space="preserve">
+    <value>The clock was set.</value>
+  </data>
+  <data name="CouldNotRead" xml:space="preserve">
+    <value>Could not read {0}: {1}</value>
+  </data>
+  <data name="CouldNotWrite" xml:space="preserve">
+    <value>Could not write {0}: {1}</value>
+  </data>
+  <data name="NoSettingsService" xml:space="preserve">
+    <value>No settings service: {0}</value>
+  </data>
+  <data name="NoSystemServices" xml:space="preserve">
+    <value>The system language and time services did not answer: {0}</value>
+  </data>
+  <data name="Generating" xml:space="preserve">
+    <value>Installing {0}...</value>
+  </data>
+  <data name="GenerateFailed" xml:space="preserve">
+    <value>Could not install {0}: {1}</value>
+  </data>
+</root>

@@ -7,6 +7,9 @@
         <Project Path="src/Wlrix.Settings.Client/Wlrix.Settings.Client.csproj" />
         <Project Path="src/Wlrix.Theme/Wlrix.Theme.csproj" />
         <Project Path="src/Wlrix.Settings.Keyboard/Wlrix.Settings.Keyboard.csproj" />
+        <Project Path="src/Wlrix.Settings.International/Wlrix.Settings.International.csproj" />
+        <Project Path="src/Wlrix.Settings.International.Core/Wlrix.Settings.International.Core.csproj" />
+        <Project Path="src/Wlrix.Settings.International.Helper/Wlrix.Settings.International.Helper.csproj" />
         <Project Path="src/Wlrix.Settings.Mouse/Wlrix.Settings.Mouse.csproj" />
         <Project Path="src/Wlrix.Settings.Power/Wlrix.Settings.Power.csproj" />
         <Project Path="src/Wlrix.Settings.Network/Wlrix.Settings.Network.csproj" />
@@ -63,6 +66,7 @@
         <Project Path="tests/Wlrix.Settings.Users.Tests/Wlrix.Settings.Users.Tests.csproj" />
         <Project Path="tests/Wlrix.Settings.Mouse.Tests/Wlrix.Settings.Mouse.Tests.csproj" />
         <Project Path="tests/Wlrix.Settings.Background.Tests/Wlrix.Settings.Background.Tests.csproj" />
+        <Project Path="tests/Wlrix.Settings.International.Tests/Wlrix.Settings.International.Tests.csproj" />
         <Project Path="tests/Wlrix.Settings.Power.Tests/Wlrix.Settings.Power.Tests.csproj" />
         <Project Path="tests/Wlrix.Settings.Network.Tests/Wlrix.Settings.Network.Tests.csproj" />
         <Project Path="tests/Wlrix.Settings.Audio.Tests/Wlrix.Settings.Audio.Tests.csproj" />

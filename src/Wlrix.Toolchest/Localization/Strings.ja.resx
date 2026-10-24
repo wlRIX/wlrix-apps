@@ -75,6 +75,9 @@
   <data name="Background" xml:space="preserve">
     <value>背景</value>
   </data>
+  <data name="Language" xml:space="preserve">
+    <value>言語</value>
+  </data>
   <data name="ColorSchemes" xml:space="preserve">
     <value>カラースキーム</value>
   </data>

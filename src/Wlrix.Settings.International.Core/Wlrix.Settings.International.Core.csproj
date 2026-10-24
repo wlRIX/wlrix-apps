@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <!-- What a locale name may be, how /etc/locale.gen is edited, and how the panel runs the
+             helper that does it. Shared by the International panel and wlrix-locale-helper, so the
+             two cannot disagree about what is allowed: the same split as Wlrix.Settings.Login.Core.
+             No UI in here: the helper runs as root and should load nothing it does not need. -->
+        <Version>0.1.0</Version>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Wlrix.Common\Wlrix.Common.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <InternalsVisibleTo Include="Wlrix.Settings.International.Tests" />
+    </ItemGroup>
+</Project>

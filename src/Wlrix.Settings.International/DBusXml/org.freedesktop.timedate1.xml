@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN"
+ "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
+
+<!--
+    systemd-timedated's interface, introspected from systemd 262 on the system bus with
+    `busctl introspect org.freedesktop.timedate1 /org/freedesktop/timedate1`, annotations removed and
+    signatures unchanged so the generated proxy cannot disagree with the daemon about one.
+-->
+
+<node>
+  <interface name="org.freedesktop.timedate1">
+  <property name="Timezone" type="s" access="read">
+  </property>
+  <property name="LocalRTC" type="b" access="read">
+  </property>
+  <property name="CanNTP" type="b" access="read">
+  </property>
+  <property name="NTP" type="b" access="read">
+  </property>
+  <property name="NTPSynchronized" type="b" access="read">
+  </property>
+  <property name="TimeUSec" type="t" access="read">
+  </property>
+  <property name="RTCTimeUSec" type="t" access="read">
+  </property>
+  <method name="SetTime">
+   <arg type="x" name="usec_utc" direction="in"/>
+   <arg type="b" name="relative" direction="in"/>
+   <arg type="b" name="interactive" direction="in"/>
+  </method>
+  <method name="SetTimezone">
+   <arg type="s" name="timezone" direction="in"/>
+   <arg type="b" name="interactive" direction="in"/>
+  </method>
+  <method name="SetLocalRTC">
+   <arg type="b" name="local_rtc" direction="in"/>
+   <arg type="b" name="fix_system" direction="in"/>
+   <arg type="b" name="interactive" direction="in"/>
+  </method>
+  <method name="SetNTP">
+   <arg type="b" name="use_ntp" direction="in"/>
+   <arg type="b" name="interactive" direction="in"/>
+  </method>
+  <method name="ListTimezones">
+   <arg type="as" name="timezones" direction="out"/>
+  </method>
+ </interface>
+</node>

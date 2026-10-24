@@ -21,12 +21,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <!-- The layout and model lists, read from xkeyboard-config the same way the Keyboard
-             panel reads them. Linked rather than copied, so there is one parser. -->
-        <Compile Include="../Wlrix.Settings.Keyboard/Services/XkbCatalog.cs" Link="Services/XkbCatalog.cs" />
-    </ItemGroup>
-
-    <ItemGroup>
         <!-- The view models are `internal`; the tests are the only other thing that calls them. -->
         <InternalsVisibleTo Include="Wlrix.Settings.Login.Tests" />
     </ItemGroup>

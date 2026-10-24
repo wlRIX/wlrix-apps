@@ -25,7 +25,9 @@ library. Apps recreate the IRIX Interactive Desktop surface.
 | `Wlrix.Toolchest`         | app  | IRIX-style menu launcher anchored top-left of the desktop.          |
 | `Wlrix.Desks`             | app  | Virtual-desktop (Rooms) overview and switcher.                      |
 | `Wlrix.Console`           | app  | Tails the wlRIX component logs, one tab each.                       |
-| `Wlrix.Settings.Keyboard` | app  | Keyboard settings panel.                                            |
+| `Wlrix.Settings.Keyboard` | app  | Keyboard settings panel: key repeat.                                |
+| `Wlrix.Settings.International` | app | International panel, after IRIX's ipanel: country, language, keyboard layout, time zone, clock. |
+| `Wlrix.Settings.International.Helper` | exe | `wlrix-locale-helper`: generates a locale for that panel, through pkexec. |
 | `Wlrix.Settings.Mouse`    | app  | Mouse Settings, after IRIX's: acceleration, buttons, click speed, touchpad. |
 | `Wlrix.Settings.Power`    | app  | Power Settings, wlRIX's own: the lid, idle profiles, lock before sleep. |
 | `Wlrix.Settings.Network`  | app  | Network Settings: device status, the radio, saved Wi-Fi networks.   |

@@ -40,6 +40,7 @@ apps := "Wlrix.Archiver:wlrix-archiver:com.wlrix.archiver.desktop \
          Wlrix.Settings.Login:wlrix-settings-login:com.wlrix.settings.login.desktop \
          Wlrix.Settings.Sound:wlrix-settings-sound:com.wlrix.settings.sound.desktop \
          Wlrix.Settings.Keyboard:wlrix-settings-keyboard:com.wlrix.settings.keyboard.desktop \
+         Wlrix.Settings.International:wlrix-settings-international:com.wlrix.settings.international.desktop \
          Wlrix.Settings.Mouse:wlrix-settings-mouse:com.wlrix.settings.mouse.desktop \
          Wlrix.Settings.Windows:wlrix-settings-windows:com.wlrix.settings.windows.desktop \
          Wlrix.Settings.Background:wlrix-settings-background:com.wlrix.settings.background.desktop \
