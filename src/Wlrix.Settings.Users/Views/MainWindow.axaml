@@ -1,4 +1,5 @@
 <Window xmlns="https://github.com/avaloniaui"
+        xmlns:wt="using:Wlrix.Theme"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:Wlrix.Settings.Users.ViewModels"
         xmlns:loc="using:Wlrix.Common.Localization"
@@ -20,23 +21,11 @@
             <Border Width="48" Height="48"
                     BorderThickness="1"
                     BorderBrush="{DynamicResource WlrixOuterLine}"
-                    Background="{DynamicResource WlrixSelect}">
-                <!-- Placeholder for the panel icon (a real asset comes from wlrix-assets): two
-                     people, one behind the other. -->
-                <Viewbox Margin="8">
-                    <Canvas Width="32" Height="28">
-                        <Ellipse Canvas.Left="15" Canvas.Top="1" Width="10" Height="10"
-                                 Stroke="{DynamicResource WlrixForeground}" StrokeThickness="1.5" />
-                        <Path Data="M 12,26 C 12,17 16,14 20,14 C 24,14 28,17 28,26"
-                              Stroke="{DynamicResource WlrixForeground}" StrokeThickness="1.5" />
-                        <Ellipse Canvas.Left="5" Canvas.Top="6" Width="10" Height="10"
-                                 Fill="{DynamicResource WlrixSelect}"
-                                 Stroke="{DynamicResource WlrixForeground}" StrokeThickness="1.5" />
-                        <Path Data="M 1,28 C 1,22 5,19 10,19 C 15,19 19,22 19,28 Z"
-                              Fill="{DynamicResource WlrixSelect}"
-                              Stroke="{DynamicResource WlrixForeground}" StrokeThickness="1.5" />
-                    </Canvas>
-                </Viewbox>
+                    Background="{DynamicResource WlrixReadWritePanel}">
+                <!-- The panel's own icon on the closed control panel carpet, as IRIX drew it here.
+                     The picture is tools/panel-banners.py's. -->
+                <wt:IrixPicture Width="46" Height="46"
+                                Asset="avares://wlrix-settings-users/Assets/banner.svg" />
             </Border>
             <TextBlock Text="{loc:Tr PanelTitle}" FontWeight="Bold" FontSize="14" VerticalAlignment="Center" />
         </StackPanel>

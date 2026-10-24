@@ -14,5 +14,7 @@
              the two: the theme knows nothing about D-Bus, and the settings client knows nothing
              about Avalonia, and neither should. -->
         <ProjectReference Include="../Wlrix.Settings.Client/Wlrix.Settings.Client.csproj" />
+        <!-- IrixPicture's rasterizing: the same resvg path the icon catalog draws with. -->
+        <ProjectReference Include="../Wlrix.Icons/Wlrix.Icons.csproj" />
     </ItemGroup>
 </Project>

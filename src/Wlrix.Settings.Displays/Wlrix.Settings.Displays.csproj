@@ -8,6 +8,11 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <!-- The banner picture; see tools/panel-banners.py. -->
+        <AvaloniaResource Include="Assets\**" />
+    </ItemGroup>
+
+    <ItemGroup>
         <PackageReference Include="Avalonia" />
         <PackageReference Include="Avalonia.Desktop" />
         <PackageReference Include="Avalonia.Wayland" />

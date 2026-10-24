@@ -1,4 +1,5 @@
 <Window xmlns="https://github.com/avaloniaui"
+        xmlns:wt="using:Wlrix.Theme"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:Wlrix.Settings.Mouse.ViewModels"
         xmlns:svc="using:Wlrix.Settings.Mouse.Services"
@@ -76,20 +77,11 @@
                 <Border Width="48" Height="48"
                         BorderThickness="1"
                         BorderBrush="{DynamicResource WlrixOuterLine}"
-                        Background="{DynamicResource WlrixSelect}">
-                    <!-- Placeholder for the panel icon (a real asset comes from wlrix-assets): a
-                         two-button mouse and its cord. -->
-                    <Viewbox Margin="8">
-                        <Canvas Width="32" Height="36">
-                            <Path Data="M 16,9 C 16,4 22,4 24,0"
-                                  Stroke="{DynamicResource WlrixForeground}" StrokeThickness="1.5" />
-                            <Path Data="M 6,15 C 6,10 10,8 16,8 C 22,8 26,10 26,15 L 26,27 C 26,33 22,35 16,35 C 10,35 6,33 6,27 Z"
-                                  Fill="{DynamicResource WlrixFace}"
-                                  Stroke="{DynamicResource WlrixForeground}" StrokeThickness="1.5" />
-                            <Path Data="M 6,18 L 26,18 M 16,8 L 16,18"
-                                  Stroke="{DynamicResource WlrixForeground}" StrokeThickness="1.5" />
-                        </Canvas>
-                    </Viewbox>
+                        Background="{DynamicResource WlrixReadWritePanel}">
+                    <!-- The panel's own icon on the closed control panel carpet, as IRIX drew it here.
+                         The picture is tools/panel-banners.py's. -->
+                    <wt:IrixPicture Width="46" Height="46"
+                                    Asset="avares://wlrix-settings-mouse/Assets/banner.svg" />
                 </Border>
                 <TextBlock Text="{loc:Tr PanelTitle}" FontWeight="Bold" FontSize="14"
                            VerticalAlignment="Center" />

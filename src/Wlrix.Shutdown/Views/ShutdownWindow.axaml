@@ -1,4 +1,5 @@
 <Window xmlns="https://github.com/avaloniaui"
+        xmlns:wt="using:Wlrix.Theme"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:Wlrix.Shutdown.ViewModels"
         xmlns:loc="using:Wlrix.Common.Localization"
@@ -31,13 +32,13 @@
         <!-- Title banner: icon slot plus what this window does, as on the IRIX original. -->
         <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="12">
             <!-- IRIX's task picture in a well of the icon panel's color, as the original drew
-                 it. The picture is rasterized in code, at the window's scale; see
-                 ShutdownWindow.axaml.cs. -->
+                 it. -->
             <Border Width="48" Height="48"
                     BorderThickness="1"
                     BorderBrush="{DynamicResource WlrixOuterLine}"
                     Background="{DynamicResource WlrixReadWritePanel}">
-                <Image Name="Picture" Stretch="Uniform" />
+                <wt:IrixPicture Width="46" Height="46"
+                                Asset="avares://wlrix-shutdown/Assets/task.svg" />
             </Border>
             <TextBlock Text="{loc:Tr Heading}" FontWeight="Bold" FontSize="16"
                        VerticalAlignment="Center" />
