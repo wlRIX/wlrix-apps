@@ -9,4 +9,9 @@
              through Avalonia.FreeDesktop, so this adds nothing to what ships. -->
         <PackageReference Include="Tmds.DBus.Protocol" />
     </ItemGroup>
+
+    <ItemGroup>
+        <!-- Imaging/SgiImage's RLE row encoder is tested on its own. -->
+        <InternalsVisibleTo Include="Wlrix.Common.Tests" />
+    </ItemGroup>
 </Project>

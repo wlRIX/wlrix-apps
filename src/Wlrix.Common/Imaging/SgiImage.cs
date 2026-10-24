@@ -3,7 +3,7 @@
 using System.Buffers.Binary;
 using System.Text;
 
-namespace Wlrix.ImageView.Services;
+namespace Wlrix.Common.Imaging;
 
 /// <summary>A decoded SGI image: top-down, unpremultiplied BGRA rows.</summary>
 /// <param name="Bgra">Pixels, four bytes each, <paramref name="Width"/> × 4 bytes per row.</param>
@@ -206,6 +206,12 @@ public static class SgiImage
         return (gray ? 1 : 3) + (alpha ? 1 : 0);
     }
 
+    /// <summary>
+    /// Rec. 601 luma, the weighting IRIX's tools used, rounded to the nearest value. What a gray
+    /// SGI file stores for a color pixel, and what Image View's histogram counts.
+    /// </summary>
+    public static int Luma(int r, int g, int b) => (299 * r + 587 * g + 114 * b + 500) / 1000;
+
     /// <summary>Encodes top-down, unpremultiplied BGRA pixels as an 8-bit SGI file.</summary>
     /// <param name="channels">1 to 4. Gray channels are taken as luma when the pixels are not neutral.</param>
     /// <param name="compress">RLE when true, verbatim otherwise.</param>
@@ -235,7 +241,7 @@ public static class SgiImage
                 {
                     case 1:
                     case 2:
-                        planes[0][i] = (byte)Models.Histogram.Luma(r, g, b);
+                        planes[0][i] = (byte)Luma(r, g, b);
                         if (channels == 2)
                             planes[1][i] = (byte)a;
                         break;

@@ -34,6 +34,7 @@ library. Apps recreate the IRIX Interactive Desktop surface.
 | `Wlrix.Settings.Displays` | app  | Displays panel, after KDE's: arrangement, modes, scale, HDR.        |
 | `Wlrix.Settings.Audio`    | app  | Audio Panel, after IRIX's apanel. Replaces pavucontrol.             |
 | `Wlrix.Settings.Sound`    | app  | System & Desktop Sounds panel, for `wlrix-sound`.                   |
+| `Wlrix.Settings.Background` | app | Background panel, after IRIX's: wallpaper, fit, color, lock screen. |
 | `Wlrix.Settings.Schemes`  | app  | Color scheme browser, after IRIX's. One Apply, whole desktop.       |
 | `Wlrix.Settings.Login`    | app  | Login Settings: the greeter's keyboard, color scheme and displays.  |
 | `Wlrix.Settings.Users`    | app  | User Accounts, after KDE's Users page: pictures, passwords, fingerprints. |

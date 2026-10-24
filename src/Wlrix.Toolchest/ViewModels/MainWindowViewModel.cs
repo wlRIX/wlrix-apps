@@ -39,6 +39,7 @@ public sealed class MainWindowViewModel : ViewModelBase
     // ones about the person's own desktop; System holds the ones about the machine, which ask for
     // an administrator's password (Login, User Accounts) or affect every monitor (Display).
     private const string WindowsProgram = "wlrix-settings-windows";
+    private const string BackgroundProgram = "wlrix-settings-background";
     private const string SchemesProgram = "wlrix-settings-schemes";
     private const string KeyboardProgram = "wlrix-settings-keyboard";
     private const string MouseProgram = "wlrix-settings-mouse";
@@ -114,6 +115,7 @@ public sealed class MainWindowViewModel : ViewModelBase
                 Launch(Strings.Windows, WindowsProgram),
                 Launch(Strings.Sounds, SoundProgram),
                 MenuNode.Separator(),
+                Launch(Strings.Background, BackgroundProgram),
                 Launch(Strings.ColorSchemes, SchemesProgram),
                 MenuNode.Separator(),
                 Launch(Strings.Mouse, MouseProgram),

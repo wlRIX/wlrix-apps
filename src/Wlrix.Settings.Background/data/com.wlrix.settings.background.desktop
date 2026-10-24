@@ -1,0 +1,21 @@
+[Desktop Entry]
+Type=Application
+Name=Background
+Name[ja]=背景
+Comment=Choose the picture on the desktop
+Comment[ja]=デスクトップの背景画像を選びます
+Icon=com.wlrix.settings.background
+Categories=Settings;DesktopSettings;
+Keywords=background;wallpaper;desktop;picture;image;
+Exec=wlrix-settings-background
+TryExec=wlrix-settings-background
+Terminal=false
+
+# One of wlRIX's control panels: the icon catalog files it on its ControlPanels page and stands
+# it on the control panel carpet. A wlRIX extension; the X- prefix keeps the file valid elsewhere.
+X-WLRIX-ControlPanel=true
+
+# Matches the Wayland app id set in Program.BuildAvaloniaApp. `wlrix-desktop` looks a running
+# window up by StartupWMClass first, and wlrix-compositor frames the window by the same id.
+StartupWMClass=com.wlrix.settings.background
+StartupNotify=false

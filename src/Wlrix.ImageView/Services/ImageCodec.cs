@@ -2,6 +2,7 @@
 
 using System.Runtime.InteropServices;
 using SkiaSharp;
+using Wlrix.Common.Imaging;
 using Wlrix.ImageView.Models;
 
 namespace Wlrix.ImageView.Services;

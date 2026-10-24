@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="WindowTitle" xml:space="preserve">
+    <value>Background</value>
+  </data>
+  <data name="PanelTitle" xml:space="preserve">
+    <value>Desktop Background</value>
+  </data>
+  <data name="MenuApplication" xml:space="preserve">
+    <value>_Application</value>
+  </data>
+  <data name="MenuClose" xml:space="preserve">
+    <value>E_xit</value>
+  </data>
+  <data name="MenuHelp" xml:space="preserve">
+    <value>_Help</value>
+  </data>
+  <data name="MenuClickForHelp" xml:space="preserve">
+    <value>_Click for Help</value>
+  </data>
+  <data name="Pictures" xml:space="preserve">
+    <value>Pictures:</value>
+  </data>
+  <data name="Add" xml:space="preserve">
+    <value>Add...</value>
+  </data>
+  <data name="Remove" xml:space="preserve">
+    <value>Remove</value>
+  </data>
+  <data name="DropHint" xml:space="preserve">
+    <value>or drop pictures here</value>
+  </data>
+  <data name="Fit" xml:space="preserve">
+    <value>Fit:</value>
+  </data>
+  <data name="DesktopColor" xml:space="preserve">
+    <value>Color:</value>
+  </data>
+  <data name="AlsoLockScreen" xml:space="preserve">
+    <value>Use on the lock screen too</value>
+  </data>
+  <data name="Ok" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="Reset" xml:space="preserve">
+    <value>Reset</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="NoPicture" xml:space="preserve">
+    <value>No Picture</value>
+  </data>
+  <data name="Mode_fill" xml:space="preserve">
+    <value>Fill the screen</value>
+  </data>
+  <data name="Mode_fit" xml:space="preserve">
+    <value>Fit inside the screen</value>
+  </data>
+  <data name="Mode_stretch" xml:space="preserve">
+    <value>Stretch to the screen</value>
+  </data>
+  <data name="Mode_center" xml:space="preserve">
+    <value>Center at full size</value>
+  </data>
+  <data name="Mode_tile" xml:space="preserve">
+    <value>Tile</value>
+  </data>
+  <data name="ColorTitle" xml:space="preserve">
+    <value>Desktop Color</value>
+  </data>
+  <data name="AddTitle" xml:space="preserve">
+    <value>Add Pictures</value>
+  </data>
+  <data name="FilterImages" xml:space="preserve">
+    <value>Pictures</value>
+  </data>
+  <data name="Elsewhere" xml:space="preserve">
+    <value>{0} (elsewhere)</value>
+  </data>
+  <data name="AddFailed" xml:space="preserve">
+    <value>Could not add {0}: {1}</value>
+  </data>
+  <data name="RemoveFailed" xml:space="preserve">
+    <value>Could not remove {0}: {1}</value>
+  </data>
+  <data name="Unsupported" xml:space="preserve">
+    <value>{0} is not a kind of picture the desktop can show.</value>
+  </data>
+  <data name="HelpTitle" xml:space="preserve">
+    <value>Background Help</value>
+  </data>
+  <data name="HelpText" xml:space="preserve">
+    <value>Click a picture to put it on the desktop. It changes at once, so you can see it where it will be.
+
+Add copies pictures into your own wallpaper folder, so moving or deleting the original later does not take the desktop with it. Pictures can also be dropped on the list from the desktop or a Files window. Remove deletes one of your own copies; the pictures that come with wlRIX cannot be removed.
+
+Fit says how a picture meets the screen. Color is what shows around it, through anything transparent in it, and on its own under No Picture.
+
+With "Use on the lock screen too" checked, the lock screen shows the same background.
+
+Reset puts back what the desktop had when this window opened. Cancel does the same and then closes; OK keeps what you chose.</value>
+  </data>
+  <data name="NoSettingsService" xml:space="preserve">
+    <value>No settings service: {0}</value>
+  </data>
+  <data name="FileInvalid" xml:space="preserve">
+    <value>{0} is not valid; showing the last good values.</value>
+  </data>
+</root>

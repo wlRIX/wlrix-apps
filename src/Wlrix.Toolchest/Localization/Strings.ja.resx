@@ -72,6 +72,9 @@
   <data name="Windows" xml:space="preserve">
     <value>ウィンドウ</value>
   </data>
+  <data name="Background" xml:space="preserve">
+    <value>背景</value>
+  </data>
   <data name="ColorSchemes" xml:space="preserve">
     <value>カラースキーム</value>
   </data>

@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 using SkiaSharp;
+using Wlrix.Common.Imaging;
 
 namespace Wlrix.ImageView.Models;
 
@@ -82,8 +83,8 @@ public sealed class Histogram
         return new Histogram(red, green, blue, luminance, count);
     }
 
-    /// <summary>Rec. 601 luma, the weighting IRIX's tools used, rounded to the nearest value.</summary>
-    internal static int Luma(int r, int g, int b) => (299 * r + 587 * g + 114 * b + 500) / 1000;
+    /// <summary>Rec. 601 luma, the weighting IRIX's tools used; the same as an SGI gray file stores.</summary>
+    internal static int Luma(int r, int g, int b) => SgiImage.Luma(r, g, b);
 
     /// <summary>
     /// The counts for <paramref name="channel"/>. For <see cref="HistogramChannel.Rgb"/> that

@@ -1,0 +1,20 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:wlrix="https://vic485.xyz/Wlrix.Avalonia"
+        xmlns:loc="using:Wlrix.Common.Localization"
+        x:Class="Wlrix.Settings.Background.Views.ColorDialog"
+        CanResize="False" SizeToContent="WidthAndHeight"
+        WindowStartupLocation="CenterOwner"
+        Title="{loc:Tr ColorTitle}">
+
+    <!-- IRIX's Color Browser, with the OK and Cancel the control leaves to its host. Nothing is
+         written until OK: every write is a file write and a repaint, and a slider sends dozens. -->
+    <DockPanel Margin="10">
+        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal"
+                    HorizontalAlignment="Center" Spacing="10" Margin="0,10,0,0">
+            <Button Content="{loc:Tr Ok}" MinWidth="80" Click="OnOk" IsDefault="True" />
+            <Button Content="{loc:Tr Cancel}" MinWidth="80" Click="OnCancel" IsCancel="True" />
+        </StackPanel>
+        <wlrix:ColorChooser x:Name="Chooser" />
+    </DockPanel>
+</Window>

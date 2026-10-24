@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="WindowTitle" xml:space="preserve">
+    <value>背景</value>
+  </data>
+  <data name="PanelTitle" xml:space="preserve">
+    <value>デスクトップの背景</value>
+  </data>
+  <data name="MenuApplication" xml:space="preserve">
+    <value>アプリケーション (_A)</value>
+  </data>
+  <data name="MenuClose" xml:space="preserve">
+    <value>終了 (_X)</value>
+  </data>
+  <data name="MenuHelp" xml:space="preserve">
+    <value>ヘルプ (_H)</value>
+  </data>
+  <data name="MenuClickForHelp" xml:space="preserve">
+    <value>ヘルプを表示 (_C)</value>
+  </data>
+  <data name="Pictures" xml:space="preserve">
+    <value>画像:</value>
+  </data>
+  <data name="Add" xml:space="preserve">
+    <value>追加...</value>
+  </data>
+  <data name="Remove" xml:space="preserve">
+    <value>削除</value>
+  </data>
+  <data name="DropHint" xml:space="preserve">
+    <value>または画像をここにドロップ</value>
+  </data>
+  <data name="Fit" xml:space="preserve">
+    <value>表示方法:</value>
+  </data>
+  <data name="DesktopColor" xml:space="preserve">
+    <value>色:</value>
+  </data>
+  <data name="AlsoLockScreen" xml:space="preserve">
+    <value>ロック画面にも使用する</value>
+  </data>
+  <data name="Ok" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="Reset" xml:space="preserve">
+    <value>リセット</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>キャンセル</value>
+  </data>
+  <data name="NoPicture" xml:space="preserve">
+    <value>画像なし</value>
+  </data>
+  <data name="Mode_fill" xml:space="preserve">
+    <value>画面全体に拡大</value>
+  </data>
+  <data name="Mode_fit" xml:space="preserve">
+    <value>画面内に収める</value>
+  </data>
+  <data name="Mode_stretch" xml:space="preserve">
+    <value>画面に合わせて伸縮</value>
+  </data>
+  <data name="Mode_center" xml:space="preserve">
+    <value>原寸で中央に表示</value>
+  </data>
+  <data name="Mode_tile" xml:space="preserve">
+    <value>並べて表示</value>
+  </data>
+  <data name="ColorTitle" xml:space="preserve">
+    <value>デスクトップの色</value>
+  </data>
+  <data name="AddTitle" xml:space="preserve">
+    <value>画像の追加</value>
+  </data>
+  <data name="FilterImages" xml:space="preserve">
+    <value>画像</value>
+  </data>
+  <data name="Elsewhere" xml:space="preserve">
+    <value>{0} (他の場所)</value>
+  </data>
+  <data name="AddFailed" xml:space="preserve">
+    <value>{0} を追加できませんでした: {1}</value>
+  </data>
+  <data name="RemoveFailed" xml:space="preserve">
+    <value>{0} を削除できませんでした: {1}</value>
+  </data>
+  <data name="Unsupported" xml:space="preserve">
+    <value>{0} はデスクトップで表示できない種類の画像です。</value>
+  </data>
+  <data name="HelpTitle" xml:space="preserve">
+    <value>背景のヘルプ</value>
+  </data>
+  <data name="HelpText" xml:space="preserve">
+    <value>画像をクリックすると、すぐにデスクトップの背景になります。実際の画面で確かめながら選べます。
+
+「追加」は画像を自分の壁紙フォルダーにコピーします。元のファイルを後で移動したり削除したりしても、背景はそのまま残ります。デスクトップやファイル・ウィンドウから画像をリストにドロップすることもできます。「削除」は自分で追加したコピーを削除します。wlRIX に付属の画像は削除できません。
+
+「表示方法」は画像を画面にどう合わせるかを決めます。「色」は画像の周り、透明な部分、そして「画像なし」のときに画面全体に表示されます。
+
+「ロック画面にも使用する」をオンにすると、ロック画面にも同じ背景が表示されます。
+
+「リセット」はこのウィンドウを開いたときの背景に戻します。「キャンセル」は同じように戻してから閉じます。「OK」は選んだ内容のまま閉じます。</value>
+  </data>
+  <data name="NoSettingsService" xml:space="preserve">
+    <value>設定サービスがありません: {0}</value>
+  </data>
+  <data name="FileInvalid" xml:space="preserve">
+    <value>{0} が無効です。最後に有効だった値を表示しています。</value>
+  </data>
+</root>
