@@ -6,12 +6,18 @@ GenericName=Image Viewer
 GenericName[ja]=画像ビューア
 Comment=View, turn and examine images
 Comment[ja]=画像を表示・回転・調査します
+Icon=com.wlrix.imageview
 Categories=Graphics;Viewer;2DGraphics;RasterGraphics;
 
 # %f, not %F: the window holds one image at a time, and `App` opens `args[0]` only.
 Exec=wlrix-imageview %f
 TryExec=wlrix-imageview
 Terminal=false
+
+# The symbol while it is running, as IRIX's imgview had: the closed one puts a face on the magic
+# carpet's picture, the running one shows it on the carpet stood upright. A wlRIX extension,
+# read by wlrix-desktop and the icon catalog; the X- prefix keeps the file valid elsewhere.
+X-WLRIX-Running-Icon=com.wlrix.imageview-running
 
 # Matches the Wayland app id set in Program.BuildAvaloniaApp, which is how `wlrix-desktop`
 # finds the running window.
