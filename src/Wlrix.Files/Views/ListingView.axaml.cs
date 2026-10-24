@@ -473,11 +473,13 @@ public partial class ListingView : UserControl
         // the press misses every row, which kept files picked out that the user had clearly
         // clicked away from. Control and Shift are left alone, as they are about adding to a
         // selection rather than replacing it.
-        if (IsEmptySpace(view, e.Source)
-            && (e.KeyModifiers & (KeyModifiers.Control | KeyModifiers.Shift)) == 0)
+        var empty = IsEmptySpace(view, e.Source);
+        if (empty && (e.KeyModifiers & (KeyModifiers.Control | KeyModifiers.Shift)) == 0)
             view.SelectedItems?.Clear();
 
-        if (!ReferenceEquals(view, IconView) || Grid is not { } grid)
+        // A press on a scroll bar is not empty space either. Banding from it would take the
+        // drag away from the thumb, since the band handles every move once it starts.
+        if (!empty || !ReferenceEquals(view, IconView) || Grid is not { } grid)
             return;
 
         var point = e.GetPosition(grid);

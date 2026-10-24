@@ -2,6 +2,7 @@
 
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Presenters;
 using Avalonia.Controls.Shapes;
 using Avalonia.Input;
 using Avalonia.Interactivity;
@@ -93,6 +94,18 @@ public partial class MainWindow : Window
 
     private static StaggeredIconPanel? PanelOf(ListBox list) => list.ItemsPanelRoot as StaggeredIconPanel;
 
+    /// <summary>Whether a press landed in the list's scrolling area rather than on a scroll bar.</summary>
+    /// <remarks>
+    /// The scroll bars sit beside the content presenter, not inside it. A press on one is a
+    /// drag of the thumb, and treating it as empty space would start a band that takes every
+    /// move from then on and leaves the thumb stuck where it was.
+    /// </remarks>
+    private static bool InContent(ListBox list, object? source) =>
+        (source as Visual)?.GetSelfAndVisualAncestors()
+            .TakeWhile(visual => !ReferenceEquals(visual, list))
+            .OfType<ScrollContentPresenter>()
+            .Any() == true;
+
     private static Rectangle? BandOf(ListBox list) =>
         (list.Parent as Panel)?.Children.OfType<Canvas>().FirstOrDefault()?.Children.OfType<Rectangle>().FirstOrDefault();
 
@@ -124,7 +137,8 @@ public partial class MainWindow : Window
         _banding = false;
 
         if (ListOf(e.Source) is not { } list || PanelOf(list) is not { } panel
-            || !e.GetCurrentPoint(list).Properties.IsLeftButtonPressed)
+            || !e.GetCurrentPoint(list).Properties.IsLeftButtonPressed
+            || !InContent(list, e.Source))
             return;
 
         var point = e.GetPosition(panel);
