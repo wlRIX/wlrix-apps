@@ -131,6 +131,11 @@
                 <MenuItem Name="CtxOpenNewTab" Header="{loc:Tr ContextOpenNewTab}"
                           Command="{Binding Tab.Window.OpenSelectionInNewTab}" />
                 <MenuItem Header="-" />
+                <!-- The formats are their own names in every language, so not translated. -->
+                <MenuItem Name="CtxCompress" Header="{loc:Tr ContextCompressTo}">
+                    <MenuItem Header="_tar.gz" Command="{Binding Tab.Window.CompressToTarGz}" />
+                    <MenuItem Header="_zip" Command="{Binding Tab.Window.CompressToZip}" />
+                </MenuItem>
                 <MenuItem Name="CtxTrash" Header="{loc:Tr SelectedTrash}"
                           Command="{Binding Tab.Window.TrashSelection}" />
                 <MenuItem Name="CtxProperties" Header="{loc:Tr SelectedProperties}"

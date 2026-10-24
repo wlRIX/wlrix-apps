@@ -143,6 +143,8 @@ public sealed class MainWindowViewModel : ReactiveObject, IDisposable
         MakeCopy = Command(MakeCopyAsync);
         MakeReference = Command(MakeReferenceAsync);
         NewFolder = Command(NewFolderAsync);
+        CompressToTarGz = Command(() => CompressAsync(ArchiveFormat.TarGz));
+        CompressToZip = Command(() => CompressAsync(ArchiveFormat.Zip));
         TrashSelection = Command(TrashAsync);
         DeleteSelection = Command(DeleteAsync);
         EmptyTrash = Command(EmptyTrashAsync);
@@ -640,6 +642,10 @@ public sealed class MainWindowViewModel : ReactiveObject, IDisposable
     public ReactiveCommand<Unit, Unit> MakeCopy { get; }
     public ReactiveCommand<Unit, Unit> MakeReference { get; }
     public ReactiveCommand<Unit, Unit> NewFolder { get; }
+
+    /// <summary>Compress To: packs the selection into a new archive beside it.</summary>
+    public ReactiveCommand<Unit, Unit> CompressToTarGz { get; }
+    public ReactiveCommand<Unit, Unit> CompressToZip { get; }
     public ReactiveCommand<Unit, Unit> TrashSelection { get; }
     public ReactiveCommand<Unit, Unit> DeleteSelection { get; }
 
@@ -1577,6 +1583,41 @@ public sealed class MainWindowViewModel : ReactiveObject, IDisposable
         var made = pane.Location.Child(name);
         if (await RunAsync(FileOperation.NewDirectory(made)).ConfigureAwait(true))
             pane.Reveal(made);
+    }
+
+    /// <summary>Packs the selection into a new archive in this directory -- Dolphin's "Compress To".</summary>
+    /// <remarks>
+    /// No prompt for a name, which is the whole point of having it a menu away rather than in
+    /// the archiver: it is named after what went into it, never replaces anything, and is
+    /// selected once it exists, so renaming it is one keystroke from there.
+    /// </remarks>
+    private async Task CompressAsync(ArchiveFormat format)
+    {
+        if (Selection.Count == 0)
+            return;
+
+        var pane = Pane;
+        var home = pane.Location;
+        var sources = SelectedLocations();
+        var stem = ArchiveNaming.Stem(
+            sources, Selection is [{ IsDirectory: true }], home, Strings.ArchiveDefaultName);
+
+        var fs = await _provider.GetAsync(home, CancellationToken.None).ConfigureAwait(true);
+        Location? archive = null;
+        foreach (var name in ArchiveNaming.Candidates(stem, format))
+        {
+            var candidate = home.Child(name);
+            if (!await fs.ExistsAsync(candidate, CancellationToken.None).ConfigureAwait(true))
+            {
+                archive = candidate;
+                break;
+            }
+        }
+        if (archive is null)
+            return;
+
+        if (await RunAsync(FileOperation.Compress(sources, archive, format)).ConfigureAwait(true))
+            pane.Reveal(archive);
     }
 
     /// <summary>Moves the selection to the trash, or deletes it where there is no trash.</summary>

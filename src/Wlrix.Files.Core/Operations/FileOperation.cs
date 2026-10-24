@@ -12,7 +12,18 @@ public enum OperationKind
     CreateDirectory,
     Rename,
     /// <summary>Create a symbolic link — IRIX's "Make Reference".</summary>
-    Link
+    Link,
+    /// <summary>Pack the sources into one new archive — Dolphin's "Compress To".</summary>
+    Compress
+}
+
+/// <summary>The archive formats Compress can write.</summary>
+public enum ArchiveFormat
+{
+    /// <summary>A gzip-compressed POSIX tar, which keeps permissions and links.</summary>
+    TarGz,
+    /// <summary>A deflated zip, for sending to somebody who is not on Unix.</summary>
+    Zip
 }
 
 /// <summary>A unit of work: what to do, to what, and where.</summary>
@@ -32,6 +43,9 @@ public sealed class FileOperation
     /// Null for delete and trash.
     /// </summary>
     public Location? Target { get; init; }
+
+    /// <summary>What a compress writes. Null for every other kind.</summary>
+    public ArchiveFormat? Format { get; init; }
 
     /// <summary>Identifies this operation across its whole life, including a resumed retry.</summary>
     public Guid Id { get; init; } = Guid.NewGuid();
@@ -54,6 +68,14 @@ public sealed class FileOperation
     /// <summary>Links each source into the target directory, under its own name.</summary>
     public static FileOperation Link(IReadOnlyList<Location> sources, Location target) =>
         new() { Kind = OperationKind.Link, Sources = sources, Target = target };
+
+    /// <summary>Packs the sources into a new archive at <paramref name="archive"/>.</summary>
+    /// <remarks>
+    /// The target is the archive file itself, not a directory to put it in, so the caller is
+    /// the one choosing its name -- and can select it once it exists.
+    /// </remarks>
+    public static FileOperation Compress(IReadOnlyList<Location> sources, Location archive, ArchiveFormat format) =>
+        new() { Kind = OperationKind.Compress, Sources = sources, Target = archive, Format = format };
 
     public static FileOperation NewDirectory(Location target) =>
         new() { Kind = OperationKind.CreateDirectory, Sources = [], Target = target };
@@ -107,6 +129,9 @@ public sealed record TransferPlan(IReadOnlyList<PlannedItem> Items, long TotalBy
 /// <param name="LinkTarget">
 /// The text of the link, when the source filesystem could say, so a copy can make the same link.
 /// </param>
+/// <param name="Modified">When it was last changed, where the scan saw it. An archive records it.</param>
+/// <param name="UnixMode">Its permission bits, where the scan saw them. An archive records them.</param>
 public sealed record PlannedItem(
     Location Source, Location? Target, bool IsDirectory, long Size,
-    bool IsLink = false, string? LinkTarget = null);
+    bool IsLink = false, string? LinkTarget = null,
+    DateTimeOffset? Modified = null, int? UnixMode = null);

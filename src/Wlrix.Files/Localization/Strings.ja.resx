@@ -574,6 +574,15 @@
   <data name="ContextSelectAll" xml:space="preserve">
     <value>すべて選択(_A)</value>
   </data>
+  <data name="ContextCompressTo" xml:space="preserve">
+    <value>圧縮(_P)</value>
+  </data>
+  <data name="OperationCompressing" xml:space="preserve">
+    <value>圧縮しています...</value>
+  </data>
+  <data name="ArchiveDefaultName" xml:space="preserve">
+    <value>アーカイブ</value>
+  </data>
   <data name="PlaceDumpster" xml:space="preserve">
     <value>ごみ箱</value>
   </data>

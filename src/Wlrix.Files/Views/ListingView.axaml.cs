@@ -409,6 +409,10 @@ public partial class ListingView : UserControl
         // Only a directory can be in a tab. Hidden rather than disabled, because a greyed
         // "Open in New Tab" over a text file invites the question of why not.
         CtxOpenNewTab.IsVisible = selection.Any(row => row.IsDirectory);
+
+        // Hidden in the Dumpster: what is in there is waiting to be put back or destroyed,
+        // and an archive made of it would be one more thing in the trash.
+        CtxCompress.IsVisible = any && Model is { IsInTrash: false };
     }
 
     /// <summary>Selects every row, for the menu item of that name.</summary>

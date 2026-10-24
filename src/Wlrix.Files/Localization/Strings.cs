@@ -59,6 +59,9 @@ public static class Strings
     public static string NewFolderTitle => Catalog.Get("NewFolderTitle");
     public static string NewFolderPrompt => Catalog.Get("NewFolderPrompt");
     public static string NewFolderDefault => Catalog.Get("NewFolderDefault");
+
+    /// <summary>What an archive of several items is called when their directory has no name.</summary>
+    public static string ArchiveDefaultName => Catalog.Get("ArchiveDefaultName");
     public static string RenameTitle => Catalog.Get("RenameTitle");
     public static string ConfirmDeleteTitle => Catalog.Get("ConfirmDeleteTitle");
 
@@ -128,6 +131,7 @@ public static class Strings
         global::Wlrix.Files.Core.Operations.OperationKind.Move => Catalog.Get("OperationMoving"),
         global::Wlrix.Files.Core.Operations.OperationKind.Trash => Catalog.Get("OperationTrashing"),
         global::Wlrix.Files.Core.Operations.OperationKind.Delete => Catalog.Get("OperationDeleting"),
+        global::Wlrix.Files.Core.Operations.OperationKind.Compress => Catalog.Get("OperationCompressing"),
         _ => Catalog.Get("StatusLoading")
     };
 

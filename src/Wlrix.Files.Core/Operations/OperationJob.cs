@@ -85,6 +85,15 @@ public sealed class OperationJob
             }
 
             var plan = await ScanAsync(operation, throttle, cancellationToken).ConfigureAwait(false);
+
+            // One archive is one item as far as success goes: a member that cannot be read
+            // leaves a hole nobody would notice until extracting it, so the whole thing fails
+            // rather than skipping it.
+            if (operation.Kind == OperationKind.Compress)
+            {
+                await CompressAsync(operation, plan, throttle, cancellationToken).ConfigureAwait(false);
+                return Finish(OperationPhase.Completed, plan.Items.Count, 0, errors, throttle);
+            }
             var bytesDone = 0L;
 
             foreach (var item in plan.Items)
@@ -161,7 +170,8 @@ public sealed class OperationJob
         foreach (var source in operation.Sources)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var target = operation.Target?.Child(source.Name);
+            // A compress's target is the archive file, which has no children to plan into.
+            var target = operation.Kind == OperationKind.Compress ? null : operation.Target?.Child(source.Name);
 
             // A link to a directory is one link, so the tree below it is not walked -- and
             // must not be, or linking a home directory would plan a million items and then
@@ -179,20 +189,20 @@ public sealed class OperationJob
 
             if (stat.SymlinkTarget is { } linkTarget)
             {
-                items.Add(LinkItem(source, target, stat.IsDirectory, stat.Size, linkTarget));
+                items.Add(LinkItem(source, target, stat.IsDirectory, stat.Size, linkTarget, stat.Modified, stat.UnixMode));
                 Tick();
                 continue;
             }
 
             if (!stat.IsDirectory)
             {
-                items.Add(new PlannedItem(source, target, false, stat.Size));
+                items.Add(new PlannedItem(source, target, false, stat.Size, Modified: stat.Modified, UnixMode: stat.UnixMode));
                 totalBytes += stat.Size;
                 Tick();
                 continue;
             }
 
-            items.Add(new PlannedItem(source, target, true, 0));
+            items.Add(new PlannedItem(source, target, true, 0, Modified: stat.Modified, UnixMode: stat.UnixMode));
             Tick();
             totalBytes += await ScanDirectoryAsync(fs, source, target, items, cancellationToken).ConfigureAwait(false);
         }
@@ -238,7 +248,8 @@ public sealed class OperationJob
                     }
                 }
 
-                var item = LinkItem(entry.Location, childTarget, entry.IsDirectory, entry.Size, linkTarget);
+                var item = LinkItem(entry.Location, childTarget, entry.IsDirectory, entry.Size, linkTarget,
+                    entry.Modified, entry.UnixMode);
                 into.Add(item);
                 bytes += item.Size;
                 continue;
@@ -246,13 +257,15 @@ public sealed class OperationJob
 
             if (entry.IsDirectory)
             {
-                into.Add(new PlannedItem(entry.Location, childTarget, true, 0));
+                into.Add(new PlannedItem(entry.Location, childTarget, true, 0,
+                    Modified: entry.Modified, UnixMode: entry.UnixMode));
                 bytes += await ScanDirectoryAsync(fs, entry.Location, childTarget, into, cancellationToken)
                     .ConfigureAwait(false);
             }
             else
             {
-                into.Add(new PlannedItem(entry.Location, childTarget, false, entry.Size));
+                into.Add(new PlannedItem(entry.Location, childTarget, false, entry.Size,
+                    Modified: entry.Modified, UnixMode: entry.UnixMode));
                 bytes += entry.Size;
             }
         }
@@ -264,8 +277,11 @@ public sealed class OperationJob
     /// Sized as the file it points at, because that is what a destination that cannot hold
     /// links receives instead. A link to a directory is sized zero, like a directory.
     /// </remarks>
-    private static PlannedItem LinkItem(Location source, Location? target, bool toDirectory, long size, string? linkTarget) =>
-        new(source, target, false, toDirectory ? 0 : size, IsLink: true, LinkTarget: linkTarget);
+    private static PlannedItem LinkItem(
+        Location source, Location? target, bool toDirectory, long size, string? linkTarget,
+        DateTimeOffset? modified = null, int? unixMode = null) =>
+        new(source, target, false, toDirectory ? 0 : size, IsLink: true, LinkTarget: linkTarget,
+            Modified: modified, UnixMode: unixMode);
 
     // --- execute ---------------------------------------------------------
 
@@ -615,6 +631,91 @@ public sealed class OperationJob
                 errors.Add(ex);
             }
         }
+    }
+
+    /// <summary>Writes every planned item into one archive, through a part file.</summary>
+    /// <remarks>
+    /// Members are named relative to the directory the archive is made in, so compressing
+    /// search results keeps the subdirectories they were found in rather than flattening them
+    /// into names that may collide. A source from anywhere else is named from its own parent.
+    ///
+    /// <para>
+    /// The archive never overwrites. The caller picked a free name, and something appearing
+    /// there in the meantime is somebody else's file.
+    /// </para>
+    /// </remarks>
+    private async Task CompressAsync(
+        FileOperation operation, TransferPlan plan,
+        ProgressThrottle<OperationProgress> throttle, CancellationToken cancellationToken)
+    {
+        var archive = operation.Target
+            ?? throw new FileOperationException(FileErrorKind.Unsupported, Location.FromLocalPath("/"), "no target");
+        var format = operation.Format
+            ?? throw new FileOperationException(FileErrorKind.Unsupported, archive, "no archive format");
+        var home = archive.Parent ?? archive;
+        var targetFs = await _provider.GetAsync(archive, cancellationToken).ConfigureAwait(false);
+        var part = home.Child(archive.Name + PartSuffix);
+
+        try
+        {
+            await using (var output = await targetFs.OpenWriteAsync(part, WriteMode.Overwrite, null, cancellationToken).ConfigureAwait(false))
+            await using (var writer = ArchiveWriter.Create(format, output))
+            {
+                var bytesDone = 0L;
+                var done = 0;
+                foreach (var planned in plan.Items)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    var item = planned;
+                    var name = MemberName(item.Source, operation.Sources, home);
+                    var sourceFs = await _provider.GetAsync(item.Source, cancellationToken).ConfigureAwait(false);
+                    // A local listing leaves the mode out, since it costs a syscall per entry
+                    // that the details view never shows. An archive does need it, or every
+                    // script inside a directory comes back out no longer executable.
+                    if (item is { UnixMode: null, IsLink: false }
+                        && sourceFs.Capabilities.HasFlag(FileSystemCapabilities.PosixMode))
+                    {
+                        var stat = await sourceFs.StatAsync(item.Source, cancellationToken).ConfigureAwait(false);
+                        item = item with { UnixMode = stat.UnixMode };
+                    }
+                    await writer.WriteAsync(sourceFs, item, name, cancellationToken).ConfigureAwait(false);
+
+                    done++;
+                    bytesDone += item.Size;
+                    throttle.Report(new OperationProgress(
+                        OperationPhase.Working,
+                        plan.TotalBytes > 0 ? (double)bytesDone / plan.TotalBytes : (double)done / Math.Max(1, plan.Items.Count),
+                        done, plan.Items.Count, bytesDone, plan.TotalBytes, item.Source.Name));
+                }
+            }
+
+            if (await targetFs.ExistsAsync(archive, cancellationToken).ConfigureAwait(false))
+                throw new FileOperationException(FileErrorKind.AlreadyExists, archive, "the archive name was taken");
+            await targetFs.RenameAsync(part, archive, cancellationToken).ConfigureAwait(false);
+        }
+        catch (Exception ex) when (ex is IOException and not FileOperationException or InvalidDataException)
+        {
+            // The streams between here and the disk -- gzip, the tar and zip writers -- throw
+            // their own exceptions, which would otherwise reach the user without saying which
+            // file they were about.
+            await TryDeleteAsync(targetFs, part).ConfigureAwait(false);
+            throw new FileOperationException(FileErrorKind.Unknown, archive, ex.Message, ex);
+        }
+        catch
+        {
+            await TryDeleteAsync(targetFs, part).ConfigureAwait(false);
+            throw;
+        }
+    }
+
+    /// <summary>The path a planned item has inside the archive.</summary>
+    internal static string MemberName(Location item, IReadOnlyList<Location> sources, Location home)
+    {
+        var source = sources.FirstOrDefault(s => s == item || s.Contains(item)) ?? item;
+        var root = home.Contains(source) ? home : source.Parent ?? source;
+        if (root.IsRoot)
+            return item.Path.TrimStart('/');
+        return item.Path[(root.Path.Length + 1)..];
     }
 
     private async Task CreateDirectoryAsync(FileOperation operation, CancellationToken cancellationToken)
