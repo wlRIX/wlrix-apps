@@ -102,9 +102,53 @@ public sealed class PaneViewModel : ReactiveObject
     /// <summary>Raised when <see cref="Selection"/> is replaced, by the listing or by a row leaving.</summary>
     public event Action? SelectionChanged;
 
+    /// <summary>Raised when a row should be selected and scrolled to, for the listing to do.</summary>
+    public event Action<FileEntryViewModel>? RevealRequested;
+
+    /// <summary>What <see cref="Reveal"/> is waiting to see arrive, if it has not yet.</summary>
+    private Location? _pendingReveal;
+
+    /// <summary>Selects the row at <paramref name="location"/> and brings it on screen.</summary>
+    /// <remarks>
+    /// The row may not be listed yet. Something just made it, and the listing only learns of
+    /// that from the watcher, which can report before the operation's completion is seen or
+    /// some time after it. So a location not in the listing is remembered and revealed when it
+    /// turns up, until the pane goes somewhere else.
+    ///
+    /// <para>
+    /// Nothing is revealed while a read is under way. Its rows are appended unsorted and then
+    /// replaced wholesale by the sorted list, which would throw a selection made in between
+    /// away; the read looks for what is waiting once its final rows are in.
+    /// </para>
+    /// </remarks>
+    public void Reveal(Location location)
+    {
+        _pendingReveal = location;
+        if (!IsLoading)
+            RevealPending(Entries);
+    }
+
+    private void RevealPending(IEnumerable<FileEntryViewModel> rows)
+    {
+        if (_pendingReveal is not { } pending
+            || rows.FirstOrDefault(row => row.Location == pending) is not { } row)
+            return;
+        _pendingReveal = null;
+        Select(row);
+    }
+
+    private void Select(FileEntryViewModel row)
+    {
+        Selection = [row];
+        RevealRequested?.Invoke(row);
+    }
+
     /// <summary>Drops rows that are no longer listed from the remembered selection.</summary>
     private void OnEntriesChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
+        if (!IsLoading && e is { Action: NotifyCollectionChangedAction.Add, NewItems: { } added })
+            RevealPending(added.OfType<FileEntryViewModel>());
+
         if (_selection.Count == 0)
             return;
 
@@ -461,6 +505,7 @@ public sealed class PaneViewModel : ReactiveObject
         // to be dropped. Leaving them up while the location changed underneath would be a list
         // that no longer has anything to do with the path bar above it.
         ClearSearch();
+        _pendingReveal = null;
         Location = target;
         this.RaisePropertyChanged(nameof(PathText));
         this.RaisePropertyChanged(nameof(PathRoot));
@@ -553,6 +598,7 @@ public sealed class PaneViewModel : ReactiveObject
             ApplySort(arrived);
             Entries.Clear();
             Entries.AddRange(arrived);
+            RevealPending(arrived);
 
             if (_search is { } finished)
             {

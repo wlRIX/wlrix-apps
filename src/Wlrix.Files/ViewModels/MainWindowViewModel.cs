@@ -1571,7 +1571,12 @@ public sealed class MainWindowViewModel : ReactiveObject, IDisposable
         if (name is null)
             return;
 
-        await RunAsync(FileOperation.NewDirectory(Pane.Location.Child(name))).ConfigureAwait(true);
+        // The pane is caught now rather than after the await: the folder belongs to the
+        // directory it was made in, even if the active pane changed while it was being made.
+        var pane = Pane;
+        var made = pane.Location.Child(name);
+        if (await RunAsync(FileOperation.NewDirectory(made)).ConfigureAwait(true))
+            pane.Reveal(made);
     }
 
     /// <summary>Moves the selection to the trash, or deletes it where there is no trash.</summary>
@@ -1757,7 +1762,8 @@ public sealed class MainWindowViewModel : ReactiveObject, IDisposable
     }
 
     /// <summary>Queues an operation, follows it, and reloads when it finishes.</summary>
-    private async Task RunAsync(FileOperation operation, IConflictResolver? conflicts = null)
+    /// <returns>Whether it succeeded.</returns>
+    private async Task<bool> RunAsync(FileOperation operation, IConflictResolver? conflicts = null)
     {
         var queued = Operations.Enqueue(operation, conflicts ?? new ViewConflictResolver(this));
         _running = queued;
@@ -1765,9 +1771,11 @@ public sealed class MainWindowViewModel : ReactiveObject, IDisposable
         RefreshOperation();
 
         var started = Stopwatch.GetTimestamp();
+        var succeeded = false;
         try
         {
             var result = await queued.Completion.ConfigureAwait(true);
+            succeeded = result.Succeeded;
             if (result.Errors.Count > 0)
                 ErrorRaised?.Invoke(Strings.OperationFailed(result.Errors.Count) + " " + result.Errors[0].Message);
             // Only for a copy or move long enough to have been waited on. One that is over in a
@@ -1788,6 +1796,7 @@ public sealed class MainWindowViewModel : ReactiveObject, IDisposable
             // throw away the selection and scroll position after every operation.
             await Pane.RefreshAsync().ConfigureAwait(true);
         }
+        return succeeded;
     }
 
     private void OnOperationChanged(QueuedOperation queued) => Dispatcher.UIThread.Post(RefreshOperation);

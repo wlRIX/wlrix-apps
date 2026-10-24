@@ -102,4 +102,52 @@ public sealed class PaneSelectionTests : IDisposable
         Assert.Same(selection, pane.Selection);
         await pane.CloseAsync();
     }
+
+    [Fact]
+    public async Task RevealingAListedRowSelectsItAndAsksTheListingToShowIt()
+    {
+        var pane = await LoadedPane();
+        var b = pane.Entries.Single(row => row.Name == "b.txt");
+        FileEntryViewModel? shown = null;
+        pane.RevealRequested += row => shown = row;
+
+        pane.Reveal(b.Location);
+
+        Assert.Equal([b], pane.Selection);
+        Assert.Same(b, shown);
+        await pane.CloseAsync();
+    }
+
+    [Fact]
+    public async Task RevealingARowNotListedYetSelectsItWhenItArrives()
+    {
+        // A new folder is revealed as soon as it is made, and the watcher may not have
+        // reported it by then.
+        var pane = await LoadedPane();
+        var made = Location.FromLocalPath(Path.Combine(_root, "made"));
+
+        pane.Reveal(made);
+        Assert.Empty(pane.Selection);
+
+        Directory.CreateDirectory(made.Path);
+        await pane.ReloadAsync();
+
+        Assert.Equal(made, Assert.Single(pane.Selection).Location);
+        await pane.CloseAsync();
+    }
+
+    [Fact]
+    public async Task NavigatingAwayForgetsARevealStillWaiting()
+    {
+        var pane = await LoadedPane();
+        var made = Location.FromLocalPath(Path.Combine(_root, "made"));
+        pane.Reveal(made);
+
+        await pane.NavigateAsync(Location.FromLocalPath(Path.GetTempPath()));
+        Directory.CreateDirectory(made.Path);
+        await pane.GoBackAsync();
+
+        Assert.Empty(pane.Selection);
+        await pane.CloseAsync();
+    }
 }

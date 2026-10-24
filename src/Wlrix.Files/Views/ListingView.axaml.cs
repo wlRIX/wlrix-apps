@@ -169,10 +169,20 @@ public partial class ListingView : UserControl
     /// when the data context arrives.
     /// </remarks>
     private MainWindowViewModel? _wired;
+    private PaneViewModel? _wiredPane;
 
     /// <summary>Follows the window's "everything on screen is stale" signal.</summary>
     private void Rewire()
     {
+        if (!ReferenceEquals(_wiredPane, Pane))
+        {
+            if (_wiredPane is { } before)
+                before.RevealRequested -= Reveal;
+            _wiredPane = Pane;
+            if (_wiredPane is { } after)
+                after.RevealRequested += Reveal;
+        }
+
         if (ReferenceEquals(_wired, Model))
             return;
         if (_wired is { } previous)
@@ -187,6 +197,28 @@ public partial class ListingView : UserControl
             current.VisualsInvalidated += RefreshVisuals;
             current.SelectAllRequested += SelectAll;
         }
+    }
+
+    /// <summary>Selects one row and scrolls the showing view until it is on screen.</summary>
+    /// <remarks>
+    /// Posted, because the row has usually only just been inserted and the view has not laid
+    /// it out yet; scrolling to it before then scrolls to where it is not. Focus goes to the
+    /// row too, so the arrow keys carry on from the thing that was just made.
+    /// </remarks>
+    private void Reveal(FileEntryViewModel row)
+    {
+        if (Pane is not { } pane)
+            return;
+
+        Dispatcher.UIThread.Post(() =>
+        {
+            if (!ReferenceEquals(Pane, pane))
+                return;
+            var view = pane.IsIconView ? IconView : Listing;
+            view.SelectedItem = row;
+            view.ScrollIntoView(row);
+            view.ContainerFromItem(row)?.Focus();
+        }, DispatcherPriority.Loaded);
     }
 
     private void RestoreSelection()
@@ -325,6 +357,11 @@ public partial class ListingView : UserControl
             window.VisualsInvalidated -= RefreshVisuals;
             window.SelectAllRequested -= SelectAll;
             _wired = null;
+        }
+        if (_wiredPane is { } pane)
+        {
+            pane.RevealRequested -= Reveal;
+            _wiredPane = null;
         }
         EndDrag();
         base.OnDetachedFromVisualTree(e);
