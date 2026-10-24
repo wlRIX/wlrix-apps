@@ -30,13 +30,14 @@
 
         <!-- Title banner: icon slot plus what this window does, as on the IRIX original. -->
         <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="12">
+            <!-- IRIX's task picture in a well of the icon panel's color, as the original drew
+                 it. The picture is rasterized in code, at the window's scale; see
+                 ShutdownWindow.axaml.cs. -->
             <Border Width="48" Height="48"
                     BorderThickness="1"
                     BorderBrush="{DynamicResource WlrixOuterLine}"
-                    Background="{DynamicResource WlrixSelect}">
-                <!-- Placeholder for the shutdown icon (a real asset comes from wlrix-assets). -->
-                <TextBlock Text="&#x23FB;" FontSize="26"
-                           HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    Background="{DynamicResource WlrixReadWritePanel}">
+                <Image Name="Picture" Stretch="Uniform" />
             </Border>
             <TextBlock Text="{loc:Tr Heading}" FontWeight="Bold" FontSize="16"
                        VerticalAlignment="Center" />

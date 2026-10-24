@@ -31,4 +31,17 @@ public class LegacySvgTests
         Assert.StartsWith("""<svg xmlns="http://www.w3.org/2000/svg" width="50pt" """, added);
         Assert.Equal(added, LegacySvg.WithNamespace(added));
     }
+
+    [Fact]
+    public void AnIrixExportRendersAtTheSizeAskedFor()
+    {
+        var png = LegacySvg.Render("""<svg width="50pt" height="50pt" viewBox="0 0 50 50"><path d="M0 0L50 50" stroke="#000"/></svg>""", 69);
+        Assert.NotNull(png);
+        using var bitmap = SkiaSharp.SKBitmap.Decode(png);
+        Assert.Equal(69, bitmap.Width);
+    }
+
+    [Fact]
+    public void ADrawingThatWillNotParseRendersNothing() =>
+        Assert.Null(LegacySvg.Render("<svg><path", 48));
 }

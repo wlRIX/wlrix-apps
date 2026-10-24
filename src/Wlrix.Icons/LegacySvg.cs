@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using ResvgSharp;
 
 namespace Wlrix.Icons;
 
@@ -30,6 +31,25 @@ public static partial class LegacySvg
             return svg;
         var root = svg.IndexOf("<svg", StringComparison.Ordinal);
         return root < 0 ? svg : svg.Insert(root + "<svg".Length, $" xmlns=\"{SvgNamespace}\"");
+    }
+
+    /// <summary>Rasterizes a drawing to a <paramref name="size"/>-pixel square, as PNG; null if it will not parse.</summary>
+    /// <remarks>
+    /// For artwork an application carries itself rather than finds in a theme -- the Shut Down
+    /// System dialog's picture, say -- which is IRIX-era too and needs the same namespace.
+    /// </remarks>
+    public static byte[]? Render(string svg, int size)
+    {
+        if (size <= 0)
+            return null;
+        try
+        {
+            return Resvg.RenderToPng(WithNamespace(svg), new ResvgOptions { Width = size, Height = size });
+        }
+        catch (ResvgSharp.Exceptions.ResvgException)
+        {
+            return null;
+        }
     }
 
     /// <summary>

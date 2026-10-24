@@ -15,6 +15,14 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Wlrix.Common\Wlrix.Common.csproj" />
+        <!-- Rasterizing the dialog's IRIX picture, the way the icon catalog draws its icons. -->
+        <ProjectReference Include="..\Wlrix.Icons\Wlrix.Icons.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <!-- IRIX's task picture, the dialog's own artwork rather than a theme icon: nothing else
+             asks for it by name, and it should not go missing from an installed dialog. -->
+        <EmbeddedResource Include="Assets\task.svg" LogicalName="Shutdown.task.svg" />
     </ItemGroup>
 
     <ItemGroup>
