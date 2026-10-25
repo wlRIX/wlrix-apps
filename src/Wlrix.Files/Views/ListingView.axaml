@@ -202,7 +202,10 @@
             </ListBox.ItemContainerTheme>
             <ListBox.ItemTemplate>
                 <DataTemplate x:DataType="vm:FileEntryViewModel">
-                    <StackPanel Margin="0,6,0,0" Spacing="3">
+                    <!-- The whole cell shows the full name on hover, not only the label: the
+                         icon is the bigger target and the label is the part that gets cut. -->
+                    <StackPanel Margin="0,6,0,0" Spacing="3"
+                                ToolTip.Tip="{Binding ToolTipText}">
                         <Panel Height="52">
                             <!-- The type icon, in whichever state the styles above pick.
 
@@ -299,7 +302,8 @@
                                   BorderBrush="Transparent"
                                   Background="Transparent"
                                   Classes.dropTarget="{Binding IsDropTarget}">
-                            <StackPanel Orientation="Horizontal" Spacing="5">
+                            <StackPanel Orientation="Horizontal" Spacing="5"
+                                        ToolTip.Tip="{Binding ToolTipText}">
                                 <!-- Placeholder geometry, matching Wlrix.Archiver's. Real
                                      icons arrive with the icon-theme resolver, at which
                                      point these two Paths become an Image. Drawn rather

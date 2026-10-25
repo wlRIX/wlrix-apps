@@ -32,6 +32,7 @@ namespace Wlrix.Files.ViewModels;
 public sealed class FileEntryViewModel : INotifyPropertyChanged
 {
     private static readonly PropertyChangedEventArgs DisplayNameChanged = new(nameof(DisplayName));
+    private static readonly PropertyChangedEventArgs ToolTipTextChanged = new(nameof(ToolTipText));
     private static readonly PropertyChangedEventArgs IconChanged = new(nameof(Icon));
     private static readonly PropertyChangedEventArgs DropTargetChanged = new(nameof(IsDropTarget));
     private static readonly PropertyChangedEventArgs PreviewChanged = new(nameof(Preview));
@@ -94,8 +95,19 @@ public sealed class FileEntryViewModel : INotifyPropertyChanged
         {
             _displayName = value;
             PropertyChanged?.Invoke(this, DisplayNameChanged);
+            PropertyChanged?.Invoke(this, ToolTipTextChanged);
         }
     }
+
+    /// <summary>What hovering the row shows: the whole name, and a file's size beneath it.</summary>
+    /// <remarks>
+    /// The icon view cuts a long name off after two lines and the details view at the edge of
+    /// its column, and until now the only way to read the rest was the Properties dialog. The
+    /// size comes along because it is the next thing anyone wants to know about a file, and the
+    /// icon view has nowhere else to show it. A directory has no size worth showing here: the
+    /// real one needs a walk, which is what Properties is for.
+    /// </remarks>
+    public string ToolTipText => IsDirectory ? DisplayName : $"{DisplayName}\n{SizeText}";
 
     public bool IsDirectory => Entry.IsDirectory;
 

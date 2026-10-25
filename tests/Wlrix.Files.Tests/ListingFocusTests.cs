@@ -107,6 +107,23 @@ public sealed class ListingFocusTests(ITestOutputHelper output) : IDisposable
             Assert.Equal(harness.PathField.Text, harness.PathField.SelectedText);
         }, CancellationToken.None);
 
+    [Fact]
+    public Task EveryRowCarriesItsToolTipInBothViews() =>
+        HeadlessFiles.Session.Dispatch(() =>
+        {
+            // Bound in the item templates, where a wrong path fails silently: the tip is
+            // simply never there. So it is read off the cells the views actually made.
+            var (from, _) = TwoFolders();
+            using var harness = new Harness(_root, Location.FromLocalPath(from), output);
+            harness.WaitFor(() => harness.Model.Pane.Entries.Count == 1, "the first listing");
+            var expected = harness.Model.Pane.Entries[0].ToolTipText;
+
+            Assert.Equal(expected, harness.TipShown());
+            harness.Model.Pane.ViewMode = ViewMode.Details;
+            harness.Pump();
+            Assert.Equal(expected, harness.TipShown());
+        }, CancellationToken.None);
+
     private (string From, string To) TwoFolders()
     {
         var from = Directory.CreateDirectory(Path.Combine(_root, "from")).FullName;
@@ -169,6 +186,15 @@ public sealed class ListingFocusTests(ITestOutputHelper output) : IDisposable
         public MainWindowViewModel Model { get; }
         public MainWindow Window { get; }
         public FileClipboard Clipboard => _services.GetRequiredService<FileClipboard>();
+
+        /// <summary>The tooltip on the visible listing's first row, wherever in the cell it sits.</summary>
+        public object? TipShown()
+        {
+            var view = Window.GetVisualDescendants().OfType<ListBox>()
+                .Single(box => box.Name is "IconView" or "Listing" && box.IsEffectivelyVisible);
+            return view.GetRealizedContainers().First().GetVisualDescendants()
+                .OfType<Control>().Select(ToolTip.GetTip).FirstOrDefault(tip => tip is not null);
+        }
 
         public TextBox PathField =>
             Window.GetVisualDescendants().OfType<TextBox>().Single(box => box.Name == "PART_TextBox");
