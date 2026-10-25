@@ -1,0 +1,48 @@
+<?xml version="1.0" standalone="no"?>
+<!-- IRIX aw.dso.PlugIn with aw.dso.Spark laid over it, in register. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="50pt" height="50pt" viewBox="0 0 50 50" xml:space="preserve">
+<g transform="scale(0.5)">
+	<g id="Path_4" style="fill-rule:none;clip-rule:nonzero;fill:#f8fcf8;stroke:#000000;stroke-miterlimit:4;">
+		<path d="M62.50 46.25L47.50 38.75L45.00 40L45.00 45L47.50 48.75L62.50 56.25z"/>
+	</g>
+	<g id="Path_5" style="fill-rule:none;clip-rule:nonzero;fill:#98c4c0;stroke:#000000;stroke-miterlimit:4;">
+		<path d="M65.00 45L50.00 37.5L47.50 38.75L62.50 46.25z"/>
+	</g>
+	<g id="Path_6" style="fill-rule:none;clip-rule:nonzero;fill:#f8fcf8;stroke:#000000;stroke-miterlimit:4;">
+		<path d="M50.00 52.5L35.00 45L32.50 46.25L32.50 51.25L35.00 55L50.00 62.5z"/>
+	</g>
+	<g id="Path_7" style="fill-rule:none;clip-rule:nonzero;fill:#98c4c0;stroke:#000000;stroke-miterlimit:4;">
+		<path d="M52.50 51.25L37.50 43.75L35.00 45L50.00 52.5z"/>
+	</g>
+	<g id="Path_8" style="fill-rule:none;clip-rule:nonzero;fill:#FFFFFF;stroke:#000000;stroke-miterlimit:4;fill-opacity:100%;">
+		<path d="M67.50 61.25L87.50 51.25L87.50 48.75L70.00 40L45.00 52.5L62.50 61.25z"/>
+	</g>
+	<g id="Path_9" style="fill-rule:none;clip-rule:nonzero;fill:#FFFFFF;stroke:#000000;stroke-miterlimit:4;fill-opacity:100%;">
+		<path d="M45.00 67.5L62.50 76.25L67.50 76.25L87.50 66.25L87.50 51.25L67.50 61.25L62.50 61.25L45.00 52.5z"/>
+	</g>
+	<g id="Path_10" style="fill-rule:none;clip-rule:nonzero;fill:#000000;stroke:#000000;stroke-miterlimit:4;fill-opacity:75%;">
+		<path d="M82.50 58.75L100.00 67.5L100.00 77.5L72.50 63.75z"/>
+	</g>
+	<g id="Path_11" style="fill-rule:none;clip-rule:nonzero;fill:#000000;stroke:#000000;stroke-miterlimit:4;fill-opacity:75%;">
+		<path d="M100.00 82.5L72.50 68.75L72.50 63.75L100.00 77.5z"/>
+	</g>
+</g>
+
+<g transform="scale(0.5)">
+	<g id="Path_0" style="fill-rule:none;clip-rule:nonzero;fill:#f8fc00;stroke:#000000;stroke-miterlimit:4;">
+		<path d="M35.00 40L27.50 26.25L25.00 27.5L17.50 16.25L15.00 17.5L5.00 5L12.50 21.25L15.00 20L20.00 32.5L22.50 31.25L27.50 43.75z"/>
+	</g>
+	<g id="Path_1" style="fill-rule:none;clip-rule:nonzero;fill:#f8fc00;stroke:#000000;stroke-miterlimit:4;">
+		<path d="M30.00 57.5L20.00 60L17.50 56.25L10.00 57.5L7.50 56.25L0.00 65L7.50 51.25L10.00 52.5L17.50 51.25L20.00 52.5L27.50 48.75z"/>
+	</g>
+	<g id="Path_2" style="fill-rule:none;clip-rule:nonzero;fill:#f8fc00;stroke:#000000;stroke-miterlimit:4;">
+		<path d="M60.00 40L67.50 33.75L65.00 30L72.50 23.75L70.00 20L77.50 11.25L62.50 18.75L65.00 22.5L57.50 26.25L60.00 30L52.50 36.25z"/>
+	</g>
+	<g id="Path_3" style="fill-rule:none;clip-rule:nonzero;fill:#f8fc00;stroke:#000000;stroke-miterlimit:4;">
+		<path d="M47.50 28.75L45.00 17.5L50.00 15L37.50 1.25L42.50 13.75L40.00 17.5L40.00 30z"/>
+	</g>
+	<g id="Path_4" style="fill-rule:none;clip-rule:nonzero;fill:#f8fc00;stroke:#000000;stroke-miterlimit:4;">
+		<path d="M32.50 73.75L27.50 78.75L30.00 92.5L32.50 81.25L37.50 76.25L40.00 60L32.50 58.75z"/>
+	</g>
+</g>
+</svg>

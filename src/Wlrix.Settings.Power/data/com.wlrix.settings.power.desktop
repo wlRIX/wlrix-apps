@@ -4,7 +4,7 @@ Name=Power Settings
 Name[ja]=電源の設定
 Comment=Set what happens when idle, on battery or when the lid closes
 Comment[ja]=アイドル時、バッテリー使用時、ふたを閉じたときの動作を設定します
-Icon=battery-full
+Icon=com.wlrix.settings.power
 Categories=Settings;HardwareSettings;
 Keywords=power;battery;idle;sleep;suspend;lid;
 Exec=wlrix-settings-power
@@ -14,6 +14,10 @@ Terminal=false
 # One of wlRIX's control panels: the icon catalog files it on its ControlPanels page and stands
 # it on the control panel carpet. A wlRIX extension; the X- prefix keeps the file valid elsewhere.
 X-WLRIX-ControlPanel=true
+
+# The symbol while the panel is open: the plug, now sparking. IRIX's aw.dso drawings, the spark
+# being a layer drawn to go over the plug.
+X-WLRIX-Running-Icon=com.wlrix.settings.power-running
 
 # Matches the Wayland app id set in Program.BuildAvaloniaApp. `wlrix-desktop` looks a running
 # window up by StartupWMClass first, and wlrix-compositor frames the window by the same id.
