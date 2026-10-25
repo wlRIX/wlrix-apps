@@ -168,20 +168,24 @@ public class PropertiesTests
     }
 
     [Fact]
-    public async Task TheFinishedTotalIsNotPaintedOverByAReportStillInTheQueue()
-    {
-        // A small directory finishes inside one dispatcher turn, so the last running total is
-        // still queued when the final one is set. Left alone it lands second and the window
-        // sits there saying "counting" forever, which is what the first screenshot showed.
-        var fs = new FakeFileSystem().AddFile("/d/a", new byte[10]).AddFile("/d/b", new byte[20]);
-        var model = Model(fs, Entry("/d", directory: true));
+    public Task TheFinishedTotalIsNotPaintedOverByAReportStillInTheQueue() =>
+        // On the headless session's UI thread, which owns the dispatcher once any test in the
+        // assembly has started it; see HeadlessFiles.
+        HeadlessFiles.Session.Dispatch(async () =>
+        {
+            // A small directory finishes inside one dispatcher turn, so the last running total is
+            // still queued when the final one is set. Left alone it lands second and the window
+            // sits there saying "counting" forever, which is what the first screenshot showed.
+            var fs = new FakeFileSystem().AddFile("/d/a", new byte[10]).AddFile("/d/b", new byte[20]);
+            var model = Model(fs, Entry("/d", directory: true));
 
-        await model.LoadAsync();
-        Dispatcher.UIThread.RunJobs();
+            await model.LoadAsync();
+            Dispatcher.UIThread.RunJobs();
 
-        Assert.Equal("30 B (30 bytes)", model.SizeText);
-        Assert.Equal("2 files, 0 folders", model.ContentsText);
-    }
+            Assert.Equal("30 B (30 bytes)", model.SizeText);
+            Assert.Equal("2 files, 0 folders", model.ContentsText);
+            return true;
+        }, CancellationToken.None);
 
     [Fact]
     public void TheSizeSaysItIsCountingBeforeTheWalkHasRun()

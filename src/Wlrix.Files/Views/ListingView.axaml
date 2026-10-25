@@ -166,7 +166,12 @@
              Canvas rather than by the panel so it floats over the cells and does not take
              part in layout. -->
         <Panel IsVisible="{Binding IsIconView}">
+        <!-- Focusable, unlike a stock ListBox, which leaves focus to its items. An empty
+             directory has no items, and the editing keys are bound on this view: without a
+             focus target of its own, Ctrl+V could never paste into a folder with nothing in it
+             yet. The details view below is focusable for the same reason. -->
         <ListBox Name="IconView"
+                 Focusable="True"
                  Classes.inactive="{Binding !$parent[Window].IsActive}"
                  ItemsSource="{Binding Entries}"
                  SelectionMode="Multiple"
@@ -281,6 +286,7 @@
              inherits from ListBox, which is what makes a very large directory usable. -->
         <TableView
                    Name="Listing"
+                   Focusable="True"
                    IsVisible="{Binding IsDetailsView}"
                    ItemsSource="{Binding Entries}"
                    SelectionMode="Multiple"

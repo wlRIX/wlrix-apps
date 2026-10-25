@@ -338,8 +338,24 @@ public partial class ListingView : UserControl
         {
             if (!ReferenceEquals(Pane, pane) || !pane.IsActive || !IsShown())
                 return;
-            ShowingView(pane).Focus();
+            FocusView(ShowingView(pane));
         }, DispatcherPriority.Loaded);
+    }
+
+    /// <summary>Puts keyboard focus in a view: on a row where there is one, else on the view.</summary>
+    /// <remarks>
+    /// A row first -- the selected one, else the first on screen -- so the arrow keys carry on
+    /// from somewhere sensible, as they would after a click. The view itself only when it has
+    /// no rows to offer, which is the empty directory a paste is most often aimed at.
+    /// </remarks>
+    private static void FocusView(ListBox view)
+    {
+        if (view.IsKeyboardFocusWithin)
+            return;
+        var row = view.SelectedItem is { } selected ? view.ContainerFromItem(selected) : null;
+        row ??= view.GetRealizedContainers().FirstOrDefault();
+        if (row?.Focus() != true)
+            view.Focus();
     }
 
     private bool IsShown() => TopLevel.GetTopLevel(this) is not null;
@@ -358,7 +374,7 @@ public partial class ListingView : UserControl
         var focused = TopLevel.GetTopLevel(this) is { } top ? top.FocusManager?.GetFocusedElement() : null;
         if (!(IsKeyboardFocusWithin || focused is null || focused is TopLevel))
             return;
-        Dispatcher.UIThread.Post(() => ShowingView(pane).Focus(), DispatcherPriority.Loaded);
+        Dispatcher.UIThread.Post(() => FocusView(ShowingView(pane)), DispatcherPriority.Loaded);
     }
 
     private void OnListingDoubleTapped(object? sender, TappedEventArgs e) =>
@@ -512,7 +528,7 @@ public partial class ListingView : UserControl
         {
             SelectForContextMenu(view, RowUnder(e.Source));
             // The ListBox takes focus for neither button on its own; see the empty-space case.
-            view.Focus();
+            FocusView(view);
             return;
         }
 
@@ -544,7 +560,7 @@ public partial class ListingView : UserControl
         // bound on this view, so clicking the empty space below the files and pressing Ctrl+V
         // pasted nothing -- focus had stayed in the path bar, or nowhere.
         if (empty)
-            view.Focus();
+            FocusView(view);
 
         // A press on a scroll bar is not empty space either. Banding from it would take the
         // drag away from the thumb, since the band handles every move once it starts.
