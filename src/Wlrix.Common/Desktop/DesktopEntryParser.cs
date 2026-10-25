@@ -115,6 +115,7 @@ public static class DesktopEntryParser
             StartupWmClass = main.Value("StartupWMClass"),
             RunningIcon = main.Value("X-WLRIX-Running-Icon"),
             IsControlPanel = main.Bool("X-WLRIX-ControlPanel"),
+            TerminalExecArgument = main.Value("X-TerminalArgExec"),
             Actions = actions,
             FilePath = filePath
         };

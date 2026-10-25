@@ -98,6 +98,15 @@ public sealed class DesktopEntry
     /// </remarks>
     public bool IsControlPanel { get; init; }
 
+    /// <summary>
+    /// For a terminal emulator, the option that runs a command in it: <c>X-TerminalArgExec</c>.
+    /// </summary>
+    /// <remarks>
+    /// From the xdg-terminal-exec specification. Null when the entry does not say, which
+    /// means <c>-e</c>, the one nearly every terminal accepts.
+    /// </remarks>
+    public string? TerminalExecArgument { get; init; }
+
     /// <summary>The extra verbs from <c>Actions=</c>, in the order declared.</summary>
     public IReadOnlyList<DesktopAction> Actions { get; init; } = [];
 

@@ -49,6 +49,15 @@ public sealed class SharedMimeDatabase
     private readonly Dictionary<string, string> _icons = new(StringComparer.Ordinal);
     private readonly Dictionary<string, string> _genericIcons = new(StringComparer.Ordinal);
 
+    /// <summary>Every pattern a type is matched by, in the order the database lists them.</summary>
+    private readonly Dictionary<string, List<string>> _patterns = new(StringComparer.Ordinal);
+
+    /// <summary>Types an earlier directory said to drop every lower directory's patterns for.</summary>
+    private readonly HashSet<string> _globsReplaced = new(StringComparer.Ordinal);
+
+    /// <summary>Every type some directory's <c>types</c> file names.</summary>
+    private readonly SortedSet<string> _types = new(StringComparer.Ordinal);
+
     /// <summary>Where to look for the per-type XML that carries the human-readable name.</summary>
     private readonly List<string> _directories = [];
 
@@ -88,6 +97,8 @@ public sealed class SharedMimeDatabase
         {
             db._directories.Add(dir);
             db.LoadGlobs(Path.Combine(dir, "globs2"));
+            foreach (var type in ReadLines(Path.Combine(dir, "types")))
+                db._types.Add(type.Trim());
             db.LoadPairs(Path.Combine(dir, "aliases"), ' ', (alias, canonical) => db._aliases.TryAdd(alias, canonical));
             db.LoadPairs(Path.Combine(dir, "subclasses"), ' ', (sub, super) =>
             {
@@ -283,6 +294,32 @@ public sealed class SharedMimeDatabase
         };
     }
 
+    /// <summary>Every type the database knows, sorted.</summary>
+    /// <remarks>
+    /// From the <c>types</c> file each directory carries, which is the one place every
+    /// registered type is listed whether or not it has a pattern. Aliases are not in it, and
+    /// should not be: they are other names for these, not more types.
+    /// </remarks>
+    public IReadOnlyCollection<string> AllTypes() => _types;
+
+    /// <summary>The filename patterns a type is matched by, as the database lists them.</summary>
+    /// <remarks>
+    /// After any override: a user package that replaced the patterns answers with its own
+    /// only, the same as matching does.
+    /// </remarks>
+    public IReadOnlyList<string> PatternsFor(string mimeType) =>
+        _patterns.TryGetValue(Canonicalize(mimeType), out var patterns) ? patterns : [];
+
+    /// <summary>The other names a type goes by.</summary>
+    public IReadOnlyList<string> AliasesFor(string mimeType)
+    {
+        var canonical = Canonicalize(mimeType);
+        return [.. _aliases
+            .Where(pair => string.Equals(pair.Value, canonical, StringComparison.Ordinal))
+            .Select(static pair => pair.Key)
+            .Order(StringComparer.Ordinal)];
+    }
+
     /// <summary>Resolves an alias to the type it stands for.</summary>
     public string Canonicalize(string mimeType) =>
         _aliases.TryGetValue(mimeType, out var canonical) ? canonical : mimeType;
@@ -381,8 +418,21 @@ public sealed class SharedMimeDatabase
         return names;
     }
 
+    /// <summary>
+    /// What <c>update-mime-database</c> writes for a package's <c>&lt;glob-deleteall/&gt;</c>.
+    /// </summary>
+    /// <remarks>
+    /// It is how a user's override takes a pattern away: the user directory is read first, and
+    /// this line in it says the system's patterns for the type no longer count.
+    /// </remarks>
+    private const string NoGlobs = "__NOGLOBS__";
+
     private void LoadGlobs(string path)
     {
+        // Only applies to the directories after this one, so it is gathered here and merged
+        // at the end. The directory that says it still contributes its own patterns.
+        var replacedHere = new HashSet<string>(StringComparer.Ordinal);
+
         foreach (var line in ReadLines(path))
         {
             // weight:mimetype:pattern[:flags]  -- the pattern may itself contain a colon,
@@ -410,6 +460,19 @@ public sealed class SharedMimeDatabase
             if (rest.Length == 0)
                 continue;
 
+            if (rest == NoGlobs)
+            {
+                replacedHere.Add(mimeType);
+                continue;
+            }
+            if (_globsReplaced.Contains(mimeType))
+                continue;
+
+            if (!_patterns.TryGetValue(mimeType, out var patterns))
+                _patterns[mimeType] = patterns = [];
+            if (!patterns.Contains(rest, StringComparer.Ordinal))
+                patterns.Add(rest);
+
             var glob = new MimeGlob(weight, mimeType, rest, caseSensitive);
             switch (glob.Kind)
             {
@@ -424,6 +487,8 @@ public sealed class SharedMimeDatabase
                     break;
             }
         }
+
+        _globsReplaced.UnionWith(replacedHere);
 
         static void Add(Dictionary<string, List<MimeGlob>> into, string key, MimeGlob glob)
         {
@@ -444,8 +509,6 @@ public sealed class SharedMimeDatabase
         }
     }
 
-    /// <summary>Reads a database file, skipping comments and blanks.</summary>
-    /// <remarks>
     /// <summary>
     /// What a type is called in words: <c>image/png</c> answers "PNG image".
     /// </summary>
@@ -557,6 +620,8 @@ public sealed class SharedMimeDatabase
         return null;
     }
 
+    /// <summary>Reads a database file, skipping comments and blanks.</summary>
+    /// <remarks>
     /// A missing file is normal, not an error: a data directory may exist without a compiled
     /// mime database under it, and <c>icons</c> is often absent entirely.
     /// </remarks>

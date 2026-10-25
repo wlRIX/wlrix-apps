@@ -14,20 +14,41 @@ namespace Wlrix.Files.Core.Platform;
 /// away.
 ///
 /// <para>
+/// The <c>mimeapps.list</c> part is a chain of files, not one: see <see cref="MimeAppsChain"/>
+/// for how they combine. Writes go to the user's file only.
+/// </para>
+///
+/// <para>
 /// Read from disk each time rather than cached. The user can change the default from another
 /// application, install something new, or hand-edit the file, and an Open With menu listing
 /// what was true at startup is worse than one that costs a few milliseconds.
 /// </para>
 /// </remarks>
+/// <param name="entries">The installed desktop entries.</param>
+/// <param name="mimeAppsPath">The user's file, which writes go to. The real one when null.</param>
+/// <param name="subclasses">The type inheritance, or none at all.</param>
+/// <param name="chainPaths">
+/// Every file to read, most important first. When null, the session's whole chain if
+/// <paramref name="mimeAppsPath"/> is too, and otherwise that one file alone, which is what a
+/// test handing over a scratch file means.
+/// </param>
 public sealed class ApplicationHandlers(
     IReadOnlyList<DesktopEntry> entries,
     string? mimeAppsPath = null,
-    SharedMime? subclasses = null)
+    SharedMime? subclasses = null,
+    IReadOnlyList<string>? chainPaths = null)
 {
     private readonly Dictionary<string, DesktopEntry> _byId = Index(entries);
 
     /// <summary>Where the user's own associations live.</summary>
     public string MimeAppsPath { get; } = mimeAppsPath ?? MimeAppsList.UserPath;
+
+    /// <summary>Every file read, most important first.</summary>
+    public IReadOnlyList<string> ChainPaths { get; } =
+        chainPaths ?? (mimeAppsPath is null ? MimeAppsChain.DefaultPaths() : [mimeAppsPath]);
+
+    /// <summary>An installed entry by id, or null.</summary>
+    public DesktopEntry? Find(string id) => _byId.GetValueOrDefault(id);
 
     private static Dictionary<string, DesktopEntry> Index(IReadOnlyList<DesktopEntry> entries)
     {
@@ -53,26 +74,56 @@ public sealed class ApplicationHandlers(
     /// the earliest position, so an application that is both the default and registered does
     /// not appear twice.
     /// </remarks>
-    public IReadOnlyList<DesktopEntry> For(string mimeType)
+    /// <param name="mimeType">The type.</param>
+    /// <param name="inherited">
+    /// False for the type's own handlers only, which is what an editor of that type's
+    /// associations shows: a text editor offered for C source because C is text is not
+    /// something the C type's list can take away.
+    /// </param>
+    public IReadOnlyList<DesktopEntry> For(string mimeType, bool inherited = true)
     {
-        var list = Read();
+        var chain = Read();
         var found = new List<DesktopEntry>();
         var seen = new HashSet<string>(StringComparer.Ordinal);
 
         // Every type this one inherits from, so a C source file offers the text editors.
         // Ordered, so the exact type's handlers come before the general ones.
-        foreach (var type in Family(mimeType))
+        foreach (var type in inherited ? Family(mimeType) : [mimeType])
         {
-            var removed = Removed(list, type);
-            foreach (var id in Preferred(list, type).Concat(Registered(type)))
+            // A default is not subject to removals: a file below cannot take away what a
+            // file above chose, and the user's own default is above everything.
+            var removed = chain.Removed(type);
+            var candidates = chain.Defaults(type)
+                .Concat(chain.Added(type))
+                .Concat(Registered(type).Where(id => !removed.Contains(id)));
+            foreach (var id in candidates)
             {
-                if (removed.Contains(id) || !seen.Add(id))
+                if (!seen.Add(id))
                     continue;
                 if (_byId.TryGetValue(id, out var entry) && Runnable(entry))
                     found.Add(entry);
             }
         }
         return found;
+    }
+
+    /// <summary>
+    /// The entries that claim a type without anybody's help: their own <c>MimeType=</c>,
+    /// plus what a file of the chain added, minus what it removed.
+    /// </summary>
+    /// <remarks>
+    /// The baseline an editor of the preference order writes against. Whatever the user's
+    /// list leaves out of this has to go into <c>[Removed Associations]</c>, or it comes back.
+    /// </remarks>
+    public IReadOnlyList<string> Associated(string mimeType, bool includeUserFile = false)
+    {
+        var chain = includeUserFile
+            ? Read()
+            : MimeAppsChain.Read(ChainPaths.Where(path => !string.Equals(path, MimeAppsPath, StringComparison.Ordinal)));
+        var removed = chain.Removed(mimeType);
+        return [.. chain.Added(mimeType)
+            .Concat(Registered(mimeType).Where(id => !removed.Contains(id)))
+            .Distinct(StringComparer.Ordinal)];
     }
 
     /// <summary>Makes an entry the default for a type, writing the user's associations.</summary>
@@ -96,14 +147,7 @@ public sealed class ApplicationHandlers(
     private IReadOnlyList<string> Family(string mimeType) =>
         subclasses is null ? [mimeType] : subclasses.Ancestry(mimeType);
 
-    private MimeAppsList Read() => MimeAppsList.Read(MimeAppsPath);
-
-    private static IEnumerable<string> Preferred(MimeAppsList list, string mimeType) =>
-        list.EntriesFor(MimeAppsList.DefaultApplications, mimeType)
-            .Concat(list.EntriesFor(MimeAppsList.AddedAssociations, mimeType));
-
-    private static HashSet<string> Removed(MimeAppsList list, string mimeType) =>
-        [.. list.EntriesFor(MimeAppsList.RemovedAssociations, mimeType)];
+    private MimeAppsChain Read() => MimeAppsChain.Read(ChainPaths);
 
     /// <summary>
     /// What <c>update-desktop-database</c> recorded, from every entry's own <c>MimeType=</c>.

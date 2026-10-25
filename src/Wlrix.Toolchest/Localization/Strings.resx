@@ -36,6 +36,9 @@
   <data name="Sounds" xml:space="preserve">
     <value>Sounds</value>
   </data>
+  <data name="Utilities" xml:space="preserve">
+    <value>Utilities</value>
+  </data>
   <data name="ExtraDesks" xml:space="preserve">
     <value>Extra Desks</value>
   </data>

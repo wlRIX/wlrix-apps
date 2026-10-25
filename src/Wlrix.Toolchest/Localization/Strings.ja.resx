@@ -36,6 +36,9 @@
   <data name="Sounds" xml:space="preserve">
     <value>サウンド</value>
   </data>
+  <data name="Utilities" xml:space="preserve">
+    <value>ユーティリティ</value>
+  </data>
   <data name="ExtraDesks" xml:space="preserve">
     <value>デスクの追加</value>
   </data>

@@ -14,6 +14,7 @@
         <Project Path="src/Wlrix.Settings.Power/Wlrix.Settings.Power.csproj" />
         <Project Path="src/Wlrix.Settings.Network/Wlrix.Settings.Network.csproj" />
         <Project Path="src/Wlrix.Settings.Background/Wlrix.Settings.Background.csproj" />
+        <Project Path="src/Wlrix.Settings.Utilities/Wlrix.Settings.Utilities.csproj" />
         <Project Path="src/Wlrix.Settings.Schemes/Wlrix.Settings.Schemes.csproj" />
         <Project Path="src/Wlrix.Settings.Windows/Wlrix.Settings.Windows.csproj" />
         <Project Path="src/Wlrix.Settings.Outputs/Wlrix.Settings.Outputs.csproj" />
@@ -66,6 +67,7 @@
         <Project Path="tests/Wlrix.Settings.Users.Tests/Wlrix.Settings.Users.Tests.csproj" />
         <Project Path="tests/Wlrix.Settings.Mouse.Tests/Wlrix.Settings.Mouse.Tests.csproj" />
         <Project Path="tests/Wlrix.Settings.Background.Tests/Wlrix.Settings.Background.Tests.csproj" />
+        <Project Path="tests/Wlrix.Settings.Utilities.Tests/Wlrix.Settings.Utilities.Tests.csproj" />
         <Project Path="tests/Wlrix.Settings.International.Tests/Wlrix.Settings.International.Tests.csproj" />
         <Project Path="tests/Wlrix.Settings.Power.Tests/Wlrix.Settings.Power.Tests.csproj" />
         <Project Path="tests/Wlrix.Settings.Network.Tests/Wlrix.Settings.Network.Tests.csproj" />

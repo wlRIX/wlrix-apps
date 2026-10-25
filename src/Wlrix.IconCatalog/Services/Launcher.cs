@@ -57,7 +57,7 @@ public sealed class Launcher(RunningApps running, ILogger<Launcher> logger)
             return;
         }
 
-        Start(icon, terminal, TerminalEmulator.Wrap(file, args));
+        Start(icon, terminal.File, terminal.Wrap(file, args));
     }
 
     private void Start(CatalogIcon icon, string file, IReadOnlyList<string> args)

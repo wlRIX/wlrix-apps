@@ -66,8 +66,8 @@ public sealed class ApplicationLauncher
                 Failed?.Invoke($"{Label(entry)} needs a terminal, and none is installed");
                 return false;
             }
-            arguments = TerminalEmulator.Wrap(file, arguments);
-            file = terminal;
+            arguments = terminal.Wrap(file, arguments);
+            file = terminal.File;
         }
 
         try

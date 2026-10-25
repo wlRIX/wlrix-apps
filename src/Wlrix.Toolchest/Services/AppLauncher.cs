@@ -44,7 +44,7 @@ public sealed class AppLauncher(ILogger<AppLauncher> logger) : IAppLauncher
     public void OpenTerminal()
     {
         if (ResolveTerminal() is { } term)
-            Start("Terminal", term, []);
+            Start("Terminal", term.File, term.Arguments);
         else
             Fail("Terminal", Strings.NoTerminal);
     }
@@ -69,7 +69,7 @@ public sealed class AppLauncher(ILogger<AppLauncher> logger) : IAppLauncher
     }
 
     // Shared with the file manager, which opens files with console applications.
-    private static string? ResolveTerminal() => TerminalEmulator.Resolve();
+    private static ResolvedTerminal? ResolveTerminal() => TerminalEmulator.Resolve();
 
     private void Fail(string displayName, string message)
     {

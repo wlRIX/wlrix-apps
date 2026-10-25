@@ -44,6 +44,7 @@ apps := "Wlrix.Archiver:wlrix-archiver:com.wlrix.archiver.desktop \
          Wlrix.Settings.Mouse:wlrix-settings-mouse:com.wlrix.settings.mouse.desktop \
          Wlrix.Settings.Windows:wlrix-settings-windows:com.wlrix.settings.windows.desktop \
          Wlrix.Settings.Background:wlrix-settings-background:com.wlrix.settings.background.desktop \
+         Wlrix.Settings.Utilities:wlrix-settings-utilities:com.wlrix.settings.utilities.desktop \
          Wlrix.Settings.Schemes:wlrix-settings-schemes:com.wlrix.settings.schemes.desktop \
          Wlrix.Settings.Network:wlrix-settings-network:com.wlrix.settings.network.desktop \
          Wlrix.Settings.Power:wlrix-settings-power:com.wlrix.settings.power.desktop \

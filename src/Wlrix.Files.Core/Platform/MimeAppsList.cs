@@ -126,6 +126,62 @@ public sealed class MimeAppsList
         return true;
     }
 
+    /// <summary>Replaces the whole list a group names for a type.</summary>
+    /// <remarks>
+    /// What an editor of the preference order needs, where <see cref="SetDefault"/> is what a
+    /// one-shot "always open with" needs. An empty list removes the line, for the same reason
+    /// <see cref="ClearDefault"/> does.
+    /// </remarks>
+    public void SetEntries(string group, string mimeType, IReadOnlyList<string> entries)
+    {
+        if (entries.Count == 0)
+        {
+            Remove(group, mimeType);
+            return;
+        }
+
+        var line = $"{mimeType}={string.Join(';', entries)};";
+        var existing = Find(group, mimeType);
+        if (existing >= 0)
+            _lines[existing] = line;
+        else
+            Insert(group, line);
+    }
+
+    /// <summary>Removes a type's line from a group.</summary>
+    /// <returns>False if it was not there.</returns>
+    public bool Remove(string group, string mimeType)
+    {
+        var index = Find(group, mimeType);
+        if (index < 0)
+            return false;
+        _lines.RemoveAt(index);
+        return true;
+    }
+
+    /// <summary>Every type a group has a line for, in file order.</summary>
+    public IReadOnlyList<string> Keys(string group)
+    {
+        var keys = new List<string>();
+        var inGroup = false;
+        foreach (var raw in _lines)
+        {
+            var line = raw.Trim();
+            if (line.StartsWith('[') && line.EndsWith(']'))
+            {
+                inGroup = string.Equals(line, group, StringComparison.Ordinal);
+                continue;
+            }
+            if (!inGroup || line.StartsWith('#'))
+                continue;
+
+            var equals = line.IndexOf('=');
+            if (equals > 0)
+                keys.Add(line[..equals].Trim());
+        }
+        return keys;
+    }
+
     /// <summary>Writes the file, atomically, creating the directory if needed.</summary>
     public void Save(string path)
     {

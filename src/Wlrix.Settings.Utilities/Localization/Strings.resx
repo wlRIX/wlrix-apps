@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="WindowTitle" xml:space="preserve">
+    <value>Desktop Utilities</value>
+  </data>
+  <data name="PanelTitle" xml:space="preserve">
+    <value>Default Viewer &amp; Editor Utilities</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="Apply" xml:space="preserve">
+    <value>Apply</value>
+  </data>
+  <data name="Reset" xml:space="preserve">
+    <value>Reset</value>
+  </data>
+  <data name="Help" xml:space="preserve">
+    <value>Help</value>
+  </data>
+  <data name="HelpText" xml:space="preserve">
+    <value>Choose the application that opens each kind of thing on the Utilities tab: choosing an image viewer, say, makes it the default for every image type it can open. The File Types tab shows every type the system knows, with the filename patterns that identify it and the applications that open it, best first. Nothing changes until Apply. Changes go into your own ~/.config/mimeapps.list, ~/.config/xdg-terminals.list and ~/.local/share/mime, and Revert to System undoes a type's.</value>
+  </data>
+  <data name="HintClose" xml:space="preserve">
+    <value>Close the panel. Changes not yet applied are asked about first.</value>
+  </data>
+  <data name="HintApply" xml:space="preserve">
+    <value>Write every change made on both tabs.</value>
+  </data>
+  <data name="HintReset" xml:space="preserve">
+    <value>Throw away every change not yet applied.</value>
+  </data>
+  <data name="HintHelp" xml:space="preserve">
+    <value>Explain this panel.</value>
+  </data>
+  <data name="TabUtilities" xml:space="preserve">
+    <value>Utilities</value>
+  </data>
+  <data name="TabFileTypes" xml:space="preserve">
+    <value>File Types</value>
+  </data>
+  <data name="SelectFavorites" xml:space="preserve">
+    <value>Select your favorites from the menus:</value>
+  </data>
+  <data name="HintRole" xml:space="preserve">
+    <value>Choose the application that opens these. Other... lists every installed application.</value>
+  </data>
+  <data name="GroupInternet" xml:space="preserve">
+    <value>Internet</value>
+  </data>
+  <data name="GroupDocuments" xml:space="preserve">
+    <value>Documents</value>
+  </data>
+  <data name="GroupMultimedia" xml:space="preserve">
+    <value>Multimedia</value>
+  </data>
+  <data name="GroupUtilities" xml:space="preserve">
+    <value>Utilities</value>
+  </data>
+  <data name="RoleBrowser" xml:space="preserve">
+    <value>Web Browser:</value>
+  </data>
+  <data name="RoleMailer" xml:space="preserve">
+    <value>Mailer:</value>
+  </data>
+  <data name="RoleTextEditor" xml:space="preserve">
+    <value>Text Editor:</value>
+  </data>
+  <data name="RoleDocumentViewer" xml:space="preserve">
+    <value>PDF/PostScript Viewer:</value>
+  </data>
+  <data name="RoleImageViewer" xml:space="preserve">
+    <value>Image Viewer:</value>
+  </data>
+  <data name="RoleMusicPlayer" xml:space="preserve">
+    <value>Music Player:</value>
+  </data>
+  <data name="RoleVideoPlayer" xml:space="preserve">
+    <value>Video Player:</value>
+  </data>
+  <data name="RoleFileManager" xml:space="preserve">
+    <value>File Manager:</value>
+  </data>
+  <data name="RoleTerminal" xml:space="preserve">
+    <value>Terminal:</value>
+  </data>
+  <data name="RoleArchiver" xml:space="preserve">
+    <value>Archive Manager:</value>
+  </data>
+  <data name="Other" xml:space="preserve">
+    <value>Other...</value>
+  </data>
+  <data name="None" xml:space="preserve">
+    <value>(None)</value>
+  </data>
+  <data name="KnownTypes" xml:space="preserve">
+    <value>Known Types</value>
+  </data>
+  <data name="SearchHint" xml:space="preserve">
+    <value>Search for a type or a pattern</value>
+  </data>
+  <data name="HintSearch" xml:space="preserve">
+    <value>Show only the types whose name or filename patterns contain this.</value>
+  </data>
+  <data name="AddEllipsis" xml:space="preserve">
+    <value>Add...</value>
+  </data>
+  <data name="Remove" xml:space="preserve">
+    <value>Remove</value>
+  </data>
+  <data name="HintAddType" xml:space="preserve">
+    <value>Make a new file type of your own.</value>
+  </data>
+  <data name="HintRemoveType" xml:space="preserve">
+    <value>Remove a file type you made. The system's own can only be reverted.</value>
+  </data>
+  <data name="SelectAType" xml:space="preserve">
+    <value>Select a type to see its patterns and what opens it.</value>
+  </data>
+  <data name="FilenamePatterns" xml:space="preserve">
+    <value>Filename Patterns</value>
+  </data>
+  <data name="HintPatterns" xml:space="preserve">
+    <value>The names that make a file this type, such as *.txt. Contents can decide too, for files these do not match.</value>
+  </data>
+  <data name="Description" xml:space="preserve">
+    <value>Description:</value>
+  </data>
+  <data name="HintDescription" xml:space="preserve">
+    <value>What this type is called, wherever it is shown.</value>
+  </data>
+  <data name="PreferenceOrder" xml:space="preserve">
+    <value>Application Preference Order</value>
+  </data>
+  <data name="HintOrder" xml:space="preserve">
+    <value>The first application opens these files; the others are offered under Open With, in this order.</value>
+  </data>
+  <data name="MoveUp" xml:space="preserve">
+    <value>Move Up</value>
+  </data>
+  <data name="MoveDown" xml:space="preserve">
+    <value>Move Down</value>
+  </data>
+  <data name="RevertToSystem" xml:space="preserve">
+    <value>Revert to System</value>
+  </data>
+  <data name="HintRevert" xml:space="preserve">
+    <value>Undo your changes to this type's patterns and description.</value>
+  </data>
+  <data name="ChooserTitle" xml:space="preserve">
+    <value>Choose an Application</value>
+  </data>
+  <data name="FilterHint" xml:space="preserve">
+    <value>Filter by name</value>
+  </data>
+  <data name="Ok" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="AddTypeTitle" xml:space="preserve">
+    <value>New File Type</value>
+  </data>
+  <data name="AddTypePrompt" xml:space="preserve">
+    <value>Name the type as group/name, in a group the system already has, such as application/x-notes:</value>
+  </data>
+  <data name="AddPatternTitle" xml:space="preserve">
+    <value>Add Pattern</value>
+  </data>
+  <data name="AddPatternPrompt" xml:space="preserve">
+    <value>Filename pattern, such as *.txt:</value>
+  </data>
+  <data name="CloseTitle" xml:space="preserve">
+    <value>Unapplied Changes</value>
+  </data>
+  <data name="ClosePrompt" xml:space="preserve">
+    <value>Some changes have not been applied. Apply them before closing?</value>
+  </data>
+  <data name="Discard" xml:space="preserve">
+    <value>Discard</value>
+  </data>
+  <data name="ApplyFailed" xml:space="preserve">
+    <value>Not everything was written: {0}</value>
+  </data>
+  <data name="InvalidType" xml:space="preserve">
+    <value>"{0}" is not a type name. It must be group/name, in a group the system already has.</value>
+  </data>
+  <data name="TypeExists" xml:space="preserve">
+    <value>There is already a type called {0}.</value>
+  </data>
+</root>

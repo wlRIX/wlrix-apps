@@ -20,6 +20,12 @@ public sealed class MainWindowViewModel : ViewModelBase
     private const string SoundProgram = "wlrix-settings-sound";
 
     /// <summary>
+    /// The installed name of the Desktop Utilities panel, launched by Desktop → Customize →
+    /// Utilities: the default applications and what opens each file type.
+    /// </summary>
+    private const string UtilitiesProgram = "wlrix-settings-utilities";
+
+    /// <summary>
     /// The installed name of the clipboard history popup, launched by Desktop → Clipboard
     /// History. The same program <c>Super+V</c> starts.
     /// </summary>
@@ -137,6 +143,7 @@ public sealed class MainWindowViewModel : ViewModelBase
             [
                 Launch(Strings.Windows, WindowsProgram),
                 Launch(Strings.Sounds, SoundProgram),
+                Launch(Strings.Utilities, UtilitiesProgram),
                 MenuNode.Separator(),
                 Launch(Strings.Background, BackgroundProgram),
                 Launch(Strings.ColorSchemes, SchemesProgram),

@@ -65,10 +65,11 @@ public class MenuTests
     public void CustomizeHoldsTheDesktopsOwnPanels()
     {
         // IRIX's Desktop → Customize submenu, ahead of Desks as on IRIX: behavior, then looks,
-        // then the mouse and keyboard, with a rule between each group.
+        // then the mouse and keyboard, with a rule between each group. Utilities sits under
+        // Sounds, as it did on IRIX.
         var customize = Assert.Single(ItemsUnder(Strings.Desktop), node => node.Header == Strings.Customize);
         Assert.Equal(
-            [Strings.Windows, Strings.Sounds, null, Strings.Background, Strings.ColorSchemes, null, Strings.Mouse, Strings.Keyboard, Strings.Language],
+            [Strings.Windows, Strings.Sounds, Strings.Utilities, null, Strings.Background, Strings.ColorSchemes, null, Strings.Mouse, Strings.Keyboard, Strings.Language],
             customize.Children!.Select(item => item.IsSeparator ? null : item.Header));
         Assert.All(customize.Children!.Where(item => !item.IsSeparator), item => Assert.NotNull(item.Command));
     }

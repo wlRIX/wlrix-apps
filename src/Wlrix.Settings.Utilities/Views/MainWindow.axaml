@@ -1,0 +1,217 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:wt="using:Wlrix.Theme"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Wlrix.Settings.Utilities.ViewModels"
+        xmlns:loc="using:Wlrix.Common.Localization"
+        xmlns:controls="using:Wlrix.Settings.Utilities.Controls"
+        xmlns:wlrix="https://vic485.xyz/Wlrix.Avalonia"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="720" d:DesignHeight="640"
+        Width="720" Height="780" MinWidth="620" MinHeight="560"
+        x:Class="Wlrix.Settings.Utilities.Views.MainWindow"
+        x:DataType="vm:UtilitiesViewModel"
+        Title="{loc:Tr WindowTitle}">
+
+    <Design.DataContext>
+        <vm:UtilitiesViewModel />
+    </Design.DataContext>
+
+    <Window.Styles>
+        <!-- A search opens the groups it found something in; the model says which. -->
+        <Style Selector="TreeViewItem" x:DataType="vm:TypeNode">
+            <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
+        </Style>
+    </Window.Styles>
+
+    <Window.Resources>
+        <!-- An application wherever one is listed: its icon, then its name. -->
+        <DataTemplate x:Key="AppTemplate" x:DataType="vm:AppChoice">
+            <StackPanel Orientation="Horizontal" Spacing="6">
+                <Image Source="{Binding Icon}" Width="16" Height="16" />
+                <TextBlock Text="{Binding Name}" VerticalAlignment="Center" />
+            </StackPanel>
+        </DataTemplate>
+    </Window.Resources>
+
+    <!-- After IRIX's Default Viewer & Editor Utilities: a title banner, one option menu per kind
+         of application, and the buttons along the bottom with the line that says what the
+         control under the pointer does below them. wlRIX adds KDE's File Associations as a
+         second tab, and an Apply: one menu here can rewrite the defaults of dozens of types. -->
+    <DockPanel>
+
+        <!-- The status line, along the very bottom edge as on the original. -->
+        <TextBlock x:Name="HintLine" DockPanel.Dock="Bottom" Margin="6,2,6,4"
+                   TextWrapping="Wrap" MinHeight="16" />
+
+        <DockPanel Margin="12,12,12,4" LastChildFill="True">
+
+            <!-- Title banner: icon slot plus the panel name. -->
+            <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="12" Margin="0,0,0,12">
+                <Border Width="48" Height="48"
+                        BorderThickness="1"
+                        BorderBrush="{DynamicResource WlrixOuterLine}"
+                        Background="{DynamicResource WlrixReadWritePanel}">
+                    <!-- The panel's own icon on the closed control panel carpet, as IRIX drew it here.
+                         The picture is tools/panel-banners.py's. -->
+                    <wt:IrixPicture Width="46" Height="46"
+                                    Asset="avares://wlrix-settings-utilities/Assets/banner.svg" />
+                </Border>
+                <TextBlock Text="{loc:Tr PanelTitle}" FontWeight="Bold" FontSize="14"
+                           VerticalAlignment="Center" />
+            </StackPanel>
+
+            <!-- Close / Apply / Reset / Help. -->
+            <UniformGrid DockPanel.Dock="Bottom" Columns="4" ColumnSpacing="12" Margin="0,12,0,0">
+                <Button Content="{loc:Tr Close}" Click="OnClose" HorizontalAlignment="Stretch"
+                        controls:Hint.Text="{loc:Tr HintClose}" />
+                <Button Content="{loc:Tr Apply}" Click="OnApply" HorizontalAlignment="Stretch"
+                        IsEnabled="{Binding CanApply}"
+                        controls:Hint.Text="{loc:Tr HintApply}" />
+                <Button Content="{loc:Tr Reset}" Click="OnReset" HorizontalAlignment="Stretch"
+                        IsEnabled="{Binding HasChanges}"
+                        controls:Hint.Text="{loc:Tr HintReset}" />
+                <Button Content="{loc:Tr Help}" HorizontalAlignment="Stretch"
+                        controls:Hint.Text="{loc:Tr HintHelp}">
+                    <Button.Flyout>
+                        <Flyout>
+                            <TextBlock MaxWidth="320" TextWrapping="Wrap" Text="{loc:Tr HelpText}" />
+                        </Flyout>
+                    </Button.Flyout>
+                </Button>
+            </UniformGrid>
+
+            <!-- What became of the last Apply, when it is worth saying. Empty, and so
+                 invisible, when everything was written. -->
+            <TextBlock DockPanel.Dock="Bottom" Text="{Binding Status}" TextWrapping="Wrap" Margin="0,8,0,0"
+                       IsVisible="{Binding Status, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+
+            <!-- The tabs hang below the page, as on IRIX's tabbed panels. -->
+            <wlrix:NotebookTabControl x:Name="Pages" TabStripPlacement="Bottom"
+                                      SelectedIndex="{Binding SelectedTab}" IsEnabled="{Binding IsReady}">
+
+                <!-- The IRIX panel itself, with KDE's groups. -->
+                <TabItem Header="{loc:Tr TabUtilities}">
+                    <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+                        <StackPanel Margin="12" Spacing="4" HorizontalAlignment="Center"
+                                    Grid.IsSharedSizeScope="True">
+                            <TextBlock Text="{loc:Tr SelectFavorites}" Margin="0,0,0,4" />
+                            <ItemsControl ItemsSource="{Binding RoleGroups}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate x:DataType="vm:RoleGroupViewModel">
+                                        <StackPanel Margin="0,8,0,0" Spacing="4">
+                                            <TextBlock Text="{Binding Heading}" FontWeight="Bold" />
+                                            <ItemsControl ItemsSource="{Binding Roles}">
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate x:DataType="vm:RoleViewModel">
+                                                        <Grid Margin="0,2" controls:Hint.Text="{loc:Tr HintRole}">
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition Width="Auto" SharedSizeGroup="Label" />
+                                                                <ColumnDefinition Width="260" />
+                                                            </Grid.ColumnDefinitions>
+                                                            <TextBlock Text="{Binding Label}" Margin="12,0,8,0"
+                                                                       HorizontalAlignment="Right" VerticalAlignment="Center" />
+                                                            <ComboBox Grid.Column="1" HorizontalAlignment="Stretch"
+                                                                      ItemsSource="{Binding Choices}"
+                                                                      SelectedItem="{Binding Selected}"
+                                                                      ItemTemplate="{StaticResource AppTemplate}" />
+                                                        </Grid>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </ScrollViewer>
+                </TabItem>
+
+                <!-- KDE's File Associations, less its Embedding tab. -->
+                <TabItem Header="{loc:Tr TabFileTypes}">
+                    <Grid Margin="8" ColumnDefinitions="240,12,*" x:DataType="vm:FileTypesViewModel"
+                          DataContext="{Binding FileTypes}">
+
+                        <!-- The known types, by media group. -->
+                        <DockPanel Grid.Column="0">
+                            <TextBlock DockPanel.Dock="Top" Text="{loc:Tr KnownTypes}" FontWeight="Bold" Margin="0,0,0,4" />
+                            <TextBox DockPanel.Dock="Top" Text="{Binding Search}" PlaceholderText="{loc:Tr SearchHint}"
+                                     Margin="0,0,0,6" controls:Hint.Text="{loc:Tr HintSearch}" />
+                            <UniformGrid DockPanel.Dock="Bottom" Columns="2" ColumnSpacing="6" Margin="0,6,0,0">
+                                <Button Content="{loc:Tr AddEllipsis}" Click="OnAddType" HorizontalAlignment="Stretch"
+                                        controls:Hint.Text="{loc:Tr HintAddType}" />
+                                <Button Content="{loc:Tr Remove}" Click="OnRemoveType" HorizontalAlignment="Stretch"
+                                        IsEnabled="{Binding CanRemoveType}"
+                                        controls:Hint.Text="{loc:Tr HintRemoveType}" />
+                            </UniformGrid>
+                            <TreeView ItemsSource="{Binding Groups}" SelectedItem="{Binding SelectedNode}">
+                                <TreeView.ItemTemplate>
+                                    <TreeDataTemplate x:DataType="vm:TypeNode" ItemsSource="{Binding Children}">
+                                        <StackPanel Orientation="Horizontal" Spacing="6">
+                                            <Image Source="{Binding Icon}" Width="16" Height="16"
+                                                   IsVisible="{Binding Type, Converter={x:Static ObjectConverters.IsNotNull}}" />
+                                            <TextBlock Text="{Binding Name}" VerticalAlignment="Center" />
+                                        </StackPanel>
+                                    </TreeDataTemplate>
+                                </TreeView.ItemTemplate>
+                            </TreeView>
+                        </DockPanel>
+
+                        <!-- Nothing selected, or a group. -->
+                        <TextBlock Grid.Column="2" Text="{loc:Tr SelectAType}" TextWrapping="Wrap"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center"
+                                   IsVisible="{Binding !HasDetails}" />
+
+                        <!-- The selected type. -->
+                        <Panel Grid.Column="2" IsVisible="{Binding HasDetails}">
+                            <Grid DataContext="{Binding Details}" x:DataType="vm:TypeDetailsViewModel"
+                                  RowDefinitions="Auto,Auto,*,Auto,Auto,Auto,2*,Auto">
+
+                                <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="8" Margin="0,0,0,8">
+                                    <Image Source="{Binding Icon}" Width="32" Height="32" />
+                                    <TextBlock Text="{Binding Type}" FontWeight="Bold" VerticalAlignment="Center" />
+                                </StackPanel>
+
+                                <TextBlock Grid.Row="1" Text="{loc:Tr FilenamePatterns}" FontWeight="Bold" Margin="0,0,0,4" />
+                                <DockPanel Grid.Row="2" controls:Hint.Text="{loc:Tr HintPatterns}">
+                                    <StackPanel DockPanel.Dock="Right" Spacing="6" Margin="6,0,0,0" MinWidth="110">
+                                        <Button Content="{loc:Tr AddEllipsis}" Click="OnAddPattern" HorizontalAlignment="Stretch" />
+                                        <Button Content="{loc:Tr Remove}" Click="OnRemovePattern" HorizontalAlignment="Stretch"
+                                                IsEnabled="{Binding CanRemovePattern}" />
+                                    </StackPanel>
+                                    <ListBox ItemsSource="{Binding Patterns}" SelectedItem="{Binding SelectedPattern}" MinHeight="60" />
+                                </DockPanel>
+
+                                <Grid Grid.Row="3" ColumnDefinitions="Auto,*" Margin="0,8,0,0"
+                                      controls:Hint.Text="{loc:Tr HintDescription}">
+                                    <TextBlock Text="{loc:Tr Description}" VerticalAlignment="Center" Margin="0,0,8,0" />
+                                    <TextBox Grid.Column="1" Text="{Binding Description}" />
+                                </Grid>
+
+                                <TextBlock Grid.Row="5" Text="{loc:Tr PreferenceOrder}" FontWeight="Bold" Margin="0,12,0,4" />
+                                <DockPanel Grid.Row="6" controls:Hint.Text="{loc:Tr HintOrder}">
+                                    <StackPanel DockPanel.Dock="Right" Spacing="6" Margin="6,0,0,0" MinWidth="110">
+                                        <Button Content="{loc:Tr MoveUp}" Click="OnMoveUp" HorizontalAlignment="Stretch"
+                                                IsEnabled="{Binding CanMoveUp}" />
+                                        <Button Content="{loc:Tr MoveDown}" Click="OnMoveDown" HorizontalAlignment="Stretch"
+                                                IsEnabled="{Binding CanMoveDown}" />
+                                        <Button Content="{loc:Tr AddEllipsis}" Click="OnAddApp" HorizontalAlignment="Stretch" />
+                                        <Button Content="{loc:Tr Remove}" Click="OnRemoveApp" HorizontalAlignment="Stretch"
+                                                IsEnabled="{Binding CanRemoveApp}" />
+                                    </StackPanel>
+                                    <ListBox ItemsSource="{Binding Apps}" SelectedItem="{Binding SelectedApp}"
+                                             ItemTemplate="{StaticResource AppTemplate}" MinHeight="80" />
+                                </DockPanel>
+
+                                <Button Grid.Row="7" Content="{loc:Tr RevertToSystem}" Click="OnRevert"
+                                        HorizontalAlignment="Right" Margin="0,8,0,0"
+                                        IsEnabled="{Binding CanRevert}"
+                                        controls:Hint.Text="{loc:Tr HintRevert}" />
+                            </Grid>
+                        </Panel>
+                    </Grid>
+                </TabItem>
+            </wlrix:NotebookTabControl>
+        </DockPanel>
+    </DockPanel>
+</Window>

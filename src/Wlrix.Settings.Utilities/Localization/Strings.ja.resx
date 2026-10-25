@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="WindowTitle" xml:space="preserve">
+    <value>デスクトップユーティリティ</value>
+  </data>
+  <data name="PanelTitle" xml:space="preserve">
+    <value>既定のビューアとエディタ</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>閉じる</value>
+  </data>
+  <data name="Apply" xml:space="preserve">
+    <value>適用</value>
+  </data>
+  <data name="Reset" xml:space="preserve">
+    <value>リセット</value>
+  </data>
+  <data name="Help" xml:space="preserve">
+    <value>ヘルプ</value>
+  </data>
+  <data name="HelpText" xml:space="preserve">
+    <value>「ユーティリティ」タブでは、種類ごとに開くアプリケーションを選びます。たとえば画像ビューアを選ぶと、そのビューアが開けるすべての画像の種類の既定になります。「ファイルの種類」タブには、システムが知っているすべての種類と、それを識別するファイル名のパターン、開くアプリケーションが優先順に表示されます。「適用」を押すまでは何も変わりません。変更はご自分の ~/.config/mimeapps.list、~/.config/xdg-terminals.list、~/.local/share/mime に書き込まれ、「システムに戻す」で種類ごとの変更を取り消せます。</value>
+  </data>
+  <data name="HintClose" xml:space="preserve">
+    <value>パネルを閉じます。適用していない変更があれば、先に確認します。</value>
+  </data>
+  <data name="HintApply" xml:space="preserve">
+    <value>両方のタブで行った変更をすべて書き込みます。</value>
+  </data>
+  <data name="HintReset" xml:space="preserve">
+    <value>まだ適用していない変更をすべて取り消します。</value>
+  </data>
+  <data name="HintHelp" xml:space="preserve">
+    <value>このパネルについて説明します。</value>
+  </data>
+  <data name="TabUtilities" xml:space="preserve">
+    <value>ユーティリティ</value>
+  </data>
+  <data name="TabFileTypes" xml:space="preserve">
+    <value>ファイルの種類</value>
+  </data>
+  <data name="SelectFavorites" xml:space="preserve">
+    <value>メニューからお好みのアプリケーションを選択してください:</value>
+  </data>
+  <data name="HintRole" xml:space="preserve">
+    <value>これらを開くアプリケーションを選びます。「その他...」ではインストールされているすべてのアプリケーションから選べます。</value>
+  </data>
+  <data name="GroupInternet" xml:space="preserve">
+    <value>インターネット</value>
+  </data>
+  <data name="GroupDocuments" xml:space="preserve">
+    <value>ドキュメント</value>
+  </data>
+  <data name="GroupMultimedia" xml:space="preserve">
+    <value>マルチメディア</value>
+  </data>
+  <data name="GroupUtilities" xml:space="preserve">
+    <value>ユーティリティ</value>
+  </data>
+  <data name="RoleBrowser" xml:space="preserve">
+    <value>Web ブラウザ:</value>
+  </data>
+  <data name="RoleMailer" xml:space="preserve">
+    <value>メーラー:</value>
+  </data>
+  <data name="RoleTextEditor" xml:space="preserve">
+    <value>テキストエディタ:</value>
+  </data>
+  <data name="RoleDocumentViewer" xml:space="preserve">
+    <value>PDF/PostScript ビューア:</value>
+  </data>
+  <data name="RoleImageViewer" xml:space="preserve">
+    <value>画像ビューア:</value>
+  </data>
+  <data name="RoleMusicPlayer" xml:space="preserve">
+    <value>音楽プレーヤー:</value>
+  </data>
+  <data name="RoleVideoPlayer" xml:space="preserve">
+    <value>ビデオプレーヤー:</value>
+  </data>
+  <data name="RoleFileManager" xml:space="preserve">
+    <value>ファイルマネージャ:</value>
+  </data>
+  <data name="RoleTerminal" xml:space="preserve">
+    <value>端末:</value>
+  </data>
+  <data name="RoleArchiver" xml:space="preserve">
+    <value>アーカイブマネージャ:</value>
+  </data>
+  <data name="Other" xml:space="preserve">
+    <value>その他...</value>
+  </data>
+  <data name="None" xml:space="preserve">
+    <value>(なし)</value>
+  </data>
+  <data name="KnownTypes" xml:space="preserve">
+    <value>既知の種類</value>
+  </data>
+  <data name="SearchHint" xml:space="preserve">
+    <value>種類またはパターンを検索</value>
+  </data>
+  <data name="HintSearch" xml:space="preserve">
+    <value>名前またはファイル名のパターンにこれを含む種類だけを表示します。</value>
+  </data>
+  <data name="AddEllipsis" xml:space="preserve">
+    <value>追加...</value>
+  </data>
+  <data name="Remove" xml:space="preserve">
+    <value>削除</value>
+  </data>
+  <data name="HintAddType" xml:space="preserve">
+    <value>独自のファイルの種類を作成します。</value>
+  </data>
+  <data name="HintRemoveType" xml:space="preserve">
+    <value>作成したファイルの種類を削除します。システムの種類は元に戻すことしかできません。</value>
+  </data>
+  <data name="SelectAType" xml:space="preserve">
+    <value>種類を選択すると、そのパターンと開くアプリケーションが表示されます。</value>
+  </data>
+  <data name="FilenamePatterns" xml:space="preserve">
+    <value>ファイル名のパターン</value>
+  </data>
+  <data name="HintPatterns" xml:space="preserve">
+    <value>ファイルをこの種類と判断する名前です(*.txt など)。一致しないファイルは内容でも判断されます。</value>
+  </data>
+  <data name="Description" xml:space="preserve">
+    <value>説明:</value>
+  </data>
+  <data name="HintDescription" xml:space="preserve">
+    <value>この種類の表示名です。</value>
+  </data>
+  <data name="PreferenceOrder" xml:space="preserve">
+    <value>アプリケーションの優先順位</value>
+  </data>
+  <data name="HintOrder" xml:space="preserve">
+    <value>先頭のアプリケーションでこれらのファイルを開きます。ほかのアプリケーションは「アプリケーションで開く」にこの順で表示されます。</value>
+  </data>
+  <data name="MoveUp" xml:space="preserve">
+    <value>上へ</value>
+  </data>
+  <data name="MoveDown" xml:space="preserve">
+    <value>下へ</value>
+  </data>
+  <data name="RevertToSystem" xml:space="preserve">
+    <value>システムに戻す</value>
+  </data>
+  <data name="HintRevert" xml:space="preserve">
+    <value>この種類のパターンと説明に対する変更を取り消します。</value>
+  </data>
+  <data name="ChooserTitle" xml:space="preserve">
+    <value>アプリケーションの選択</value>
+  </data>
+  <data name="FilterHint" xml:space="preserve">
+    <value>名前で絞り込む</value>
+  </data>
+  <data name="Ok" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>キャンセル</value>
+  </data>
+  <data name="AddTypeTitle" xml:space="preserve">
+    <value>新しいファイルの種類</value>
+  </data>
+  <data name="AddTypePrompt" xml:space="preserve">
+    <value>種類の名前を「グループ/名前」の形で入力してください。グループはシステムにある既存のもの(application/x-notes など)にしてください:</value>
+  </data>
+  <data name="AddPatternTitle" xml:space="preserve">
+    <value>パターンの追加</value>
+  </data>
+  <data name="AddPatternPrompt" xml:space="preserve">
+    <value>ファイル名のパターン(*.txt など):</value>
+  </data>
+  <data name="CloseTitle" xml:space="preserve">
+    <value>適用していない変更</value>
+  </data>
+  <data name="ClosePrompt" xml:space="preserve">
+    <value>適用していない変更があります。閉じる前に適用しますか?</value>
+  </data>
+  <data name="Discard" xml:space="preserve">
+    <value>破棄</value>
+  </data>
+  <data name="ApplyFailed" xml:space="preserve">
+    <value>一部を書き込めませんでした: {0}</value>
+  </data>
+  <data name="InvalidType" xml:space="preserve">
+    <value>「{0}」は種類の名前ではありません。システムにある既存のグループで「グループ/名前」の形にしてください。</value>
+  </data>
+  <data name="TypeExists" xml:space="preserve">
+    <value>{0} という種類はすでにあります。</value>
+  </data>
+</root>

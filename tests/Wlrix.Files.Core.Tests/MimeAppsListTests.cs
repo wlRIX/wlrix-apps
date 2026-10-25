@@ -223,4 +223,52 @@ public class MimeAppsListTests
         Assert.Equal(Files, MimeAppsList.Read(path).DefaultFor(Directory));
         Assert.Empty(System.IO.Directory.GetFiles(Path.GetDirectoryName(path)!, "*.wlrix-new"));
     }
+
+    [Fact]
+    public void SettingAWholeListReplacesTheLineAndAnEmptyOneRemovesIt()
+    {
+        var list = From("""
+            [Default Applications]
+            text/plain=micro.desktop;vim.desktop;
+            """);
+
+        list.SetEntries(MimeAppsList.DefaultApplications, "text/plain", ["vim.desktop", "kate.desktop"]);
+        Assert.Equal(["vim.desktop", "kate.desktop"], list.EntriesFor(MimeAppsList.DefaultApplications, "text/plain"));
+
+        list.SetEntries(MimeAppsList.DefaultApplications, "text/plain", []);
+        Assert.DoesNotContain(list.Lines, line => line.StartsWith("text/plain", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void SettingAListInAMissingGroupCreatesIt()
+    {
+        var list = From("""
+            [Default Applications]
+            text/plain=micro.desktop;
+            """);
+
+        list.SetEntries(MimeAppsList.RemovedAssociations, "text/plain", ["gimp.desktop"]);
+
+        Assert.Equal(["gimp.desktop"], list.EntriesFor(MimeAppsList.RemovedAssociations, "text/plain"));
+        Assert.Equal("micro.desktop", list.DefaultFor("text/plain"));
+    }
+
+    [Fact]
+    public void KeysAreOneGroupsOnlyAndSkipComments()
+    {
+        var list = From("""
+            [Default Applications]
+            # text/x-old=gone.desktop;
+            text/plain=micro.desktop;
+            image/png=imv.desktop;
+
+            [Added Associations]
+            application/pdf=zathura.desktop;
+            """);
+
+        Assert.Equal(["text/plain", "image/png"], list.Keys(MimeAppsList.DefaultApplications));
+        Assert.Equal(["application/pdf"], list.Keys(MimeAppsList.AddedAssociations));
+        Assert.True(list.Remove(MimeAppsList.AddedAssociations, "application/pdf"));
+        Assert.False(list.Remove(MimeAppsList.AddedAssociations, "application/pdf"));
+    }
 }

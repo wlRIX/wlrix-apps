@@ -1,0 +1,21 @@
+[Desktop Entry]
+Type=Application
+Name=Desktop Utilities
+Name[ja]=デスクトップユーティリティ
+Comment=Choose the default web browser, editor and viewers, and what opens each file type
+Comment[ja]=既定のブラウザ、エディタ、ビューアと、ファイルの種類ごとに開くアプリケーションを選択します
+Icon=com.wlrix.settings.utilities
+Categories=Settings;DesktopSettings;
+Keywords=default;applications;browser;editor;viewer;terminal;mime;file types;associations;open with;
+Exec=wlrix-settings-utilities
+TryExec=wlrix-settings-utilities
+Terminal=false
+
+# One of wlRIX's control panels: the icon catalog files it on its ControlPanels page and stands
+# it on the control panel carpet. A wlRIX extension; the X- prefix keeps the file valid elsewhere.
+X-WLRIX-ControlPanel=true
+
+# Matches the Wayland app id set in Program.BuildAvaloniaApp. `wlrix-desktop` looks a running
+# window up by StartupWMClass first, and wlrix-compositor frames the window by the same id.
+StartupWMClass=com.wlrix.settings.utilities
+StartupNotify=false

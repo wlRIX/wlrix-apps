@@ -1,0 +1,45 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+        <ApplicationManifest>app.manifest</ApplicationManifest>
+        <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+        <AssemblyName>wlrix-settings-utilities</AssemblyName>
+        <Version>0.0.0</Version>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <AvaloniaResource Include="Assets\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Avalonia" />
+        <PackageReference Include="Avalonia.Desktop" />
+        <PackageReference Include="Avalonia.Wayland" />
+        <PackageReference Include="AvaloniaUI.DiagnosticsSupport">
+            <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
+            <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
+        </PackageReference>
+        <PackageReference Include="ReactiveUI.Avalonia" />
+        <PackageReference Include="Wlrix.Avalonia" />
+        <PackageReference Include="Wlrix.Avalonia.Dialogs" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <!-- The localized strings, the {loc:Tr} markup extension and the desktop entries. -->
+        <ProjectReference Include="../Wlrix.Common/Wlrix.Common.csproj" />
+        <!-- The MIME database, mimeapps.list and the handler order, which Files already reads
+             and writes. Taken whole, as the file picker does, rather than split out for one
+             more user. -->
+        <ProjectReference Include="../Wlrix.Files.Core/Wlrix.Files.Core.csproj" />
+        <!-- Application and type icons. -->
+        <ProjectReference Include="../Wlrix.Icons/Wlrix.Icons.csproj" />
+        <!-- Follows the session's color scheme. One call in App.axaml.cs. -->
+        <ProjectReference Include="../Wlrix.Theme/Wlrix.Theme.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <!-- The roles, the pending changes and what they write, tested without a window. -->
+        <InternalsVisibleTo Include="Wlrix.Settings.Utilities.Tests" />
+    </ItemGroup>
+
+</Project>
