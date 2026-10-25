@@ -74,6 +74,7 @@
             </MenuItem>
             <MenuItem Header="{loc:Tr MenuSelected}">
                 <MenuItem Header="{loc:Tr SelectedOpen}" InputGesture="Ctrl+O" Command="{Binding OpenSelected}" />
+                <MenuItem Header="{loc:Tr SelectedEdit}" Command="{Binding EditSelected}" />
                 <MenuItem Header="{loc:Tr SelectedRemove}" Command="{Binding RemoveSelected}" />
                 <MenuItem Header="{loc:Tr SelectedSelectAll}" InputGesture="Ctrl+A" Command="{Binding SelectAll}" />
             </MenuItem>

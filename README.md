@@ -202,6 +202,15 @@ page. On a system page, Selected ▸ Remove hides an installed application there
 What the user changed is kept in `~/.local/share/wlrix/icon-catalog/state.json`. An icon whose application has been
 uninstalled is skipped but remembered, so it comes back if the application does.
 
+**Selected ▸ Edit changes how a launcher starts**: its name, command, environment variables, working directory, and
+whether it runs in a terminal. Environment variables are written into the command as `env NAME=value …`, which every
+launcher understands, and read back out of it into their own list. An installed application's file is never touched.
+The edit becomes the user's own copy under the same desktop-file id in `~/.local/share/applications`, which every
+launcher finds first, and **Revert to Installed** deletes the copy again. While a copy exists, a package update to the
+installed entry is not seen. A launcher of the user's own, dropped on a page from the Desktop say, is edited where it
+is. Only the keys that changed are written; comments, translations and actions stay as they were. A changed command
+also drops `DBusActivatable`, which would otherwise have launchers that honor it ignore the command altogether.
+
 **Installs and removals show up on their own.** Every `applications` directory is watched with inotify, and a burst of
 changes is one rescan half a second after it settles.
 

@@ -46,6 +46,9 @@ public sealed class MainWindowViewModel : ReactiveObject, IDisposable
         var hasSelection = current
             .Select(page => page?.WhenAnyValue(model => model.HasSelection) ?? Observable.Return(false))
             .Switch();
+        var hasOneLauncher = current
+            .Select(page => page?.WhenAnyValue(model => model.HasOneLauncher) ?? Observable.Return(false))
+            .Switch();
         // Where the page showing is, which decides whether Up and Down can go anywhere. The
         // count is in it because a rescan can add or remove pages on either side.
         var position = this.WhenAnyValue(model => model.CurrentPage, model => model.PageCount,
@@ -58,6 +61,13 @@ public sealed class MainWindowViewModel : ReactiveObject, IDisposable
         PageDown = ReactiveCommand.Create(() => Step(1), position.Select(p => p.At >= 0 && p.At < p.Count - 1));
         Exit = ReactiveCommand.Create(() => ExitRequested?.Invoke());
         OpenSelected = ReactiveCommand.Create(OpenSelection, hasSelection);
+        EditSelected = ReactiveCommand.Create(
+            () =>
+            {
+                if (CurrentPage?.Selection is [{ Icon.Entry: not null } icon])
+                    EditRequested?.Invoke(icon);
+            },
+            hasOneLauncher);
         RemoveSelected = ReactiveCommand.Create(RemoveSelection, hasSelection);
         SelectAll = ReactiveCommand.Create(SelectEverything, current.Select(page => page is not null));
         ProductInformation = ReactiveCommand.Create(() => AboutRequested?.Invoke());
@@ -89,6 +99,9 @@ public sealed class MainWindowViewModel : ReactiveObject, IDisposable
     public event Action? AboutRequested;
     public event Action<string>? ErrorRequested;
 
+    /// <summary>Selected ▸ Edit, for the one launcher selected. The view shows the dialog.</summary>
+    public event Action<IconViewModel>? EditRequested;
+
     public ObservableCollection<PageViewModel> Pages { get; } = [];
 
     public PageViewModel? CurrentPage
@@ -119,6 +132,7 @@ public sealed class MainWindowViewModel : ReactiveObject, IDisposable
     public ReactiveCommand<Unit, Unit> PageDown { get; }
     public ReactiveCommand<Unit, Unit> Exit { get; }
     public ReactiveCommand<Unit, Unit> OpenSelected { get; }
+    public ReactiveCommand<Unit, Unit> EditSelected { get; }
     public ReactiveCommand<Unit, Unit> RemoveSelected { get; }
     public ReactiveCommand<Unit, Unit> SelectAll { get; }
     public ReactiveCommand<Unit, Unit> ProductInformation { get; }
@@ -181,6 +195,12 @@ public sealed class MainWindowViewModel : ReactiveObject, IDisposable
         foreach (var icon in page.Icons.Where(icon => keys.Contains(icon.Key)))
             page.Selection.Add(icon);
     }
+
+    /// <summary>
+    /// Reads what is installed again now, after an edit: a launcher outside the watched
+    /// directories -- one on the Desktop -- changes nothing the watch would see.
+    /// </summary>
+    public Task RefreshAsync() => RescanAsync();
 
     /// <summary>Remembers the window's size for next time.</summary>
     public void SaveWindow(double width, double height) => _state.Change(document =>

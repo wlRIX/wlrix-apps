@@ -45,6 +45,15 @@ public static class Strings
     public static string NoRunnableCommand(string exec) => Catalog.Format("NoRunnableCommand", exec);
     public static string CouldNotStart(string name, string detail) => Catalog.Format("CouldNotStart", name, detail);
 
+    public static string EditTitle => Catalog.Get("EditTitle");
+    public static string EditRevert => Catalog.Get("EditRevert");
+    public static string EditNoCommand => Catalog.Get("EditNoCommand");
+    public static string EditSavesCopy(string directory) => Catalog.Format("EditSavesCopy", directory);
+    public static string EditSavesFile(string path) => Catalog.Format("EditSavesFile", path);
+    public static string EditSavesOverride(string directory) => Catalog.Format("EditSavesOverride", directory);
+    public static string EditBadVariable(string line) => Catalog.Format("EditBadVariable", line);
+    public static string EditSaveFailed(string path, string detail) => Catalog.Format("EditSaveFailed", path, detail);
+
     /// <summary>A system page's tab label, by its id (<c>Page_&lt;id&gt;</c>).</summary>
     public static string Page(string id) => Catalog.Get("Page_" + id);
 }

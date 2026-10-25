@@ -1,0 +1,38 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:loc="using:Wlrix.Common.Localization"
+        x:Class="Wlrix.IconCatalog.Views.EntryDialog"
+        Title="{loc:Tr EditTitle}"
+        Width="480" SizeToContent="Height"
+        CanResize="False"
+        ShowInTaskbar="False"
+        WindowStartupLocation="CenterOwner">
+    <!-- Selected > Edit: what a launcher is called and how it starts. The model behind it,
+         EntryEditing, decides where the change is saved and writes only what changed. -->
+    <StackPanel Margin="16" Spacing="8">
+        <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto" ColumnSpacing="10" RowSpacing="8">
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="{loc:Tr EditName}" VerticalAlignment="Center" />
+            <TextBox Grid.Row="0" Grid.Column="1" Name="NameBox" />
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="{loc:Tr EditCommand}" VerticalAlignment="Center" />
+            <TextBox Grid.Row="1" Grid.Column="1" Name="CommandBox" />
+            <TextBlock Grid.Row="2" Grid.Column="0" Text="{loc:Tr EditDirectory}" VerticalAlignment="Center" />
+            <TextBox Grid.Row="2" Grid.Column="1" Name="DirectoryBox" />
+        </Grid>
+
+        <TextBlock Text="{loc:Tr EditEnvironment}" />
+        <TextBox Name="EnvironmentBox" AcceptsReturn="True" Height="72" TextWrapping="NoWrap" />
+
+        <CheckBox Name="TerminalBox" Content="{loc:Tr EditTerminal}" />
+
+        <!-- Where the change goes, so nobody wonders why the installed file did not change. -->
+        <TextBlock Name="Where" TextWrapping="Wrap" Opacity="0.8" />
+
+        <DockPanel Margin="0,6,0,0">
+            <Button Name="Revert" DockPanel.Dock="Left" Content="{loc:Tr EditRevert}" />
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
+                <Button Name="Accept" Content="{loc:Tr DialogOk}" MinWidth="80" IsDefault="True" />
+                <Button Name="Reject" Content="{loc:Tr DialogCancel}" MinWidth="80" IsCancel="True" />
+            </StackPanel>
+        </DockPanel>
+    </StackPanel>
+</Window>

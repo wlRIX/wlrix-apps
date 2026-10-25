@@ -148,4 +148,47 @@
   <data name="Page_Other" xml:space="preserve">
     <value>その他</value>
   </data>
+  <data name="SelectedEdit" xml:space="preserve">
+    <value>編集... (_I)</value>
+  </data>
+  <data name="EditTitle" xml:space="preserve">
+    <value>エントリの編集</value>
+  </data>
+  <data name="EditName" xml:space="preserve">
+    <value>名前:</value>
+  </data>
+  <data name="EditCommand" xml:space="preserve">
+    <value>コマンド:</value>
+  </data>
+  <data name="EditEnvironment" xml:space="preserve">
+    <value>環境変数 (1 行に 1 つ、名前=値):</value>
+  </data>
+  <data name="EditDirectory" xml:space="preserve">
+    <value>作業ディレクトリ:</value>
+  </data>
+  <data name="EditTerminal" xml:space="preserve">
+    <value>端末で実行する</value>
+  </data>
+  <data name="EditSavesCopy" xml:space="preserve">
+    <value>{0} に自分用のコピーとして保存されます。インストール済みのエントリは変更されません。</value>
+  </data>
+  <data name="EditSavesFile" xml:space="preserve">
+    <value>{0} に保存されます。</value>
+  </data>
+  <data name="EditSavesOverride" xml:space="preserve">
+    <value>これは {0} にある自分用のコピーです。「インストール時に戻す」で削除されます。</value>
+  </data>
+  <data name="EditRevert" xml:space="preserve">
+    <value>インストール時に戻す</value>
+  </data>
+  <data name="EditBadVariable" xml:space="preserve">
+    <value>「{0}」は 名前=値 の形式ではありません。</value>
+  </data>
+  <data name="EditNoCommand" xml:space="preserve">
+    <value>コマンドを空にすることはできません。</value>
+  </data>
+  <data name="EditSaveFailed" xml:space="preserve">
+    <value>「{0}」を保存できませんでした。
+{1}</value>
+  </data>
 </root>

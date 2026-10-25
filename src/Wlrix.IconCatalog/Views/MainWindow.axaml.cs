@@ -10,7 +10,9 @@ using Avalonia.Platform.Storage;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
 using Wlrix.Avalonia.Dialogs;
+using Wlrix.Common.Desktop;
 using Wlrix.IconCatalog.Controls;
+using Wlrix.IconCatalog.Models;
 using Wlrix.IconCatalog.Localization;
 using Wlrix.IconCatalog.ViewModels;
 
@@ -49,6 +51,7 @@ public partial class MainWindow : Window
             old.ExitRequested -= Close;
             old.AboutRequested -= ShowAbout;
             old.ErrorRequested -= ShowError;
+            old.EditRequested -= OnEditRequested;
         }
 
         _model = DataContext as MainWindowViewModel;
@@ -58,6 +61,7 @@ public partial class MainWindow : Window
         model.ExitRequested += Close;
         model.AboutRequested += ShowAbout;
         model.ErrorRequested += ShowError;
+        model.EditRequested += OnEditRequested;
         model.Prompt = (title, prompt, initial) =>
             PromptDialog.ShowAsync(this, title, prompt, initial, selectExtension: true,
                 Strings.DialogOk, Strings.DialogCancel);
@@ -78,6 +82,15 @@ public partial class MainWindow : Window
         var version = GetType().Assembly.GetName().Version?.ToString(3) ?? "0.0.0";
         _ = MessageDialog.ShowAsync(this, DialogType.Information, Strings.About(version),
             title: Strings.AboutTitle, buttons: DialogButtons.Ok, okText: Strings.DialogOk);
+    }
+
+    private async void OnEditRequested(IconViewModel icon)
+    {
+        if (EntryEditing.For(icon.Icon, DesktopFiles.UserDirectory, DesktopFiles.Installed,
+                System.Globalization.CultureInfo.CurrentUICulture) is not { } editing)
+            return;
+        if (await EntryDialog.ShowAsync(this, editing) && _model is { } model)
+            await model.RefreshAsync();
     }
 
     private void ShowError(string message) =>

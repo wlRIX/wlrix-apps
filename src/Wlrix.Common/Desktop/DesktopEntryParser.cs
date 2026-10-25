@@ -176,6 +176,22 @@ public static class DesktopEntryParser
         return values.TryGetValue(string.Empty, out var unlocalized) ? unlocalized : string.Empty;
     }
 
+    /// <summary>
+    /// The locale of the value <see cref="ResolveLocalized"/> would pick -- <c>ja</c> for a
+    /// <c>Name[ja]</c> -- or <see cref="string.Empty"/> for the unlocalized one.
+    /// </summary>
+    /// <remarks>
+    /// What an editor changes when the user edits the name they can see: under Japanese that
+    /// is <c>Name[ja]</c>, and changing the plain <c>Name</c> instead would appear to do nothing.
+    /// </remarks>
+    public static string ResolvedLocale(IReadOnlyDictionary<string, string> values, CultureInfo culture)
+    {
+        foreach (var key in LocaleKeys(culture))
+            if (values.ContainsKey(key))
+                return key;
+        return string.Empty;
+    }
+
     // POSIX-style locale keys to try, most specific first (encoding/modifier omitted for brevity).
     private static IEnumerable<string> LocaleKeys(CultureInfo culture)
     {

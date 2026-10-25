@@ -148,4 +148,47 @@ The applications themselves stay installed.</value>
   <data name="Page_Other" xml:space="preserve">
     <value>Other</value>
   </data>
+  <data name="SelectedEdit" xml:space="preserve">
+    <value>Ed_it…</value>
+  </data>
+  <data name="EditTitle" xml:space="preserve">
+    <value>Edit Entry</value>
+  </data>
+  <data name="EditName" xml:space="preserve">
+    <value>Name:</value>
+  </data>
+  <data name="EditCommand" xml:space="preserve">
+    <value>Command:</value>
+  </data>
+  <data name="EditEnvironment" xml:space="preserve">
+    <value>Environment (one NAME=value per line):</value>
+  </data>
+  <data name="EditDirectory" xml:space="preserve">
+    <value>Working directory:</value>
+  </data>
+  <data name="EditTerminal" xml:space="preserve">
+    <value>Run in a terminal</value>
+  </data>
+  <data name="EditSavesCopy" xml:space="preserve">
+    <value>Saved as your own copy in {0}. The installed entry is left as it is.</value>
+  </data>
+  <data name="EditSavesFile" xml:space="preserve">
+    <value>Saved to {0}.</value>
+  </data>
+  <data name="EditSavesOverride" xml:space="preserve">
+    <value>This is your own copy, in {0}. Revert to Installed removes it.</value>
+  </data>
+  <data name="EditRevert" xml:space="preserve">
+    <value>Revert to Installed</value>
+  </data>
+  <data name="EditBadVariable" xml:space="preserve">
+    <value>“{0}” is not NAME=value.</value>
+  </data>
+  <data name="EditNoCommand" xml:space="preserve">
+    <value>The command cannot be empty.</value>
+  </data>
+  <data name="EditSaveFailed" xml:space="preserve">
+    <value>Could not save “{0}”.
+{1}</value>
+  </data>
 </root>

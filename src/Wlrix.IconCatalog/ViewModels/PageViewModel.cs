@@ -12,13 +12,18 @@ public sealed class PageViewModel : ReactiveObject
 {
     private string _name;
     private bool _hasSelection;
+    private bool _hasOneLauncher;
 
     public PageViewModel(CatalogPage page)
     {
         Id = page.Id;
         IsSystem = page.IsSystem;
         _name = page.Name;
-        Selection.CollectionChanged += (_, _) => HasSelection = Selection.Count > 0;
+        Selection.CollectionChanged += (_, _) =>
+        {
+            HasSelection = Selection.Count > 0;
+            HasOneLauncher = Selection is [{ Icon.Entry: not null }];
+        };
     }
 
     public string Id { get; }
@@ -41,6 +46,13 @@ public sealed class PageViewModel : ReactiveObject
     {
         get => _hasSelection;
         private set => this.RaiseAndSetIfChanged(ref _hasSelection, value);
+    }
+
+    /// <summary>Whether exactly one icon is selected and it is a launcher: what Selected ▸ Edit acts on.</summary>
+    public bool HasOneLauncher
+    {
+        get => _hasOneLauncher;
+        private set => this.RaiseAndSetIfChanged(ref _hasOneLauncher, value);
     }
 
     /// <summary>
