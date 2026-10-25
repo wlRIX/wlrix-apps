@@ -1,4 +1,5 @@
 <Window xmlns="https://github.com/avaloniaui"
+        xmlns:wt="using:Wlrix.Theme"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:Wlrix.Settings.Bluetooth.ViewModels"
         xmlns:loc="using:Wlrix.Common.Localization"
@@ -19,14 +20,11 @@
             <Border Width="48" Height="48"
                     BorderThickness="1"
                     BorderBrush="{DynamicResource WlrixOuterLine}"
-                    Background="{DynamicResource WlrixSelect}">
-                <!-- Placeholder for the panel icon (a real asset comes from wlrix-assets): the
-                     Bluetooth rune. -->
-                <Viewbox Margin="10">
-                    <Path Data="M 4,8 L 16,20 L 10,26 L 10,2 L 16,8 L 4,20"
-                          Stroke="{DynamicResource WlrixForeground}" StrokeThickness="2"
-                          StrokeJoin="Round" StrokeLineCap="Round" />
-                </Viewbox>
+                    Background="{DynamicResource WlrixReadWritePanel}">
+                <!-- The panel's own icon on the closed control panel carpet, as IRIX drew it here.
+                     The picture is tools/panel-banners.py's. -->
+                <wt:IrixPicture Width="46" Height="46"
+                                Asset="avares://wlrix-settings-bluetooth/Assets/banner.svg" />
             </Border>
             <TextBlock Text="{loc:Tr PanelTitle}" FontWeight="Bold" FontSize="14" VerticalAlignment="Center" />
         </StackPanel>

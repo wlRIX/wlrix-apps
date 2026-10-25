@@ -9,6 +9,11 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <!-- The banner picture; see tools/panel-banners.py. -->
+        <AvaloniaResource Include="Assets\**" />
+    </ItemGroup>
+
+    <ItemGroup>
         <InternalsVisibleTo Include="Wlrix.Settings.Bluetooth.Tests" />
     </ItemGroup>
 

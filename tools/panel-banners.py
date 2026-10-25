@@ -32,6 +32,7 @@ PANELS = [
     ("Wlrix.Settings.Schemes", "com.wlrix.settings.schemes"),
     ("Wlrix.Settings.Windows", "com.wlrix.settings.windows"),
     ("Wlrix.Settings.Background", "com.wlrix.settings.background"),
+    ("Wlrix.Settings.Bluetooth", "com.wlrix.settings.bluetooth"),
 ]
 
 ROOT_ELEMENT = re.compile(r"<svg\b[^>]*>", re.S)

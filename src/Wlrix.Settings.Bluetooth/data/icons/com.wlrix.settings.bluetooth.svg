@@ -1,0 +1,38 @@
+<?xml version="1.0" standalone="no"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="50pt" height="50pt" viewBox="0 0 50 50" xml:space="preserve">
+<g transform="scale(0.5)">
+	<g id="Side_0" style="fill-rule:evenodd;clip-rule:nonzero;fill:#ffffff;stroke:#000000;stroke-miterlimit:4;stroke-linejoin:round;fill-opacity:100%;">
+		<path d="M61.51 57.24L53.60 66.47L47.60 63.47L55.51 54.24z"/>
+	</g>
+	<g id="Side_1" style="fill-rule:evenodd;clip-rule:nonzero;fill:#ffffff;stroke:#000000;stroke-miterlimit:4;stroke-linejoin:round;fill-opacity:100%;">
+		<path d="M74.49 50.76L56.49 47.76L50.49 44.76L68.49 47.76z"/>
+	</g>
+	<g id="Side_2" style="fill-rule:evenodd;clip-rule:nonzero;fill:#d8d8d8;stroke:#000000;stroke-miterlimit:4;stroke-linejoin:round;fill-opacity:100%;">
+		<path d="M46.40 59.53L46.40 83.53L40.40 80.53L40.40 56.53z"/>
+	</g>
+	<g id="Side_3" style="fill-rule:evenodd;clip-rule:nonzero;fill:#ffffff;stroke:#000000;stroke-miterlimit:4;stroke-linejoin:round;fill-opacity:100%;">
+		<path d="M61.51 33.24L53.60 42.47L47.60 39.47L55.51 30.24z"/>
+	</g>
+	<g id="Side_4" style="fill-rule:evenodd;clip-rule:nonzero;fill:#d8d8d8;stroke:#000000;stroke-miterlimit:4;stroke-linejoin:round;fill-opacity:100%;">
+		<path d="M30.00 70.00L34.00 74.00L28.00 71.00L24.00 67.00z"/>
+	</g>
+	<g id="Side_5" style="fill-rule:evenodd;clip-rule:nonzero;fill:#ffffff;stroke:#000000;stroke-miterlimit:4;stroke-linejoin:round;fill-opacity:100%;">
+		<path d="M43.51 54.24L30.00 70.00L24.00 67.00L37.51 51.24z"/>
+	</g>
+	<g id="Side_6" style="fill-rule:evenodd;clip-rule:nonzero;fill:#ffffff;stroke:#000000;stroke-miterlimit:4;stroke-linejoin:round;fill-opacity:100%;">
+		<path d="M74.49 26.76L46.40 22.07L40.40 19.07L68.49 23.76z"/>
+	</g>
+	<g id="Side_7" style="fill-rule:evenodd;clip-rule:nonzero;fill:#ffffff;stroke:#000000;stroke-miterlimit:4;stroke-linejoin:round;fill-opacity:100%;">
+		<path d="M46.40 46.07L34.00 44.01L28.00 41.01L40.40 43.07z"/>
+	</g>
+	<g id="Side_8" style="fill-rule:evenodd;clip-rule:nonzero;fill:#d8d8d8;stroke:#000000;stroke-miterlimit:4;stroke-linejoin:round;fill-opacity:100%;">
+		<path d="M46.40 22.07L46.40 46.07L40.40 43.07L40.40 19.07z"/>
+	</g>
+	<g id="Side_9" style="fill-rule:evenodd;clip-rule:nonzero;fill:#d8d8d8;stroke:#000000;stroke-miterlimit:4;stroke-linejoin:round;fill-opacity:100%;">
+		<path d="M34.00 44.01L30.00 51.99L24.00 48.99L28.00 41.01z"/>
+	</g>
+	<g id="Rune" style="fill-rule:evenodd;clip-rule:nonzero;fill:#1c5ed6;stroke:#000000;stroke-miterlimit:4;stroke-linejoin:round;fill-opacity:100%;">
+		<path d="M43.51 54.24L30.00 70.00L34.00 74.00L46.40 59.53L46.40 83.53L74.49 50.76L56.49 47.76L74.49 26.76L46.40 22.07L46.40 46.07L34.00 44.01L30.00 51.99zM53.60 55.93L61.51 57.24L53.60 66.47zM53.60 42.47L53.60 31.93L61.51 33.24z"/>
+	</g>
+</g>
+</svg>
