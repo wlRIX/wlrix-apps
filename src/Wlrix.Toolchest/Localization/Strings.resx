@@ -118,4 +118,21 @@ Version {0}</value>
   <data name="LoginProperties" xml:space="preserve">
     <value>Login Properties</value>
   </data>
+  <data name="StartNewConsole" xml:space="preserve">
+    <value>Start New Console</value>
+  </data>
+  <data name="LockSession" xml:space="preserve">
+    <value>Lock Session</value>
+  </data>
+  <data name="InhibitIdle" xml:space="preserve">
+    <value>Inhibit Idle</value>
+  </data>
+  <data name="InhibitIdleFailed" xml:space="preserve">
+    <value>Could not keep the session awake.
+{0}</value>
+  </data>
+  <data name="ReleaseIdleFailed" xml:space="preserve">
+    <value>Could not let the session go idle again.
+{0}</value>
+  </data>
 </root>

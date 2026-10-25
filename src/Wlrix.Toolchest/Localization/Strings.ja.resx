@@ -108,4 +108,13 @@
   <data name="LoginProperties" xml:space="preserve">
     <value>ログインのプロパティ</value>
   </data>
+  <data name="StartNewConsole" xml:space="preserve">
+    <value>新しいコンソールを開始</value>
+  </data>
+  <data name="LockSession" xml:space="preserve">
+    <value>セッションをロック</value>
+  </data>
+  <data name="InhibitIdle" xml:space="preserve">
+    <value>アイドルを抑止</value>
+  </data>
 </root>

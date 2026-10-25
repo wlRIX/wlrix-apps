@@ -30,9 +30,12 @@ public static class Strings
     public static string ControlAudio => Catalog.Get("ControlAudio");
     public static string ClipboardHistory => Catalog.Get("ClipboardHistory");
     public static string OpenTerminal => Catalog.Get("OpenTerminal");
+    public static string LockSession => Catalog.Get("LockSession");
+    public static string InhibitIdle => Catalog.Get("InhibitIdle");
     public static string LogOut => Catalog.Get("LogOut");
     public static string LogOutPrompt => Catalog.Get("LogOutPrompt");
     public static string ManageSoftware => Catalog.Get("ManageSoftware");
+    public static string StartNewConsole => Catalog.Get("StartNewConsole");
     public static string DisplayProperties => Catalog.Get("DisplayProperties");
     public static string NetworkProperties => Catalog.Get("NetworkProperties");
     public static string BluetoothProperties => Catalog.Get("BluetoothProperties");
@@ -53,6 +56,12 @@ public static class Strings
 
     /// <summary>The program a launcher names is not on the PATH.</summary>
     public static string NotInstalled(string program) => Catalog.Format("NotInstalled", program);
+
+    /// <summary>Taking the idle inhibit failed; <paramref name="detail"/> is what the bus said.</summary>
+    public static string InhibitIdleFailed(string detail) => Catalog.Format("InhibitIdleFailed", detail);
+
+    /// <summary>Giving the idle inhibit back failed; <paramref name="detail"/> is what the bus said.</summary>
+    public static string ReleaseIdleFailed(string detail) => Catalog.Format("ReleaseIdleFailed", detail);
 
     /// <summary>Starting it threw; <paramref name="detail"/> is what the OS said.</summary>
     public static string CouldNotStart(string displayName, string detail) =>

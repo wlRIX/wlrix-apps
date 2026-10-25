@@ -4,6 +4,7 @@ Name=wlRIX Archiver
 Name[ja]=wlRIX アーカイバ
 Comment=Work with compressed archives
 Comment[ja]=圧縮アーカイブを操作します
+Icon=com.wlrix.archiver
 Categories=Utility;Archiving;Compression;
 
 # %f, not %F: the window holds one archive at a time, and `Main` opens `args[0]` only. Claiming
@@ -11,6 +12,9 @@ Categories=Utility;Archiving;Compression;
 Exec=wlrix-archiver %f
 TryExec=wlrix-archiver
 Terminal=false
+
+# Running symbol
+X-WLRIX-Running-Icon=com.wlrix.archiver-running
 
 # Matches the Wayland app id set in Program.BuildAvaloniaApp. `wlrix-desktop` looks a running
 # window up by StartupWMClass first, so without this its running-application state would never

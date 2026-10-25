@@ -37,10 +37,29 @@ public class MenuTests
     }
 
     [Fact]
-    public void TheDesktopMenuIsCustomizeDesksAudioAndClipboardThenTerminalThenLogOut() =>
+    public void TheDesktopMenuIsCustomizeDesksAudioAndClipboardThenTerminalAndLockThenLogOut() =>
         Assert.Equal(
-            [Strings.Customize, Strings.ExtraDesks, Strings.ControlAudio, Strings.ClipboardHistory, Strings.OpenTerminal, Strings.LogOut],
+            [Strings.Customize, Strings.ExtraDesks, Strings.ControlAudio, Strings.ClipboardHistory,
+                Strings.OpenTerminal, Strings.LockSession, Strings.InhibitIdle, Strings.LogOut],
             HeadersUnder(Strings.Desktop));
+
+    [Fact]
+    public void InhibitIdleIsACheckboxThatStartsOff()
+    {
+        // Off until the inhibit has actually been taken: a fresh Toolchest holds nothing.
+        var item = Assert.Single(ItemsUnder(Strings.Desktop), node => node.Header == Strings.InhibitIdle);
+        Assert.True(item.IsCheckable);
+        Assert.False(item.IsChecked);
+        Assert.NotNull(item.Command);
+    }
+
+    [Fact]
+    public void OnlyInhibitIdleIsCheckable()
+    {
+        foreach (var menu in new[] { Strings.Desktop, Strings.System })
+        foreach (var item in Leaves(ItemsUnder(menu)).Where(item => item.Header != Strings.InhibitIdle))
+            Assert.False(item.IsCheckable, $"{menu} → {item.Header}");
+    }
 
     [Fact]
     public void CustomizeHoldsTheDesktopsOwnPanels()
@@ -57,19 +76,19 @@ public class MenuTests
     [Fact]
     public void TheDesktopMenuIsInThreeGroups()
     {
-        // The desktop's own panels together, then the terminal, then Log Out, with a rule between
-        // the groups and none at either end: Log Out in particular should not sit flush against
-        // the item above it.
-        Assert.Equal([false, false, false, false, true, false, true, false],
+        // The desktop's own panels together, then the terminal and the session's lock and idle
+        // items, then Log Out, with a rule between the groups and none at either end: Log Out in
+        // particular should not sit flush against the item above it.
+        Assert.Equal([false, false, false, false, true, false, false, false, true, false],
             ItemsUnder(Strings.Desktop).Select(item => item.IsSeparator));
     }
 
     [Fact]
     public void TheSystemMenuIsSoftwareThenPropertiesThenTheMachine() =>
-        // Three groups: installing software, the machine's own settings, and ending everything
-        // running on the box.
+        // Three groups: installing software and watching the session's logs, the machine's own
+        // settings, and ending everything running on the box.
         Assert.Equal(
-            [Strings.ManageSoftware, null,
+            [Strings.ManageSoftware, Strings.StartNewConsole, null,
                 Strings.DisplayProperties, Strings.NetworkProperties, Strings.BluetoothProperties,
                 Strings.PowerProperties, Strings.UserAccounts,
                 Strings.LoginProperties, null,

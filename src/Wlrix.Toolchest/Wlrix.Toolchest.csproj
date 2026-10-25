@@ -30,6 +30,7 @@
         </PackageReference>
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
         <PackageReference Include="ReactiveUI.Avalonia" />
+        <PackageReference Include="Tmds.DBus.Protocol" />
         <PackageReference Include="Wlrix.Avalonia" />
         <PackageReference Include="Wlrix.Avalonia.Dialogs" />
         <PackageReference Include="ZLogger" />

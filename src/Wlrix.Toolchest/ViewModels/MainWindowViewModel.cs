@@ -35,6 +35,19 @@ public sealed class MainWindowViewModel : ViewModelBase
     /// <summary>The installed name of the Software Manager, launched by System → Manage Software.</summary>
     private const string SoftwareManagerProgram = "wlrix-software-manager";
 
+    /// <summary>
+    /// The installed name of the session console, launched by System → Start New Console: a
+    /// window tailing the compositor's and the session's logs, where IRIX's opened a console
+    /// shell.
+    /// </summary>
+    private const string ConsoleProgram = "wlrix-console";
+
+    /// <summary>
+    /// The locker Desktop → Lock Session starts itself when no idle manager answers on the bus
+    /// -- the same program <c>wlrix-idle</c> runs by default, and <c>Super+L</c> starts.
+    /// </summary>
+    private const string LockProgram = "wlrix-lock";
+
     // The rest of the desktop's settings panels, by installed name. Desktop → Customize holds the
     // ones about the person's own desktop; System holds the ones about the machine, which ask for
     // an administrator's password (Login, User Accounts) or affect every monitor (Display).
@@ -66,11 +79,19 @@ public sealed class MainWindowViewModel : ViewModelBase
 
     private readonly IAppLauncher _launcher;
     private readonly ISessionService _session;
+    private readonly IIdleService _idle;
 
-    public MainWindowViewModel(IAppLauncher launcher, ISessionService session)
+    /// <summary>Desktop → Inhibit Idle, whose check mark follows <see cref="IIdleService.IsInhibited"/>.</summary>
+    private MenuNode? _inhibitIdle;
+
+    /// <summary>Set while a click on Inhibit Idle is still on the bus, so a second one waits its turn.</summary>
+    private bool _togglingIdle;
+
+    public MainWindowViewModel(IAppLauncher launcher, ISessionService session, IIdleService idle)
     {
         _launcher = launcher;
         _session = session;
+        _idle = idle;
         _launcher.LaunchFailed += OnLaunchFailed;
         BuildTopLevel();
     }
@@ -80,6 +101,7 @@ public sealed class MainWindowViewModel : ViewModelBase
     {
         _launcher = null!;
         _session = null!;
+        _idle = null!;
         BuildTopLevel();
     }
 
@@ -131,6 +153,9 @@ public sealed class MainWindowViewModel : ViewModelBase
                 command: new RelayCommand(() => _launcher.Run(Strings.ClipboardHistory, ClipboardHistoryProgram))),
             MenuNode.Separator(),
             new MenuNode(Strings.OpenTerminal, command: new RelayCommand(() => _launcher.OpenTerminal())),
+            new MenuNode(Strings.LockSession, command: new RelayCommand(() => _ = LockAsync())),
+            _inhibitIdle = new MenuNode(Strings.InhibitIdle,
+                command: new RelayCommand(() => _ = ToggleInhibitIdleAsync()), isCheckable: true),
             MenuNode.Separator(),
             new MenuNode(Strings.LogOut, command: new RelayCommand(() => _ = LogOutAsync())),
         ]));
@@ -140,6 +165,7 @@ public sealed class MainWindowViewModel : ViewModelBase
         TopLevel.Add(new MenuNode(Strings.System,
         [
             Launch(Strings.ManageSoftware, SoftwareManagerProgram),
+            Launch(Strings.StartNewConsole, ConsoleProgram),
             MenuNode.Separator(),
             // The machine's own settings, as IRIX's System menu had them.
             Launch(Strings.DisplayProperties, DisplaysProgram),
@@ -175,6 +201,40 @@ public sealed class MainWindowViewModel : ViewModelBase
 
         if (_session.LogOut() is { } why)
             ShowError?.Invoke(why);
+    }
+
+    /// <summary>
+    /// Locks the session through the idle manager, or by starting the locker directly when none
+    /// answers -- a Lock Session that did nothing because a daemon was down would leave somebody
+    /// walking away from an open desktop.
+    /// </summary>
+    private async Task LockAsync()
+    {
+        if (!await _idle.LockAsync())
+            _launcher.Run(Strings.LockSession, LockProgram);
+    }
+
+    /// <summary>
+    /// Takes or gives back the idle inhibit, and ticks the item to match what actually happened
+    /// rather than what was clicked.
+    /// </summary>
+    private async Task ToggleInhibitIdleAsync()
+    {
+        if (_togglingIdle)
+            return;
+
+        _togglingIdle = true;
+        try
+        {
+            var why = await _idle.SetInhibitedAsync(!_idle.IsInhibited);
+            if (why is not null)
+                ShowError?.Invoke(why);
+        }
+        finally
+        {
+            _togglingIdle = false;
+            _inhibitIdle?.SetChecked(_idle.IsInhibited);
+        }
     }
 
     private void RaiseAbout()
