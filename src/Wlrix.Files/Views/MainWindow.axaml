@@ -16,9 +16,11 @@
          ran, and through HotKey did not. So the gesture is written twice, once to show and
          once to work, and AcceleratorTests checks the two never drift apart.
 
-         Being on the window rather than the listing is what makes them yield to a text box: a
-         focused TextBox marks Delete and Ctrl+C handled, and only what it leaves unhandled
-         reaches here. -->
+         The editing keys are not here: Cut, Copy, Paste, Select All and the two Deletes are on
+         the listing (ListingView.axaml). Avalonia runs KeyBindings before the key reaches the
+         focused control, from the focused element out to the window, so a text box never gets
+         a gesture the window binds. On the window, those took Ctrl+C, Ctrl+V and Delete away
+         from the path bar and spent them on the selected files instead. -->
     <Window.KeyBindings>
         <KeyBinding Gesture="Alt+Left" Command="{Binding GoBack}" />
         <KeyBinding Gesture="Alt+Right" Command="{Binding GoForward}" />
@@ -32,13 +34,7 @@
         <KeyBinding Gesture="Ctrl+Tab" Command="{Binding NextTab}" />
         <KeyBinding Gesture="Ctrl+Shift+Tab" Command="{Binding PreviousTab}" />
         <KeyBinding Gesture="Ctrl+Shift+W" Command="{Binding Close}" />
-        <KeyBinding Gesture="Ctrl+A" Command="{Binding SelectAll}" />
-        <KeyBinding Gesture="Ctrl+X" Command="{Binding CutSelection}" />
-        <KeyBinding Gesture="Ctrl+C" Command="{Binding CopySelection}" />
-        <KeyBinding Gesture="Ctrl+V" Command="{Binding Paste}" />
         <KeyBinding Gesture="F2" Command="{Binding RenameSelection}" />
-        <KeyBinding Gesture="Delete" Command="{Binding TrashSelection}" />
-        <KeyBinding Gesture="Shift+Delete" Command="{Binding DeleteSelection}" />
         <KeyBinding Gesture="Alt+Return" Command="{Binding ShowProperties}" />
         <KeyBinding Gesture="F3" Command="{Binding ToggleSplit}" />
         <KeyBinding Gesture="F5" Command="{Binding Refresh}" />

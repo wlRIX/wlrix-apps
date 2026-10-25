@@ -15,6 +15,20 @@
          The places rail is deliberately not in here. It belongs to the window, not to a
          tab, and the file picker wants the rail beside a listing with no tabs at all. -->
 
+    <!-- The keys that also mean something in a text field, scoped to the listing so they act on
+         files only while it has focus. Avalonia runs KeyBindings from the focused element
+         outward before the key reaches that element, so on the window these would beat the path
+         bar to Ctrl+C and Delete. The menus still advertise them; AcceleratorTests counts these
+         as registered. -->
+    <UserControl.KeyBindings>
+        <KeyBinding Gesture="Ctrl+A" Command="{Binding Tab.Window.SelectAll}" />
+        <KeyBinding Gesture="Ctrl+X" Command="{Binding Tab.Window.CutSelection}" />
+        <KeyBinding Gesture="Ctrl+C" Command="{Binding Tab.Window.CopySelection}" />
+        <KeyBinding Gesture="Ctrl+V" Command="{Binding Tab.Window.Paste}" />
+        <KeyBinding Gesture="Delete" Command="{Binding Tab.Window.TrashSelection}" />
+        <KeyBinding Gesture="Shift+Delete" Command="{Binding Tab.Window.DeleteSelection}" />
+    </UserControl.KeyBindings>
+
     <UserControl.Styles>
         <!-- A symlink's name is in italics, in both views, as IRIX's file manager set it. The
              entry still sorts and opens as what it points at; this is the only sign it is a

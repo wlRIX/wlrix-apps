@@ -49,16 +49,23 @@ public class AcceleratorTests
     private static string? Attribute(XElement element, string name) => element.Attribute(name)?.Value;
 
     /// <summary>The command a <c>{Binding Foo}</c> attribute names, or null.</summary>
+    /// <remarks>
+    /// The last segment of the path, so the listing's <c>{Binding Tab.Window.Paste}</c> names
+    /// the same command as the menu's <c>{Binding Paste}</c>.
+    /// </remarks>
     private static string? Bound(XElement element)
     {
         var text = Attribute(element, "Command");
-        return text is null ? null : Regex.Match(text, @"\{Binding\s+([A-Za-z0-9_]+)").Groups[1].Value;
+        if (text is null)
+            return null;
+        var path = Regex.Match(text, @"\{Binding\s+([A-Za-z0-9_.]+)").Groups[1].Value;
+        return path[(path.LastIndexOf('.') + 1)..];
     }
 
     private static string Describe(XElement item) =>
         Attribute(item, "Header") ?? Attribute(item, "Name") ?? "(unnamed)";
 
-    /// <summary>Gesture to command, as the window will actually act on them.</summary>
+    /// <summary>Gesture to command, as the window and the listing will actually act on them.</summary>
     private static Dictionary<string, string> Registered() =>
         Elements("KeyBinding")
             .Where(binding => Attribute(binding, "Gesture") is not null && Bound(binding) is not null)
@@ -156,6 +163,26 @@ public class AcceleratorTests
         var hidden = Registered().Keys.Where(gesture => !advertised.Contains(gesture)).ToList();
 
         Assert.Empty(hidden);
+    }
+
+    [Theory]
+    [InlineData("Ctrl+A")]
+    [InlineData("Ctrl+X")]
+    [InlineData("Ctrl+C")]
+    [InlineData("Ctrl+V")]
+    [InlineData("Delete")]
+    [InlineData("Shift+Delete")]
+    public void NoKeyATextFieldUsesIsBoundOnTheWindow(string gesture)
+    {
+        // Avalonia runs KeyBindings from the focused element out to the window before the key
+        // reaches the focused control, so a window binding wins over the path bar. These took
+        // Copy, Paste and Delete away from it; the listing is where they belong.
+        var onWindow = XDocument.Load(Path.Combine(AppContext.BaseDirectory, "Localization", "MainWindow.axaml"))
+            .Descendants(Xaml + "KeyBinding")
+            .Select(binding => Attribute(binding, "Gesture"));
+
+        Assert.DoesNotContain(gesture, onWindow, StringComparer.OrdinalIgnoreCase);
+        Assert.True(Registered().ContainsKey(gesture), $"{gesture} is no longer bound anywhere");
     }
 
     [Fact]

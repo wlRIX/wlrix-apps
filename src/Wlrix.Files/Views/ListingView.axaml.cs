@@ -122,6 +122,9 @@ public partial class ListingView : UserControl
         // happens before the click does anything else — by the time a row has been selected or
         // a drag has begun, the window has to already agree about which pane that was in.
         AddHandler(PointerPressedEvent, OnActivatingPress, RoutingStrategies.Tunnel);
+        // Focus too, because the editing keys are bound here and act on the active pane: in a
+        // split tab, tabbing into the other listing has to make that the one Ctrl+C copies from.
+        AddHandler(GotFocusEvent, (_, _) => Pane?.Activate());
 
         // Return is the other way to open, and the Actions menu has advertised it since M3.
         // On the listing itself rather than as a window hot key, because it must not fire
@@ -177,10 +180,16 @@ public partial class ListingView : UserControl
         if (!ReferenceEquals(_wiredPane, Pane))
         {
             if (_wiredPane is { } before)
+            {
                 before.RevealRequested -= Reveal;
+                before.PropertyChanged -= OnPanePropertyChanged;
+            }
             _wiredPane = Pane;
             if (_wiredPane is { } after)
+            {
                 after.RevealRequested += Reveal;
+                after.PropertyChanged += OnPanePropertyChanged;
+            }
         }
 
         if (ReferenceEquals(_wired, Model))
@@ -299,6 +308,57 @@ public partial class ListingView : UserControl
         base.OnDataContextChanged(e);
         Rewire();
         RestoreSelection();
+        FocusWhenShown();
+    }
+
+    protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        base.OnAttachedToVisualTree(e);
+        Rewire();
+        FocusWhenShown();
+    }
+
+    /// <summary>The view of the two that is showing.</summary>
+    private ListBox ShowingView(PaneViewModel pane) => pane.IsIconView ? IconView : Listing;
+
+    /// <summary>Gives the listing focus as it comes on screen, if it is the active pane.</summary>
+    /// <remarks>
+    /// The editing keys are bound on this view and need focus inside it. Switching tabs
+    /// rebuilds the listing, and the new one had none: the files copied in one tab could not
+    /// be pasted into the next with Ctrl+V until something in it had been clicked. Only the
+    /// active pane takes it, so a split tab does not have its two listings fight over focus.
+    /// Posted, because the items are not bound yet when the data context arrives.
+    /// </remarks>
+    private void FocusWhenShown()
+    {
+        if (Pane is not { } pane)
+            return;
+
+        Dispatcher.UIThread.Post(() =>
+        {
+            if (!ReferenceEquals(Pane, pane) || !pane.IsActive || !IsShown())
+                return;
+            ShowingView(pane).Focus();
+        }, DispatcherPriority.Loaded);
+    }
+
+    private bool IsShown() => TopLevel.GetTopLevel(this) is not null;
+
+    /// <summary>Carries focus across when the view switches between icons and details.</summary>
+    /// <remarks>
+    /// The view that had it is hidden, and a hidden control cannot keep focus, so without this
+    /// a switch from the View menu leaves the keys with nowhere to go.
+    /// </remarks>
+    private void OnPanePropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName != nameof(PaneViewModel.IsIconView) || Pane is not { } pane)
+            return;
+        // Hiding may or may not have dropped focus yet, depending on which binding hears first:
+        // either it is still in here, or it is nowhere in particular.
+        var focused = TopLevel.GetTopLevel(this) is { } top ? top.FocusManager?.GetFocusedElement() : null;
+        if (!(IsKeyboardFocusWithin || focused is null || focused is TopLevel))
+            return;
+        Dispatcher.UIThread.Post(() => ShowingView(pane).Focus(), DispatcherPriority.Loaded);
     }
 
     private void OnListingDoubleTapped(object? sender, TappedEventArgs e) =>
@@ -361,6 +421,7 @@ public partial class ListingView : UserControl
         if (_wiredPane is { } pane)
         {
             pane.RevealRequested -= Reveal;
+            pane.PropertyChanged -= OnPanePropertyChanged;
             _wiredPane = null;
         }
         EndDrag();
@@ -450,6 +511,8 @@ public partial class ListingView : UserControl
         if (e.GetCurrentPoint(view).Properties.IsRightButtonPressed)
         {
             SelectForContextMenu(view, RowUnder(e.Source));
+            // The ListBox takes focus for neither button on its own; see the empty-space case.
+            view.Focus();
             return;
         }
 
@@ -476,6 +539,12 @@ public partial class ListingView : UserControl
         var empty = IsEmptySpace(view, e.Source);
         if (empty && (e.KeyModifiers & (KeyModifiers.Control | KeyModifiers.Shift)) == 0)
             view.SelectedItems?.Clear();
+
+        // A ListBox takes focus only when a press lands on an item, and the editing keys are
+        // bound on this view, so clicking the empty space below the files and pressing Ctrl+V
+        // pasted nothing -- focus had stayed in the path bar, or nowhere.
+        if (empty)
+            view.Focus();
 
         // A press on a scroll bar is not empty space either. Banding from it would take the
         // drag away from the thumb, since the band handles every move once it starts.
