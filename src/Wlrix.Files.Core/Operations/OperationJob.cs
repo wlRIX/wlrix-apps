@@ -55,6 +55,12 @@ public sealed class OperationJob
     /// </remarks>
     private Action<long>? _itemBytes;
 
+    /// <summary>Held while the user has paused the operation; null when nothing can pause it.</summary>
+    private PauseGate? _pause;
+
+    /// <summary>The operation's token, for the waits inside a read that has no token of its own.</summary>
+    private CancellationToken _token;
+
     public OperationJob(
         IFileSystemProvider provider,
         IConflictResolver? conflicts = null,
@@ -68,11 +74,15 @@ public sealed class OperationJob
     }
 
     /// <summary>Runs the operation to completion, cancellation or failure.</summary>
+    /// <param name="pause">The gate the user's Pause button closes, or null for no pausing.</param>
     public async Task<OperationResult> RunAsync(
         FileOperation operation,
         IProgress<OperationProgress>? progress = null,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default,
+        PauseGate? pause = null)
     {
+        _pause = pause;
+        _token = cancellationToken;
         var throttle = new ProgressThrottle<OperationProgress>(progress);
         var errors = new List<FileOperationException>();
         var done = 0;
@@ -103,17 +113,21 @@ public sealed class OperationJob
                 return Finish(OperationPhase.Completed, plan.Items.Count, 0, errors, throttle);
             }
             var bytesDone = 0L;
+            var files = new FileCount(plan);
 
             foreach (var item in plan.Items)
             {
                 cancellationToken.ThrowIfCancellationRequested();
+                if (_pause is { } gate)
+                    await gate.WaitAsync(cancellationToken).ConfigureAwait(false);
 
                 // Named as it starts rather than once it is done, so the status line says what
                 // is being copied now and not what finished a moment ago.
                 var before = bytesDone;
                 var finished = done + skipped;
-                throttle.Report(Working(plan, finished, before, item));
-                _itemBytes = read => throttle.Report(Working(plan, finished, before + Math.Min(read, item.Size), item));
+                var filesBefore = files.Done;
+                throttle.Report(Working(plan, finished, files, filesBefore, before, item));
+                _itemBytes = read => throttle.Report(Working(plan, finished, files, filesBefore, before + Math.Min(read, item.Size), item));
                 ItemOutcome outcome;
                 try
                 {
@@ -138,8 +152,9 @@ public sealed class OperationJob
                     case ItemOutcome.Aborted:
                         return Finish(OperationPhase.Failed, done, skipped, errors, throttle);
                 }
+                files.Passed(item);
 
-                throttle.Report(Working(plan, done + skipped, bytesDone, item));
+                throttle.Report(Working(plan, done + skipped, files, files.Done, bytesDone, item));
             }
 
             // A move deletes its sources only after everything has been copied, and only if
@@ -167,10 +182,29 @@ public sealed class OperationJob
     /// files are over in a moment and one disk image is not. A plan of nothing but directories
     /// and empty files has no bytes to divide by and counts items instead.
     /// </remarks>
-    private static OperationProgress Working(TransferPlan plan, int finished, long bytes, PlannedItem current) =>
+    private static OperationProgress Working(TransferPlan plan, int finished, FileCount files, int filesDone, long bytes, PlannedItem current) =>
         new(OperationPhase.Working,
             plan.TotalBytes > 0 ? (double)bytes / plan.TotalBytes : (double)finished / Math.Max(1, plan.Items.Count),
-            finished, plan.Items.Count, bytes, plan.TotalBytes, current.Source.Name);
+            finished, plan.Items.Count, bytes, plan.TotalBytes, current.Source.Name,
+            filesDone, files.Total, current.Source);
+
+    /// <summary>The files in a plan, and how many of them are behind us.</summary>
+    /// <remarks>
+    /// The total is counted once, because the progress line asks ten times a second and a plan
+    /// can be a hundred thousand items long.
+    /// </remarks>
+    private sealed class FileCount(TransferPlan plan)
+    {
+        public int Total { get; } = plan.Items.Count(item => !item.IsDirectory);
+
+        public int Done { get; private set; }
+
+        public void Passed(PlannedItem item)
+        {
+            if (!item.IsDirectory)
+                Done++;
+        }
+    }
 
     private static OperationResult Finish(
         OperationPhase phase, int done, int skipped,
@@ -693,6 +727,7 @@ public sealed class OperationJob
             {
                 var bytesDone = 0L;
                 var done = 0;
+                var files = new FileCount(plan);
                 foreach (var planned in plan.Items)
                 {
                     cancellationToken.ThrowIfCancellationRequested();
@@ -708,10 +743,13 @@ public sealed class OperationJob
                         var stat = await sourceFs.StatAsync(item.Source, cancellationToken).ConfigureAwait(false);
                         item = item with { UnixMode = stat.UnixMode };
                     }
+                    if (_pause is { } gate)
+                        await gate.WaitAsync(cancellationToken).ConfigureAwait(false);
                     var before = bytesDone;
                     var current = item;
-                    throttle.Report(Working(plan, done, before, current));
-                    _itemBytes = read => throttle.Report(Working(plan, done, before + Math.Min(read, current.Size), current));
+                    var filesBefore = files.Done;
+                    throttle.Report(Working(plan, done, files, filesBefore, before, current));
+                    _itemBytes = read => throttle.Report(Working(plan, done, files, filesBefore, before + Math.Min(read, current.Size), current));
                     try
                     {
                         await writer.WriteAsync(sourceFs, item, name, Counted, cancellationToken).ConfigureAwait(false);
@@ -723,7 +761,8 @@ public sealed class OperationJob
 
                     done++;
                     bytesDone += item.Size;
-                    throttle.Report(Working(plan, done, bytesDone, item));
+                    files.Passed(item);
+                    throttle.Report(Working(plan, done, files, files.Done, bytesDone, item));
                 }
             }
 
@@ -775,7 +814,9 @@ public sealed class OperationJob
 
     /// <summary>The source stream, counting what is read from it when anything is listening.</summary>
     private Stream Counted(Stream input) =>
-        _itemBytes is { } report ? new ProgressReadStream(input, report) : input;
+        _itemBytes is not null || _pause is not null
+            ? new ProgressReadStream(input, _itemBytes, _pause, _token)
+            : input;
 
     private static async Task TryDeleteAsync(IFileSystem fs, Location location)
     {

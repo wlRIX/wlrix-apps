@@ -128,8 +128,12 @@ public partial class MainWindow : Window
     private void OnError(string message) =>
         _ = MessageDialog.ShowAsync(this, DialogType.Error, message, title: Strings.ErrorTitle);
 
-    private void OnCancelOperation(object? sender, RoutedEventArgs e) =>
-        (DataContext as MainWindowViewModel)?.CancelOperation();
+    /// <summary>A click on the status bar's progress brings up the progress window.</summary>
+    private void OnOperationBarReleased(object? sender, PointerReleasedEventArgs e)
+    {
+        if (e.InitialPressMouseButton == MouseButton.Left)
+            (DataContext as MainWindowViewModel)?.ShowOperations();
+    }
 
     private Task<string?> OnPrompt(string title, string prompt, string initial, bool selectExtension) =>
         PromptDialog.ShowAsync(this, title, prompt, initial, selectExtension, Strings.DialogOk, Strings.DialogCancel);

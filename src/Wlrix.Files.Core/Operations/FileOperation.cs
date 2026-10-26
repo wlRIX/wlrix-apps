@@ -111,7 +111,13 @@ public readonly record struct OperationProgress(
     long BytesDone = 0,
     long BytesTotal = 0,
     /// <summary>What is being worked on right now, for the status line.</summary>
-    string? Current = null);
+    string? Current = null,
+    /// <summary>Files finished, counting neither directories nor the one in progress.</summary>
+    int FilesDone = 0,
+    /// <summary>Files in the whole plan. Directories are made, not copied, so they are left out.</summary>
+    int FilesTotal = 0,
+    /// <summary>Where <see cref="Current"/> is, in full, for a progress window's details.</summary>
+    Location? CurrentSource = null);
 
 /// <summary>What a scan found, so progress has a denominator.</summary>
 /// <param name="Items">Every file and directory to be processed, sources first.</param>

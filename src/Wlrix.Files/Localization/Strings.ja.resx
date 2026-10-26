@@ -388,6 +388,84 @@
   <data name="OperationAmountRate" xml:space="preserve">
     <value>{0}: {1} / {2} ({3}/秒)</value>
   </data>
+  <data name="ProgressWindowTitle" xml:space="preserve">
+    <value>ファイル操作</value>
+  </data>
+  <data name="ProgressCopying" xml:space="preserve">
+    <value>コピー中</value>
+  </data>
+  <data name="ProgressMoving" xml:space="preserve">
+    <value>移動中</value>
+  </data>
+  <data name="ProgressCompressing" xml:space="preserve">
+    <value>圧縮中</value>
+  </data>
+  <data name="ProgressTrashing" xml:space="preserve">
+    <value>ごみ箱へ移動中</value>
+  </data>
+  <data name="ProgressDeleting" xml:space="preserve">
+    <value>削除中</value>
+  </data>
+  <data name="ProgressLinking" xml:space="preserve">
+    <value>参照を作成中</value>
+  </data>
+  <data name="ProgressItems" xml:space="preserve">
+    <value>{0} 個の項目</value>
+  </data>
+  <data name="ProgressTo" xml:space="preserve">
+    <value>{0} を {1} へ</value>
+  </data>
+  <data name="ProgressAmount" xml:space="preserve">
+    <value>{0} / {1}</value>
+  </data>
+  <data name="ProgressFiles" xml:space="preserve">
+    <value>{0} / {1} 個のファイル</value>
+  </data>
+  <data name="ProgressFilesOne" xml:space="preserve">
+    <value>{0} / 1 個のファイル</value>
+  </data>
+  <data name="ProgressRate" xml:space="preserve">
+    <value>{0}/秒</value>
+  </data>
+  <data name="ProgressSpeed" xml:space="preserve">
+    <value>速度 {0}</value>
+  </data>
+  <data name="ProgressAverage" xml:space="preserve">
+    <value>平均速度 {0}</value>
+  </data>
+  <data name="ProgressRemaining" xml:space="preserve">
+    <value>残り {0}</value>
+  </data>
+  <data name="ProgressSeconds" xml:space="preserve">
+    <value>{0} 秒</value>
+  </data>
+  <data name="ProgressMinutes" xml:space="preserve">
+    <value>{0} 分</value>
+  </data>
+  <data name="ProgressHours" xml:space="preserve">
+    <value>{0} 時間 {1} 分</value>
+  </data>
+  <data name="ProgressPaused" xml:space="preserve">
+    <value>一時停止中</value>
+  </data>
+  <data name="ProgressWaiting" xml:space="preserve">
+    <value>待機中</value>
+  </data>
+  <data name="ProgressPause" xml:space="preserve">
+    <value>一時停止</value>
+  </data>
+  <data name="ProgressResume" xml:space="preserve">
+    <value>再開</value>
+  </data>
+  <data name="ProgressDetails" xml:space="preserve">
+    <value>詳細</value>
+  </data>
+  <data name="ProgressSource" xml:space="preserve">
+    <value>ソース:</value>
+  </data>
+  <data name="ProgressDestination" xml:space="preserve">
+    <value>宛先:</value>
+  </data>
   <data name="OperationScanning" xml:space="preserve">
     <value>{0} 個の項目を調べています...</value>
   </data>

@@ -1,0 +1,111 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:loc="using:Wlrix.Common.Localization"
+        xmlns:vm="using:Wlrix.Files.ViewModels"
+        xmlns:controls="using:Wlrix.Files.Controls"
+        xmlns:services="using:Wlrix.Files.Services"
+        xmlns:wlrix="https://vic485.xyz/Wlrix.Avalonia"
+        x:Class="Wlrix.Files.Views.ProgressWindow"
+        x:DataType="services:OperationsMonitor"
+        Title="{loc:Tr ProgressWindowTitle}"
+        Width="440" SizeToContent="Height"
+        CanResize="False">
+
+    <!-- Every running operation, one panel each, laid out after the job panel Plasma shows for
+         Dolphin. Scrolls past a few panels rather than growing off the screen. -->
+    <ScrollViewer MaxHeight="640" HorizontalScrollBarVisibility="Disabled">
+        <ItemsControl ItemsSource="{Binding Operations}" Margin="12">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <StackPanel Spacing="14" />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="vm:OperationViewModel">
+                    <StackPanel Spacing="6">
+                        <DockPanel>
+                            <TextBlock DockPanel.Dock="Right" Text="{Binding Status}" VerticalAlignment="Bottom" />
+                            <TextBlock Text="{Binding Title}" FontWeight="Bold" />
+                        </DockPanel>
+                        <TextBlock Text="{Binding Summary}" TextTrimming="CharacterEllipsis"
+                                   ToolTip.Tip="{Binding Summary}" />
+
+                        <!-- The bar IRIX's fm showed, kept under the graph's heading: the graph
+                             says whether it is moving, the bar how far it has got. -->
+                        <ProgressBar Height="14" Minimum="0" Maximum="1"
+                                     Value="{Binding Fraction, FallbackValue=0}"
+                                     IsIndeterminate="{Binding !Fraction.HasValue}" />
+
+                        <wlrix:BevelBorder Bevel="Sunken" BevelThickness="2" Height="112"
+                                           Background="{DynamicResource WlrixTextAreaBackground}"
+                                           LightBrush="{DynamicResource WlrixTopShadow}"
+                                           DarkBrush="{DynamicResource WlrixBottomShadow}"
+                                           IsVisible="{Binding ShowsSpeed}">
+                            <controls:SpeedGraph Samples="{Binding SpeedHistory}"
+                                                 Fill="{DynamicResource WlrixSelection}"
+                                                 Stroke="{DynamicResource WlrixOuterLine}"
+                                                 GridBrush="{DynamicResource WlrixBottomShadow}"
+                                                 Foreground="{DynamicResource WlrixViewForeground}"
+                                                 Margin="2" />
+                        </wlrix:BevelBorder>
+                        <DockPanel IsVisible="{Binding ShowsSpeed}">
+                            <TextBlock DockPanel.Dock="Right" Text="{Binding AverageText}" />
+                            <TextBlock Text="{Binding SpeedText}" />
+                        </DockPanel>
+
+                        <DockPanel>
+                            <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Spacing="6">
+                                <Button Content="{Binding PauseText}" Command="{Binding TogglePause}" MinWidth="80" />
+                                <Button Content="{loc:Tr OperationCancel}" Command="{Binding Cancel}" MinWidth="80" />
+                            </StackPanel>
+                            <ToggleButton Content="{loc:Tr ProgressDetails}" IsChecked="{Binding ShowDetails}"
+                                          HorizontalAlignment="Left" MinWidth="80" />
+                        </DockPanel>
+
+                        <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto"
+                              IsVisible="{Binding ShowDetails}">
+                            <Grid.Styles>
+                                <Style Selector="TextBlock">
+                                    <Setter Property="Margin" Value="0,1" />
+                                </Style>
+                                <Style Selector="TextBlock.label">
+                                    <Setter Property="Margin" Value="0,1,8,1" />
+                                    <Setter Property="HorizontalAlignment" Value="Right" />
+                                </Style>
+                                <!-- A link rather than a button: it goes somewhere, and that is how
+                                     Plasma's panel draws the same thing. -->
+                                <Style Selector="Button.link">
+                                    <Setter Property="Template">
+                                        <ControlTemplate>
+                                            <ContentPresenter Content="{TemplateBinding Content}"
+                                                              Background="Transparent" />
+                                        </ControlTemplate>
+                                    </Setter>
+                                    <Setter Property="Cursor" Value="Hand" />
+                                    <Setter Property="HorizontalAlignment" Value="Left" />
+                                </Style>
+                            </Grid.Styles>
+
+                            <TextBlock Grid.Row="0" Classes="label" Text="{loc:Tr ProgressSource}" />
+                            <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding SourceText}"
+                                       TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding SourceText}" />
+
+                            <TextBlock Grid.Row="1" Classes="label" Text="{loc:Tr ProgressDestination}"
+                                       IsVisible="{Binding HasDestination}" />
+                            <Button Grid.Row="1" Grid.Column="1" Classes="link"
+                                    Command="{Binding OpenDestination}"
+                                    IsVisible="{Binding HasDestination}">
+                                <TextBlock Text="{Binding DestinationText}" TextDecorations="Underline"
+                                           Foreground="{DynamicResource WlrixSelection}"
+                                           TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding DestinationText}" />
+                            </Button>
+
+                            <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding AmountText}" />
+                            <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding FilesText}" />
+                        </Grid>
+                    </StackPanel>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </ScrollViewer>
+</Window>

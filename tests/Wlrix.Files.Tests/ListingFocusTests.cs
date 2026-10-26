@@ -168,6 +168,7 @@ public sealed class ListingFocusTests(ITestOutputHelper output) : IDisposable
             services.AddSingleton(sp => new OperationQueue(
                 sp.GetRequiredService<IFileSystemProvider>(), sp.GetRequiredService<MountTable>()));
             services.AddSingleton<FileClipboard>();
+            services.AddSingleton<OperationsMonitor>();
             services.AddSingleton(sp => new DragStaging(sp.GetRequiredService<IFileSystemProvider>()));
             services.AddSingleton(_ => new FilesStateStore(Path.Combine(root, "state")));
             services.AddSingleton<IStorageDeviceMonitor, NoDevices>();

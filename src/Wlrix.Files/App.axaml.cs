@@ -198,6 +198,8 @@ public class App : Application
             services.AddSingleton(sp => new OperationQueue(
                 sp.GetRequiredService<IFileSystemProvider>(), sp.GetRequiredService<MountTable>()));
             services.AddSingleton<FileClipboard>();
+            // The progress window, which is the application's because the operations are.
+            services.AddSingleton<OperationsMonitor>();
             // Also application-scoped: the files it stages have to outlive the drag that
             // made them, because the application receiving the drop may still be reading.
             services.AddSingleton(sp => new DragStaging(sp.GetRequiredService<IFileSystemProvider>()));
@@ -233,6 +235,12 @@ public class App : Application
 
             var windows = _services.GetRequiredService<WindowManager>();
             windows.Start();
+
+            // Resolved now rather than by the first window to ask, so it is watching the queue
+            // before anything can be put on it. A panel's destination link opens the way any
+            // other request to show a directory does, by the navigation mode's rules.
+            var monitor = _services.GetRequiredService<OperationsMonitor>();
+            monitor.OpenRequested += location => windows.OpenAll([location.ToUriString()]);
             windows.AllWindowsClosed += () => desktop.Shutdown();
 
             // Every argument is a directory to open, which is what the desktop entry's %U

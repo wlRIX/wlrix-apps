@@ -248,32 +248,22 @@
                            Padding="6,3">
             <DockPanel>
                 <!-- The running operation takes the right-hand end, so the item count stays
-                     where it was rather than being displaced while a copy runs. -->
-                <Button DockPanel.Dock="Right"
-                        Content="{loc:Tr OperationCancel}"
-                        IsVisible="{Binding HasOperation}"
-                        Click="OnCancelOperation"
-                        Padding="8,0"
-                        Margin="6,0,0,0" />
+                     where it was rather than being displaced while a copy runs. Only the bar:
+                     the file, the speed, Pause and Cancel are in the progress window, which a
+                     click on the bar brings back if it was closed. What the line used to say
+                     is its tooltip. -->
                 <ProgressBar DockPanel.Dock="Right"
+                             Name="OperationBar"
                              Width="140"
                              Height="14"
                              Margin="6,0,0,0"
                              Minimum="0" Maximum="1"
+                             Cursor="Hand"
+                             ToolTip.Tip="{Binding OperationStatus}"
+                             PointerReleased="OnOperationBarReleased"
                              Value="{Binding OperationFraction, FallbackValue=0}"
                              IsIndeterminate="{Binding !OperationFraction.HasValue}"
                              IsVisible="{Binding HasOperation}" />
-                <!-- Capped so a running copy cannot push the item count off the bar. A long file
-                     name is already shortened in the middle by the view model, so the amount and
-                     rate at the end, the part that says it is still going, stay on screen;
-                     the trimming here is only a backstop. The whole line is in the tooltip. -->
-                <TextBlock DockPanel.Dock="Right"
-                           Text="{Binding OperationStatus}"
-                           ToolTip.Tip="{Binding OperationStatus}"
-                           IsVisible="{Binding HasOperation}"
-                           MaxWidth="460"
-                           TextTrimming="CharacterEllipsis"
-                           VerticalAlignment="Center" />
                 <TextBlock Text="{Binding Pane.Status}" VerticalAlignment="Center" />
             </DockPanel>
         </wlrix:BevelBorder>

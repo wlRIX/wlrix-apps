@@ -151,6 +151,36 @@ public static class Strings
             : Catalog.Format("OperationAmountRate", doing, done, total, rate);
     }
 
+    /// <summary>A progress panel's heading: what the operation is doing.</summary>
+    public static string ProgressTitle(global::Wlrix.Files.Core.Operations.OperationKind kind) => Catalog.Get(kind switch
+    {
+        global::Wlrix.Files.Core.Operations.OperationKind.Move => "ProgressMoving",
+        global::Wlrix.Files.Core.Operations.OperationKind.Compress => "ProgressCompressing",
+        global::Wlrix.Files.Core.Operations.OperationKind.Trash => "ProgressTrashing",
+        global::Wlrix.Files.Core.Operations.OperationKind.Delete => "ProgressDeleting",
+        global::Wlrix.Files.Core.Operations.OperationKind.Link => "ProgressLinking",
+        _ => "ProgressCopying"
+    });
+
+    public static string ProgressItems(int count) => Catalog.Format("ProgressItems", count);
+    public static string ProgressTo(string what, string where) => Catalog.Format("ProgressTo", what, where);
+    public static string ProgressAmount(string done, string total) => Catalog.Format("ProgressAmount", done, total);
+
+    public static string ProgressFiles(int on, int total) =>
+        total == 1 ? Catalog.Format("ProgressFilesOne", on) : Catalog.Format("ProgressFiles", on, total);
+
+    public static string ProgressRate(string size) => Catalog.Format("ProgressRate", size);
+    public static string ProgressSpeed(string rate) => Catalog.Format("ProgressSpeed", rate);
+    public static string ProgressAverage(string rate) => Catalog.Format("ProgressAverage", rate);
+    public static string ProgressRemaining(string time) => Catalog.Format("ProgressRemaining", time);
+    public static string ProgressSeconds(long seconds) => Catalog.Format("ProgressSeconds", seconds);
+    public static string ProgressMinutes(long minutes) => Catalog.Format("ProgressMinutes", minutes);
+    public static string ProgressHours(long hours, long minutes) => Catalog.Format("ProgressHours", hours, minutes);
+    public static string ProgressPaused => Catalog.Get("ProgressPaused");
+    public static string ProgressWaiting => Catalog.Get("ProgressWaiting");
+    public static string ProgressPause => Catalog.Get("ProgressPause");
+    public static string ProgressResume => Catalog.Get("ProgressResume");
+
     /// <summary>The Kind column's text for an entry.</summary>
     public static string Kind(global::Wlrix.Files.Core.FileKind kind) => kind switch
     {

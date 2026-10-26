@@ -52,6 +52,10 @@ public sealed class MainWindowViewModel : ReactiveObject, IDisposable
     private IReadOnlyList<FileEntryViewModel> _selection = [];
     private double _sidebarWidth = 170;
     private QueuedOperation? _running;
+    private readonly OperationsMonitor _monitor;
+
+    /// <summary>Brings up the progress window, for a click on the status bar's progress.</summary>
+    public void ShowOperations() => _monitor.Show();
 
     /// <summary>The running operation's speed, for the status line.</summary>
     private readonly TransferRate _rate = new(TimeSpan.FromSeconds(3));
@@ -87,8 +91,10 @@ public sealed class MainWindowViewModel : ReactiveObject, IDisposable
         ICredentialStore credentials,
         SharedMimeDatabase mime,
         IStorageDeviceMonitor devices,
-        FilesSettings settings)
+        FilesSettings settings,
+        OperationsMonitor monitor)
     {
+        _monitor = monitor;
         _credentials = credentials;
         _mime = mime;
         _devices = devices;
@@ -1917,8 +1923,6 @@ public sealed class MainWindowViewModel : ReactiveObject, IDisposable
         return string.Concat(name.AsSpan(0, head), "\u2026", name.AsSpan(name.Length - tail));
     }
 
-    /// <summary>Cancels whatever is running.</summary>
-    public void CancelOperation() => _running?.Cancel();
 
     /// <summary>Routes a conflict from the engine out to the window's dialog.</summary>
     /// <remarks>

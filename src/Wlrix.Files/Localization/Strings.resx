@@ -388,6 +388,84 @@ If you do not trust this program, click Cancel. Continuing also marks the file e
   <data name="OperationAmountRate" xml:space="preserve">
     <value>{0}: {1} of {2} at {3}/s</value>
   </data>
+  <data name="ProgressWindowTitle" xml:space="preserve">
+    <value>File Operations</value>
+  </data>
+  <data name="ProgressCopying" xml:space="preserve">
+    <value>Copying</value>
+  </data>
+  <data name="ProgressMoving" xml:space="preserve">
+    <value>Moving</value>
+  </data>
+  <data name="ProgressCompressing" xml:space="preserve">
+    <value>Compressing</value>
+  </data>
+  <data name="ProgressTrashing" xml:space="preserve">
+    <value>Moving to Trash</value>
+  </data>
+  <data name="ProgressDeleting" xml:space="preserve">
+    <value>Deleting</value>
+  </data>
+  <data name="ProgressLinking" xml:space="preserve">
+    <value>Making References</value>
+  </data>
+  <data name="ProgressItems" xml:space="preserve">
+    <value>{0} items</value>
+  </data>
+  <data name="ProgressTo" xml:space="preserve">
+    <value>{0} to {1}</value>
+  </data>
+  <data name="ProgressAmount" xml:space="preserve">
+    <value>{0} of {1}</value>
+  </data>
+  <data name="ProgressFiles" xml:space="preserve">
+    <value>{0} of {1} files</value>
+  </data>
+  <data name="ProgressFilesOne" xml:space="preserve">
+    <value>{0} of 1 file</value>
+  </data>
+  <data name="ProgressRate" xml:space="preserve">
+    <value>{0}/s</value>
+  </data>
+  <data name="ProgressSpeed" xml:space="preserve">
+    <value>Speed {0}</value>
+  </data>
+  <data name="ProgressAverage" xml:space="preserve">
+    <value>Average Speed {0}</value>
+  </data>
+  <data name="ProgressRemaining" xml:space="preserve">
+    <value>{0} remaining</value>
+  </data>
+  <data name="ProgressSeconds" xml:space="preserve">
+    <value>{0} s</value>
+  </data>
+  <data name="ProgressMinutes" xml:space="preserve">
+    <value>{0} min</value>
+  </data>
+  <data name="ProgressHours" xml:space="preserve">
+    <value>{0} h {1} min</value>
+  </data>
+  <data name="ProgressPaused" xml:space="preserve">
+    <value>Paused</value>
+  </data>
+  <data name="ProgressWaiting" xml:space="preserve">
+    <value>Waiting</value>
+  </data>
+  <data name="ProgressPause" xml:space="preserve">
+    <value>Pause</value>
+  </data>
+  <data name="ProgressResume" xml:space="preserve">
+    <value>Resume</value>
+  </data>
+  <data name="ProgressDetails" xml:space="preserve">
+    <value>Details</value>
+  </data>
+  <data name="ProgressSource" xml:space="preserve">
+    <value>Source:</value>
+  </data>
+  <data name="ProgressDestination" xml:space="preserve">
+    <value>Destination:</value>
+  </data>
   <data name="OperationScanning" xml:space="preserve">
     <value>Examining {0} items...</value>
   </data>

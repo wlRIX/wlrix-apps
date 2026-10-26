@@ -13,8 +13,14 @@ namespace Wlrix.Files.Core.Operations;
 /// that checks <see cref="Stream.CanSeek"/> on what it is handed sees the same answer it would
 /// have for the stream underneath. The tar writer makes that check.
 /// </para>
+///
+/// <para>
+/// It is also where a pause takes hold: each read waits on the gate first, so a paused copy
+/// stops within one buffer rather than at the end of the file.
+/// </para>
 /// </remarks>
-internal sealed class ProgressReadStream(Stream inner, Action<long> report) : Stream
+internal sealed class ProgressReadStream(
+    Stream inner, Action<long>? report, PauseGate? pause, CancellationToken cancellationToken) : Stream
 {
     private long _read;
 
@@ -29,12 +35,24 @@ internal sealed class ProgressReadStream(Stream inner, Action<long> report) : St
         set => inner.Position = value;
     }
 
-    public override int Read(byte[] buffer, int offset, int count) => Counted(inner.Read(buffer, offset, count));
+    public override int Read(byte[] buffer, int offset, int count)
+    {
+        pause?.Wait(cancellationToken);
+        return Counted(inner.Read(buffer, offset, count));
+    }
 
-    public override int Read(Span<byte> buffer) => Counted(inner.Read(buffer));
+    public override int Read(Span<byte> buffer)
+    {
+        pause?.Wait(cancellationToken);
+        return Counted(inner.Read(buffer));
+    }
 
-    public override async ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default) =>
-        Counted(await inner.ReadAsync(buffer, cancellationToken).ConfigureAwait(false));
+    public override async ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken token = default)
+    {
+        if (pause is not null)
+            await pause.WaitAsync(token.CanBeCanceled ? token : cancellationToken).ConfigureAwait(false);
+        return Counted(await inner.ReadAsync(buffer, token).ConfigureAwait(false));
+    }
 
     public override Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken) =>
         ReadAsync(buffer.AsMemory(offset, count), cancellationToken).AsTask();
@@ -44,7 +62,7 @@ internal sealed class ProgressReadStream(Stream inner, Action<long> report) : St
         if (read > 0)
         {
             _read += read;
-            report(_read);
+            report?.Invoke(_read);
         }
         return read;
     }

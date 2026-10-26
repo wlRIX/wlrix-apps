@@ -35,6 +35,25 @@ public sealed class QueuedOperation
     /// <summary>Asks the operation to stop at the next item boundary.</summary>
     public void Cancel() => _cancellation.Cancel();
 
+    /// <summary>What Pause closes. The job waits on it between items and before every read.</summary>
+    internal PauseGate PauseGate { get; } = new();
+
+    /// <summary>Whether the user has paused this operation.</summary>
+    public bool IsPaused => PauseGate.IsPaused;
+
+    /// <summary>Holds the operation where it is, until <see cref="Resume"/>.</summary>
+    public void Pause()
+    {
+        PauseGate.Pause();
+        Changed?.Invoke(this);
+    }
+
+    public void Resume()
+    {
+        PauseGate.Resume();
+        Changed?.Invoke(this);
+    }
+
     /// <summary>Guards <see cref="Progress"/> against a report that outlives the operation.</summary>
     private readonly Lock _phase = new();
     private bool _completed;
@@ -150,7 +169,7 @@ public sealed class OperationQueue : IAsyncDisposable
                 var job = new OperationJob(_provider, conflicts, retries, _mounts);
                 using var linked = CancellationTokenSource.CreateLinkedTokenSource(cancellation.Token, laneToken);
                 var progress = new Progress<OperationProgress>(queued.Report);
-                var result = await job.RunAsync(queued.Operation, progress, linked.Token).ConfigureAwait(false);
+                var result = await job.RunAsync(queued.Operation, progress, linked.Token, queued.PauseGate).ConfigureAwait(false);
                 queued.Complete(result);
             }
             catch (Exception ex)

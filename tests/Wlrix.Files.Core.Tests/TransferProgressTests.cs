@@ -33,6 +33,12 @@ public class TransferProgressTests
                 _seen.Add(value);
         }
 
+        public OperationProgress Last(Func<OperationProgress, bool> which)
+        {
+            lock (_seen)
+                return _seen.Last(which);
+        }
+
         /// <summary>The reports from partway through the file: some bytes, not all of them.</summary>
         public List<OperationProgress> Partway()
         {
@@ -81,6 +87,72 @@ public class TransferProgressTests
 
         Assert.True(result.Succeeded);
         Assert.NotEmpty(reports.Partway());
+    }
+
+    [Fact]
+    public async Task APausedCopyHoldsStillAndFinishesOnceResumed()
+    {
+        var fs = SlowShare();
+        var reports = new Reports();
+        var gate = new PauseGate();
+
+        var running = new OperationJob(new SingleFileSystemProvider(fs)).RunAsync(
+            FileOperation.Copy([Location.Parse("/share/big.iso")], Location.Parse("/disk")), reports,
+            CancellationToken.None, gate);
+        while (reports.Partway().Count == 0)
+            await Task.Delay(5);
+        gate.Pause();
+        // One read may already be in flight when the gate closes; after that, nothing moves.
+        await Task.Delay(100);
+        var held = reports.Partway().Count;
+        await Task.Delay(300);
+
+        Assert.Equal(held, reports.Partway().Count);
+        Assert.False(running.IsCompleted);
+
+        gate.Resume();
+        Assert.True((await running).Succeeded);
+        Assert.Equal(Size, fs.ContentOf("/disk/big.iso")!.Length);
+    }
+
+    [Fact]
+    public async Task APausedCopyCanStillBeCanceled()
+    {
+        var fs = SlowShare();
+        var reports = new Reports();
+        var gate = new PauseGate();
+        using var cancel = new CancellationTokenSource();
+
+        var running = new OperationJob(new SingleFileSystemProvider(fs)).RunAsync(
+            FileOperation.Copy([Location.Parse("/share/big.iso")], Location.Parse("/disk")), reports,
+            cancel.Token, gate);
+        while (reports.Partway().Count == 0)
+            await Task.Delay(5);
+        gate.Pause();
+        await Task.Delay(50);
+        cancel.Cancel();
+
+        Assert.Equal(OperationPhase.Canceled, (await running).Phase);
+        // And the part file is swept, as for any canceled copy.
+        Assert.False(fs.Contains("/disk/big.iso" + OperationJob.PartSuffix));
+    }
+
+    [Fact]
+    public async Task ProgressCountsFilesAndNamesWhereTheCurrentOneIs()
+    {
+        // Slow enough per read that the throttle lets a report through for each file.
+        var fs = new FakeFileSystem { ReadDelay = TimeSpan.FromMilliseconds(120) }
+            .AddFile("/src/a.txt", "1").AddFile("/src/sub/b.txt", "22").AddDirectory("/dst");
+        var reports = new Reports();
+
+        await new OperationJob(new SingleFileSystemProvider(fs)).RunAsync(
+            FileOperation.Copy([Location.Parse("/src")], Location.Parse("/dst")), reports);
+
+        var last = reports.Last(p => p.Phase == OperationPhase.Working);
+        // Two files; the two directories are made, not copied, so they are not counted.
+        Assert.Equal(2, last.FilesTotal);
+        Assert.Equal(2, last.FilesDone);
+        Assert.NotNull(last.CurrentSource);
     }
 
     [Fact]
