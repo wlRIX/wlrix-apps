@@ -18,66 +18,66 @@
     <data name="MenuOverview" xml:space="preserve">
         <value>_Overview</value>
     </data>
-  <data name="ShowGlobalDesk" xml:space="preserve">
-    <value>Show Global Desk</value>
-  </data>
-  <data name="HideGlobalDesk" xml:space="preserve">
-    <value>Hide Global Desk</value>
-  </data>
-  <data name="ShowSnapshots" xml:space="preserve">
-    <value>Show Snapshots</value>
-  </data>
-  <data name="HideSnapshots" xml:space="preserve">
-    <value>Hide Snapshots</value>
-  </data>
+    <data name="ShowGlobalDesk" xml:space="preserve">
+        <value>Show _Global Desk</value>
+    </data>
+    <data name="HideGlobalDesk" xml:space="preserve">
+        <value>Hide _Global Desk</value>
+    </data>
+    <data name="ShowSnapshots" xml:space="preserve">
+        <value>Show _Snapshots</value>
+    </data>
+    <data name="HideSnapshots" xml:space="preserve">
+        <value>Hide _Snapshots</value>
+    </data>
     <data name="Exit" xml:space="preserve">
         <value>E_xit</value>
     </data>
     <data name="MenuDesk" xml:space="preserve">
         <value>_Desk</value>
     </data>
-  <data name="NewDesk" xml:space="preserve">
-    <value>New Desk</value>
-  </data>
-  <data name="RenameSelected" xml:space="preserve">
-    <value>Rename Selected</value>
-  </data>
-  <data name="GotoSelected" xml:space="preserve">
-    <value>Goto Selected</value>
-  </data>
-  <data name="DeleteSelected" xml:space="preserve">
-    <value>Delete Selected</value>
-  </data>
+    <data name="NewDesk" xml:space="preserve">
+        <value>_New Desk</value>
+    </data>
+    <data name="RenameSelected" xml:space="preserve">
+        <value>_Rename Selected</value>
+    </data>
+    <data name="GotoSelected" xml:space="preserve">
+        <value>_Goto Selected</value>
+    </data>
+    <data name="DeleteSelected" xml:space="preserve">
+        <value>_Delete Selected</value>
+    </data>
     <data name="MenuWindow" xml:space="preserve">
         <value>_Window</value>
     </data>
-  <data name="ListAll" xml:space="preserve">
-    <value>List All</value>
-  </data>
-  <data name="MinimizeAll" xml:space="preserve">
-    <value>Minimize All</value>
-  </data>
-  <data name="RestoreAll" xml:space="preserve">
-    <value>Restore All</value>
-  </data>
-  <data name="AddToGlobal" xml:space="preserve">
-    <value>Add to Global</value>
-  </data>
-  <data name="RemoveFromDesk" xml:space="preserve">
-    <value>Remove from Desk</value>
-  </data>
-  <data name="Minimize" xml:space="preserve">
-    <value>Minimize</value>
-  </data>
-  <data name="Restore" xml:space="preserve">
-    <value>Restore</value>
-  </data>
-  <data name="Lower" xml:space="preserve">
-    <value>Lower</value>
-  </data>
-  <data name="Raise" xml:space="preserve">
-    <value>Raise</value>
-  </data>
+    <data name="ListAll" xml:space="preserve">
+        <value>_List All</value>
+    </data>
+    <data name="MinimizeAll" xml:space="preserve">
+        <value>Mi_nimize All</value>
+    </data>
+    <data name="RestoreAll" xml:space="preserve">
+        <value>_Restore All</value>
+    </data>
+    <data name="AddToGlobal" xml:space="preserve">
+        <value>Add to _Global</value>
+    </data>
+    <data name="RemoveFromDesk" xml:space="preserve">
+        <value>Remove from _Desk</value>
+    </data>
+    <data name="Minimize" xml:space="preserve">
+        <value>_Minimize</value>
+    </data>
+    <data name="Restore" xml:space="preserve">
+        <value>R_estore</value>
+    </data>
+    <data name="Lower" xml:space="preserve">
+        <value>L_ower</value>
+    </data>
+    <data name="Raise" xml:space="preserve">
+        <value>R_aise</value>
+    </data>
   <data name="DefaultDeskName" xml:space="preserve">
     <value>Desk {0}</value>
   </data>
@@ -89,12 +89,26 @@ The compositor may not be running.</value>
     <value>The compositor rejected the request: {0}</value>
   </data>
     <data name="ShowWindowNames" xml:space="preserve">
-        <value>Show Window Names</value>
+        <value>Show _Window Names</value>
     </data>
     <data name="ShowApplicationIds" xml:space="preserve">
-        <value>Show Application IDs</value>
+        <value>Show Application _IDs</value>
     </data>
     <data name="ShowNoNames" xml:space="preserve">
-        <value>Show No Names</value>
+        <value>Show _No Names</value>
+    </data>
+    <data name="MenuHelp" xml:space="preserve">
+        <value>_Help</value>
+    </data>
+    <data name="HelpProductInfo" xml:space="preserve">
+        <value>_Product Information</value>
+    </data>
+    <data name="AboutTitle" xml:space="preserve">
+        <value>Product Information</value>
+    </data>
+    <data name="About" xml:space="preserve">
+        <value>wlRIX Desks {0}
+
+Shows every desk at a glance. Double-click a desk to switch to it, or select a window in its snapshot to work on it from the Window menu.</value>
     </data>
 </root>

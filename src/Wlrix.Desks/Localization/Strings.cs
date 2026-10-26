@@ -8,7 +8,7 @@ namespace Wlrix.Desks.Localization;
 ///
 /// The menus come through <c>{loc:Tr}</c>, which reads the same <see cref="Catalog"/>. What is
 /// here is what code has to build: the two menu items whose text depends on what they would do,
-/// the name a new desk is given, and the failure messages.
+/// the name a new desk is given, the product information, and the failure messages.
 ///
 /// Desk names and window titles are not here. A desk's name is the user's own, kept by the
 /// compositor; a window's title is the application's.
@@ -20,6 +20,10 @@ public static class Strings
         new("Wlrix.Desks.Localization.Strings", typeof(Strings).Assembly);
 
     public static string CompositorUnreachable => Catalog.Get("CompositorUnreachable");
+    public static string AboutTitle => Catalog.Get("AboutTitle");
+
+    /// <summary>The product information text, with the version.</summary>
+    public static string About(string version) => Catalog.Format("About", version);
 
     /// <summary>The Overview menu's toggle, which says what it will do rather than what is on.</summary>
     public static string GlobalDeskToggle(bool shown) =>

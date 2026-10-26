@@ -120,7 +120,7 @@
             <MenuItem Header="{loc:Tr MenuOverview}">
                 <MenuItem Header="{Binding GlobalDeskMenuHeader}" Click="OnToggleGlobalDesk" />
                 <MenuItem Header="{Binding SnapshotsMenuHeader}" Click="OnToggleSnapshots" />
-                <MenuItem Header="-" />
+                <Separator />
                 <!-- What the miniature windows say under the pointer. `ov` had one switch
                      here, noWindowName, and no way to change it once the program was up; the
                      third state and the menu are so a flag somebody passed once is not a thing
@@ -132,7 +132,7 @@
                           IsChecked="{Binding ShowsApplicationIds, Mode=OneWay}" Click="OnShowApplicationIds" />
                 <MenuItem Header="{loc:Tr ShowNoNames}" ToggleType="Radio" GroupName="WindowLabel"
                           IsChecked="{Binding ShowsNoNames, Mode=OneWay}" Click="OnShowNoNames" />
-                <MenuItem Header="-" />
+                <Separator />
                 <MenuItem Header="{loc:Tr Exit}" Click="OnExit" />
             </MenuItem>
             <MenuItem Header="{loc:Tr MenuDesk}">
@@ -150,15 +150,12 @@
                           Command="{Binding MinimizeAll}" />
                 <MenuItem Header="{loc:Tr RestoreAll}" InputGesture="Shift+Ctrl+M"
                           Command="{Binding RestoreAll}" />
-                <!-- The theme draws a separator from a MenuItem headed "-" (Avalonia's
-                     :separator pseudo-class); a bare <Separator/> gets no template here and
-                     renders as nothing at all. -->
-                <MenuItem Header="-" />
+                <Separator />
                 <MenuItem Header="{loc:Tr AddToGlobal}" InputGesture="Ctrl+G"
                           Command="{Binding AddSelectedToGlobal}" IsEnabled="{Binding HasSelectedWindow}" />
                 <MenuItem Header="{loc:Tr RemoveFromDesk}" InputGesture="Ctrl+D"
                           Command="{Binding RemoveSelectedFromDesk}" IsEnabled="{Binding HasSelectedWindow}" />
-                <MenuItem Header="-" />
+                <Separator />
                 <MenuItem Header="{loc:Tr Minimize}" InputGesture="Ctrl+E"
                           Command="{Binding MinimizeSelected}" IsEnabled="{Binding CanMinimizeSelected}" />
                 <MenuItem Header="{loc:Tr Restore}" InputGesture="Shift+Ctrl+E"
@@ -167,6 +164,9 @@
                           IsEnabled="{Binding HasSelectedWindow}" />
                 <MenuItem Header="{loc:Tr Raise}" Command="{Binding RaiseSelected}"
                           IsEnabled="{Binding HasSelectedWindow}" />
+            </MenuItem>
+            <MenuItem Header="{loc:Tr MenuHelp}" DockPanel.Dock="Right">
+                <MenuItem Header="{loc:Tr HelpProductInfo}" Click="OnProductInformation" />
             </MenuItem>
         </wlrix:MenuBar>
 

@@ -151,6 +151,13 @@ public partial class MainWindow : Window
 
     private void OnExit(object? sender, RoutedEventArgs e) => Close();
 
+    private void OnProductInformation(object? sender, RoutedEventArgs e)
+    {
+        var version = GetType().Assembly.GetName().Version?.ToString(3) ?? "0.0.0";
+        _ = MessageDialog.ShowAsync(this, DialogType.Information, Strings.About(version),
+            title: Strings.AboutTitle, buttons: DialogButtons.Ok);
+    }
+
 
     // Rename opens the editor on the selected tile; the template only realizes the field when
     // IsEditing flips, so focusing it waits for that layout pass.

@@ -18,75 +18,89 @@
         <value>デスク {0}</value>
     </data>
     <data name="HideGlobalDesk" xml:space="preserve">
-        <value>グローバル・デスクを隠す</value>
+        <value>グローバル・デスクを隠す (_G)</value>
     </data>
     <data name="HideSnapshots" xml:space="preserve">
-        <value>スナップショットを隠す</value>
+        <value>スナップショットを隠す (_S)</value>
     </data>
     <data name="Exit" xml:space="preserve">
-        <value>終了</value>
+        <value>終了 (_X)</value>
     </data>
     <data name="NewDesk" xml:space="preserve">
-        <value>新規デスク</value>
+        <value>新規デスク (_N)</value>
     </data>
     <data name="RenameSelected" xml:space="preserve">
-        <value>選択したデスクを名前変更</value>
+        <value>選択したデスクを名前変更 (_R)</value>
     </data>
     <data name="RemoveFromDesk" xml:space="preserve">
-        <value>選択したデスクの削除</value>
+        <value>デスクから削除 (_D)</value>
     </data>
     <data name="Lower" xml:space="preserve">
-        <value>奥へ</value>
+        <value>奥へ (_O)</value>
     </data>
     <data name="Raise" xml:space="preserve">
-        <value>手前へ</value>
+        <value>手前へ (_A)</value>
     </data>
     <data name="MinimizeAll" xml:space="preserve">
-        <value>すべてを最小化</value>
+        <value>すべてを最小化 (_N)</value>
     </data>
     <data name="Minimize" xml:space="preserve">
-        <value>最小化</value>
+        <value>最小化 (_M)</value>
     </data>
     <data name="MenuWindow" xml:space="preserve">
-        <value>ウィンドウ</value>
+        <value>ウィンドウ (_W)</value>
     </data>
     <data name="MenuOverview" xml:space="preserve">
-        <value>オーバービュー</value>
+        <value>オーバービュー (_O)</value>
     </data>
     <data name="MenuDesk" xml:space="preserve">
-        <value>デスク</value>
+        <value>デスク (_D)</value>
     </data>
     <data name="ListAll" xml:space="preserve">
-        <value>すべてをリスト...</value>
+        <value>すべてをリスト... (_L)</value>
     </data>
     <data name="Restore" xml:space="preserve">
-        <value>復元</value>
+        <value>復元 (_E)</value>
     </data>
     <data name="RestoreAll" xml:space="preserve">
-        <value>すべてを復元</value>
+        <value>すべてを復元 (_R)</value>
     </data>
     <data name="AddToGlobal" xml:space="preserve">
-        <value>グローバルに追加</value>
+        <value>グローバルに追加 (_G)</value>
     </data>
     <data name="DeleteSelected" xml:space="preserve">
-        <value>選択したデスクの削除</value>
+        <value>選択したデスクの削除 (_D)</value>
     </data>
     <data name="GotoSelected" xml:space="preserve">
-        <value>選択したデスクへ移動</value>
+        <value>選択したデスクへ移動 (_G)</value>
     </data>
     <data name="ShowGlobalDesk" xml:space="preserve">
-        <value>グローバル・デスクを表示</value>
+        <value>グローバル・デスクを表示 (_G)</value>
     </data>
     <data name="ShowSnapshots" xml:space="preserve">
-        <value>スナップショットを表示する</value>
+        <value>スナップショットを表示する (_S)</value>
     </data>
     <data name="ShowWindowNames" xml:space="preserve">
-        <value>ウィンドウ名を表示する</value>
+        <value>ウィンドウ名を表示する (_W)</value>
     </data>
     <data name="ShowApplicationIds" xml:space="preserve">
-        <value>アプリケーション ID を表示する</value>
+        <value>アプリケーション _ID を表示する</value>
     </data>
     <data name="ShowNoNames" xml:space="preserve">
-        <value>名前を表示しない</value>
+        <value>名前を表示しない (_N)</value>
+    </data>
+    <data name="MenuHelp" xml:space="preserve">
+        <value>ヘルプ (_H)</value>
+    </data>
+    <data name="HelpProductInfo" xml:space="preserve">
+        <value>製品情報 (_P)</value>
+    </data>
+    <data name="AboutTitle" xml:space="preserve">
+        <value>製品情報</value>
+    </data>
+    <data name="About" xml:space="preserve">
+        <value>wlRIX デスク {0}
+
+すべてのデスクを一覧表示します。デスクをダブルクリックするとそのデスクに切り替わり、スナップショット内のウィンドウを選択すると「ウィンドウ」メニューから操作できます。</value>
     </data>
 </root>
