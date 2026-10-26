@@ -37,80 +37,93 @@
     </Design.DataContext>
 
     <Window.Styles>
-        <!-- With the snapshot hidden the tile is a name and a lamp, and the padding the
-             preview needed is just empty face. The man page calls what is left a "small
-             space-saving button", and reclaiming the padding is what makes it one; the
-             collapsed preview already takes its own height and the StackPanel's spacing with
-             it. -->
-        <Style Selector="wlrix|BevelBorder.compact">
-            <Setter Property="Padding" Value="4,1" />
-            <Setter Property="Margin" Value="2" />
+        <!-- The desk list's items are only a place for a tile to sit: the tile draws its own
+             selection, so the theme's highlight behind the item is turned off, and with it the
+             padding and the selected-text color meant to sit on that highlight. -->
+        <Style Selector="ListBox#DeskList ListBoxItem">
+            <Setter Property="Padding" Value="0" />
+        </Style>
+        <Style Selector="ListBox#DeskList ListBoxItem:selected /template/ Border#Root">
+            <Setter Property="Background" Value="Transparent" />
+        </Style>
+        <Style Selector="ListBoxItem:selected TextBlock.name">
+            <Setter Property="Foreground" Value="{DynamicResource WlrixForeground}" />
+        </Style>
+
+        <!-- A tile shows its state in the two pixels inside its outline, as IRIX's overview did
+             and with the colors its icons used: face at rest, white under the pointer, lamp
+             yellow selected. Measured off an IRIX screen, a drop target turns the same ring
+             royal blue (WlrixIconTintDrop), for when windows can be dragged between desks.
+             Selection comes second so it wins under the pointer. -->
+        <Style Selector="Border.ring">
+            <Setter Property="BorderBrush" Value="{DynamicResource WlrixFace}" />
+        </Style>
+        <Style Selector="Border.tile:pointerover > Border.ring">
+            <Setter Property="BorderBrush" Value="{DynamicResource WlrixIconTintHover}" />
+        </Style>
+        <Style Selector="ListBoxItem:selected Border.ring">
+            <Setter Property="BorderBrush" Value="{DynamicResource WlrixIconTintSelected}" />
         </Style>
     </Window.Styles>
 
     <Window.Resources>
-        <!-- A desk tile: an IRIX LED-button face (lamp lit when the desk is active) above an
-             opaque geometry preview of the desk's windows. Shared by the pinned Global tile
+        <!-- A desk tile: a flat face with the desk's lamp (lit when it is the active desk) and
+             name, over a picture of where its windows are. IRIX drew these as surfaces rather
+             than buttons, which is why there is no bevel here. Shared by the pinned Global tile
              and the scrollable desk list. -->
         <DataTemplate x:Key="DeskTile" x:DataType="vm:DeskViewModel">
-            <wlrix:BevelBorder Bevel="Raised" BevelThickness="2" OuterLineThickness="1" Margin="3"
-                             Classes.compact="{Binding !$parent[Window].((vm:MainWindowViewModel)DataContext).ShowSnapshots}"
-                             Background="{DynamicResource WlrixFace}"
-                             LightBrush="{DynamicResource WlrixTopShadow}"
-                             DarkBrush="{DynamicResource WlrixBottomShadow}"
-                             OuterLineBrush="{DynamicResource WlrixOuterLine}"
-                             Padding="6">
-                <StackPanel Spacing="6">
-                    <!-- Header: LED lamp + desk name -->
-                    <DockPanel>
-                        <wlrix:BevelBorder Bevel="Sunken" BevelThickness="1"
-                                         OuterLineThickness="1" Width="14" Height="14"
-                                         Margin="0,0,8,0" VerticalAlignment="Center"
-                                         Background="{DynamicResource WlrixOuterLine}"
-                                         LightBrush="{DynamicResource WlrixTopShadow}"
-                                         DarkBrush="{DynamicResource WlrixBottomShadow}"
-                                         OuterLineBrush="{DynamicResource WlrixOuterLine}">
-                            <!-- Lit (accent) when active; hidden otherwise so the dark well shows. -->
-                            <Border Margin="1"
-                                    Background="{DynamicResource WlrixAccent}"
-                                    IsVisible="{Binding IsActive}" />
-                        </wlrix:BevelBorder>
-                        <!-- The name is renamed in place (IRIX had no rename prompt): the label
-                             gives way to a text field for the length of the edit. -->
-                        <Panel MinHeight="20">
-                            <TextBlock Text="{Binding Name}" FontWeight="Bold"
-                                       VerticalAlignment="Center"
-                                       IsVisible="{Binding !IsEditing}" />
-                            <TextBox Name="NameEditor" Text="{Binding EditName}"
-                                     FontWeight="Bold" Padding="2,0" VerticalAlignment="Center"
-                                     IsVisible="{Binding IsEditing}"
-                                     KeyDown="OnRenameKeyDown"
-                                     LostFocus="OnRenameLostFocus" />
-                        </Panel>
-                    </DockPanel>
+            <Border Classes="tile" Margin="2" BorderThickness="1"
+                    BorderBrush="{DynamicResource WlrixOuterLine}"
+                    Background="{DynamicResource WlrixFace}">
+                <Border Classes="ring" BorderThickness="2">
+                    <StackPanel>
+                        <!-- Header: lamp + desk name -->
+                        <DockPanel Margin="4,3">
+                            <wlrix:BevelBorder Bevel="Sunken" BevelThickness="1"
+                                             OuterLineThickness="1" Width="14" Height="14"
+                                             Margin="0,0,8,0" VerticalAlignment="Center"
+                                             Background="{DynamicResource WlrixFace}"
+                                             LightBrush="{DynamicResource WlrixTopShadow}"
+                                             DarkBrush="{DynamicResource WlrixBottomShadow}"
+                                             OuterLineBrush="{DynamicResource WlrixOuterLine}">
+                                <!-- Lit when active; hidden otherwise so the unlit face shows. -->
+                                <Border Margin="1"
+                                        Background="{DynamicResource WlrixIndicatorLight}"
+                                        IsVisible="{Binding IsActive}" />
+                            </wlrix:BevelBorder>
+                            <!-- The name is renamed in place (IRIX had no rename prompt): the label
+                                 gives way to a text field for the length of the edit. -->
+                            <Panel MinHeight="20">
+                                <TextBlock Classes="name" Text="{Binding Name}" FontWeight="Bold"
+                                           VerticalAlignment="Center"
+                                           IsVisible="{Binding !IsEditing}" />
+                                <TextBox Name="NameEditor" Text="{Binding EditName}"
+                                         FontWeight="Bold" Padding="2,0" VerticalAlignment="Center"
+                                         IsVisible="{Binding IsEditing}"
+                                         KeyDown="OnRenameKeyDown"
+                                         LostFocus="OnRenameLostFocus" />
+                            </Panel>
+                        </DockPanel>
 
-                    <!-- Window geometry preview -->
-                    <wlrix:BevelBorder Bevel="Sunken" BevelThickness="2" OuterLineThickness="1"
-                                     Background="{DynamicResource WlrixViewBackground}"
-                                     LightBrush="{DynamicResource WlrixTopShadow}"
-                                     DarkBrush="{DynamicResource WlrixBottomShadow}"
-                                     OuterLineBrush="{DynamicResource WlrixOuterLine}"
-                                     IsVisible="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).ShowSnapshots}">
-                        <!-- The box carries the screen layout's aspect ratio, so it fits the
-                             sunken well exactly rather than letterboxing inside a fixed box. -->
-                        <controls:DeskPreview Width="{Binding PreviewWidth}"
-                                              Height="{Binding PreviewHeight}"
-                                              Windows="{Binding PreviewWindows}"
-                                              WindowBrush="{DynamicResource WlrixFace}"
-                                              WindowBorderBrush="{DynamicResource WlrixForeground}"
-                                              HoverBorderBrush="White"
-                                              SelectionBorderBrush="{DynamicResource WlrixSelectFill}"
-                                              HoveredWindowId="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).HoveredWindowId, Mode=TwoWay}"
-                                              SelectedWindowId="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).SelectedWindowId, Mode=TwoWay}"
-                                              LabelMode="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).WindowLabel}" />
-                    </wlrix:BevelBorder>
-                </StackPanel>
-            </wlrix:BevelBorder>
+                        <!-- Window geometry preview, running out to the ring on three sides.
+                             The box carries the screen layout's aspect ratio, so the tile is the
+                             shape of the screen rather than letterboxing inside a fixed box. -->
+                        <Border Background="{DynamicResource WlrixViewBackground}"
+                                IsVisible="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).ShowSnapshots}">
+                            <controls:DeskPreview Width="{Binding PreviewWidth}"
+                                                  Height="{Binding PreviewHeight}"
+                                                  Windows="{Binding PreviewWindows}"
+                                                  WindowBrush="{DynamicResource WlrixFace}"
+                                                  WindowBorderBrush="{DynamicResource WlrixForeground}"
+                                                  HoverBorderBrush="White"
+                                                  SelectionBorderBrush="{DynamicResource WlrixSelectFill}"
+                                                  HoveredWindowId="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).HoveredWindowId, Mode=TwoWay}"
+                                                  SelectedWindowId="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).SelectedWindowId, Mode=TwoWay}"
+                                                  LabelMode="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).WindowLabel}" />
+                        </Border>
+                    </StackPanel>
+                </Border>
+            </Border>
         </DataTemplate>
     </Window.Resources>
 
