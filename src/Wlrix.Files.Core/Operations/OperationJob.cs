@@ -47,6 +47,14 @@ public sealed class OperationJob
     private ConflictDecision? _conflictForAll;
     private bool _skipAllErrors;
 
+    /// <summary>Told how many bytes of the current item have been read, while one is copying.</summary>
+    /// <remarks>
+    /// A field rather than a parameter threaded through every step between the loop and the
+    /// read, because only the loop knows what the count is out of and only the read knows the
+    /// count. A job runs one operation, one item at a time, so there is only ever one.
+    /// </remarks>
+    private Action<long>? _itemBytes;
+
     public OperationJob(
         IFileSystemProvider provider,
         IConflictResolver? conflicts = null,
@@ -100,8 +108,22 @@ public sealed class OperationJob
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                var outcome = await ExecuteWithRetryAsync(operation, item, errors, cancellationToken)
-                    .ConfigureAwait(false);
+                // Named as it starts rather than once it is done, so the status line says what
+                // is being copied now and not what finished a moment ago.
+                var before = bytesDone;
+                var finished = done + skipped;
+                throttle.Report(Working(plan, finished, before, item));
+                _itemBytes = read => throttle.Report(Working(plan, finished, before + Math.Min(read, item.Size), item));
+                ItemOutcome outcome;
+                try
+                {
+                    outcome = await ExecuteWithRetryAsync(operation, item, errors, cancellationToken)
+                        .ConfigureAwait(false);
+                }
+                finally
+                {
+                    _itemBytes = null;
+                }
 
                 switch (outcome)
                 {
@@ -117,10 +139,7 @@ public sealed class OperationJob
                         return Finish(OperationPhase.Failed, done, skipped, errors, throttle);
                 }
 
-                throttle.Report(new OperationProgress(
-                    OperationPhase.Working,
-                    plan.TotalBytes > 0 ? (double)bytesDone / plan.TotalBytes : (double)(done + skipped) / Math.Max(1, plan.Items.Count),
-                    done + skipped, plan.Items.Count, bytesDone, plan.TotalBytes, item.Source.Name));
+                throttle.Report(Working(plan, done + skipped, bytesDone, item));
             }
 
             // A move deletes its sources only after everything has been copied, and only if
@@ -141,6 +160,17 @@ public sealed class OperationJob
             return Finish(OperationPhase.Failed, done, skipped, errors, throttle);
         }
     }
+
+    /// <summary>Progress partway through a plan.</summary>
+    /// <remarks>
+    /// By bytes wherever there are any, because that is what takes the time: a thousand empty
+    /// files are over in a moment and one disk image is not. A plan of nothing but directories
+    /// and empty files has no bytes to divide by and counts items instead.
+    /// </remarks>
+    private static OperationProgress Working(TransferPlan plan, int finished, long bytes, PlannedItem current) =>
+        new(OperationPhase.Working,
+            plan.TotalBytes > 0 ? (double)bytes / plan.TotalBytes : (double)finished / Math.Max(1, plan.Items.Count),
+            finished, plan.Items.Count, bytes, plan.TotalBytes, current.Source.Name);
 
     private static OperationResult Finish(
         OperationPhase phase, int done, int skipped,
@@ -577,7 +607,7 @@ public sealed class OperationJob
 
         try
         {
-            await using (var input = await sourceFs.OpenReadAsync(item.Source, cancellationToken).ConfigureAwait(false))
+            await using (var input = Counted(await sourceFs.OpenReadAsync(item.Source, cancellationToken).ConfigureAwait(false)))
             await using (var output = await targetFs.OpenWriteAsync(part, WriteMode.Overwrite, item.Size, cancellationToken).ConfigureAwait(false))
             {
                 await input.CopyToAsync(output, BufferSize, cancellationToken).ConfigureAwait(false);
@@ -678,14 +708,22 @@ public sealed class OperationJob
                         var stat = await sourceFs.StatAsync(item.Source, cancellationToken).ConfigureAwait(false);
                         item = item with { UnixMode = stat.UnixMode };
                     }
-                    await writer.WriteAsync(sourceFs, item, name, cancellationToken).ConfigureAwait(false);
+                    var before = bytesDone;
+                    var current = item;
+                    throttle.Report(Working(plan, done, before, current));
+                    _itemBytes = read => throttle.Report(Working(plan, done, before + Math.Min(read, current.Size), current));
+                    try
+                    {
+                        await writer.WriteAsync(sourceFs, item, name, Counted, cancellationToken).ConfigureAwait(false);
+                    }
+                    finally
+                    {
+                        _itemBytes = null;
+                    }
 
                     done++;
                     bytesDone += item.Size;
-                    throttle.Report(new OperationProgress(
-                        OperationPhase.Working,
-                        plan.TotalBytes > 0 ? (double)bytesDone / plan.TotalBytes : (double)done / Math.Max(1, plan.Items.Count),
-                        done, plan.Items.Count, bytesDone, plan.TotalBytes, item.Source.Name));
+                    throttle.Report(Working(plan, done, bytesDone, item));
                 }
             }
 
@@ -734,6 +772,10 @@ public sealed class OperationJob
         var fs = await _provider.GetAsync(source, cancellationToken).ConfigureAwait(false);
         await fs.RenameAsync(source, target, cancellationToken).ConfigureAwait(false);
     }
+
+    /// <summary>The source stream, counting what is read from it when anything is listening.</summary>
+    private Stream Counted(Stream input) =>
+        _itemBytes is { } report ? new ProgressReadStream(input, report) : input;
 
     private static async Task TryDeleteAsync(IFileSystem fs, Location location)
     {

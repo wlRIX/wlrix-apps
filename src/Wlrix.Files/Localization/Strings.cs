@@ -135,6 +135,22 @@ public static class Strings
         _ => Catalog.Get("StatusLoading")
     };
 
+    /// <summary>A running copy, move or compress, with how far it has got and how fast.</summary>
+    /// <param name="rate">Already formatted, or null in the first second, before there is one.</param>
+    public static string OperationTransfer(
+        global::Wlrix.Files.Core.Operations.OperationKind kind, string name, string done, string total, string? rate)
+    {
+        var doing = Catalog.Format(kind switch
+        {
+            global::Wlrix.Files.Core.Operations.OperationKind.Move => "OperationMovingName",
+            global::Wlrix.Files.Core.Operations.OperationKind.Compress => "OperationCompressingName",
+            _ => "OperationCopyingName"
+        }, name);
+        return rate is null
+            ? Catalog.Format("OperationAmount", doing, done, total)
+            : Catalog.Format("OperationAmountRate", doing, done, total, rate);
+    }
+
     /// <summary>The Kind column's text for an entry.</summary>
     public static string Kind(global::Wlrix.Files.Core.FileKind kind) => kind switch
     {

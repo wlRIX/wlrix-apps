@@ -373,6 +373,21 @@
   <data name="OperationTrashing" xml:space="preserve">
     <value>ごみ箱へ移動しています...</value>
   </data>
+  <data name="OperationCopyingName" xml:space="preserve">
+    <value>{0} をコピー中</value>
+  </data>
+  <data name="OperationMovingName" xml:space="preserve">
+    <value>{0} を移動中</value>
+  </data>
+  <data name="OperationCompressingName" xml:space="preserve">
+    <value>{0} を圧縮中</value>
+  </data>
+  <data name="OperationAmount" xml:space="preserve">
+    <value>{0}: {1} / {2}</value>
+  </data>
+  <data name="OperationAmountRate" xml:space="preserve">
+    <value>{0}: {1} / {2} ({3}/秒)</value>
+  </data>
   <data name="OperationScanning" xml:space="preserve">
     <value>{0} 個の項目を調べています...</value>
   </data>

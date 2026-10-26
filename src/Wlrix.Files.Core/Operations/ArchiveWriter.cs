@@ -69,7 +69,12 @@ internal abstract class ArchiveWriter : IAsyncDisposable
     };
 
     /// <summary>Adds one item under <paramref name="name"/>, a relative path with forward slashes.</summary>
-    public abstract Task WriteAsync(IFileSystem fs, PlannedItem item, string name, CancellationToken cancellationToken);
+    /// <param name="source">
+    /// Applied to the file's stream before anything reads it, which is how the job counts the
+    /// bytes going in while one large file is compressed.
+    /// </param>
+    public abstract Task WriteAsync(IFileSystem fs, PlannedItem item, string name, Func<Stream, Stream> source,
+        CancellationToken cancellationToken);
 
     public abstract ValueTask DisposeAsync();
 
@@ -100,7 +105,8 @@ internal abstract class ArchiveWriter : IAsyncDisposable
             _tar = new TarWriter(_gzip, TarEntryFormat.Pax, leaveOpen: true);
         }
 
-        public override async Task WriteAsync(IFileSystem fs, PlannedItem item, string name, CancellationToken cancellationToken)
+        public override async Task WriteAsync(IFileSystem fs, PlannedItem item, string name, Func<Stream, Stream> source,
+            CancellationToken cancellationToken)
         {
             if (item.IsDirectory)
             {
@@ -116,7 +122,7 @@ internal abstract class ArchiveWriter : IAsyncDisposable
                 return;
             }
 
-            await using var input = await fs.OpenReadAsync(item.Source, cancellationToken).ConfigureAwait(false);
+            await using var input = source(await fs.OpenReadAsync(item.Source, cancellationToken).ConfigureAwait(false));
             var file = Entry(TarEntryType.RegularFile, name, item);
             // A tar header carries the size ahead of the data, so with a compressed output
             // that cannot seek back to fix it, the data has to say its length up front. A local
@@ -152,7 +158,8 @@ internal abstract class ArchiveWriter : IAsyncDisposable
 
         private readonly ZipArchive _zip = new(output, ZipArchiveMode.Create, leaveOpen: true);
 
-        public override async Task WriteAsync(IFileSystem fs, PlannedItem item, string name, CancellationToken cancellationToken)
+        public override async Task WriteAsync(IFileSystem fs, PlannedItem item, string name, Func<Stream, Stream> source,
+            CancellationToken cancellationToken)
         {
             if (item.IsDirectory)
             {
@@ -171,7 +178,7 @@ internal abstract class ArchiveWriter : IAsyncDisposable
             }
 
             var file = Entry(name, item, TypeFile, CompressionLevel.Optimal);
-            await using var input = await fs.OpenReadAsync(item.Source, cancellationToken).ConfigureAwait(false);
+            await using var input = source(await fs.OpenReadAsync(item.Source, cancellationToken).ConfigureAwait(false));
             await using var member = await file.OpenAsync(cancellationToken).ConfigureAwait(false);
             await input.CopyToAsync(member, cancellationToken).ConfigureAwait(false);
         }

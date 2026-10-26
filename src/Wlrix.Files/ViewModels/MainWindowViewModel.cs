@@ -52,6 +52,18 @@ public sealed class MainWindowViewModel : ReactiveObject, IDisposable
     private IReadOnlyList<FileEntryViewModel> _selection = [];
     private double _sidebarWidth = 170;
     private QueuedOperation? _running;
+
+    /// <summary>The running operation's speed, for the status line.</summary>
+    private readonly TransferRate _rate = new(TimeSpan.FromSeconds(3));
+    private readonly Stopwatch _operationClock = new();
+
+    /// <summary>Redraws the status line once a second while an operation runs.</summary>
+    /// <remarks>
+    /// Progress reports only arrive when bytes do, so without this a copy whose share had gone
+    /// quiet would keep showing the last rate it had, looking busy while doing nothing. Each
+    /// tick samples the rate again, and a stalled copy is seen falling to 0 B/s.
+    /// </remarks>
+    private DispatcherTimer? _operationTick;
     private string? _operationStatus;
     private double? _operationFraction;
 
@@ -1809,6 +1821,11 @@ public sealed class MainWindowViewModel : ReactiveObject, IDisposable
         var queued = Operations.Enqueue(operation, conflicts ?? new ViewConflictResolver(this));
         _running = queued;
         queued.Changed += OnOperationChanged;
+        _rate.Reset();
+        _operationClock.Restart();
+        _operationTick ??= new DispatcherTimer(TimeSpan.FromSeconds(1), DispatcherPriority.Background,
+            (_, _) => RefreshOperation());
+        _operationTick.Start();
         RefreshOperation();
 
         var started = Stopwatch.GetTimestamp();
@@ -1830,6 +1847,7 @@ public sealed class MainWindowViewModel : ReactiveObject, IDisposable
         {
             queued.Changed -= OnOperationChanged;
             _running = null;
+            _operationTick?.Stop();
             RefreshOperation();
             // A nudge, not a reload. The directory is watched, so the change is coming
             // anyway; this only stops a share waiting out its poll interval before showing
@@ -1855,10 +1873,48 @@ public sealed class MainWindowViewModel : ReactiveObject, IDisposable
             var progress = queued.Progress;
             OperationStatus = progress.Phase == OperationPhase.Scanning
                 ? Strings.OperationScanning(progress.ItemsDone)
-                : Strings.Operation(queued.Operation.Kind);
+                : TransferText(queued.Operation.Kind, progress) ?? Strings.Operation(queued.Operation.Kind);
             OperationFraction = progress.Fraction;
         }
         this.RaisePropertyChanged(nameof(HasOperation));
+    }
+
+    /// <summary>
+    /// What a copy, move or compress is doing now: the file, how far through the whole
+    /// operation it is, and how fast.
+    /// </summary>
+    /// <remarks>
+    /// The amount is the operation's, not the file's: across a thousand small files it still
+    /// counts up steadily, and for one large file the two are the same thing. Null for the
+    /// operations that move no bytes, which keep their plain "Deleting..." line.
+    /// </remarks>
+    private string? TransferText(OperationKind kind, OperationProgress progress)
+    {
+        if (kind is not (OperationKind.Copy or OperationKind.Move or OperationKind.Compress)
+            || progress is not { Phase: OperationPhase.Working, BytesTotal: > 0, Current: { } current })
+            return null;
+
+        _rate.Add(_operationClock.Elapsed, progress.BytesDone);
+        var rate = _rate.BytesPerSecond is { } perSecond ? FileSizes.Binary((long)perSecond) : null;
+        return Strings.OperationTransfer(kind, Shortened(current),
+            FileSizes.Binary(progress.BytesDone), FileSizes.Binary(progress.BytesTotal), rate);
+    }
+
+    /// <summary>How many characters of a file name the status line shows.</summary>
+    private const int StatusNameLength = 40;
+
+    /// <summary>A long name with its middle taken out, keeping both ends.</summary>
+    /// <remarks>
+    /// Both ends because both say something: the start is what the file is, and the end is
+    /// its version and extension, which is often all that tells two downloads apart.
+    /// </remarks>
+    internal static string Shortened(string name)
+    {
+        if (name.Length <= StatusNameLength)
+            return name;
+        var tail = (StatusNameLength - 1) / 2;
+        var head = StatusNameLength - 1 - tail;
+        return string.Concat(name.AsSpan(0, head), "\u2026", name.AsSpan(name.Length - tail));
     }
 
     /// <summary>Cancels whatever is running.</summary>

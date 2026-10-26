@@ -62,6 +62,13 @@ public sealed class FakeFileSystem : IFileSystem
     /// <summary>An artificial delay on every operation, for exercising cancellation.</summary>
     public TimeSpan Latency { get; set; } = TimeSpan.Zero;
 
+    /// <summary>A pause before every read from an open file: a slow share, as a copy sees one.</summary>
+    /// <remarks>
+    /// Separate from <see cref="Latency"/>, which is paid once per call. Progress through a large
+    /// file only shows when the bytes themselves arrive slowly.
+    /// </remarks>
+    public TimeSpan ReadDelay { get; set; } = TimeSpan.Zero;
+
     /// <summary>How many operations have been performed. Cheap assertion of "did it retry".</summary>
     public int OperationCount { get; private set; }
 
@@ -237,7 +244,45 @@ public sealed class FakeFileSystem : IFileSystem
         var node = Require(location);
         if (node.IsDirectory)
             throw new FileOperationException(FileErrorKind.IsADirectory, location);
-        return new MemoryStream(node.Content, writable: false);
+        var content = new MemoryStream(node.Content, writable: false);
+        return ReadDelay > TimeSpan.Zero ? new SlowReadStream(content, ReadDelay) : content;
+    }
+
+    /// <summary>Waits before every read; seekable and sized like the stream it wraps.</summary>
+    private sealed class SlowReadStream(Stream inner, TimeSpan delay) : Stream
+    {
+        public override bool CanRead => true;
+        public override bool CanSeek => inner.CanSeek;
+        public override bool CanWrite => false;
+        public override long Length => inner.Length;
+
+        public override long Position
+        {
+            get => inner.Position;
+            set => inner.Position = value;
+        }
+
+        public override int Read(byte[] buffer, int offset, int count)
+        {
+            Thread.Sleep(delay);
+            return inner.Read(buffer, offset, count);
+        }
+
+        public override async ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default)
+        {
+            await Task.Delay(delay, cancellationToken).ConfigureAwait(false);
+            return await inner.ReadAsync(buffer, cancellationToken).ConfigureAwait(false);
+        }
+
+        public override Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken) =>
+            ReadAsync(buffer.AsMemory(offset, count), cancellationToken).AsTask();
+
+        public override long Seek(long offset, SeekOrigin origin) => inner.Seek(offset, origin);
+        public override void Flush()
+        {
+        }
+        public override void SetLength(long value) => throw new NotSupportedException();
+        public override void Write(byte[] buffer, int offset, int count) => throw new NotSupportedException();
     }
 
     /// <inheritdoc/>

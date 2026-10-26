@@ -373,6 +373,21 @@ If you do not trust this program, click Cancel. Continuing also marks the file e
   <data name="OperationTrashing" xml:space="preserve">
     <value>Moving to trash...</value>
   </data>
+  <data name="OperationCopyingName" xml:space="preserve">
+    <value>Copying {0}</value>
+  </data>
+  <data name="OperationMovingName" xml:space="preserve">
+    <value>Moving {0}</value>
+  </data>
+  <data name="OperationCompressingName" xml:space="preserve">
+    <value>Compressing {0}</value>
+  </data>
+  <data name="OperationAmount" xml:space="preserve">
+    <value>{0}: {1} of {2}</value>
+  </data>
+  <data name="OperationAmountRate" xml:space="preserve">
+    <value>{0}: {1} of {2} at {3}/s</value>
+  </data>
   <data name="OperationScanning" xml:space="preserve">
     <value>Examining {0} items...</value>
   </data>

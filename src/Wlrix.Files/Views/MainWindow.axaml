@@ -263,9 +263,16 @@
                              Value="{Binding OperationFraction, FallbackValue=0}"
                              IsIndeterminate="{Binding !OperationFraction.HasValue}"
                              IsVisible="{Binding HasOperation}" />
+                <!-- Capped so a running copy cannot push the item count off the bar. A long file
+                     name is already shortened in the middle by the view model, so the amount and
+                     rate at the end, the part that says it is still going, stay on screen;
+                     the trimming here is only a backstop. The whole line is in the tooltip. -->
                 <TextBlock DockPanel.Dock="Right"
                            Text="{Binding OperationStatus}"
+                           ToolTip.Tip="{Binding OperationStatus}"
                            IsVisible="{Binding HasOperation}"
+                           MaxWidth="460"
+                           TextTrimming="CharacterEllipsis"
                            VerticalAlignment="Center" />
                 <TextBlock Text="{Binding Pane.Status}" VerticalAlignment="Center" />
             </DockPanel>
