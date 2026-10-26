@@ -23,5 +23,11 @@ public partial class MainWindow : Window
     private void OnReset(object? sender, RoutedEventArgs e) =>
         (DataContext as WindowSettingsViewModel)?.Reset();
 
+    private async void OnSetHomeSession(object? sender, RoutedEventArgs e)
+    {
+        if (DataContext is WindowSettingsViewModel vm)
+            await vm.SetHomeSessionAsync();
+    }
+
     private void InitializeComponent() => AvaloniaXamlLoader.Load(this);
 }

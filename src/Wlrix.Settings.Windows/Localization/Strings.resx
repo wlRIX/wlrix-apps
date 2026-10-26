@@ -55,12 +55,33 @@
     <value>Help</value>
   </data>
   <data name="HelpText" xml:space="preserve">
-    <value>Choose how a window comes to have the keyboard, whether clicking one raises it, and whether moving and resizing show the window's contents or an outline. Changes apply as you make them, to windows already open as well as new ones. Reset restores the settings from when this window opened.</value>
+    <value>Choose how a window comes to have the keyboard, whether clicking one raises it, and whether moving and resizing show the window's contents or an outline. Save Windows &amp; Desks chooses what opens at login: the windows open when you log out, or the home session you set with Set Home Session. Changes apply as you make them, to windows already open as well as new ones. Reset restores the settings from when this window opened.</value>
   </data>
   <data name="NoSettingsService" xml:space="preserve">
     <value>No settings service: {0}</value>
   </data>
   <data name="FileInvalid" xml:space="preserve">
     <value>{0} is not valid; showing the last good values.</value>
+  </data>
+  <data name="SaveSession" xml:space="preserve">
+    <value>Save Windows &amp; Desks:</value>
+  </data>
+  <data name="SaveContinuously" xml:space="preserve">
+    <value>Continuously</value>
+  </data>
+  <data name="SaveExplicitly" xml:space="preserve">
+    <value>Explicitly</value>
+  </data>
+  <data name="SetHomeSession" xml:space="preserve">
+    <value>Set Home Session</value>
+  </data>
+  <data name="SessionContinuously" xml:space="preserve">
+    <value>Windows onscreen at logout will be reopened at your next login.</value>
+  </data>
+  <data name="SessionExplicitly" xml:space="preserve">
+    <value>Windows you specify will be reopened at your next login.</value>
+  </data>
+  <data name="HomeSessionSet" xml:space="preserve">
+    <value>Home session set: {0} windows.</value>
   </data>
 </root>

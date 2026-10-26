@@ -197,6 +197,17 @@ public sealed class SettingsClient : IDisposable
     public async Task<ApplyResult> ResetAsync(params string[] keys) =>
         new(await _proxy.ResetAsync(keys).ConfigureAwait(false));
 
+    /// <summary>
+    /// Set Home Session: have the compositor save the windows open now as the ones every login
+    /// reopens, and wait for it to. Returns how many windows were saved.
+    ///
+    /// An action, not a setting: it is the compositor that writes the file, because it is the
+    /// only process that knows where the windows are. Throws when the compositor is not running
+    /// or did not answer in time, with a message that says which.
+    /// </summary>
+    public async Task<uint> SaveHomeSessionAsync() =>
+        await _proxy.SaveHomeSessionAsync().ConfigureAwait(false);
+
     /// <summary>Which config files will not currently parse, and why.</summary>
     public async Task<IReadOnlyDictionary<string, string>> InvalidAsync() =>
         await _proxy.GetInvalidAsync().ConfigureAwait(false);

@@ -42,6 +42,9 @@
       <arg name="namespace" type="s" direction="in" />
       <arg type="a{ss}" direction="out" />
     </method>
+    <method name="SaveHomeSession">
+      <arg type="u" direction="out" />
+    </method>
     <method name="Reload">
       <arg type="a{ss}" direction="out" />
     </method>

@@ -7,8 +7,8 @@ namespace Wlrix.Settings.Windows.ViewModels;
 
 /// <summary>
 /// Backs the window settings window: IRIX's Window Settings panel, which is the keyboard focus
-/// policy plus the three flags 4Dwm called Click Raise, Opaque Window Move and Opaque Window
-/// Resize.
+/// policy, the three flags 4Dwm called Click Raise, Opaque Window Move and Opaque Window
+/// Resize, and Save Windows &amp; Desks with its Set Home Session button.
 ///
 /// Built the same way as <c>Wlrix.Settings.Keyboard</c>, and for the same reasons. Everything
 /// about the config file goes through <c>wlrix-settings-daemon</c>: this app does not know
@@ -18,7 +18,7 @@ namespace Wlrix.Settings.Windows.ViewModels;
 /// there is one place they are written down.
 ///
 /// One commit is one <c>SetMany</c>, which is what makes <see cref="Reset"/> a single write of
-/// four keys rather than four writes the compositor reloads against one at a time.
+/// five keys rather than five writes the compositor reloads against one at a time.
 /// </summary>
 public sealed class WindowSettingsViewModel : ViewModelBase, IDisposable
 {
@@ -26,6 +26,13 @@ public sealed class WindowSettingsViewModel : ViewModelBase, IDisposable
     private const string RaiseKey = "compositor.focus.raise_on_click";
     private const string OpaqueMoveKey = "compositor.windows.opaque_move";
     private const string OpaqueResizeKey = "compositor.windows.opaque_resize";
+    private const string SaveKey = "compositor.session.save";
+
+    // `[session] save`'s two values. Spelled here rather than read from the schema, unlike the
+    // focus policies: IRIX's two radio buttons are the whole of this setting, and the button
+    // beside them only means anything for the second.
+    private const string SaveContinuouslyValue = "continuously";
+    private const string SaveExplicitlyValue = "explicitly";
 
     /// <summary>
     /// The radio group to show before the daemon has been asked, and if it never answers.
@@ -46,6 +53,7 @@ public sealed class WindowSettingsViewModel : ViewModelBase, IDisposable
     private bool _openRaiseOnClick = true;
     private bool _openOpaqueMove = true;
     private bool _openOpaqueResize = true;
+    private bool _openExplicitly;
 
     // True while loading, or while applying a change that came from somewhere else, so those do
     // not each schedule a commit of their own.
@@ -56,6 +64,8 @@ public sealed class WindowSettingsViewModel : ViewModelBase, IDisposable
     private bool _raiseOnClick = true;
     private bool _opaqueMove = true;
     private bool _opaqueResize = true;
+    private bool _explicitly;
+    private bool _savingHome;
 
     /// <summary>
     /// Builds the window's model without touching the daemon, so the XAML designer and a
@@ -68,7 +78,7 @@ public sealed class WindowSettingsViewModel : ViewModelBase, IDisposable
         Watch(FocusPolicies);
         Select("click");
 
-        // Checkboxes do not produce the burst a slider drag does, but Reset moves four settings
+        // Checkboxes do not produce the burst a slider drag does, but Reset moves five settings
         // at once and a person ticking two boxes in a row produces two. The debounce turns
         // either into one SetMany, so the compositor reloads its config once.
         _commitTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(250) };
@@ -113,11 +123,51 @@ public sealed class WindowSettingsViewModel : ViewModelBase, IDisposable
         }
     }
 
+    /// <summary>
+    /// Save Windows &amp; Desks: Explicitly, reopening the home session at every login. The
+    /// other radio button, Continuously, is this turned off.
+    /// </summary>
+    public bool SaveExplicitly
+    {
+        get => _explicitly;
+        set
+        {
+            if (_explicitly == value)
+                return;
+            _explicitly = value;
+            this.RaisePropertyChanged();
+            this.RaisePropertyChanged(nameof(SaveContinuously));
+            this.RaisePropertyChanged(nameof(CanSetHomeSession));
+            this.RaisePropertyChanged(nameof(StatusLine));
+            ScheduleCommit();
+        }
+    }
+
+    /// <summary>
+    /// Save Windows &amp; Desks: Continuously, reopening whatever was open at logout.
+    ///
+    /// Picking one radio button clears the other, so this is set false and the other true for
+    /// one click; both route through <see cref="SaveExplicitly"/>, so only the first changes
+    /// anything and only one commit is scheduled.
+    /// </summary>
+    public bool SaveContinuously
+    {
+        get => !_explicitly;
+        set => SaveExplicitly = !value;
+    }
+
+    /// <summary>Set Home Session is only for Explicitly, as on IRIX, and one at a time.</summary>
+    public bool CanSetHomeSession => _explicitly && _ready && !_savingHome;
+
     /// <summary>Whether the settings have loaded and the controls mean anything yet.</summary>
     public bool IsReady
     {
         get => _ready;
-        private set => this.RaiseAndSetIfChanged(ref _ready, value);
+        private set
+        {
+            this.RaiseAndSetIfChanged(ref _ready, value);
+            this.RaisePropertyChanged(nameof(CanSetHomeSession));
+        }
     }
 
     /// <summary>
@@ -129,7 +179,47 @@ public sealed class WindowSettingsViewModel : ViewModelBase, IDisposable
     public string Status
     {
         get => _status;
-        private set => this.RaiseAndSetIfChanged(ref _status, value);
+        private set
+        {
+            this.RaiseAndSetIfChanged(ref _status, value);
+            this.RaisePropertyChanged(nameof(StatusLine));
+        }
+    }
+
+    /// <summary>
+    /// The line along the bottom of the window: <see cref="Status"/> when there is something to
+    /// report, and otherwise what IRIX's panel said there -- what the chosen Save Windows &amp;
+    /// Desks mode will do at the next login.
+    /// </summary>
+    public string StatusLine =>
+        string.IsNullOrEmpty(_status) ? Strings.SessionHint(_explicitly) : _status;
+
+    /// <summary>
+    /// Set Home Session: have the compositor save what is open now as the windows every login
+    /// reopens. The settings daemon waits for the file to be written, so success here means it
+    /// was.
+    /// </summary>
+    public async Task SetHomeSessionAsync()
+    {
+        if (_client is null || !CanSetHomeSession)
+            return;
+
+        _savingHome = true;
+        this.RaisePropertyChanged(nameof(CanSetHomeSession));
+        try
+        {
+            var windows = await _client.SaveHomeSessionAsync().ConfigureAwait(true);
+            Status = Strings.HomeSessionSet(windows);
+        }
+        catch (Exception e)
+        {
+            Status = e.Message.Split('\n')[0];
+        }
+        finally
+        {
+            _savingHome = false;
+            this.RaisePropertyChanged(nameof(CanSetHomeSession));
+        }
     }
 
     /// <summary>
@@ -159,6 +249,7 @@ public sealed class WindowSettingsViewModel : ViewModelBase, IDisposable
             _openRaiseOnClick = _raiseOnClick;
             _openOpaqueMove = _opaqueMove;
             _openOpaqueResize = _opaqueResize;
+            _openExplicitly = _explicitly;
 
             await _client.WatchAsync().ConfigureAwait(true);
             _client.Changed += OnChangedElsewhere;
@@ -182,6 +273,7 @@ public sealed class WindowSettingsViewModel : ViewModelBase, IDisposable
         RaiseOnClick = _openRaiseOnClick;
         OpaqueMove = _openOpaqueMove;
         OpaqueResize = _openOpaqueResize;
+        SaveExplicitly = _openExplicitly;
         _loading = false;
         _ = CommitAsync();
     }
@@ -238,6 +330,7 @@ public sealed class WindowSettingsViewModel : ViewModelBase, IDisposable
             [RaiseKey] = _raiseOnClick,
             [OpaqueMoveKey] = _opaqueMove,
             [OpaqueResizeKey] = _opaqueResize,
+            [SaveKey] = _explicitly ? SaveExplicitlyValue : SaveContinuouslyValue,
         };
 
         try
@@ -306,7 +399,7 @@ public sealed class WindowSettingsViewModel : ViewModelBase, IDisposable
     }
 
     /// <summary>
-    /// Put whatever of these four settings is present into the controls.
+    /// Put whatever of these five settings is present into the controls.
     ///
     /// Used for both the initial load and a change from elsewhere, so a hand-edit that touches
     /// only the focus policy leaves the checkboxes where they are.
@@ -324,6 +417,9 @@ public sealed class WindowSettingsViewModel : ViewModelBase, IDisposable
 
         if (values.TryGetValue(OpaqueResizeKey, out var resize) && resize is bool opaqueResize)
             OpaqueResize = opaqueResize;
+
+        if (values.TryGetValue(SaveKey, out var save) && save is string mode)
+            SaveExplicitly = mode == SaveExplicitlyValue;
     }
 
     /// <summary>

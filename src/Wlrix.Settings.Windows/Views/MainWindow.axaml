@@ -5,8 +5,8 @@
         xmlns:loc="using:Wlrix.Common.Localization"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="320" d:DesignHeight="245"
-        Width="320" Height="245"
+        mc:Ignorable="d" d:DesignWidth="320" d:DesignHeight="330"
+        Width="320" SizeToContent="Height"
         x:Class="Wlrix.Settings.Windows.Views.MainWindow"
         x:DataType="vm:WindowSettingsViewModel"
         CanResize="False"
@@ -18,7 +18,8 @@
 
     <!-- The layout follows 4Dwm's Window Settings: a title banner, then a labeled radio group
          with its buttons indented on the line below, then a column of flags whose names are on
-         the left and whose boxes line up on the right. -->
+         the left and whose boxes line up on the right, then Save Windows &amp; Desks with Set Home
+         Session under it. The status line runs along the very bottom, below the buttons. -->
     <DockPanel Margin="12" LastChildFill="True">
 
         <!-- Title banner: icon slot plus the panel name, as on the IRIX original. -->
@@ -36,6 +37,15 @@
                        VerticalAlignment="Center" />
         </StackPanel>
 
+        <!-- The status line, under the buttons as on the original. What became of the last
+             change when it is worth saying (the compositor not being running, a value the
+             daemon refused, a config file somebody has half-edited, Set Home Session's result),
+             and otherwise what the Save Windows &amp; Desks choice will do at the next login. -->
+        <!-- Two lines tall whatever it holds, so the window does not change height when the
+             line changes length: a translation can wrap one mode's hint and not the other's. -->
+        <TextBlock DockPanel.Dock="Bottom" Text="{Binding StatusLine}" TextWrapping="Wrap"
+                   FontSize="11" Margin="0,8,0,0" MinHeight="30" />
+
         <!-- Close / Reset / Help, along the bottom as on the original. -->
         <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal"
                     HorizontalAlignment="Center" Spacing="8" Margin="0,12,0,0">
@@ -50,12 +60,6 @@
                 </Button.Flyout>
             </Button>
         </StackPanel>
-
-        <!-- What became of the last change, when it is worth saying: the compositor not being
-             running, a value the daemon refused, or a config file somebody has half-edited.
-             Empty, and so invisible, when everything applied. -->
-        <TextBlock DockPanel.Dock="Bottom" Text="{Binding Status}" TextWrapping="Wrap" Margin="0,8,0,0"
-                   IsVisible="{Binding Status, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
 
         <StackPanel Spacing="8">
 
@@ -101,6 +105,22 @@
                 <CheckBox Grid.Row="2" Grid.Column="1" IsChecked="{Binding OpaqueResize}"
                           ToolTip.Tip="{loc:Tr OpaqueResizeTip}" />
             </Grid>
+
+            <!-- Save Windows &amp; Desks: what opens at the next login. Set Home Session saves the
+                 windows open now as that set, and only means anything for Explicitly, so it is
+                 grayed out under Continuously, as IRIX did. -->
+            <StackPanel Spacing="2">
+                <TextBlock Text="{loc:Tr SaveSession}" FontWeight="Bold" />
+                <StackPanel Orientation="Horizontal" Spacing="12" Margin="12,0,0,0">
+                    <RadioButton GroupName="SaveSession" Content="{loc:Tr SaveContinuously}"
+                                 IsChecked="{Binding SaveContinuously, Mode=TwoWay}" />
+                    <RadioButton GroupName="SaveSession" Content="{loc:Tr SaveExplicitly}"
+                                 IsChecked="{Binding SaveExplicitly, Mode=TwoWay}" />
+                </StackPanel>
+                <Button HorizontalAlignment="Right" Margin="0,4,0,0"
+                        Content="{loc:Tr SetHomeSession}" Click="OnSetHomeSession"
+                        IsEnabled="{Binding CanSetHomeSession}" />
+            </StackPanel>
 
         </StackPanel>
 

@@ -36,6 +36,13 @@ public static class Strings
     public static string NoSettingsService(string detail) =>
         Catalog.Format("NoSettingsService", detail);
 
+    /// <summary>What the status line says about the session mode while nothing else needs saying.</summary>
+    public static string SessionHint(bool explicitly) =>
+        Catalog.Get(explicitly ? "SessionExplicitly" : "SessionContinuously");
+
+    /// <summary>Set Home Session worked, and saved <paramref name="windows"/> windows.</summary>
+    public static string HomeSessionSet(uint windows) => Catalog.Format("HomeSessionSet", windows);
+
     /// <summary>Somebody is halfway through hand-editing <paramref name="path"/>.</summary>
     public static string FileInvalid(string path) => Catalog.Format("FileInvalid", path);
 }

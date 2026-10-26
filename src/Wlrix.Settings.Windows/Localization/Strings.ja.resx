@@ -38,4 +38,25 @@
     <data name="OpaqueMove" xml:space="preserve">
         <value>ウィンドウを表示のまま移動：</value>
     </data>
+    <data name="SaveSession" xml:space="preserve">
+        <value>ウィンドウとデスクの保存：</value>
+    </data>
+    <data name="SaveContinuously" xml:space="preserve">
+        <value>常に</value>
+    </data>
+    <data name="SaveExplicitly" xml:space="preserve">
+        <value>指定時</value>
+    </data>
+    <data name="SetHomeSession" xml:space="preserve">
+        <value>ホームセッションを設定</value>
+    </data>
+    <data name="SessionContinuously" xml:space="preserve">
+        <value>ログアウト時に表示中のウィンドウは、次回のログインで再び開かれます。</value>
+    </data>
+    <data name="SessionExplicitly" xml:space="preserve">
+        <value>指定したウィンドウが、次回のログインで再び開かれます。</value>
+    </data>
+    <data name="HomeSessionSet" xml:space="preserve">
+        <value>ホームセッションを設定しました：ウィンドウ {0} 個。</value>
+    </data>
 </root>
