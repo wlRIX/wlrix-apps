@@ -124,12 +124,30 @@ public partial class MainWindow : Window
             model.SelectionChanged(EntryTree.SelectedItems.OfType<EntryNodeViewModel>());
     }
 
+    /// <summary>The folder holding the open archive, where every picker here starts.</summary>
+    /// <remarks>
+    /// It is the folder the user was just working in. Null, which the portal takes as home,
+    /// when nothing is open or that folder has gone away since.
+    /// </remarks>
+    private async Task<IStorageFolder?> ArchiveFolderAsync()
+    {
+        if (DataContext is not MainWindowViewModel { Archive.Path: { } archivePath }
+            || Path.GetDirectoryName(archivePath) is not { Length: > 0 } directory
+            || !Directory.Exists(directory))
+        {
+            return null;
+        }
+
+        return await StorageProvider.TryGetFolderFromPathAsync(directory);
+    }
+
     private async Task<string?> OnOpenFileRequested()
     {
         var files = await StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
         {
             Title = Strings.OpenTitle,
             AllowMultiple = false,
+            SuggestedStartLocation = await ArchiveFolderAsync(),
             FileTypeFilter =
             [
                 new FilePickerFileType(Strings.FilterArchives)
@@ -150,10 +168,13 @@ public partial class MainWindow : Window
 
     private async Task<string?> OnDestinationRequested()
     {
+        // Extracting next to the archive is the common case.
+        var start = await ArchiveFolderAsync();
         var folders = await StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions
         {
             Title = Strings.ExtractTitle,
             AllowMultiple = false,
+            SuggestedStartLocation = start,
         });
 
         return folders.Count == 0 ? null : folders[0].TryGetLocalPath();
@@ -170,6 +191,7 @@ public partial class MainWindow : Window
         var file = await StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
         {
             Title = Strings.NewTitle,
+            SuggestedStartLocation = await ArchiveFolderAsync(),
             DefaultExtension = "zip",
             ShowOverwritePrompt = true,
             FileTypeChoices =
