@@ -10,11 +10,17 @@ using Wlrix.Desks.ViewModels;
 namespace Wlrix.Desks.Controls;
 
 /// <summary>
-/// Draws a desk's windows as opaque, outlined rectangles, and hit-tests them: the rectangle
+/// Draws a desk's windows as miniature framed windows, and hit-tests them: the rectangle
 /// under the pointer reports itself as hovered, and clicking one selects it. The rectangles are
 /// expected to be pre-scaled (by <see cref="DeskViewModel"/>) into this control's own coordinate
 /// space, so it simply fills each one — mirroring the theme's direct-render controls and
 /// sidestepping the per-item container positioning an ItemsControl/Canvas would need.
+///
+/// Each window is drawn as IRIX's overview drew it, measured off an IRIX screen: a one-pixel
+/// outline, then a frame one pixel wide down the sides and along the bottom and three pixels
+/// deep across the top for the title bar, around the body. The frame is what shows the window's
+/// state, with the colors an icon's body takes: gray at rest, white under the pointer, lamp
+/// yellow selected. The outline and the body stay as they are.
 ///
 /// Hover and selection are held as window *ids* and bound two-way to shared state, so a window
 /// that appears on several desks (anything on the Global desk) lights up in every tile at once,
@@ -36,11 +42,14 @@ public sealed class DeskPreview : Control, ICustomHitTest
     public static readonly StyledProperty<IBrush?> WindowBorderBrushProperty =
         AvaloniaProperty.Register<DeskPreview, IBrush?>(nameof(WindowBorderBrush));
 
-    public static readonly StyledProperty<IBrush?> HoverBorderBrushProperty =
-        AvaloniaProperty.Register<DeskPreview, IBrush?>(nameof(HoverBorderBrush));
+    public static readonly StyledProperty<IBrush?> FrameBrushProperty =
+        AvaloniaProperty.Register<DeskPreview, IBrush?>(nameof(FrameBrush));
 
-    public static readonly StyledProperty<IBrush?> SelectionBorderBrushProperty =
-        AvaloniaProperty.Register<DeskPreview, IBrush?>(nameof(SelectionBorderBrush));
+    public static readonly StyledProperty<IBrush?> HoverFrameBrushProperty =
+        AvaloniaProperty.Register<DeskPreview, IBrush?>(nameof(HoverFrameBrush));
+
+    public static readonly StyledProperty<IBrush?> SelectionFrameBrushProperty =
+        AvaloniaProperty.Register<DeskPreview, IBrush?>(nameof(SelectionFrameBrush));
 
     public static readonly StyledProperty<long?> HoveredWindowIdProperty =
         AvaloniaProperty.Register<DeskPreview, long?>(
@@ -53,6 +62,10 @@ public sealed class DeskPreview : Control, ICustomHitTest
     public static readonly StyledProperty<WindowLabel> LabelModeProperty =
         AvaloniaProperty.Register<DeskPreview, WindowLabel>(nameof(LabelMode));
 
+    // The frame's depth across the top, where the title bar is, and down the other three sides.
+    private const double TitleDepth = 3;
+    private const double FrameWidth = 1;
+
     // Where the pointer was last seen, so a snapshot that moves the windows can re-ask what is
     // under it.
     private Point? _lastPointerPosition;
@@ -62,7 +75,7 @@ public sealed class DeskPreview : Control, ICustomHitTest
     static DeskPreview() =>
         AffectsRender<DeskPreview>(
             WindowsProperty, WindowBrushProperty, WindowBorderBrushProperty,
-            HoverBorderBrushProperty, SelectionBorderBrushProperty,
+            FrameBrushProperty, HoverFrameBrushProperty, SelectionFrameBrushProperty,
             HoveredWindowIdProperty, SelectedWindowIdProperty);
 
     public IReadOnlyList<PreviewWindow>? Windows
@@ -71,30 +84,39 @@ public sealed class DeskPreview : Control, ICustomHitTest
         set => SetValue(WindowsProperty, value);
     }
 
+    /// <summary>Fills a window's body.</summary>
     public IBrush? WindowBrush
     {
         get => GetValue(WindowBrushProperty);
         set => SetValue(WindowBrushProperty, value);
     }
 
+    /// <summary>Outlines every window, whatever its state.</summary>
     public IBrush? WindowBorderBrush
     {
         get => GetValue(WindowBorderBrushProperty);
         set => SetValue(WindowBorderBrushProperty, value);
     }
 
-    /// <summary>Outlines the window under the pointer.</summary>
-    public IBrush? HoverBorderBrush
+    /// <summary>A window's frame at rest.</summary>
+    public IBrush? FrameBrush
     {
-        get => GetValue(HoverBorderBrushProperty);
-        set => SetValue(HoverBorderBrushProperty, value);
+        get => GetValue(FrameBrushProperty);
+        set => SetValue(FrameBrushProperty, value);
     }
 
-    /// <summary>Outlines the selected window.</summary>
-    public IBrush? SelectionBorderBrush
+    /// <summary>The frame of the window under the pointer.</summary>
+    public IBrush? HoverFrameBrush
     {
-        get => GetValue(SelectionBorderBrushProperty);
-        set => SetValue(SelectionBorderBrushProperty, value);
+        get => GetValue(HoverFrameBrushProperty);
+        set => SetValue(HoverFrameBrushProperty, value);
+    }
+
+    /// <summary>The frame of the selected window.</summary>
+    public IBrush? SelectionFrameBrush
+    {
+        get => GetValue(SelectionFrameBrushProperty);
+        set => SetValue(SelectionFrameBrushProperty, value);
     }
 
     /// <summary>The hovered window, shared across every tile (bind two-way).</summary>
@@ -129,17 +151,34 @@ public sealed class DeskPreview : Control, ICustomHitTest
         if (Windows is not { } windows)
             return;
 
-        var normal = Pen(WindowBorderBrush);
-        var hovered = Pen(HoverBorderBrush) ?? normal;
-        var selected = Pen(SelectionBorderBrush) ?? normal;
+        var hovered = HoverFrameBrush ?? FrameBrush;
+        var selected = SelectionFrameBrush ?? FrameBrush;
 
         foreach (var w in windows)
         {
-            var pen = w.Id == SelectedWindowId ? selected
+            // Selection wins under the pointer, as it does for icons.
+            var frame = w.Id == SelectedWindowId ? selected
                 : w.Id == HoveredWindowId ? hovered
-                : normal;
-            context.DrawRectangle(WindowBrush, pen, new Rect(w.X, w.Y, w.W, w.H));
+                : FrameBrush;
+
+            // Whole pixels, so the one-pixel lines stay one pixel and do not blur across two.
+            var x = Math.Round(w.X);
+            var y = Math.Round(w.Y);
+            var outer = new Rect(x, y, Math.Max(1, Math.Round(w.X + w.W) - x), Math.Max(1, Math.Round(w.Y + w.H) - y));
+
+            // Painted from the outside in, each layer over the last, so a window too small for
+            // all of them still shows as much as it has room for.
+            Fill(context, WindowBorderBrush, outer);
+            var inner = outer.Deflate(1);
+            Fill(context, frame, inner);
+            Fill(context, WindowBrush, inner.Deflate(new Thickness(FrameWidth, TitleDepth, FrameWidth, FrameWidth)));
         }
+    }
+
+    private static void Fill(DrawingContext context, IBrush? brush, Rect rect)
+    {
+        if (brush is not null && rect.Width > 0 && rect.Height > 0)
+            context.FillRectangle(brush, rect);
     }
 
     protected override void OnPointerMoved(PointerEventArgs e)
@@ -237,6 +276,4 @@ public sealed class DeskPreview : Control, ICustomHitTest
 
         return null;
     }
-
-    private static Pen? Pen(IBrush? brush) => brush is null ? null : new Pen(brush);
 }
