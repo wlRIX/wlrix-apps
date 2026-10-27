@@ -106,7 +106,7 @@
     </ItemGroup>
 
     <ItemGroup Label="wlRIX theme">
-        <PackageVersion Include="Wlrix.Avalonia" Version="0.5.4" />
+        <PackageVersion Include="Wlrix.Avalonia" Version="0.5.5" />
         <PackageVersion Include="Wlrix.Avalonia.Dialogs" Version="1.3.0" />
         <PackageVersion Include="Wlrix.Avalonia.Controls.ColorPicker" Version="1.0.0" />
     </ItemGroup>
