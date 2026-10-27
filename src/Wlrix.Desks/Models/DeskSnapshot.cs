@@ -13,7 +13,8 @@ public sealed record WindowInfo(
     long Id, int DeskId, double X, double Y, double W, double H, bool Minimized, string AppId, string Title);
 
 /// <summary>
-/// A full desk/window snapshot, as produced by the compositor's <c>wlrix-desks</c> feed. The
+/// A full desk/window snapshot, as produced by the compositor's <c>wlrix-desks</c> feed.
+/// <see cref="Windows"/> is in stacking order, back to front, across every desk. The
 /// output layout the previews are scaled against comes from Avalonia's <c>Screens</c>, not the
 /// feed, so it is not part of the snapshot.
 /// </summary>

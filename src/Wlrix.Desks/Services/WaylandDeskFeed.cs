@@ -198,7 +198,12 @@ public sealed class WaylandDeskFeed : IDeskFeed
             .Select(d => new DeskInfo((int)d.Id, d.Active, d.Name))
             .ToList();
 
+        // Back to front, so a preview that paints in list order draws each window over the ones
+        // behind it. A compositor older than the stacking event leaves every position at zero,
+        // and the stable sort falls back to the order the windows were announced in.
         var windows = _toplevels.Values
+            .OrderBy(t => t.Stacking)
+            .ThenBy(t => t.WindowId)
             .Select(t => new WindowInfo(
                 t.WindowId,
                 t.Desk is { } deskObj && _desks.TryGetValue(deskObj, out var d) ? (int)d.Id : 0,
@@ -248,6 +253,7 @@ public sealed class WaylandDeskFeed : IDeskFeed
         public bool Minimized;
         public bool Maximized;
         public bool Activated;
+        public uint Stacking;
         public WlrixDeskV1? Desk;
     }
 
@@ -361,6 +367,11 @@ public sealed class WaylandDeskFeed : IDeskFeed
         protected override void Desk(WlrixToplevelV1 sender, WlrixDeskV1? desk)
         {
             if (feed._toplevels.TryGetValue(sender, out var t)) t.Desk = desk;
+        }
+
+        protected override void Stacking(WlrixToplevelV1 sender, uint position)
+        {
+            if (feed._toplevels.TryGetValue(sender, out var t)) t.Stacking = position;
         }
 
         protected override void Closed(WlrixToplevelV1 sender) => feed._toplevels.Remove(sender);

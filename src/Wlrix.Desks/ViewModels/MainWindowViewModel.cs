@@ -508,7 +508,9 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
             if (!byId.TryGetValue(info.Id, out var vm))
                 vm = new DeskViewModel(info.Id);
 
-            var windows = snapshot.Windows.Where(w => w.DeskId == info.Id).Concat(globalWindows).ToList();
+            // One pass over the snapshot rather than the desk's windows followed by the global
+            // desk's, so the two stay interleaved in the stacking order the feed gives them in.
+            var windows = snapshot.Windows.Where(w => w.DeskId == info.Id || w.DeskId == 0).ToList();
             vm.Update(info, windows, world, Scale);
             ordered.Add(vm);
         }
