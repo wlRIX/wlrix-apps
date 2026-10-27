@@ -208,12 +208,13 @@
                                  which is what keeps a nested row lined up with the heading. -->
                             <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="4"
                                         Margin="{Binding Depth, Converter={StaticResource ArchiveIndent}}">
-                                <ToggleButton Theme="{StaticResource ArchiveTreeExpandToggle}"
+                                <ToggleButton Theme="{DynamicResource WlrixTreeExpandToggle}"
                                               VerticalAlignment="Center"
                                               IsVisible="{Binding HasChildren}"
                                               IsChecked="{Binding IsExpanded, Mode=TwoWay}" />
-                                <!-- Holds the toggle's width on a leaf so names still align. -->
-                                <Panel Width="11" IsVisible="{Binding !HasChildren}" />
+                                <!-- Holds the toggle's width on a leaf so names still align. Matches
+                                     the Width in the theme's WlrixTreeExpandToggle. -->
+                                <Panel Width="12" IsVisible="{Binding !HasChildren}" />
                                 <Path Width="16" Height="16" Stretch="None"
                                       VerticalAlignment="Center"
                                       Data="M1,4 L1,3 L6,3 L7,4.5 L15,4.5 L15,13 L1,13 Z"
