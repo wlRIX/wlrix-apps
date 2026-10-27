@@ -1,0 +1,22 @@
+[Desktop Entry]
+Type=Application
+Name=wlRIX Desks
+Name[ja]=wlRIX デスク
+Comment=See and switch between desks
+Comment[ja]=デスクの一覧と切り替え
+Icon=com.wlrix.desks
+Categories=Utility;
+Exec=wlrix-desks
+TryExec=wlrix-desks
+Terminal=false
+
+# Hide from icon catalog - launched via toolchest entry
+NoDisplay=true
+
+# Running symbol
+X-WLRIX-Running-Icon=com.wlrix.desks-running
+
+# Matches the Wayland app id set in Program.BuildAvaloniaApp. `wlrix-desktop` looks a running
+# window up by StartupWMClass first, and wlrix-compositor frames the window by the same id.
+StartupWMClass=com.wlrix.desks
+StartupNotify=false
