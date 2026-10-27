@@ -2,15 +2,70 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:Wlrix.Writer.ViewModels"
              xmlns:views="using:Wlrix.Writer.Views"
+             xmlns:loc="using:Wlrix.Common.Localization"
              xmlns:wlrix="https://vic485.xyz/Wlrix.Avalonia"
              x:Class="Wlrix.Writer.Views.EditorView"
              x:DataType="vm:EditorTabViewModel">
-    <!-- The text area sits in a sunken well, as a Motif XmText does. Colors, font and selection
-         come from Themes/Editor.axaml through the "writer" class. -->
-    <wlrix:BevelBorder Bevel="Sunken" BevelThickness="2"
-                       LightBrush="{DynamicResource WlrixTextTopShadow}"
-                       DarkBrush="{DynamicResource WlrixTextBottomShadow}">
-        <views:WriterTextEditor Name="Editor" Classes="writer"
-                                ShowLineNumbers="{Binding Preferences.ShowLineNumbers}" />
-    </wlrix:BevelBorder>
+    <UserControl.Styles>
+        <!-- The mode buttons: small tool buttons holding a drawing, not a word. -->
+        <Style Selector="ToggleButton.mode">
+            <Setter Property="Padding" Value="3,2" />
+            <Setter Property="Focusable" Value="False" />
+        </Style>
+        <Style Selector="ToggleButton.mode Path">
+            <Setter Property="Stroke" Value="{DynamicResource WlrixForeground}" />
+            <Setter Property="StrokeThickness" Value="1" />
+            <Setter Property="Width" Value="16" />
+            <Setter Property="Height" Value="13" />
+        </Style>
+    </UserControl.Styles>
+
+    <!-- Text, preview, or the two side by side. The columns are set in code as the mode
+         changes, as the window's own split is: a GridSplitter leaves pixel widths behind, and
+         going back to one side has to give it the whole width again. -->
+    <Grid Name="Layout" ColumnDefinitions="*,0,0">
+        <!-- The text area sits in a sunken well, as a Motif XmText does. Colors, font and
+             selection come from Themes/Editor.axaml through the "writer" class. -->
+        <wlrix:BevelBorder Name="TextWell" Grid.Column="0"
+                           Bevel="Sunken" BevelThickness="2"
+                           LightBrush="{DynamicResource WlrixTextTopShadow}"
+                           DarkBrush="{DynamicResource WlrixTextBottomShadow}">
+            <views:WriterTextEditor Name="Editor" Classes="writer"
+                                    ShowLineNumbers="{Binding Preferences.ShowLineNumbers}" />
+        </wlrix:BevelBorder>
+
+        <GridSplitter Name="PreviewSplitter" Grid.Column="1" ResizeDirection="Columns"
+                      IsVisible="False" />
+
+        <!-- The preview, in a well of its own matching the text's. -->
+        <wlrix:BevelBorder Name="PreviewWell" Grid.Column="2" IsVisible="False"
+                           Bevel="Sunken" BevelThickness="2"
+                           LightBrush="{DynamicResource WlrixTextTopShadow}"
+                           DarkBrush="{DynamicResource WlrixTextBottomShadow}">
+            <views:PreviewPane Name="Preview" />
+        </wlrix:BevelBorder>
+
+        <!-- Text only, both, preview only: in the top-right corner as JetBrains has them, clear
+             of the vertical scroll bar. Shown only for documents that have a preview. -->
+        <StackPanel Name="ModeButtons" Grid.Column="0" Grid.ColumnSpan="3"
+                    Orientation="Horizontal" Spacing="2"
+                    HorizontalAlignment="Right" VerticalAlignment="Top"
+                    Margin="0,6,24,0" IsVisible="False">
+            <ToggleButton Name="TextOnlyButton" Classes="mode"
+                          ToolTip.Tip="{loc:Tr ViewTextOnlyTip}">
+                <!-- A page of text. -->
+                <Path Data="M0.5,0.5 H15.5 V12.5 H0.5 Z M3,3.5 H13 M3,6.5 H13 M3,9.5 H10" />
+            </ToggleButton>
+            <ToggleButton Name="SplitButton" Classes="mode"
+                          ToolTip.Tip="{loc:Tr ViewSplitTip}">
+                <!-- The page halved: lines of text on the left, a block of rendering on the right. -->
+                <Path Data="M0.5,0.5 H15.5 V12.5 H0.5 Z M8.5,0.5 V12.5 M2.5,3.5 H6.5 M2.5,6.5 H6.5 M2.5,9.5 H5.5 M10.5,3.5 H13.5 V6.5 H10.5 Z M10.5,9.5 H13.5" />
+            </ToggleButton>
+            <ToggleButton Name="PreviewOnlyButton" Classes="mode"
+                          ToolTip.Tip="{loc:Tr ViewPreviewOnlyTip}">
+                <!-- A rendered page: a heading bar and a picture. -->
+                <Path Data="M0.5,0.5 H15.5 V12.5 H0.5 Z M3,3.5 H10 M3,4.5 H10 M3,7.5 H8.5 V10.5 H3 Z M10.5,8.5 H13 M10.5,10.5 H13" />
+            </ToggleButton>
+        </StackPanel>
+    </Grid>
 </UserControl>

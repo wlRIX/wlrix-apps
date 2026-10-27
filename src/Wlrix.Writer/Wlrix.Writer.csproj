@@ -45,6 +45,8 @@
         <PackageReference Include="AvaloniaEdit.TextMate" />
         <PackageReference Include="TextMateSharp" />
         <PackageReference Include="TextMateSharp.Grammars" />
+        <!-- The Markdown preview's parser. -->
+        <PackageReference Include="Markdig" />
     </ItemGroup>
 
     <ItemGroup>
@@ -55,6 +57,9 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Wlrix.Common\Wlrix.Common.csproj" />
+        <!-- The SVG preview: resvg, as the icon theme draws with, and the namespace fix the
+             IRIX-era exports need before it will read them. -->
+        <ProjectReference Include="..\Wlrix.Icons\Wlrix.Icons.csproj" />
     </ItemGroup>
     <ItemGroup>
         <!-- Follows the session's color scheme, so the text area matches the desktop behind

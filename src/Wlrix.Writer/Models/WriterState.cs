@@ -22,9 +22,14 @@ public sealed record WriterStateDocument
 
     /// <summary>Strings searched for, most recent first: the Find dialog's up-arrow recall.</summary>
     public List<string> SearchHistory { get; init; } = [];
+
+    /// <summary>The mode Markdown and SVG files open in: the last one picked for each.</summary>
+    public PreviewDefaults PreviewModes { get; init; } = PreviewDefaults.Initial;
 }
 
-[JsonSourceGenerationOptions(WriteIndented = true, PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase)]
+// Enums by name, so the file says "split" rather than 1 and survives the enum being reordered.
+[JsonSourceGenerationOptions(WriteIndented = true, PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase,
+    UseStringEnumConverter = true)]
 [JsonSerializable(typeof(WriterStateDocument))]
 internal sealed partial class WriterJson : JsonSerializerContext;
 
@@ -79,6 +84,7 @@ public sealed class WriterState
                 Recent = document.Recent ?? [],
                 SearchHistory = document.SearchHistory ?? [],
                 DefaultTabs = (document.DefaultTabs ?? TabSettings.Default).Normalized(),
+                PreviewModes = document.PreviewModes ?? PreviewDefaults.Initial,
             };
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or JsonException)

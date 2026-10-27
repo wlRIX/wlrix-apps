@@ -24,8 +24,7 @@ namespace Wlrix.Writer.Tests;
 /// </remarks>
 public class EditorScrollTests
 {
-    private static readonly Lazy<HeadlessUnitTestSession> Session = new(() =>
-        HeadlessUnitTestSession.StartNew(typeof(HeadlessWriter)));
+    private static Lazy<HeadlessUnitTestSession> Session => HeadlessWriter.Session;
 
     [Fact]
     public Task DraggingPastTheEndOfTheLongestLineStaysInsideTheText() =>
@@ -119,6 +118,13 @@ public class EditorScrollTests
 /// <summary>The Writer's application, styles and all, on a headless platform that draws real text.</summary>
 public static class HeadlessWriter
 {
+    /// <summary>
+    /// The one headless application every test class shares. A second session in the same
+    /// process collides with the first: Avalonia's URI schemes and dispatcher are process-wide.
+    /// </summary>
+    public static readonly Lazy<HeadlessUnitTestSession> Session = new(() =>
+        HeadlessUnitTestSession.StartNew(typeof(HeadlessWriter)));
+
     /// <summary>
     /// An installed family, for the reason Program gives: AvaloniaEdit needs a default family
     /// before any style has given it one.

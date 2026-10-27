@@ -120,6 +120,24 @@
   <data name="WindowsPreviousTab" xml:space="preserve">
     <value>_Previous Tab</value>
   </data>
+  <data name="WindowsTextOnly" xml:space="preserve">
+    <value>_Text Only</value>
+  </data>
+  <data name="WindowsTextAndPreview" xml:space="preserve">
+    <value>Text _and Preview</value>
+  </data>
+  <data name="WindowsPreviewOnly" xml:space="preserve">
+    <value>Previe_w Only</value>
+  </data>
+  <data name="ViewTextOnlyTip" xml:space="preserve">
+    <value>Text only</value>
+  </data>
+  <data name="ViewSplitTip" xml:space="preserve">
+    <value>Text and preview</value>
+  </data>
+  <data name="ViewPreviewOnlyTip" xml:space="preserve">
+    <value>Preview only</value>
+  </data>
   <data name="HelpAbout" xml:space="preserve">
     <value>_About Writer</value>
   </data>

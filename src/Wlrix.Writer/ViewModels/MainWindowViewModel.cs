@@ -119,6 +119,25 @@ public sealed class MainWindowViewModel : ViewModelBase, ISearchTarget, IDisposa
         PreviousTab = ReactiveCommand.Create(() => CycleTab(-1), hasTab);
         ShowAbout = ReactiveCommand.Create(() => AboutRequested?.Invoke());
 
+        // The active tab's preview, for the Windows menu's mode items and their marks.
+        var previewState = activeTab
+            .Select(tab => tab is null
+                ? Observable.Return((Kind: PreviewKind.None, Mode: ViewMode.Editor))
+                : tab.WhenAnyValue(model => model.Document.PreviewKind, model => model.Mode,
+                    (kind, mode) => (Kind: kind, Mode: mode)))
+            .Switch()
+            .Publish()
+            .RefCount();
+        _canPreview = previewState.Select(state => state.Kind != PreviewKind.None)
+            .ToProperty(this, model => model.CanPreview);
+        _viewMode = previewState.Select(state => state.Mode)
+            .ToProperty(this, model => model.ViewMode);
+        _subscriptions.Add(_canPreview);
+        _subscriptions.Add(_viewMode);
+        SetViewMode = ReactiveCommand.Create<ViewMode>(
+            mode => { if (ActiveTab is { } tab) ChangeViewMode(tab, mode); },
+            this.WhenAnyValue(model => model.CanPreview));
+
         _subscriptions.Add(activeDocument
             .Select(document => document is null
                 ? Observable.Return(Strings.AppName)
@@ -137,7 +156,7 @@ public sealed class MainWindowViewModel : ViewModelBase, ISearchTarget, IDisposa
                  {
                      New, Open, OpenRecent, Close, Save, SaveAs, Exit, Undo, Redo, Cut, Copy, Paste, SelectAll,
                      ChooseLanguage, ToggleHighlight, EditTabs, ToggleLineNumbers, SplitWindow, MoveToOtherSide,
-                     Unsplit, NextTab, PreviousTab, ShowAbout,
+                     Unsplit, NextTab, PreviousTab, ShowAbout, SetViewMode,
                  })
         {
             _subscriptions.Add(command.ThrownExceptions.Subscribe(OnCommandFailed));
@@ -294,6 +313,16 @@ public sealed class MainWindowViewModel : ViewModelBase, ISearchTarget, IDisposa
     public ReactiveCommand<Unit, Unit> NextTab { get; }
     public ReactiveCommand<Unit, Unit> PreviousTab { get; }
     public ReactiveCommand<Unit, Unit> ShowAbout { get; }
+    public ReactiveCommand<ViewMode, Unit> SetViewMode { get; }
+
+    private readonly ObservableAsPropertyHelper<bool> _canPreview;
+    private readonly ObservableAsPropertyHelper<ViewMode> _viewMode;
+
+    /// <summary>Whether the active document has a preview: Markdown or SVG.</summary>
+    public bool CanPreview => _canPreview.Value;
+
+    /// <summary>The active tab's mode, for the marks on the Windows menu's mode items.</summary>
+    public ViewMode ViewMode => _viewMode.Value;
 
     // --- menus ---------------------------------------------------------------------------------
 
@@ -570,7 +599,8 @@ public sealed class MainWindowViewModel : ViewModelBase, ISearchTarget, IDisposa
     private EditorTabViewModel AddTab(TabGroupViewModel group, DocumentViewModel document,
         Action<EditorTabViewModel>? prepare = null)
     {
-        var tab = new EditorTabViewModel(document, Preferences);
+        var tab = new EditorTabViewModel(document, Preferences,
+            kind => _state.Document.PreviewModes.For(kind), ChangeViewMode);
         prepare?.Invoke(tab);
         var index = group.SelectedTab is { } selected ? group.Tabs.IndexOf(selected) + 1 : group.Tabs.Count;
         group.Tabs.Insert(index, tab);
@@ -635,6 +665,27 @@ public sealed class MainWindowViewModel : ViewModelBase, ISearchTarget, IDisposa
         NewDocument();
     }
 
+    /// <summary>
+    /// Windows ▸ Text Only, Text and Preview, Preview Only, and the buttons in the tab.
+    /// </summary>
+    /// <remarks>
+    /// The choice is also what this kind of file opens in from now on, the way a JetBrains
+    /// editor remembers it: someone who reads Markdown rendered wants the next file rendered too.
+    /// </remarks>
+    private void ChangeViewMode(EditorTabViewModel tab, ViewMode mode)
+    {
+        var kind = tab.Document.PreviewKind;
+        if (kind == PreviewKind.None)
+            return;
+
+        tab.Mode = mode;
+        if (_state.Document.PreviewModes.For(kind) != mode)
+            _state.Update(state => state with { PreviewModes = state.PreviewModes.With(kind, mode) });
+        // Back to the text when the text comes back; the preview has nothing to type into.
+        if (mode != ViewMode.Preview)
+            tab.RequestFocus();
+    }
+
     /// <summary>Windows ▸ Split Window: shows the active document in the other half as well.</summary>
     private void Split()
     {
@@ -655,6 +706,7 @@ public sealed class MainWindowViewModel : ViewModelBase, ISearchTarget, IDisposa
             var source = tab.Editor;
             AddTab(other, tab.Document, copy =>
             {
+                copy.Mode = tab.Mode;
                 copy.CaretOffset = source?.CaretOffset ?? tab.CaretOffset;
                 copy.ScrollOffset = source is null
                     ? tab.ScrollOffset

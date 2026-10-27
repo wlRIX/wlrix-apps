@@ -83,7 +83,11 @@ public sealed class DocumentViewModel : ViewModelBase, IDisposable
     public string? Path
     {
         get => _path;
-        private set => this.RaiseAndSetIfChanged(ref _path, value);
+        private set
+        {
+            this.RaiseAndSetIfChanged(ref _path, value);
+            this.RaisePropertyChanged(nameof(PreviewKind));
+        }
     }
 
     /// <summary>For an untitled document, which one: 1 is "Untitled", 2 "Untitled 2". Zero once saved.</summary>
@@ -119,8 +123,15 @@ public sealed class DocumentViewModel : ViewModelBase, IDisposable
     public string? LanguageId
     {
         get => _languageId;
-        set => this.RaiseAndSetIfChanged(ref _languageId, value);
+        set
+        {
+            this.RaiseAndSetIfChanged(ref _languageId, value);
+            this.RaisePropertyChanged(nameof(PreviewKind));
+        }
     }
+
+    /// <summary>What the document can be previewed as: Markdown by its language, SVG by its name.</summary>
+    public PreviewKind PreviewKind => PreviewKinds.For(_path, _languageId);
 
     /// <summary>
     /// Whether the language was picked from the menu rather than guessed from the file name.

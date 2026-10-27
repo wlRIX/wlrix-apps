@@ -2,6 +2,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:Wlrix.Writer.ViewModels"
         xmlns:views="using:Wlrix.Writer.Views"
+        xmlns:models="using:Wlrix.Writer.Models"
         xmlns:loc="using:Wlrix.Common.Localization"
         xmlns:wlrix="https://vic485.xyz/Wlrix.Avalonia"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -133,6 +134,18 @@
                 <Separator />
                 <MenuItem Header="{loc:Tr WindowsNextTab}" InputGesture="Ctrl+PageDown" Command="{Binding NextTab}" />
                 <MenuItem Header="{loc:Tr WindowsPreviousTab}" InputGesture="Ctrl+PageUp" Command="{Binding PreviousTab}" />
+                <!-- How a Markdown or SVG document is shown in its tab; the same choice as the
+                     buttons in the tab's corner. Only there for documents with a preview. -->
+                <Separator IsVisible="{Binding CanPreview}" />
+                <MenuItem Header="{loc:Tr WindowsTextOnly}" ToggleType="Radio" IsVisible="{Binding CanPreview}"
+                          IsChecked="{Binding ViewMode, Mode=OneWay, Converter={x:Static views:ViewModeConverter.Instance}, ConverterParameter={x:Static models:ViewMode.Editor}}"
+                          Command="{Binding SetViewMode}" CommandParameter="{x:Static models:ViewMode.Editor}" />
+                <MenuItem Header="{loc:Tr WindowsTextAndPreview}" ToggleType="Radio" IsVisible="{Binding CanPreview}"
+                          IsChecked="{Binding ViewMode, Mode=OneWay, Converter={x:Static views:ViewModeConverter.Instance}, ConverterParameter={x:Static models:ViewMode.Split}}"
+                          Command="{Binding SetViewMode}" CommandParameter="{x:Static models:ViewMode.Split}" />
+                <MenuItem Header="{loc:Tr WindowsPreviewOnly}" ToggleType="Radio" IsVisible="{Binding CanPreview}"
+                          IsChecked="{Binding ViewMode, Mode=OneWay, Converter={x:Static views:ViewModeConverter.Instance}, ConverterParameter={x:Static models:ViewMode.Preview}}"
+                          Command="{Binding SetViewMode}" CommandParameter="{x:Static models:ViewMode.Preview}" />
             </MenuItem>
 
             <MenuItem Header="{loc:Tr MenuHelp}" DockPanel.Dock="Right">

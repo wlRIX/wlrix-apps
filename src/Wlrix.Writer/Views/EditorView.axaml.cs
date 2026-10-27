@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Media;
@@ -20,6 +21,11 @@ namespace Wlrix.Writer.Views;
 /// A tab control builds this once and hands it each tab in turn as the selection moves, so it is
 /// written to change documents: the outgoing tab's caret, selection and scroll position are saved
 /// on it, and the incoming tab's are put back.
+/// </para>
+/// <para>
+/// A Markdown or SVG document can also be shown rendered: beside the text, or in its place. The
+/// tab's <see cref="EditorTabViewModel.Mode"/> says which, and the layout follows it. Beside the
+/// text, a Markdown preview scrolls along with the editor.
 /// </para>
 /// <para>
 /// Highlighting is a TextMate installation per editor. Its theme is rebuilt from the session's
@@ -62,6 +68,64 @@ public partial class EditorView : UserControl
         // A scheme change swaps a dictionary deep in the application's styles, and the
         // notification reaches every control here, several times over. One look after they settle.
         ResourcesChanged += (_, _) => ScheduleScheme();
+
+        TextOnlyButton.Click += (_, _) => Choose(ViewMode.Editor);
+        SplitButton.Click += (_, _) => Choose(ViewMode.Split);
+        PreviewOnlyButton.Click += (_, _) => Choose(ViewMode.Preview);
+        Editor.TextArea.TextView.ScrollOffsetChanged += (_, _) => FollowEditor();
+        Preview.Rendered += FollowEditor;
+    }
+
+    private void Choose(ViewMode mode)
+    {
+        _tab?.Choose(mode);
+        // The buttons toggle themselves on a click; put every mark back where the mode is,
+        // including the one just clicked if the mode did not change.
+        ApplyMode();
+    }
+
+    /// <summary>The mode the tab is in, as it can be shown: text alone for a document with no preview.</summary>
+    private ViewMode EffectiveMode =>
+        _tab is { } tab && tab.Document.PreviewKind != PreviewKind.None ? tab.Mode : ViewMode.Editor;
+
+    /// <summary>Lays the tab out for its mode: which wells show, and how the width is shared.</summary>
+    private void ApplyMode()
+    {
+        var mode = EffectiveMode;
+        var previewable = _tab?.Document.PreviewKind is { } kind && kind != PreviewKind.None;
+        var columns = Layout.ColumnDefinitions;
+        var showText = mode != ViewMode.Preview;
+        var showPreview = mode != ViewMode.Editor;
+        var wasPreviewShown = PreviewWell.IsVisible;
+
+        columns[0].Width = showText ? new GridLength(1, GridUnitType.Star) : new GridLength(0);
+        columns[1].Width = mode == ViewMode.Split ? GridLength.Auto : new GridLength(0);
+        columns[2].Width = showPreview ? new GridLength(1, GridUnitType.Star) : new GridLength(0);
+        TextWell.IsVisible = showText;
+        PreviewSplitter.IsVisible = mode == ViewMode.Split;
+        PreviewWell.IsVisible = showPreview;
+
+        ModeButtons.IsVisible = previewable;
+        TextOnlyButton.IsChecked = mode == ViewMode.Editor;
+        SplitButton.IsChecked = mode == ViewMode.Split;
+        PreviewOnlyButton.IsChecked = mode == ViewMode.Preview;
+
+        // The preview does not render while hidden, so it is brought up to date as it appears.
+        if (showPreview && !wasPreviewShown)
+            Preview.Refresh();
+    }
+
+    /// <summary>Scrolls the preview to what is at the top of the editor, while both are on screen.</summary>
+    private void FollowEditor()
+    {
+        if (EffectiveMode != ViewMode.Split || _tab?.Document.PreviewKind != PreviewKind.Markdown)
+            return;
+
+        var textView = Editor.TextArea.TextView;
+        var top = textView.ScrollOffset.Y;
+        var atEnd = top > 0 && top + textView.Bounds.Height >= textView.DocumentHeight - 1;
+        var line = textView.GetDocumentLineByVisualTop(top);
+        Preview.FollowEditor(line.LineNumber - 1, atEnd);
     }
 
     protected override void OnDataContextChanged(EventArgs e)
@@ -104,7 +168,16 @@ public partial class EditorView : UserControl
             document.WhenAnyValue(model => model.LanguageId, model => model.HighlightSyntax)
                 .Subscribe(_ => ApplyGrammar()),
             document.WhenAnyValue(model => model.Tabs).Subscribe(ApplyTabs),
+            tab.WhenAnyValue(model => model.Mode).Subscribe(_ => ApplyMode()),
+            // A document that becomes Markdown or SVG (Save As, or a change of language) has a
+            // preview to draw, or a different one.
+            document.WhenAnyValue(model => model.PreviewKind).Skip(1).Subscribe(_ =>
+            {
+                ApplyMode();
+                Preview.Refresh();
+            }),
         };
+        Preview.Show(document);
         tab.FocusRequested += OnFocusRequested;
         subscriptions.Add(Disposable.Create(() => tab.FocusRequested -= OnFocusRequested));
         _documentSubscriptions.Disposable = subscriptions;
@@ -145,6 +218,7 @@ public partial class EditorView : UserControl
             tab.Editor = null;
 
         _documentSubscriptions.Disposable = null;
+        Preview.Show(null);
         _tab = null;
     }
 

@@ -5,6 +5,7 @@ using Avalonia;
 using AvaloniaEdit;
 using ReactiveUI;
 using Wlrix.Writer.Localization;
+using Wlrix.Writer.Models;
 
 namespace Wlrix.Writer.ViewModels;
 
@@ -17,18 +18,34 @@ namespace Wlrix.Writer.ViewModels;
 public sealed class EditorTabViewModel : ViewModelBase, IDisposable
 {
     private readonly IDisposable _headerSubscription;
+    private readonly IDisposable _kindSubscription;
+    private readonly Action<EditorTabViewModel, ViewMode>? _modeChosen;
     private string _header = "";
     private bool _hasSelection;
+    private ViewMode _mode;
 
-    public EditorTabViewModel(DocumentViewModel document, EditorPreferences preferences)
+    /// <param name="defaultMode">
+    /// The mode a kind of previewable document opens in. Asked again whenever the document
+    /// becomes a different kind -- saved as <c>.md</c>, say, or switched to Markdown -- so it
+    /// arrives in the mode that kind opens in rather than the one the old kind had.
+    /// </param>
+    /// <param name="modeChosen">What to do when the user picks a mode in this tab.</param>
+    public EditorTabViewModel(DocumentViewModel document, EditorPreferences preferences,
+        Func<PreviewKind, ViewMode>? defaultMode = null,
+        Action<EditorTabViewModel, ViewMode>? modeChosen = null)
     {
         Document = document;
+        _modeChosen = modeChosen;
         Preferences = preferences;
         document.Views++;
 
         _headerSubscription = document
             .WhenAnyValue(model => model.DisplayName, model => model.IsModified)
             .Subscribe(pair => Header = pair.Item2 ? Strings.TabModified(pair.Item1) : pair.Item1);
+        _kindSubscription = document
+            .WhenAnyValue(model => model.PreviewKind)
+            .DistinctUntilChanged()
+            .Subscribe(kind => Mode = defaultMode?.Invoke(kind) ?? ViewMode.Editor);
     }
 
     public DocumentViewModel Document { get; }
@@ -47,6 +64,30 @@ public sealed class EditorTabViewModel : ViewModelBase, IDisposable
     {
         get => _hasSelection;
         set => this.RaiseAndSetIfChanged(ref _hasSelection, value);
+    }
+
+    /// <summary>
+    /// Text, preview or both. Only means anything for a document that has a preview; any other
+    /// is always shown as text, whatever this says.
+    /// </summary>
+    public ViewMode Mode
+    {
+        get => _mode;
+        set => this.RaiseAndSetIfChanged(ref _mode, value);
+    }
+
+    /// <summary>The user picked a mode with the buttons in this tab.</summary>
+    /// <remarks>
+    /// Through the window rather than straight to <see cref="Mode"/>, so the choice is also
+    /// remembered for the next file of the kind. This tab and not the active one: the buttons
+    /// can be clicked in the half that does not have the focus.
+    /// </remarks>
+    public void Choose(ViewMode mode)
+    {
+        if (_modeChosen is { } chosen)
+            chosen(this, mode);
+        else
+            Mode = mode;
     }
 
     /// <summary>The editor showing this tab, while it is the selected one. Set by the view.</summary>
@@ -74,6 +115,7 @@ public sealed class EditorTabViewModel : ViewModelBase, IDisposable
     public void Dispose()
     {
         _headerSubscription.Dispose();
+        _kindSubscription.Dispose();
         Document.Views--;
         Editor = null;
     }
