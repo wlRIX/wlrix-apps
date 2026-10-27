@@ -18,24 +18,18 @@ public sealed record PreviewWindow(
 
 /// <summary>
 /// One desk tile: its name, whether it is the active desk (drives the LED lamp), and the
-/// opaque geometry of its windows mapped into a preview box that carries the screen layout's
-/// own aspect ratio (<see cref="PreviewWidth"/> × <see cref="PreviewHeight"/>).
+/// opaque geometry of its windows mapped into a preview box that is the screen layout drawn at
+/// the overview's scale (<see cref="PreviewWidth"/> × <see cref="PreviewHeight"/>).
 /// Id 0 is the Global desk (<see cref="IsGlobal"/>).
 /// </summary>
 public sealed class DeskViewModel(int id) : ViewModelBase
 {
-    /// <summary>The preview box the screen layout is fitted into; the box that comes out keeps
-    /// the layout's aspect ratio, so a wide multi-monitor desktop gets a wide, shorter tile
-    /// rather than a fixed box with dead space above and below the windows.</summary>
-    public const double MaxPreviewWidth = 320;
-    public const double MaxPreviewHeight = 100;
-
     private string _name = string.Empty;
     private bool _isActive;
     private bool _isEditing;
     private string _editName = string.Empty;
-    private double _previewWidth = MaxPreviewWidth;
-    private double _previewHeight = MaxPreviewHeight;
+    private double _previewWidth;
+    private double _previewHeight;
     private IReadOnlyList<PreviewWindow> _previewWindows = [];
 
     public int Id { get; } = id;
@@ -78,14 +72,14 @@ public sealed class DeskViewModel(int id) : ViewModelBase
         private set => this.RaiseAndSetIfChanged(ref _previewWindows, value);
     }
 
-    /// <summary>Width of the preview box, sized from the screen layout's aspect ratio.</summary>
+    /// <summary>Width of the preview box: the screen layout's, at the overview's scale.</summary>
     public double PreviewWidth
     {
         get => _previewWidth;
         private set => this.RaiseAndSetIfChanged(ref _previewWidth, value);
     }
 
-    /// <summary>Height of the preview box, sized from the screen layout's aspect ratio.</summary>
+    /// <summary>Height of the preview box: the screen layout's, at the overview's scale.</summary>
     public double PreviewHeight
     {
         get => _previewHeight;
@@ -104,8 +98,9 @@ public sealed class DeskViewModel(int id) : ViewModelBase
 
     /// <summary>Refreshes this tile from a snapshot. <paramref name="windows"/> are the windows
     /// to draw (the desk's own plus the Global desk's); <paramref name="world"/> is the bounding
-    /// box of all outputs.</summary>
-    public void Update(DeskInfo info, IReadOnlyList<WindowInfo> windows, Rect world)
+    /// box of all outputs; <paramref name="scalePercent"/> is how large it is drawn, as a
+    /// percentage of its own size (see <see cref="DeskScale"/>).</summary>
+    public void Update(DeskInfo info, IReadOnlyList<WindowInfo> windows, Rect world, int scalePercent)
     {
         Name = info.Name;
         IsActive = info.Active;
@@ -116,9 +111,10 @@ public sealed class DeskViewModel(int id) : ViewModelBase
             return;
         }
 
-        // Fit the screen layout into the preview budget and take the fitted size as the box
-        // itself, so the windows always reach all four edges instead of being letterboxed.
-        var scale = Math.Min(MaxPreviewWidth / world.Width, MaxPreviewHeight / world.Height);
+        // The box is the whole screen layout scaled down, as IRIX drew it, so it keeps the
+        // layout's aspect ratio and the windows reach all four edges: a wide multi-monitor
+        // desktop gets a wide tile rather than a fixed box with dead space in it.
+        var scale = scalePercent / 100.0;
         PreviewWidth = Math.Round(world.Width * scale);
         PreviewHeight = Math.Round(world.Height * scale);
         PreviewWindows = Scale(windows, world, scale);

@@ -103,4 +103,43 @@
 
 すべてのデスクを一覧表示します。デスクをダブルクリックするとそのデスクに切り替わり、スナップショット内のウィンドウを選択すると「ウィンドウ」メニューから操作できます。</value>
     </data>
+    <data name="Scaling" xml:space="preserve">
+        <value>スケーリング (_S)</value>
+    </data>
+    <data name="Scale6" xml:space="preserve">
+        <value>_6%</value>
+    </data>
+    <data name="Scale7" xml:space="preserve">
+        <value>_7%</value>
+    </data>
+    <data name="Scale8" xml:space="preserve">
+        <value>_8%</value>
+    </data>
+    <data name="Scale9" xml:space="preserve">
+        <value>_9%</value>
+    </data>
+    <data name="Scale10" xml:space="preserve">
+        <value>_10%</value>
+    </data>
+    <data name="UserDefinedScale" xml:space="preserve">
+        <value>ユーザ定義 – {0}% (_U)</value>
+    </data>
+    <data name="CustomScale" xml:space="preserve">
+        <value>カスタム... (_C)</value>
+    </data>
+    <data name="CustomScaleTitle" xml:space="preserve">
+        <value>wlRIX デスク カスタムスケーリング</value>
+    </data>
+    <data name="CustomDeskScale" xml:space="preserve">
+        <value>カスタムデスクスケール</value>
+    </data>
+    <data name="DialogOk" xml:space="preserve">
+        <value>OK</value>
+    </data>
+    <data name="DialogApply" xml:space="preserve">
+        <value>適用</value>
+    </data>
+    <data name="DialogCancel" xml:space="preserve">
+        <value>キャンセル</value>
+    </data>
 </root>

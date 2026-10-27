@@ -1,3 +1,4 @@
+using System.Globalization;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
@@ -40,6 +41,9 @@ public partial class MainWindow : Window
         vm.FeedUnavailable += OnFeedUnavailable;
         vm.CommandFailed += OnCommandFailed;
         vm.UiStateChanged += SaveState;
+        vm.ScaleChanged += OnScaleChanged;
+        vm.RenameStarted += OnRenameStarted;
+        vm.ExitRequested += Close;
         // The previews are scaled against the screen layout, which the compositor owns and
         // Avalonia already knows; keep it in step with the desks feed.
         UpdateWorld();
@@ -58,6 +62,9 @@ public partial class MainWindow : Window
             vm.FeedUnavailable -= OnFeedUnavailable;
             vm.CommandFailed -= OnCommandFailed;
             vm.UiStateChanged -= SaveState;
+            vm.ScaleChanged -= OnScaleChanged;
+            vm.RenameStarted -= OnRenameStarted;
+            vm.ExitRequested -= Close;
             // Before Dispose, and the only point at which the window's size can still be read.
             SaveState();
             vm.Dispose();
@@ -92,6 +99,9 @@ public partial class MainWindow : Window
             ShowSnapshots = vm.ShowSnapshots,
             ShowGlobalDesk = vm.ShowGlobalDesk,
             WindowLabel = vm.WindowLabel,
+            PresetScale = vm.PresetScale,
+            UserDefinedScale = vm.UserDefinedScale,
+            UseUserDefinedScale = vm.UseUserDefinedScale,
             WindowWidth = Width,
             WindowHeight = Height,
         });
@@ -149,7 +159,46 @@ public partial class MainWindow : Window
             vm.WindowLabel = label;
     }
 
-    private void OnExit(object? sender, RoutedEventArgs e) => Close();
+    private void OnPresetScale(object? sender, RoutedEventArgs e)
+    {
+        if (DataContext is MainWindowViewModel vm && sender is MenuItem { Tag: string tag }
+            && int.TryParse(tag, NumberStyles.Integer, CultureInfo.InvariantCulture, out var percent))
+            vm.ChoosePresetScale(percent);
+    }
+
+    private void OnUserDefinedScale(object? sender, RoutedEventArgs e) =>
+        (DataContext as MainWindowViewModel)?.ChooseUserDefinedScale();
+
+    private void OnCustomScale(object? sender, RoutedEventArgs e)
+    {
+        if (DataContext is MainWindowViewModel vm)
+            _ = CustomScaleDialog.ShowAsync(this, vm.Scale, vm.SetUserDefinedScale);
+    }
+
+    // The window grows and shrinks with its tiles, so a larger scale shows the same desks
+    // rather than the top of them, and a smaller one leaves no empty strip below. Every row of
+    // tiles changes by the same amount; the width is left alone, because the strip scrolls
+    // sideways and more columns is what a wider window was for.
+    private void OnScaleChanged(double heightDelta)
+    {
+        if (DataContext is not MainWindowViewModel { ShowSnapshots: true } || heightDelta == 0
+            || !double.IsFinite(Height))
+            return;
+
+        Height = Math.Max(MinHeight, Height + heightDelta * RowsOfTiles());
+    }
+
+    // How many tiles are stacked in the desk list's first column; at least one, for the Global
+    // tile beside an empty list.
+    private int RowsOfTiles()
+    {
+        var tiles = DeskList.GetRealizedContainers().ToList();
+        if (tiles.Count == 0)
+            return 1;
+
+        var firstColumn = tiles.Min(tile => tile.Bounds.X);
+        return Math.Max(1, tiles.Count(tile => tile.Bounds.X == firstColumn));
+    }
 
     private void OnProductInformation(object? sender, RoutedEventArgs e)
     {
@@ -159,16 +208,10 @@ public partial class MainWindow : Window
     }
 
 
-    // Rename opens the editor on the selected tile; the template only realizes the field when
-    // IsEditing flips, so focusing it waits for that layout pass.
-    private void OnRenameSelected(object? sender, RoutedEventArgs e)
-    {
-        if (DataContext is not MainWindowViewModel vm || vm.SelectedDesk is not { } desk)
-            return;
-
-        vm.BeginRenameSelected();
+    // The template only realizes the name field when IsEditing flips, so focusing it waits
+    // for that layout pass.
+    private void OnRenameStarted(DeskViewModel desk) =>
         Dispatcher.UIThread.Post(() => FocusNameEditor(desk), DispatcherPriority.Loaded);
-    }
 
     private void FocusNameEditor(DeskViewModel desk)
     {

@@ -7,7 +7,8 @@ namespace Wlrix.Desks.Services;
 
 /// <summary>What the overview looked like when it was last closed.</summary>
 /// <remarks>
-/// Everything a person can change from the Overview menu, plus the window's size. All of it is
+/// Everything a person can change from the Overview menu, the snapshot scale from the Desk
+/// menu, and the window's size. All of it is
 /// written back on close, whether it got there from a menu item or from the command line: a
 /// flag is how you ask for something, not a separate kind of state.
 /// </remarks>
@@ -21,6 +22,19 @@ public sealed record DesksSettings
     public bool ShowGlobalDesk { get; init; } = true;
 
     public WindowLabel WindowLabel { get; init; } = WindowLabel.Title;
+
+    /// <summary>The Scaling submenu's preset that is chosen, or was last chosen.</summary>
+    public int PresetScale { get; init; } = DeskScale.Default;
+
+    /// <summary>
+    /// What the Custom dialog was last set to, or null if it never has been. Kept apart from
+    /// <see cref="PresetScale"/> because the submenu offers both: going back to a preset does
+    /// not forget the user-defined amount.
+    /// </summary>
+    public int? UserDefinedScale { get; init; }
+
+    /// <summary>Whether the user-defined amount is the one in use, rather than the preset.</summary>
+    public bool UseUserDefinedScale { get; init; }
 
     /// <summary>The window's size. Defaults match <c>MainWindow.axaml</c>.</summary>
     public double WindowWidth { get; init; } = DesksSettingsStore.DefaultWindowWidth;
@@ -108,6 +122,10 @@ public sealed class DesksSettingsStore : IDesksSettingsStore
 
         var settings = loaded with
         {
+            PresetScale = DeskScale.IsPreset(loaded.PresetScale) ? loaded.PresetScale : DeskScale.Default,
+            UserDefinedScale = loaded.UserDefinedScale is { } user && DeskScale.IsInRange(user) ? user : null,
+            UseUserDefinedScale = loaded.UseUserDefinedScale && loaded.UserDefinedScale is { } used
+                                  && DeskScale.IsInRange(used),
             WindowWidth = Size(loaded.WindowWidth, DefaultWindowWidth),
             WindowHeight = Size(loaded.WindowHeight, DefaultWindowHeight),
         };

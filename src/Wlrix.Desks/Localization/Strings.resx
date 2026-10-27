@@ -111,4 +111,43 @@ The compositor may not be running.</value>
 
 Shows every desk at a glance. Double-click a desk to switch to it, or select a window in its snapshot to work on it from the Window menu.</value>
     </data>
+    <data name="Scaling" xml:space="preserve">
+        <value>_Scaling</value>
+    </data>
+    <data name="Scale6" xml:space="preserve">
+        <value>_6%</value>
+    </data>
+    <data name="Scale7" xml:space="preserve">
+        <value>_7%</value>
+    </data>
+    <data name="Scale8" xml:space="preserve">
+        <value>_8%</value>
+    </data>
+    <data name="Scale9" xml:space="preserve">
+        <value>_9%</value>
+    </data>
+    <data name="Scale10" xml:space="preserve">
+        <value>_10%</value>
+    </data>
+    <data name="UserDefinedScale" xml:space="preserve">
+        <value>_User Defined – {0}%</value>
+    </data>
+    <data name="CustomScale" xml:space="preserve">
+        <value>_Custom...</value>
+    </data>
+    <data name="CustomScaleTitle" xml:space="preserve">
+        <value>wlRIX Desks Custom Scaling</value>
+    </data>
+    <data name="CustomDeskScale" xml:space="preserve">
+        <value>Custom Desk Scale</value>
+    </data>
+    <data name="DialogOk" xml:space="preserve">
+        <value>OK</value>
+    </data>
+    <data name="DialogApply" xml:space="preserve">
+        <value>Apply</value>
+    </data>
+    <data name="DialogCancel" xml:space="preserve">
+        <value>Cancel</value>
+    </data>
 </root>

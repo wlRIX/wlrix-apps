@@ -24,7 +24,7 @@ public class DeskViewModelTests
         desk.Update(
             new DeskInfo(1, Active: true, "Web"),
             [new WindowInfo(101, 1, 100, 120, 760, 520, Minimized: false, "firefox", "Mozilla Firefox")],
-            World);
+            World, DeskScale.Default);
 
         var window = Assert.Single(desk.PreviewWindows);
         Assert.Equal(101, window.Id);
@@ -39,17 +39,18 @@ public class DeskViewModelTests
         desk.Update(
             new DeskInfo(1, Active: false, "Web"),
             [new WindowInfo(101, 1, 192, 108, 960, 540, Minimized: false, "term", "Terminal")],
-            World);
+            World, 10);
 
-        // 1920x1080 fitted into 320x100 is a scale of 100/1080, and the box takes the fitted
-        // size so the windows reach all four edges rather than letterboxing.
-        var scale = DeskViewModel.MaxPreviewHeight / World.Height;
+        // At 10% the box is the screen layout a tenth the size, so the windows reach all four
+        // edges rather than letterboxing.
+        const double scale = 0.1;
         var window = Assert.Single(desk.PreviewWindows);
 
         Assert.Equal(192 * scale, window.X, 6);
         Assert.Equal(108 * scale, window.Y, 6);
         Assert.Equal(960 * scale, window.W, 6);
         Assert.Equal(540 * scale, window.H, 6);
-        Assert.Equal(Math.Round(World.Height * scale), desk.PreviewHeight);
+        Assert.Equal(192, desk.PreviewWidth);
+        Assert.Equal(108, desk.PreviewHeight);
     }
 }

@@ -1,0 +1,33 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:loc="using:Wlrix.Common.Localization"
+        x:Class="Wlrix.Desks.Views.CustomScaleDialog"
+        Title="{loc:Tr CustomScaleTitle}"
+        MinWidth="300" SizeToContent="WidthAndHeight"
+        CanResize="False"
+        ShowInTaskbar="False"
+        WindowStartupLocation="CenterOwner">
+    <StackPanel Margin="16,12,16,16" Spacing="2">
+        <TextBlock Text="{loc:Tr CustomDeskScale}" FontWeight="Bold" HorizontalAlignment="Center" />
+
+        <!-- The amount rides above the thumb rather than sitting in a field of its own, as a
+             Motif scale showed its value: the code-behind keeps it centered over the thumb. -->
+        <Canvas Name="ValueTrack" Height="18" Margin="0,6,0,0">
+            <TextBlock Name="ValueLabel" FontWeight="Bold" />
+        </Canvas>
+        <Slider Name="ScaleSlider" TickFrequency="1" IsSnapToTickEnabled="True"
+                SmallChange="1" LargeChange="1" />
+
+        <!-- Spread across the dialog as IRIX laid them out: OK at the left, Cancel at the
+             right, Apply between. The gaps take the slack, so a longer translation widens the
+             dialog rather than clipping a button. -->
+        <Grid ColumnDefinitions="Auto,*,Auto,*,Auto" Margin="0,18,0,0">
+            <Button Grid.Column="0" Name="Accept" Content="{loc:Tr DialogOk}" MinWidth="76"
+                    IsDefault="True" />
+            <Button Grid.Column="2" Name="Apply" Content="{loc:Tr DialogApply}" MinWidth="76"
+                    Margin="12,0" />
+            <Button Grid.Column="4" Name="Reject" Content="{loc:Tr DialogCancel}" MinWidth="76"
+                    IsCancel="True" />
+        </Grid>
+    </StackPanel>
+</Window>

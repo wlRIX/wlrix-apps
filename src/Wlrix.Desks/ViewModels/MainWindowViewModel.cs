@@ -18,6 +18,9 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
     private bool _showGlobalDesk = true;
     private bool _showSnapshots = true;
     private WindowLabel _windowLabel = WindowLabel.Title;
+    private int _presetScale = DeskScale.Default;
+    private int? _userDefinedScale;
+    private bool _useUserDefinedScale;
     private DeskSnapshot? _lastSnapshot;
     private long? _hoveredWindowId;
     private long? _selectedWindowId;
@@ -40,6 +43,9 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
             _showGlobalDesk = settings.ShowGlobalDesk;
             _showSnapshots = settings.ShowSnapshots;
             _windowLabel = settings.WindowLabel;
+            _presetScale = settings.PresetScale;
+            _userDefinedScale = settings.UserDefinedScale;
+            _useUserDefinedScale = settings.UseUserDefinedScale && settings.UserDefinedScale is not null;
         }
 
         _feed = feed;
@@ -47,6 +53,8 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
         _feed.Unavailable += OnUnavailable;
 
         NewDesk = ReactiveCommand.CreateFromTask(NewDeskAsync);
+        RenameSelected = ReactiveCommand.Create(BeginRenameSelected);
+        Exit = ReactiveCommand.Create(() => ExitRequested?.Invoke());
         GotoSelected = ReactiveCommand.CreateFromTask(GotoSelectedAsync);
         DeleteSelected = ReactiveCommand.CreateFromTask(DeleteSelectedAsync);
         MinimizeAll = ReactiveCommand.CreateFromTask(MinimizeAllAsync);
@@ -74,6 +82,21 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
     /// subscription lifetime with it for three setters.
     /// </remarks>
     public event Action? UiStateChanged;
+
+    /// <summary>
+    /// Raised when a desk's inline name editor has been opened, so the view can focus the
+    /// field once the template has realized it.
+    /// </summary>
+    public event Action<DeskViewModel>? RenameStarted;
+
+    /// <summary>Raised by the Overview menu's Exit; closing the window is the view's.</summary>
+    public event Action? ExitRequested;
+
+    /// <summary>
+    /// Raised when the snapshot scale changes, with how much taller (or, negative, shorter) a
+    /// snapshot became, so the window can grow or shrink with its tiles.
+    /// </summary>
+    public event Action<double>? ScaleChanged;
 
     /// <summary>The scrollable, selectable desks (excludes the Global desk).</summary>
     public ObservableCollection<DeskViewModel> Desks { get; } = [];
@@ -190,6 +213,75 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
 
     public bool ShowsNoNames => WindowLabel == WindowLabel.None;
 
+    /// <summary>The Scaling submenu's preset, whether or not it is the one in use.</summary>
+    public int PresetScale => _presetScale;
+
+    /// <summary>What the Custom dialog was last set to, or null if it never has been.</summary>
+    public int? UserDefinedScale => _userDefinedScale;
+
+    public bool UseUserDefinedScale => _useUserDefinedScale;
+
+    /// <summary>How large the snapshots are drawn, as a percentage of the screen layout.</summary>
+    public int Scale => _useUserDefinedScale && _userDefinedScale is { } user ? user : _presetScale;
+
+    /// <summary>The preset whose radio item is checked: none while the user-defined amount is
+    /// in use, even when it happens to equal one of them.</summary>
+    public int? CheckedPresetScale => _useUserDefinedScale ? null : _presetScale;
+
+    /// <summary>The submenu lists the user-defined amount once there is one to list.</summary>
+    public bool HasUserDefinedScale => _userDefinedScale is not null;
+
+    public string UserDefinedScaleMenuHeader =>
+        _userDefinedScale is { } user ? Strings.UserDefinedScale(user) : string.Empty;
+
+    /// <summary>Draws the snapshots at one of the Scaling submenu's presets.</summary>
+    public void ChoosePresetScale(int percent)
+    {
+        if (DeskScale.IsPreset(percent))
+            SetScale(percent, _userDefinedScale, useUserDefined: false);
+    }
+
+    /// <summary>Goes back to the user-defined amount, if there is one.</summary>
+    public void ChooseUserDefinedScale()
+    {
+        if (_userDefinedScale is not null)
+            SetScale(_presetScale, _userDefinedScale, useUserDefined: true);
+    }
+
+    /// <summary>Sets the user-defined amount and draws the snapshots at it: the Custom
+    /// dialog's OK and Apply.</summary>
+    public void SetUserDefinedScale(int percent) =>
+        SetScale(_presetScale, Math.Clamp(percent, DeskScale.Minimum, DeskScale.Maximum), useUserDefined: true);
+
+    private void SetScale(int preset, int? userDefined, bool useUserDefined)
+    {
+        var before = Scale;
+        var remembered = (_presetScale, _userDefinedScale, _useUserDefinedScale);
+        _presetScale = preset;
+        _userDefinedScale = userDefined;
+        _useUserDefinedScale = useUserDefined;
+        if (remembered == (_presetScale, _userDefinedScale, _useUserDefinedScale))
+            return;
+
+        this.RaisePropertyChanged(nameof(PresetScale));
+        this.RaisePropertyChanged(nameof(UserDefinedScale));
+        this.RaisePropertyChanged(nameof(UseUserDefinedScale));
+        this.RaisePropertyChanged(nameof(Scale));
+        this.RaisePropertyChanged(nameof(CheckedPresetScale));
+        this.RaisePropertyChanged(nameof(HasUserDefinedScale));
+        this.RaisePropertyChanged(nameof(UserDefinedScaleMenuHeader));
+
+        if (Scale != before)
+        {
+            if (_lastSnapshot is not null)
+                ApplySnapshot(_lastSnapshot);
+            ScaleChanged?.Invoke(Math.Round(_world.Height * Scale / 100.0)
+                                 - Math.Round(_world.Height * before / 100.0));
+        }
+
+        UiStateChanged?.Invoke();
+    }
+
     /// <summary>
     /// The virtual-screen bounds the window rectangles are scaled from, set by the view from
     /// Avalonia's <see cref="Avalonia.Platform.Screen"/> layout. Re-applies the last snapshot
@@ -223,11 +315,13 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
     // with nothing selected does nothing rather than throwing. That is what lets the menu's
     // IsEnabled stay a matter of appearance.
     //
-    // Rename is deliberately absent. It opens an inline editor and then has to focus it once
-    // the template has realized the field, which is view work and stays in the view — and it
-    // advertises no shortcut to need this.
+    // Rename and Exit end in view work — focusing the editor once the template has realized
+    // it, closing the window — so their commands do the model's half and raise an event for
+    // the rest.
 
     public ReactiveCommand<Unit, Unit> NewDesk { get; }
+    public ReactiveCommand<Unit, Unit> RenameSelected { get; }
+    public ReactiveCommand<Unit, Unit> Exit { get; }
     public ReactiveCommand<Unit, Unit> GotoSelected { get; }
     public ReactiveCommand<Unit, Unit> DeleteSelected { get; }
     public ReactiveCommand<Unit, Unit> MinimizeAll { get; }
@@ -247,10 +341,17 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
         SelectedDesk is { IsGlobal: false } d ? Guard(() => _feed.SwitchAsync(d.Id)) : Task.CompletedTask;
 
     /// <summary>Opens the inline name editor on the selected desk.</summary>
+    /// <remarks>
+    /// An editor that is already open is left alone: the shortcut reaches the window even from
+    /// inside the field, and reopening it would throw away what has been typed.
+    /// </remarks>
     public void BeginRenameSelected()
     {
-        if (SelectedDesk is { IsGlobal: false } d)
-            d.BeginEdit();
+        if (SelectedDesk is not { IsGlobal: false, IsEditing: false } d)
+            return;
+
+        d.BeginEdit();
+        RenameStarted?.Invoke(d);
     }
 
     /// <summary>
@@ -395,7 +496,7 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
         if (snapshot.Desks.FirstOrDefault(d => d.Id == 0) is { } globalInfo)
         {
             var g = GlobalDesk ?? new DeskViewModel(0);
-            g.Update(globalInfo, globalWindows, world);
+            g.Update(globalInfo, globalWindows, world, Scale);
             GlobalDesk = g;
         }
 
@@ -408,7 +509,7 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
                 vm = new DeskViewModel(info.Id);
 
             var windows = snapshot.Windows.Where(w => w.DeskId == info.Id).Concat(globalWindows).ToList();
-            vm.Update(info, windows, world);
+            vm.Update(info, windows, world, Scale);
             ordered.Add(vm);
         }
 

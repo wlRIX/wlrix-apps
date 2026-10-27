@@ -47,6 +47,40 @@ public sealed class DesksSettingsStoreTests : IDisposable
     }
 
     [Fact]
+    public void TheScaleComesBack()
+    {
+        new DesksSettingsStore(_root).Save(new DesksSettings
+        {
+            PresetScale = 10,
+            UserDefinedScale = 18,
+            UseUserDefinedScale = true,
+        });
+        var loaded = new DesksSettingsStore(_root).Load();
+
+        Assert.Equal(10, loaded.PresetScale);
+        Assert.Equal(18, loaded.UserDefinedScale);
+        Assert.True(loaded.UseUserDefinedScale);
+    }
+
+    [Fact]
+    public void AScaleOutsideWhatTheMenuOffersFallsBack()
+    {
+        // 5% is in the Custom dialog's range but is not a preset; 40% is in neither. A file
+        // that says to use a user-defined scale it does not have is using the preset.
+        new DesksSettingsStore(_root).Save(new DesksSettings
+        {
+            PresetScale = 5,
+            UserDefinedScale = 40,
+            UseUserDefinedScale = true,
+        });
+        var loaded = new DesksSettingsStore(_root).Load();
+
+        Assert.Equal(DeskScale.Default, loaded.PresetScale);
+        Assert.Null(loaded.UserDefinedScale);
+        Assert.False(loaded.UseUserDefinedScale);
+    }
+
+    [Fact]
     public void TheLabelModeIsWrittenByName()
     {
         // Small enough to read, so it should be readable: nobody looking into this file should
