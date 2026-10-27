@@ -138,8 +138,8 @@
   <data name="ViewPreviewOnlyTip" xml:space="preserve">
     <value>Preview only</value>
   </data>
-  <data name="HelpAbout" xml:space="preserve">
-    <value>_About Writer</value>
+  <data name="HelpProductInfo" xml:space="preserve">
+    <value>_Product Information</value>
   </data>
   <data name="OpenTitle" xml:space="preserve">
     <value>Open File</value>
@@ -157,7 +157,7 @@
     <value>Error</value>
   </data>
   <data name="AboutTitle" xml:space="preserve">
-    <value>About wlRIX Writer</value>
+    <value>Product Information</value>
   </data>
   <data name="AboutMessage" xml:space="preserve">
     <value>wlRIX Writer {0}

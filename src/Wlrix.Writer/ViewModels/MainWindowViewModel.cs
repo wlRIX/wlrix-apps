@@ -117,7 +117,7 @@ public sealed class MainWindowViewModel : ViewModelBase, ISearchTarget, IDisposa
         Unsplit = ReactiveCommand.Create(Join, isSplit);
         NextTab = ReactiveCommand.Create(() => CycleTab(1), hasTab);
         PreviousTab = ReactiveCommand.Create(() => CycleTab(-1), hasTab);
-        ShowAbout = ReactiveCommand.Create(() => AboutRequested?.Invoke());
+        ProductInformation = ReactiveCommand.Create(() => AboutRequested?.Invoke());
 
         // The active tab's preview, for the Windows menu's mode items and their marks.
         var previewState = activeTab
@@ -156,7 +156,7 @@ public sealed class MainWindowViewModel : ViewModelBase, ISearchTarget, IDisposa
                  {
                      New, Open, OpenRecent, Close, Save, SaveAs, Exit, Undo, Redo, Cut, Copy, Paste, SelectAll,
                      ChooseLanguage, ToggleHighlight, EditTabs, ToggleLineNumbers, SplitWindow, MoveToOtherSide,
-                     Unsplit, NextTab, PreviousTab, ShowAbout, SetViewMode,
+                     Unsplit, NextTab, PreviousTab, ProductInformation, SetViewMode,
                  })
         {
             _subscriptions.Add(command.ThrownExceptions.Subscribe(OnCommandFailed));
@@ -312,7 +312,7 @@ public sealed class MainWindowViewModel : ViewModelBase, ISearchTarget, IDisposa
     public ReactiveCommand<Unit, Unit> Unsplit { get; }
     public ReactiveCommand<Unit, Unit> NextTab { get; }
     public ReactiveCommand<Unit, Unit> PreviousTab { get; }
-    public ReactiveCommand<Unit, Unit> ShowAbout { get; }
+    public ReactiveCommand<Unit, Unit> ProductInformation { get; }
     public ReactiveCommand<ViewMode, Unit> SetViewMode { get; }
 
     private readonly ObservableAsPropertyHelper<bool> _canPreview;

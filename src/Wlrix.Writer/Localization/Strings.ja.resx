@@ -1,0 +1,319 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AppName" xml:space="preserve">
+    <value>wlRIX ライター</value>
+  </data>
+  <data name="Untitled" xml:space="preserve">
+    <value>無題</value>
+  </data>
+  <data name="TitleModified" xml:space="preserve">
+    <value>{0} (変更あり)</value>
+  </data>
+  <data name="TabModified" xml:space="preserve">
+    <value>{0} *</value>
+  </data>
+  <data name="MenuFile" xml:space="preserve">
+    <value>ファイル (_F)</value>
+  </data>
+  <data name="MenuEdit" xml:space="preserve">
+    <value>編集 (_E)</value>
+  </data>
+  <data name="MenuSearch" xml:space="preserve">
+    <value>検索 (_S)</value>
+  </data>
+  <data name="MenuPreferences" xml:space="preserve">
+    <value>設定 (_P)</value>
+  </data>
+  <data name="MenuWindows" xml:space="preserve">
+    <value>ウィンドウ (_W)</value>
+  </data>
+  <data name="MenuHelp" xml:space="preserve">
+    <value>ヘルプ (_H)</value>
+  </data>
+  <data name="FileNew" xml:space="preserve">
+    <value>新規 (_N)</value>
+  </data>
+  <data name="FileOpen" xml:space="preserve">
+    <value>開く... (_O)</value>
+  </data>
+  <data name="FileOpenPrevious" xml:space="preserve">
+    <value>最近使ったファイル (_P)</value>
+  </data>
+  <data name="FileOpenPreviousNone" xml:space="preserve">
+    <value>(なし)</value>
+  </data>
+  <data name="FileClose" xml:space="preserve">
+    <value>閉じる (_C)</value>
+  </data>
+  <data name="FileSave" xml:space="preserve">
+    <value>保存 (_S)</value>
+  </data>
+  <data name="FileSaveAs" xml:space="preserve">
+    <value>名前を付けて保存... (_A)</value>
+  </data>
+  <data name="FileExit" xml:space="preserve">
+    <value>終了 (_X)</value>
+  </data>
+  <data name="EditUndo" xml:space="preserve">
+    <value>元に戻す (_U)</value>
+  </data>
+  <data name="EditRedo" xml:space="preserve">
+    <value>やり直す (_R)</value>
+  </data>
+  <data name="EditCut" xml:space="preserve">
+    <value>切り取り (_T)</value>
+  </data>
+  <data name="EditCopy" xml:space="preserve">
+    <value>コピー (_C)</value>
+  </data>
+  <data name="EditPaste" xml:space="preserve">
+    <value>貼り付け (_P)</value>
+  </data>
+  <data name="EditSelectAll" xml:space="preserve">
+    <value>すべて選択 (_A)</value>
+  </data>
+  <data name="SearchFind" xml:space="preserve">
+    <value>検索... (_F)</value>
+  </data>
+  <data name="SearchReplace" xml:space="preserve">
+    <value>置換... (_R)</value>
+  </data>
+  <data name="PrefLanguageMode" xml:space="preserve">
+    <value>言語モード (_L)</value>
+  </data>
+  <data name="PrefPlain" xml:space="preserve">
+    <value>プレーン</value>
+  </data>
+  <data name="PrefHighlight" xml:space="preserve">
+    <value>構文の強調表示 (_H)</value>
+  </data>
+  <data name="PrefTabs" xml:space="preserve">
+    <value>タブ... (_T)</value>
+  </data>
+  <data name="PrefLineNumbers" xml:space="preserve">
+    <value>行番号を表示 (_N)</value>
+  </data>
+  <data name="WindowsSplit" xml:space="preserve">
+    <value>ウィンドウを分割 (_S)</value>
+  </data>
+  <data name="WindowsMove" xml:space="preserve">
+    <value>タブを反対側へ移動 (_M)</value>
+  </data>
+  <data name="WindowsUnsplit" xml:space="preserve">
+    <value>分割を解除 (_U)</value>
+  </data>
+  <data name="WindowsNextTab" xml:space="preserve">
+    <value>次のタブ (_N)</value>
+  </data>
+  <data name="WindowsPreviousTab" xml:space="preserve">
+    <value>前のタブ (_P)</value>
+  </data>
+  <data name="WindowsTextOnly" xml:space="preserve">
+    <value>テキストのみ (_T)</value>
+  </data>
+  <data name="WindowsTextAndPreview" xml:space="preserve">
+    <value>テキストとプレビュー (_A)</value>
+  </data>
+  <data name="WindowsPreviewOnly" xml:space="preserve">
+    <value>プレビューのみ (_W)</value>
+  </data>
+  <data name="ViewTextOnlyTip" xml:space="preserve">
+    <value>テキストのみ</value>
+  </data>
+  <data name="ViewSplitTip" xml:space="preserve">
+    <value>テキストとプレビュー</value>
+  </data>
+  <data name="ViewPreviewOnlyTip" xml:space="preserve">
+    <value>プレビューのみ</value>
+  </data>
+  <data name="HelpProductInfo" xml:space="preserve">
+    <value>製品情報 (_P)</value>
+  </data>
+  <data name="OpenTitle" xml:space="preserve">
+    <value>ファイルを開く</value>
+  </data>
+  <data name="SaveAsTitle" xml:space="preserve">
+    <value>名前を付けて保存</value>
+  </data>
+  <data name="FilterAllFiles" xml:space="preserve">
+    <value>すべてのファイル</value>
+  </data>
+  <data name="FilterText" xml:space="preserve">
+    <value>テキストファイル</value>
+  </data>
+  <data name="ErrorTitle" xml:space="preserve">
+    <value>エラー</value>
+  </data>
+  <data name="AboutTitle" xml:space="preserve">
+    <value>製品情報</value>
+  </data>
+  <data name="AboutMessage" xml:space="preserve">
+    <value>wlRIX ライター {0}
+
+NEdit にならった、wlRIX デスクトップ用のテキストエディタです。</value>
+  </data>
+  <data name="ErrorOpenFailed" xml:space="preserve">
+    <value>{0} を開けませんでした:
+{1}</value>
+  </data>
+  <data name="ErrorNotText" xml:space="preserve">
+    <value>{0} はテキストファイルではありません。</value>
+  </data>
+  <data name="ErrorSaveFailed" xml:space="preserve">
+    <value>{0} を保存できませんでした:
+{1}</value>
+  </data>
+  <data name="InfoTitle" xml:space="preserve">
+    <value>情報</value>
+  </data>
+  <data name="InfoEncodingWidened" xml:space="preserve">
+    <value>{0} には {1} で表せない文字が含まれているため、UTF-8 で保存しました。</value>
+  </data>
+  <data name="SaveChangesTitle" xml:space="preserve">
+    <value>変更の保存</value>
+  </data>
+  <data name="SaveChangesMessage" xml:space="preserve">
+    <value>{0} への変更を保存しますか?</value>
+  </data>
+  <data name="DialogSave" xml:space="preserve">
+    <value>保存</value>
+  </data>
+  <data name="DialogDontSave" xml:space="preserve">
+    <value>保存しない</value>
+  </data>
+  <data name="DialogCancel" xml:space="preserve">
+    <value>キャンセル</value>
+  </data>
+  <data name="DialogOk" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="ReloadTitle" xml:space="preserve">
+    <value>ファイルが変更されました</value>
+  </data>
+  <data name="ReloadMessage" xml:space="preserve">
+    <value>{0} は別のプログラムによって変更されました。
+
+ディスクから再読み込みしますか?</value>
+  </data>
+  <data name="ReloadMessageModified" xml:space="preserve">
+    <value>{0} は別のプログラムによって変更されましたが、ここにも保存していない変更があります。
+
+ディスクから再読み込みして、その変更を破棄しますか?</value>
+  </data>
+  <data name="DialogReload" xml:space="preserve">
+    <value>再読み込み</value>
+  </data>
+  <data name="DialogKeep" xml:space="preserve">
+    <value>こちらを残す</value>
+  </data>
+  <data name="DeletedTitle" xml:space="preserve">
+    <value>ファイルが削除されました</value>
+  </data>
+  <data name="DeletedMessage" xml:space="preserve">
+    <value>{0} は別のプログラムによって削除または移動されました。
+
+テキストはここに開いたままです。保存すると書き戻されます。</value>
+  </data>
+  <data name="TabsTitle" xml:space="preserve">
+    <value>タブ</value>
+  </data>
+  <data name="TabsWidth" xml:space="preserve">
+    <value>タブの間隔:</value>
+  </data>
+  <data name="TabsUseSpaces" xml:space="preserve">
+    <value>タブ文字の代わりにスペースを挿入する</value>
+  </data>
+  <data name="TabsDefault" xml:space="preserve">
+    <value>新しい文書の既定値にする</value>
+  </data>
+  <data name="FindTitle" xml:space="preserve">
+    <value>検索</value>
+  </data>
+  <data name="FindLabel" xml:space="preserve">
+    <value>検索する文字列 (_S):</value>
+  </data>
+  <data name="FindRecallHint" xml:space="preserve">
+    <value>(上矢印キーで以前の文字列を呼び出せます)</value>
+  </data>
+  <data name="FindRegex" xml:space="preserve">
+    <value>正規表現 (_R)</value>
+  </data>
+  <data name="FindCase" xml:space="preserve">
+    <value>大文字と小文字を区別 (_C)</value>
+  </data>
+  <data name="FindBackward" xml:space="preserve">
+    <value>後方へ検索 (_B)</value>
+  </data>
+  <data name="FindKeep" xml:space="preserve">
+    <value>ダイアログを開いたままにする (_K)</value>
+  </data>
+  <data name="FindButton" xml:space="preserve">
+    <value>検索</value>
+  </data>
+  <data name="FindWrapped" xml:space="preserve">
+    <value>先頭に戻って検索しました。</value>
+  </data>
+  <data name="FindWrappedBackward" xml:space="preserve">
+    <value>末尾に戻って検索しました。</value>
+  </data>
+  <data name="FindNotFound" xml:space="preserve">
+    <value>文字列が見つかりません。</value>
+  </data>
+  <data name="FindInvalid" xml:space="preserve">
+    <value>正規表現が正しくありません: {0}</value>
+  </data>
+  <data name="FindNoDocument" xml:space="preserve">
+    <value>検索する文書がありません。</value>
+  </data>
+  <data name="ReplaceTitle" xml:space="preserve">
+    <value>置換/検索</value>
+  </data>
+  <data name="ReplaceWithLabel" xml:space="preserve">
+    <value>置換後の文字列 (_W):</value>
+  </data>
+  <data name="FindWholeWord" xml:space="preserve">
+    <value>単語単位 (_H)</value>
+  </data>
+  <data name="ReplaceAllIn" xml:space="preserve">
+    <value>すべて置換する範囲:</value>
+  </data>
+  <data name="ReplaceScopeTab" xml:space="preserve">
+    <value>タブ (_T)</value>
+  </data>
+  <data name="ReplaceScopeSelection" xml:space="preserve">
+    <value>選択範囲 (_L)</value>
+  </data>
+  <data name="ReplaceScopeAllTabs" xml:space="preserve">
+    <value>すべてのタブ (_A)</value>
+  </data>
+  <data name="ReplaceButton" xml:space="preserve">
+    <value>置換</value>
+  </data>
+  <data name="ReplaceFindButton" xml:space="preserve">
+    <value>検索 (_F)</value>
+  </data>
+  <data name="ReplaceAndFindButton" xml:space="preserve">
+    <value>置換して検索 (_I)</value>
+  </data>
+  <data name="ReplacedOne" xml:space="preserve">
+    <value>1 件置換しました。</value>
+  </data>
+  <data name="ReplacedMany" xml:space="preserve">
+    <value>{0} 件置換しました。</value>
+  </data>
+  <data name="ReplacedManyInDocuments" xml:space="preserve">
+    <value>{1} 個の文書で {0} 件置換しました。</value>
+  </data>
+</root>

@@ -13,6 +13,13 @@
     </ItemGroup>
 
     <ItemGroup>
+        <!-- The string catalogs, read as data so the Japanese one can be checked against the
+             English: a key missing there shows the English, a placeholder lost shows nothing. -->
+        <None Include="..\..\src\Wlrix.Writer\Localization\*.resx"
+              Link="Localization\%(Filename)%(Extension)"
+              CopyToOutputDirectory="PreserveNewest" />
+    </ItemGroup>
+    <ItemGroup>
         <PackageReference Include="Avalonia.Headless" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" />
         <PackageReference Include="xunit" />
