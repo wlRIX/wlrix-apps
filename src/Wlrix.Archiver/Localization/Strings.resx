@@ -45,8 +45,8 @@
   <data name="ViewEncoding" xml:space="preserve">
     <value>_Encoding</value>
   </data>
-  <data name="HelpAbout" xml:space="preserve">
-    <value>_About</value>
+  <data name="HelpProductInfo" xml:space="preserve">
+    <value>_Product Information</value>
   </data>
   <data name="ColumnName" xml:space="preserve">
     <value>Name</value>
@@ -79,7 +79,7 @@
     <value>All files</value>
   </data>
   <data name="AboutTitle" xml:space="preserve">
-    <value>About wlRIX Archiver</value>
+    <value>Product Information</value>
   </data>
   <data name="AboutMessage" xml:space="preserve">
     <value>wlRIX Archiver

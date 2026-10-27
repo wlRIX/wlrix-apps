@@ -45,8 +45,8 @@
   <data name="ViewEncoding" xml:space="preserve">
     <value>文字エンコード(_E)</value>
   </data>
-  <data name="HelpAbout" xml:space="preserve">
-    <value>バージョン情報(_A)</value>
+  <data name="HelpProductInfo" xml:space="preserve">
+    <value>製品情報 (_P)</value>
   </data>
   <data name="ColumnName" xml:space="preserve">
     <value>名前</value>
@@ -79,7 +79,7 @@
     <value>すべてのファイル</value>
   </data>
   <data name="AboutTitle" xml:space="preserve">
-    <value>wlRIX アーカイバについて</value>
+    <value>製品情報</value>
   </data>
   <data name="AboutMessage" xml:space="preserve">
     <value>wlRIX アーカイバ

@@ -73,13 +73,13 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
         Exit = ReactiveCommand.Create(() => ExitRequested?.Invoke());
         Cancel = ReactiveCommand.Create(
             () => _running?.Cancel(), this.WhenAnyValue(model => model.IsBusy));
-        ShowAbout = ReactiveCommand.Create(() => AboutRequested?.Invoke());
+        ProductInformation = ReactiveCommand.Create(() => AboutRequested?.Invoke());
 
         // A command that throws has nowhere to put the exception and rethrows it on the
         // scheduler, taking the process with it. Everything reports here instead — the same
         // guard Wlrix.SoftwareManager's main view model documents.
         foreach (var command in new IHandleObservableErrors[]
-                     { Open, Extract, Remove, New, Exit, ShowAbout, Cancel })
+                     { Open, Extract, Remove, New, Exit, ProductInformation, Cancel })
         {
             _subscriptions.Add(command.ThrownExceptions.Subscribe(OnCommandFailed));
         }
@@ -102,7 +102,7 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
     public ReactiveCommand<Unit, Unit> Extract { get; }
     public ReactiveCommand<Unit, Unit> Remove { get; }
     public ReactiveCommand<Unit, Unit> Exit { get; }
-    public ReactiveCommand<Unit, Unit> ShowAbout { get; }
+    public ReactiveCommand<Unit, Unit> ProductInformation { get; }
 
     /// <summary>Stops the operation in progress. Enabled only while one is running.</summary>
     public ReactiveCommand<Unit, Unit> Cancel { get; }
@@ -138,7 +138,7 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
 
     public event Action<string>? ErrorRaised;
 
-    /// <summary>Raised (UI thread) when the About item is chosen.</summary>
+    /// <summary>Raised (UI thread) when Product Information is chosen.</summary>
     public event Action? AboutRequested;
 
     /// <summary>Raised (UI thread) when the window should close.</summary>
