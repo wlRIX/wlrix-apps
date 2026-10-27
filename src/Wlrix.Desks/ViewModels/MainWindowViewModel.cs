@@ -403,6 +403,26 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
             ? Guard(() => _feed.MoveWindowToDeskAsync(w.Id, desk))
             : Task.CompletedTask;
 
+    /// <summary>
+    /// Drops a window dragged across the overview: onto <paramref name="desk"/>, with its
+    /// top-left corner at <paramref name="previewTopLeft"/> in that desk's preview.
+    /// </summary>
+    /// <remarks>
+    /// The point is scaled back up to the screen layout and kept inside it, so a window let go
+    /// with its corner hanging off a snapshot's edge lands against the screen's edge rather
+    /// than off it.
+    /// </remarks>
+    public Task DropWindowAsync(long windowId, DeskViewModel desk, Point previewTopLeft)
+    {
+        if (_lastSnapshot?.Windows.FirstOrDefault(w => w.Id == windowId) is not { Minimized: false } window)
+            return Task.CompletedTask;
+
+        var scale = Scale / 100.0;
+        var x = Math.Clamp(_world.X + previewTopLeft.X / scale, _world.X, Math.Max(_world.X, _world.Right - window.W));
+        var y = Math.Clamp(_world.Y + previewTopLeft.Y / scale, _world.Y, Math.Max(_world.Y, _world.Bottom - window.H));
+        return Guard(() => _feed.PlaceWindowAsync(window.Id, desk.Id, (int)Math.Round(x), (int)Math.Round(y)));
+    }
+
     public Task MinimizeSelectedAsync() =>
         SelectedWindow is { Minimized: false } w
             ? Guard(() => _feed.MinimizeWindowAsync(w.Id))

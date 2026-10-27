@@ -46,6 +46,11 @@ public interface IDeskFeed : IDisposable
     /// <summary>Moves a window to another desk; desk 0 is the Global desk, which shows its
     /// windows on every desk.</summary>
     Task MoveWindowToDeskAsync(long id, int deskId);
+
+    /// <summary>Moves a window to a desk with its top-left corner at <paramref name="x"/>,
+    /// <paramref name="y"/> in compositor-logical coordinates. The desk may be the window's own,
+    /// which only moves it.</summary>
+    Task PlaceWindowAsync(long id, int deskId, int x, int y);
 }
 
 /// <summary>Thrown when the compositor answers a command with an <c>err</c> reply.</summary>

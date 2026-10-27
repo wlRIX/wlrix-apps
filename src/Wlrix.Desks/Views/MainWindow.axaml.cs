@@ -7,6 +7,7 @@ using Avalonia.Interactivity;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
 using Wlrix.Avalonia.Dialogs;
+using Wlrix.Desks.Controls;
 using Wlrix.Desks.Localization;
 using Wlrix.Desks.Models;
 using Wlrix.Desks.Services;
@@ -16,9 +17,16 @@ namespace Wlrix.Desks.Views;
 
 public partial class MainWindow : Window
 {
+    // The pointer carrying a dragged window, and the desk it would land on.
+    private IPointer? _dragPointer;
+    private DeskViewModel? _dropTarget;
+
     public MainWindow()
     {
         InitializeComponent();
+        AddHandler(DeskPreview.WindowDragDeltaEvent, OnWindowDragDelta);
+        AddHandler(DeskPreview.WindowDragEndedEvent, OnWindowDragEnded);
+        AddHandler(KeyDownEvent, OnDragKeyDown, RoutingStrategies.Tunnel);
     }
 
     /// <summary>
@@ -264,6 +272,66 @@ public partial class MainWindow : Window
 
 
 
+
+    // ── Dragging a window between desks ─────────────────────────────────────────────────
+    //
+    // As IRIX's overview did it: the window's ghost follows the pointer, the desk it is over
+    // turns blue, and letting go puts the window on that desk where the ghost was. Letting go
+    // over the desk it is already on just moves it there.
+
+    private void OnWindowDragDelta(object? sender, WindowDragEventArgs e)
+    {
+        _dragPointer = e.Pointer;
+
+        var position = e.PositionIn(DragLayer) - e.GrabOffset;
+        Ghost.Width = e.Window.W;
+        Ghost.Height = e.Window.H;
+        Canvas.SetLeft(Ghost, Math.Round(position.X));
+        Canvas.SetTop(Ghost, Math.Round(position.Y));
+        Ghost.IsVisible = true;
+
+        SetDropTarget(TileUnder(e)?.DataContext as DeskViewModel);
+    }
+
+    private void OnWindowDragEnded(object? sender, WindowDragEventArgs e)
+    {
+        var tile = e.Canceled ? null : TileUnder(e);
+        Ghost.IsVisible = false;
+        SetDropTarget(null);
+        _dragPointer = null;
+
+        if (tile is { DataContext: DeskViewModel desk } && DataContext is MainWindowViewModel vm
+            && tile.GetVisualDescendants().OfType<DeskPreview>().FirstOrDefault() is { } preview)
+            _ = vm.DropWindowAsync(e.Window.Id, desk, e.PositionIn(preview) - e.GrabOffset);
+    }
+
+    // Escape puts the window back. Releasing the pointer is what ends the drag, and the preview
+    // that holds it reports the end as canceled.
+    private void OnDragKeyDown(object? sender, KeyEventArgs e)
+    {
+        if (e.Key != Key.Escape || _dragPointer is not { } pointer)
+            return;
+
+        e.Handled = true;
+        pointer.Capture(null);
+    }
+
+    // The desk tile under the pointer -- its header as much as its snapshot, as the whole tile
+    // lights up -- or null over anything else.
+    private Border? TileUnder(WindowDragEventArgs e) =>
+        (this.InputHitTest(e.PositionIn(this)) as Visual)?
+            .GetSelfAndVisualAncestors()
+            .OfType<Border>()
+            .FirstOrDefault(border => border.Classes.Contains("tile"));
+
+    private void SetDropTarget(DeskViewModel? desk)
+    {
+        if (ReferenceEquals(desk, _dropTarget))
+            return;
+        _dropTarget?.IsDropTarget = false;
+        _dropTarget = desk;
+        _dropTarget?.IsDropTarget = true;
+    }
 
     // Clicking empty space in the desk strip (not on a tile, not the scrollbar) clears the selection.
     private void OnDeskListPointerPressed(object? sender, PointerPressedEventArgs e)

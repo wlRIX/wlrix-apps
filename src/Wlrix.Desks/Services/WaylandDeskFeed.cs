@@ -106,6 +106,22 @@ public sealed class WaylandDeskFeed : IDeskFeed
         return Task.CompletedTask;
     }
 
+    public Task PlaceWindowAsync(long id, int deskId, int x, int y)
+    {
+        Post(() =>
+        {
+            if (Toplevel(id) is not { } toplevel || Desk(deskId) is not { } desk)
+                return;
+            // `place` came with version 3. An older compositor can still be asked to change the
+            // desk, which is the half of a drop that matters most.
+            if (toplevel.Version >= 3)
+                toplevel.Place(desk, x, y);
+            else
+                toplevel.MoveToDesk(desk);
+        });
+        return Task.CompletedTask;
+    }
+
     public void Dispose()
     {
         if (!_cts.IsCancellationRequested)

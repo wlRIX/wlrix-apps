@@ -115,6 +115,20 @@ public sealed class SampleDeskFeed : IDeskFeed
         return Task.CompletedTask;
     }
 
+    public Task PlaceWindowAsync(long id, int deskId, int x, int y)
+    {
+        lock (_gate)
+        {
+            var i = _windows.FindIndex(w => w.Id == id);
+            if (i < 0)
+                return Task.CompletedTask;
+            _windows[i] = _windows[i] with { DeskId = deskId, X = x, Y = y };
+        }
+
+        Emit();
+        return Task.CompletedTask;
+    }
+
     public void Dispose() => _timer?.Dispose();
 
     private Task SetMinimized(long id, bool minimized)

@@ -12,9 +12,14 @@ namespace Wlrix.Desks.ViewModels;
 /// <see cref="WindowInfo"/> and are what the preview shows in a tooltip. Both are carried
 /// rather than one being chosen here, so that the Overview menu's choice between them stays a
 /// live toggle instead of something only a relaunch can change.
+///
+/// <para>
+/// <paramref name="Minimized"/> says the rectangle is an icon in the minimized grid rather than
+/// the window, which is why it cannot be dragged to a new position.
+/// </para>
 /// </remarks>
 public sealed record PreviewWindow(
-    long Id, double X, double Y, double W, double H, string Title, string AppId);
+    long Id, double X, double Y, double W, double H, string Title, string AppId, bool Minimized);
 
 /// <summary>
 /// One desk tile: its name, whether it is the active desk (drives the LED lamp), and the
@@ -28,6 +33,7 @@ public sealed class DeskViewModel(int id) : ViewModelBase
     private bool _isActive;
     private bool _isEditing;
     private string _editName = string.Empty;
+    private bool _isDropTarget;
     private double _previewWidth;
     private double _previewHeight;
     private IReadOnlyList<PreviewWindow> _previewWindows = [];
@@ -64,6 +70,13 @@ public sealed class DeskViewModel(int id) : ViewModelBase
     {
         get => _editName;
         set => this.RaiseAndSetIfChanged(ref _editName, value);
+    }
+
+    /// <summary>True while a window is being dragged over this desk, which would drop it here.</summary>
+    public bool IsDropTarget
+    {
+        get => _isDropTarget;
+        set => this.RaiseAndSetIfChanged(ref _isDropTarget, value);
     }
 
     public IReadOnlyList<PreviewWindow> PreviewWindows
@@ -137,7 +150,8 @@ public sealed class DeskViewModel(int id) : ViewModelBase
                 Math.Max(1, w.W * scale),
                 Math.Max(1, w.H * scale),
                 w.Title,
-                w.AppId));
+                w.AppId,
+                w.Minimized));
         }
 
         return result;

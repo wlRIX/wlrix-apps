@@ -57,9 +57,9 @@
 
         <!-- A tile shows its state in the two pixels inside its outline, as IRIX's overview did
              and with the colors its icons used: face at rest, white under the pointer, lamp
-             yellow selected. Measured off an IRIX screen, a drop target turns the same ring
-             royal blue (WlrixIconTintDrop), for when windows can be dragged between desks.
-             Selection comes second so it wins under the pointer. -->
+             yellow selected, and royal blue under a window being dragged onto it. Selection
+             comes after hover so it wins under the pointer, and the drop target last, because
+             it is the one thing being decided while a window is carried. -->
         <Style Selector="Border.ring">
             <Setter Property="BorderBrush" Value="{DynamicResource WlrixFace}" />
         </Style>
@@ -68,6 +68,9 @@
         </Style>
         <Style Selector="ListBoxItem:selected Border.ring">
             <Setter Property="BorderBrush" Value="{DynamicResource WlrixIconTintSelected}" />
+        </Style>
+        <Style Selector="Border.ring.drop">
+            <Setter Property="BorderBrush" Value="{DynamicResource WlrixIconTintDrop}" />
         </Style>
     </Window.Styles>
 
@@ -80,7 +83,7 @@
             <Border Classes="tile" Margin="2" BorderThickness="1"
                     BorderBrush="{DynamicResource WlrixOuterLine}"
                     Background="{DynamicResource WlrixFace}">
-                <Border Classes="ring" BorderThickness="2">
+                <Border Classes="ring" Classes.drop="{Binding IsDropTarget}" BorderThickness="2">
                     <StackPanel>
                         <!-- Header: lamp + desk name -->
                         <DockPanel Margin="4,3">
@@ -215,33 +218,44 @@
             </MenuItem>
         </wlrix:MenuBar>
 
-        <!-- Desk strip: pinned Global tile + horizontally scrolling desk list -->
-        <DockPanel Margin="8">
-            <ContentControl
-                            Content="{Binding GlobalDesk}"
-                            ContentTemplate="{StaticResource DeskTile}"
-                            IsVisible="{Binding ShowGlobalDesk}"
-                            VerticalAlignment="Top"
-                            Margin="0,0,8,0" />
+        <!-- The desk strip, with the layer a dragged window's ghost is drawn on laid over it:
+             the ghost follows the pointer from one tile to another, so it belongs to neither. -->
+        <Panel>
+            <!-- Desk strip: pinned Global tile + horizontally scrolling desk list -->
+            <DockPanel Margin="8">
+                <ContentControl
+                                Content="{Binding GlobalDesk}"
+                                ContentTemplate="{StaticResource DeskTile}"
+                                IsVisible="{Binding ShowGlobalDesk}"
+                                VerticalAlignment="Top"
+                                Margin="0,0,8,0" />
 
-            <ListBox x:Name="DeskList"
-                     ItemsSource="{Binding Desks}"
-                     SelectedItem="{Binding SelectedDesk}"
-                     ItemTemplate="{StaticResource DeskTile}"
-                     PointerPressed="OnDeskListPointerPressed"
-                     DoubleTapped="OnDeskDoubleTapped"
-                     ScrollViewer.HorizontalScrollBarVisibility="Auto"
-                     ScrollViewer.VerticalScrollBarVisibility="Disabled">
-                <!-- Fill a column top-to-bottom, then wrap to the next column; the viewport
-                     height (vertical scrolling is disabled) bounds each column, and columns
-                     overflow horizontally. -->
-                <ListBox.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <WrapPanel Orientation="Vertical" VerticalAlignment="Top" />
-                    </ItemsPanelTemplate>
-                </ListBox.ItemsPanel>
-            </ListBox>
-        </DockPanel>
+                <ListBox x:Name="DeskList"
+                         ItemsSource="{Binding Desks}"
+                         SelectedItem="{Binding SelectedDesk}"
+                         ItemTemplate="{StaticResource DeskTile}"
+                         PointerPressed="OnDeskListPointerPressed"
+                         DoubleTapped="OnDeskDoubleTapped"
+                         ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                         ScrollViewer.VerticalScrollBarVisibility="Disabled">
+                    <!-- Fill a column top-to-bottom, then wrap to the next column; the viewport
+                         height (vertical scrolling is disabled) bounds each column, and columns
+                         overflow horizontally. -->
+                    <ListBox.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel Orientation="Vertical" VerticalAlignment="Top" />
+                        </ItemsPanelTemplate>
+                    </ListBox.ItemsPanel>
+                </ListBox>
+            </DockPanel>
+
+            <Canvas Name="DragLayer" IsHitTestVisible="False">
+                <!-- IRIX's ghost: the window's size, a white edge round a gray body. -->
+                <Border Name="Ghost" IsVisible="False" BorderThickness="1"
+                        BorderBrush="{DynamicResource WlrixIconTintHover}"
+                        Background="{DynamicResource WlrixIconTintGhost}" />
+            </Canvas>
+        </Panel>
     </DockPanel>
 
 </Window>

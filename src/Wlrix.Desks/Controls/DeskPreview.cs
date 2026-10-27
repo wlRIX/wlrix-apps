@@ -2,6 +2,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Data;
 using Avalonia.Input;
+using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Rendering;
 using Wlrix.Desks.Models;
@@ -25,6 +26,12 @@ namespace Wlrix.Desks.Controls;
 /// Hover and selection are held as window *ids* and bound two-way to shared state, so a window
 /// that appears on several desks (anything on the Global desk) lights up in every tile at once,
 /// the way IRIX highlighted it.
+///
+/// A window can be dragged out of the preview. Past a few pixels of movement the preview raises
+/// <see cref="WindowDragDeltaEvent"/> as the pointer moves and <see cref="WindowDragEndedEvent"/>
+/// when it is let go or the drag is canceled. The pointer stays captured here for the length of
+/// the drag, so the events keep coming wherever it goes; drawing the ghost and deciding which
+/// desk is under it are the window's business, because a drag crosses from one tile to another.
 ///
 /// The rectangle under the pointer also names itself in a tooltip, which is what
 /// <c>ov</c>'s <c>--noWindowName</c> switched between titles and application IDs. The tip is set
@@ -65,6 +72,23 @@ public sealed class DeskPreview : Control, ICustomHitTest
     // The frame's depth across the top, where the title bar is, and down the other three sides.
     private const double TitleDepth = 3;
     private const double FrameWidth = 1;
+
+    /// <summary>A drag of one of this preview's windows moved; bubbles to the window.</summary>
+    public static readonly RoutedEvent<WindowDragEventArgs> WindowDragDeltaEvent =
+        RoutedEvent.Register<DeskPreview, WindowDragEventArgs>(nameof(WindowDragDelta), RoutingStrategies.Bubble);
+
+    /// <summary>A drag of one of this preview's windows ended, dropped or canceled.</summary>
+    public static readonly RoutedEvent<WindowDragEventArgs> WindowDragEndedEvent =
+        RoutedEvent.Register<DeskPreview, WindowDragEventArgs>(nameof(WindowDragEnded), RoutingStrategies.Bubble);
+
+    // How far the pointer has to travel before a press on a window becomes a drag, so a click
+    // that wobbles still only selects.
+    private const double DragThreshold = 4;
+
+    // The press that may become a drag, and once it has, the drag itself.
+    private PreviewWindow? _pressedWindow;
+    private Point _pressPoint;
+    private bool _dragging;
 
     // Where the pointer was last seen, so a snapshot that moves the windows can re-ask what is
     // under it.
@@ -141,6 +165,18 @@ public sealed class DeskPreview : Control, ICustomHitTest
         set => SetValue(LabelModeProperty, value);
     }
 
+    public event EventHandler<WindowDragEventArgs>? WindowDragDelta
+    {
+        add => AddHandler(WindowDragDeltaEvent, value);
+        remove => RemoveHandler(WindowDragDeltaEvent, value);
+    }
+
+    public event EventHandler<WindowDragEventArgs>? WindowDragEnded
+    {
+        add => AddHandler(WindowDragEndedEvent, value);
+        remove => RemoveHandler(WindowDragEndedEvent, value);
+    }
+
     // Only the window rectangles are painted, and hit testing follows what a control paints, so
     // without this the gaps between windows would not be clickable — and clicking the desk's
     // empty space has to be able to clear the selection.
@@ -185,8 +221,63 @@ public sealed class DeskPreview : Control, ICustomHitTest
     {
         base.OnPointerMoved(e);
         _lastPointerPosition = e.GetPosition(this);
+
+        if (_pressedWindow is { } window)
+        {
+            var travel = _lastPointerPosition.Value - _pressPoint;
+            if (!_dragging && Math.Max(Math.Abs(travel.X), Math.Abs(travel.Y)) >= DragThreshold)
+            {
+                _dragging = true;
+                // Nothing under the pointer is being named while it carries a window.
+                SetCurrentValue(HoveredWindowIdProperty, null);
+                ToolTip.SetTip(this, null);
+            }
+
+            if (_dragging)
+            {
+                RaiseEvent(new WindowDragEventArgs(WindowDragDeltaEvent, e, window, GrabOffset(window)));
+                return;
+            }
+        }
+
         UpdateHover(_lastPointerPosition.Value);
     }
+
+    protected override void OnPointerReleased(PointerReleasedEventArgs e)
+    {
+        base.OnPointerReleased(e);
+        if (_pressedWindow is not { } window || e.InitialPressMouseButton != MouseButton.Left)
+            return;
+
+        var dropped = _dragging;
+        EndDrag();
+        e.Pointer.Capture(null);
+        if (dropped)
+            RaiseEvent(new WindowDragEventArgs(WindowDragEndedEvent, e, window, GrabOffset(window)));
+    }
+
+    // Escape, a grab taken by something else, or the window losing the pointer: the drag ends
+    // where it started, with nothing moved.
+    protected override void OnPointerCaptureLost(PointerCaptureLostEventArgs e)
+    {
+        base.OnPointerCaptureLost(e);
+        if (_pressedWindow is not { } window)
+            return;
+
+        var dragged = _dragging;
+        EndDrag();
+        if (dragged)
+            RaiseEvent(new WindowDragEventArgs(WindowDragEndedEvent, null, window, GrabOffset(window)));
+    }
+
+    private void EndDrag()
+    {
+        _pressedWindow = null;
+        _dragging = false;
+    }
+
+    // Where in the window it was picked up, which the ghost keeps under the pointer.
+    private Vector GrabOffset(PreviewWindow window) => _pressPoint - new Point(window.X, window.Y);
 
     protected override void OnPointerExited(PointerEventArgs e)
     {
@@ -220,7 +311,18 @@ public sealed class DeskPreview : Control, ICustomHitTest
             return;
 
         // Clicking the desk's empty space deselects, matching the desk strip's own behavior.
-        SetCurrentValue(SelectedWindowIdProperty, WindowAt(e.GetPosition(this))?.Id);
+        var point = e.GetPosition(this);
+        var window = WindowAt(point);
+        SetCurrentValue(SelectedWindowIdProperty, window?.Id);
+
+        // A minimized window is its icon in the grid, which has no position on the desk to drop
+        // it at, so only a window on screen can be picked up.
+        if (window is { Minimized: false })
+        {
+            _pressedWindow = window;
+            _pressPoint = point;
+            e.Pointer.Capture(this);
+        }
     }
 
     private void UpdateHover(Point point)
