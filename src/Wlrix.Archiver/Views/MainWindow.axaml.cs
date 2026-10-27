@@ -2,8 +2,11 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.Media;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
+using Avalonia.VisualTree;
+using Avalonia.Wayland;
 using Wlrix.Archiver.Localization;
 using Wlrix.Archiver.ViewModels;
 using Wlrix.Avalonia.Dialogs;
@@ -20,6 +23,9 @@ public partial class MainWindow : Window
     /// </remarks>
     private const double DragThreshold = 6;
 
+    /// <summary>Shown over the listing while a drag's entries are being extracted.</summary>
+    private static readonly Cursor WaitCursor = new(StandardCursorType.Wait);
+
     private string? _openOnStartup;
     private Point? _pressedAt;
 
@@ -34,6 +40,15 @@ public partial class MainWindow : Window
     /// refused, which looks exactly like drag-and-drop not working.
     /// </remarks>
     private PointerPressedEventArgs? _press;
+
+    /// <summary>What was selected when the press landed, before the tree collapsed it.</summary>
+    private List<EntryNodeViewModel> _pressedRows = [];
+
+    /// <summary>Whether the button that pressed is still down.</summary>
+    private bool _buttonHeld;
+
+    /// <summary>Whether a drag that started here is in flight.</summary>
+    private bool _dragging;
 
     public MainWindow()
     {
@@ -203,17 +218,35 @@ public partial class MainWindow : Window
 
     private void OnTreePointerPressed(object? sender, PointerPressedEventArgs e)
     {
+        _pressedAt = null;
+        _press = null;
+        _pressedRows = [];
         if (!e.GetCurrentPoint(EntryTree).Properties.IsLeftButtonPressed)
             return;
 
+        // A press on the empty well below the rows, or on the scrollbar, carries nothing.
+        if ((e.Source as Visual)?.FindAncestorOfType<TreeViewItem>(includeSelf: true)
+                ?.DataContext is not EntryNodeViewModel row)
+        {
+            return;
+        }
+
         _pressedAt = e.GetPosition(EntryTree);
         _press = e;
+        _buttonHeld = true;
+
+        // Snapshotted on the way past in the tunnel, before the tree sees the press: a press on
+        // an already-selected row collapses the selection to that row, so by the time the
+        // pointer has moved far enough to be a drag there would be one entry left to carry.
+        var selected = EntryTree.SelectedItems.OfType<EntryNodeViewModel>().ToList();
+        _pressedRows = selected.Contains(row) ? selected : [row];
     }
 
     private void OnTreePointerReleased(object? sender, PointerReleasedEventArgs e)
     {
         _pressedAt = null;
         _press = null;
+        _buttonHeld = false;
     }
 
     private void OnTreePointerMoved(object? sender, PointerEventArgs e)
@@ -229,51 +262,123 @@ public partial class MainWindow : Window
             return;
 
         // Cleared before the await, not after: staging can take a while on a large selection,
-        // and a second move event arriving meanwhile would start the same drag again.
+        // and a second move event arriving meanwhile would start the same drag again. The press
+        // is good for exactly one start_drag, so it goes with it.
         _pressedAt = null;
         if (_press is { } press)
-            _ = StartDragAsync(press);
+        {
+            _press = null;
+            _ = StartDragAsync(press, _pressedRows);
+        }
     }
 
-    private async Task StartDragAsync(PointerPressedEventArgs trigger)
+    private async Task StartDragAsync(PointerPressedEventArgs trigger,
+        IReadOnlyList<EntryNodeViewModel> rows)
     {
-        if (DataContext is not MainWindowViewModel model)
+        if (DataContext is not MainWindowViewModel model || rows.Count == 0)
             return;
 
-        // Entries inside an archive have no path on disk, so the selection is extracted to a
-        // scratch directory and *those* files are what the drop target receives.
-        var staged = await model.StageSelectionForDragAsync();
-        if (staged.Count == 0)
+        // Put back what the press collapsed, so the rows being carried are the rows that look
+        // selected -- and stay selected for whatever the user does after the drop.
+        if (rows.Count > 1)
+        {
+            EntryTree.SelectedItems.Clear();
+            foreach (var row in rows)
+                EntryTree.SelectedItems.Add(row);
+        }
+
+        // Entries inside an archive have no path on disk, so they are extracted to a scratch
+        // directory and *those* files are what the drop target receives. It has to happen
+        // before the drag rather than at the drop: a receiving window reads the file list as
+        // soon as the drag enters it, to decide whether to accept, and it reads it on its UI
+        // thread. Extracting then would hang the window being dragged over.
+        IReadOnlyList<string> staged;
+        EntryTree.Cursor = WaitCursor;
+        try
+        {
+            staged = await model.StageForDragAsync(rows);
+        }
+        finally
+        {
+            EntryTree.Cursor = null;
+        }
+
+        // Let go while extracting: the gesture is over, and the compositor would refuse a drag
+        // started from a press whose button is already up.
+        if (staged.Count == 0 || !_buttonHeld)
             return;
 
-        var files = staged
-            .Select(path => StorageProvider.TryGetFileFromPathAsync(path).GetAwaiter().GetResult())
-            .OfType<IStorageItem>()
-            .ToArray();
-        if (files.Length == 0)
+        // Awaited, never blocked on. The storage provider answers on this thread, so waiting
+        // for it synchronously here is a deadlock -- which is what froze the window before.
+        // And the two accessors are separate: a folder asked for as a file comes back null and
+        // silently drops out of the drag.
+        var items = new List<IStorageItem>(staged.Count);
+        foreach (var path in staged)
+        {
+            IStorageItem? item = Directory.Exists(path)
+                ? await StorageProvider.TryGetFolderFromPathAsync(path)
+                : await StorageProvider.TryGetFileFromPathAsync(path);
+            if (item is not null)
+                items.Add(item);
+        }
+        if (items.Count == 0)
             return;
 
         var transfer = new DataTransfer();
-        transfer.Add(DataTransferItem.Create(DataFormat.File, files[0]));
-        foreach (var file in files.Skip(1))
-            transfer.Add(DataTransferItem.Create(DataFormat.File, file));
+        foreach (var item in items)
+            transfer.Add(DataTransferItem.Create(DataFormat.File, item));
 
-        await DragDrop.DoDragDropAsync(trigger, transfer, DragDropEffects.Copy);
+        // The picture that follows the pointer. An in-process format, so the receiving side
+        // sees exactly the file list it would have seen without it.
+        if (DragImageRenderer.Render(rows, DragPalette(), RenderScaling) is { } image)
+            transfer.Add(DataTransferItem.Create(WaylandDragImage.Format, image));
+
+        _dragging = true;
+        try
+        {
+            await DragDrop.DoDragDropAsync(trigger, transfer, DragDropEffects.Copy);
+        }
+        finally
+        {
+            _dragging = false;
+        }
+    }
+
+    /// <summary>The brushes the listing draws its glyphs with, for the drag image.</summary>
+    private DragImageRenderer.Palette DragPalette()
+    {
+        IBrush Brush(string key, IBrush fallback) =>
+            this.TryFindResource(key, ActualThemeVariant, out var value) && value is IBrush brush
+                ? brush
+                : fallback;
+
+        return new DragImageRenderer.Palette(
+            Brush("WlrixFace", Brushes.LightGray),
+            Brush("WlrixTopShadow", Brushes.White),
+            Brush("WlrixOuterLine", Brushes.Black));
     }
 
     // ---- Drop in --------------------------------------------------------------------------
 
     private void OnDragOver(object? sender, DragEventArgs e)
     {
-        var accepts = DataContext is MainWindowViewModel { CanAdd: true }
+        // Not our own drag: dropping the entries back onto the listing would add the staged
+        // copies to the archive they were just extracted from.
+        var accepts = !_dragging
+            && DataContext is MainWindowViewModel { CanAdd: true }
             && e.DataTransfer.Contains(DataFormat.File);
         e.DragEffects = accepts ? DragDropEffects.Copy : DragDropEffects.None;
+        e.Handled = true;
     }
 
     private void OnDrop(object? sender, DragEventArgs e)
     {
-        if (DataContext is not MainWindowViewModel model)
+        e.Handled = true;
+        if (_dragging || DataContext is not MainWindowViewModel { CanAdd: true } model)
+        {
+            e.DragEffects = DragDropEffects.None;
             return;
+        }
 
         var paths = e.DataTransfer.TryGetFiles()?
             .Select(file => file.TryGetLocalPath())

@@ -26,19 +26,26 @@ public sealed class DragStaging : IDisposable
     private int _sequence;
 
     public DragStaging(IArchiveBackendRegistry registry)
+        : this(registry, Path.Combine(ApplicationPaths.AppData, "archiver", "drag",
+            Environment.ProcessId.ToString(System.Globalization.CultureInfo.InvariantCulture)))
+    {
+    }
+
+    /// <summary>Stages under <paramref name="root"/> instead; for tests.</summary>
+    internal DragStaging(IArchiveBackendRegistry registry, string root)
     {
         _registry = registry;
-        _root = Path.Combine(ApplicationPaths.AppData, "archiver", "drag",
-            Environment.ProcessId.ToString(System.Globalization.CultureInfo.InvariantCulture));
+        _root = root;
     }
 
     /// <summary>
     /// Extracts <paramref name="entryPaths"/> and returns the files to offer to the drop target.
     /// </summary>
     /// <remarks>
-    /// Full paths are preserved, so dragging <c>src/main.c</c> out hands over a <c>src</c>
-    /// directory containing it rather than a bare <c>main.c</c> — which is what the receiving
-    /// side would have got by extracting the archive itself.
+    /// What is handed over is the selected entry itself: dragging <c>src/main.c</c> out drops a
+    /// bare <c>main.c</c>, and dragging <c>src/lib</c> drops a <c>lib</c> directory with
+    /// everything under it. The archive's own folders above the entry are what the user
+    /// browsed through to reach it, not part of what they picked up.
     /// </remarks>
     /// <param name="password">
     /// Whatever the window already knows, if the archive is encrypted. A drag cannot stop to ask
@@ -65,20 +72,20 @@ public sealed class DragStaging : IDisposable
         await backend.ExtractAsync(archive.Path, archive.Format, entryPaths, directory,
             flatten: false, password, progress: null, cancellationToken).ConfigureAwait(false);
 
-        // Offer the topmost thing each selected entry produced, not every file underneath it:
-        // dragging a directory should drop one directory, not a flat pile of its contents.
-        return entryPaths
-            .Select(entry => Path.Combine(directory, TopComponent(entry)))
+        // Extracted with full paths so names cannot collide inside the scratch directory, then
+        // each selected entry is offered from where it landed. An entry inside another selected
+        // directory is already carried by that directory, and offering it again would drop it
+        // twice: once in place and once loose beside it.
+        var selected = entryPaths
+            .Select(ArchiveTree.Normalize)
+            .Where(entry => entry.Length != 0)
             .Distinct(StringComparer.Ordinal)
+            .ToList();
+        return selected
+            .Where(entry => !selected.Any(other => entry.StartsWith(other + "/", StringComparison.Ordinal)))
+            .Select(entry => Path.Combine(directory, entry))
             .Where(path => File.Exists(path) || Directory.Exists(path))
             .ToList();
-    }
-
-    private static string TopComponent(string entryPath)
-    {
-        var normalized = ArchiveTree.Normalize(entryPath);
-        var slash = normalized.IndexOf('/');
-        return slash < 0 ? normalized : normalized[..slash];
     }
 
     public void Dispose()

@@ -324,18 +324,23 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
     }
 
     /// <summary>
-    /// Extracts the selection to a scratch directory and returns the files to hand a drop
-    /// target. Empty when nothing is selected or no archive is open.
+    /// Extracts <paramref name="nodes"/> to a scratch directory and returns the files to hand a
+    /// drop target. Empty when nothing is given or no archive is open.
     /// </summary>
-    public async Task<IReadOnlyList<string>> StageSelectionForDragAsync()
+    /// <remarks>
+    /// Takes the rows rather than reading <see cref="Selection"/>: the view snapshots what was
+    /// selected when the press landed, before the tree collapsed it to the pressed row.
+    /// </remarks>
+    public async Task<IReadOnlyList<string>> StageForDragAsync(
+        IReadOnlyCollection<EntryNodeViewModel> nodes)
     {
-        if (Archive is not { } archive || Selection.Count == 0)
+        if (Archive is not { } archive || nodes.Count == 0)
             return [];
 
         try
         {
             return await _staging
-                .StageAsync(archive, Selection.Select(node => node.Path).ToList(), _password)
+                .StageAsync(archive, nodes.Select(node => node.Path).ToList(), _password)
                 .ConfigureAwait(true);
         }
         catch (Exception ex) when (ex is ArchiveException or IOException
