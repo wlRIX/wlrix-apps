@@ -215,20 +215,30 @@
                                 <!-- Holds the toggle's width on a leaf so names still align. Matches
                                      the Width in the theme's WlrixTreeExpandToggle. -->
                                 <Panel Width="12" IsVisible="{Binding !HasChildren}" />
-                                <Path Width="16" Height="16" Stretch="None"
-                                      VerticalAlignment="Center"
-                                      Data="M1,4 L1,3 L6,3 L7,4.5 L15,4.5 L15,13 L1,13 Z"
-                                      Fill="{DynamicResource WlrixFace}"
-                                      Stroke="{DynamicResource WlrixOuterLine}"
-                                      StrokeThickness="1"
-                                      IsVisible="{Binding IsDirectory}" />
-                                <Path Width="16" Height="16" Stretch="None"
-                                      VerticalAlignment="Center"
-                                      Data="M3,1 L10,1 L13,4 L13,15 L3,15 Z M10,1 L10,4 L13,4"
-                                      Fill="{DynamicResource WlrixTopShadow}"
-                                      Stroke="{DynamicResource WlrixOuterLine}"
-                                      StrokeThickness="1"
-                                      IsVisible="{Binding !IsDirectory}" />
+                                <!-- The icon theme's icon for the entry, as the file manager shows
+                                     it. Until it arrives, or where the theme has none, the plain
+                                     folder and file glyphs below hold the place. -->
+                                <Panel Width="16" Height="16" VerticalAlignment="Center">
+                                    <Image Source="{Binding Icon}"
+                                           Width="16" Height="16"
+                                           IsVisible="{Binding HasIcon}" />
+                                    <Panel IsVisible="{Binding !HasIcon}">
+                                        <Path Width="16" Height="16" Stretch="None"
+                                              VerticalAlignment="Center"
+                                              Data="M1,4 L1,3 L6,3 L7,4.5 L15,4.5 L15,13 L1,13 Z"
+                                              Fill="{DynamicResource WlrixFace}"
+                                              Stroke="{DynamicResource WlrixOuterLine}"
+                                              StrokeThickness="1"
+                                              IsVisible="{Binding IsDirectory}" />
+                                        <Path Width="16" Height="16" Stretch="None"
+                                              VerticalAlignment="Center"
+                                              Data="M3,1 L10,1 L13,4 L13,15 L3,15 Z M10,1 L10,4 L13,4"
+                                              Fill="{DynamicResource WlrixTopShadow}"
+                                              Stroke="{DynamicResource WlrixOuterLine}"
+                                              StrokeThickness="1"
+                                              IsVisible="{Binding !IsDirectory}" />
+                                    </Panel>
+                                </Panel>
                                 <TextBlock Text="{Binding Name}" VerticalAlignment="Center"
                                            TextTrimming="CharacterEllipsis" />
                             </StackPanel>

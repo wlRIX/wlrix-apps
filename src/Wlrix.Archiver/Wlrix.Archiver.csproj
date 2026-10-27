@@ -45,6 +45,9 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Wlrix.Common\Wlrix.Common.csproj" />
+        <!-- The file manager's MIME database and icon theme, so entries wear the icons their
+             files will have once extracted. Display-free, as the file chooser uses it too. -->
+        <ProjectReference Include="..\Wlrix.Files.Core\Wlrix.Files.Core.csproj" />
     </ItemGroup>
     <ItemGroup>
         <!-- Follows the session's color scheme, so this window is the same gray as the desktop

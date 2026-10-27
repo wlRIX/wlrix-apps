@@ -10,6 +10,9 @@ using Wlrix.Archiver.ViewModels;
 using Wlrix.Archiver.Views;
 using Wlrix.Common;
 using Wlrix.Common.Localization;
+using Wlrix.Files.Core.Config;
+using Wlrix.Files.Core.Mime;
+using Wlrix.Icons;
 using Wlrix.Theme;
 
 namespace Wlrix.Archiver;
@@ -54,6 +57,10 @@ public partial class App : Application
                     provider.GetRequiredService<SevenZipCliBackend>(),
                 ]));
             services.AddSingleton<DragStaging>();
+            // The file manager's icon theme, from files.toml, read once at startup as the file
+            // chooser does. A theme changed while the window is open shows on the next launch.
+            services.AddSingleton(_ => new EntryIcons(SharedMimeDatabase.Load(),
+                new IconLoader(new XdgIconTheme { Theme = FilesConfig.Load().IconTheme })));
             services.AddTransient<MainWindowViewModel>();
             _services = services.BuildServiceProvider();
 

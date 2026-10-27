@@ -1,3 +1,4 @@
+using Avalonia.Media.Imaging;
 using System.Collections.ObjectModel;
 using System.Reactive;
 using System.Reactive.Linq;
@@ -19,6 +20,7 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
     private readonly IArchiveBackendRegistry _registry;
     private readonly FilenameDecoder _decoder;
     private readonly DragStaging _staging;
+    private readonly EntryIcons? _icons;
     private readonly ILogger<MainWindowViewModel> _logger;
     private readonly List<IDisposable> _subscriptions = [];
 
@@ -41,13 +43,18 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
     {
     }
 
+    /// <param name="icons">
+    /// The icon theme's icons for the rows. Optional so tests and the previewer can do without
+    /// a theme; the rows fall back to plain glyphs.
+    /// </param>
     public MainWindowViewModel(IArchiveBackendRegistry registry, FilenameDecoder decoder,
-        DragStaging staging, ILogger<MainWindowViewModel> logger)
+        DragStaging staging, ILogger<MainWindowViewModel> logger, EntryIcons? icons = null)
     {
         _registry = registry;
         _decoder = decoder;
         _staging = staging;
         _logger = logger;
+        _icons = icons;
 
         Encodings = new ObservableCollection<EncodingChoiceViewModel>(
             EncodingCatalog.All.Select(entry => new EncodingChoiceViewModel(entry, this)));
@@ -354,6 +361,12 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
         }
     }
 
+    /// <summary>
+    /// The icon theme's icon for an entry at <paramref name="size"/>, or null without a theme.
+    /// </summary>
+    public Task<Bitmap?> IconAsync(ArchiveEntry entry, int size) =>
+        _icons?.GetAsync(entry, size) ?? Task.FromResult<Bitmap?>(null);
+
     /// <summary>Re-reads the open archive under a different filename encoding.</summary>
     internal async Task ApplyEncodingAsync(FilenameEncoding encoding)
     {
@@ -454,7 +467,7 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
         Archive = archive;
         Roots.Clear();
         foreach (var node in ArchiveTree.Build(archive.Entries))
-            Roots.Add(new EntryNodeViewModel(node, Columns));
+            Roots.Add(new EntryNodeViewModel(node, Columns, icons: _icons));
 
         SelectionChanged([]);
         // Detection happens during the read above, so the menu label can only be right now.

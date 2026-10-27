@@ -314,6 +314,9 @@ public partial class MainWindow : Window
         // before the drag rather than at the drop: a receiving window reads the file list as
         // soon as the drag enters it, to decide whether to accept, and it reads it on its UI
         // thread. Extracting then would hang the window being dragged over.
+        // The drag image's icon renders alongside the extraction rather than after it.
+        var icon = model.IconAsync(rows[0].Entry, DragImageRenderer.IconSize);
+
         IReadOnlyList<string> staged;
         EntryTree.Cursor = WaitCursor;
         try
@@ -352,7 +355,7 @@ public partial class MainWindow : Window
 
         // The picture that follows the pointer. An in-process format, so the receiving side
         // sees exactly the file list it would have seen without it.
-        if (DragImageRenderer.Render(rows, DragPalette(), RenderScaling) is { } image)
+        if (DragImageRenderer.Render(rows, await icon, DragPalette(), RenderScaling) is { } image)
             transfer.Add(DataTransferItem.Create(WaylandDragImage.Format, image));
 
         _dragging = true;

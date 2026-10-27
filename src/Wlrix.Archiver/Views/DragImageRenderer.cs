@@ -10,8 +10,9 @@ namespace Wlrix.Archiver.Views;
 /// Draws the picture that follows the pointer while entries are dragged out.
 /// </summary>
 /// <remarks>
-/// The listing's own folder and file glyphs, drawn larger, with a count when there is more than
-/// one. Without a drag image the compositor shows nothing but the cursor, which is how a drag
+/// The first entry's icon from the icon theme, at the size the file manager drags at, with a
+/// count when there is more than one. Where the theme has no icon, the listing's own folder and
+/// file glyphs stand in, drawn larger. Without a drag image the compositor shows nothing but the cursor, which is how a drag
 /// out of this window used to look: indistinguishable from no drag at all.
 ///
 /// <para>
@@ -21,6 +22,9 @@ namespace Wlrix.Archiver.Views;
 /// </remarks>
 internal static class DragImageRenderer
 {
+    /// <summary>How big a themed icon is drawn: the file manager's drag size.</summary>
+    public const int IconSize = 48;
+
     /// <summary>The glyphs' design size, the same 16 units the listing draws them at.</summary>
     private const int GlyphSize = 16;
 
@@ -40,14 +44,15 @@ internal static class DragImageRenderer
     public readonly record struct Palette(IBrush FolderFill, IBrush FileFill, IBrush Outline);
 
     /// <summary>Draws <paramref name="rows"/>, or null if there is nothing worth drawing.</summary>
-    public static WaylandDragImage? Render(IReadOnlyList<EntryNodeViewModel> rows, Palette palette,
-        double scaling)
+    /// <param name="icon">The first row's themed icon at <see cref="IconSize"/>, if it has one.</param>
+    public static WaylandDragImage? Render(IReadOnlyList<EntryNodeViewModel> rows, Bitmap? icon,
+        Palette palette, double scaling)
     {
         if (rows.Count == 0)
             return null;
 
         var scale = scaling > 0 ? scaling : 1.0;
-        var side = GlyphSize * Magnify + Padding * 2;
+        var side = (icon is null ? GlyphSize * Magnify : IconSize) + Padding * 2;
         var pixels = new PixelSize(
             Math.Max(1, (int)Math.Round(side * scale)),
             Math.Max(1, (int)Math.Round(side * scale)));
@@ -57,7 +62,7 @@ internal static class DragImageRenderer
             using var target = new RenderTargetBitmap(pixels, new Vector(96 * scale, 96 * scale));
             using (var context = target.CreateDrawingContext())
             {
-                Draw(context, rows, palette, side);
+                Draw(context, rows, icon, palette, side);
             }
             return WaylandDragImage.FromBitmap(target);
         }
@@ -70,12 +75,23 @@ internal static class DragImageRenderer
     }
 
     private static void Draw(DrawingContext context, IReadOnlyList<EntryNodeViewModel> rows,
-        Palette palette, int side)
+        Bitmap? icon, Palette palette, int side)
     {
         var directory = rows[0].IsDirectory;
-        using (context.PushTransform(Matrix.CreateScale(Magnify, Magnify)
-                   * Matrix.CreateTranslation(Padding, Padding)))
+        if (icon is not null)
         {
+            // Fitted rather than stretched, in case a theme's icon is not square.
+            var fit = Math.Min(IconSize / icon.Size.Width, IconSize / icon.Size.Height);
+            var width = icon.Size.Width * fit;
+            var height = icon.Size.Height * fit;
+            context.DrawImage(icon, new Rect(
+                Padding + (IconSize - width) / 2, Padding + (IconSize - height) / 2,
+                width, height));
+        }
+        else
+        {
+            using var glyph = context.PushTransform(Matrix.CreateScale(Magnify, Magnify)
+                * Matrix.CreateTranslation(Padding, Padding));
             // The outline scales with the glyph, so it keeps the listing's proportions.
             context.DrawGeometry(directory ? palette.FolderFill : palette.FileFill,
                 new Pen(palette.Outline, 1), directory ? Folder : File);

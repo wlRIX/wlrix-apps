@@ -1,22 +1,32 @@
 using System.Collections.ObjectModel;
 using System.Globalization;
+using Avalonia.Media.Imaging;
 using ReactiveUI;
 using Wlrix.Archiver.Models;
+using Wlrix.Archiver.Services;
 
 namespace Wlrix.Archiver.ViewModels;
 
 /// <summary>One row of the listing.</summary>
 public sealed class EntryNodeViewModel : ViewModelBase
 {
-    private bool _isExpanded;
+    /// <summary>The size of the icon beside the name: the file manager's list-view size.</summary>
+    public const int IconSize = 16;
 
-    public EntryNodeViewModel(ArchiveNode node, ColumnLayout columns, int depth = 0)
+    private readonly EntryIcons? _icons;
+    private bool _isExpanded;
+    private bool _iconRequested;
+    private Bitmap? _icon;
+
+    public EntryNodeViewModel(ArchiveNode node, ColumnLayout columns, int depth = 0,
+        EntryIcons? icons = null)
     {
         Entry = node.Entry;
         Columns = columns;
         Depth = depth;
+        _icons = icons;
         Children = new ObservableCollection<EntryNodeViewModel>(
-            node.Children.Select(child => new EntryNodeViewModel(child, columns, depth + 1)));
+            node.Children.Select(child => new EntryNodeViewModel(child, columns, depth + 1, icons)));
 
         // Only the top level starts open, and the depth check is the whole point of it.
         // Expanding every directory is what the eye wants and what the layout cannot pay for: a
@@ -50,6 +60,36 @@ public sealed class EntryNodeViewModel : ViewModelBase
     public string Name => Entry.Name;
 
     public bool IsDirectory => Entry.IsDirectory;
+
+    /// <summary>The icon theme's icon for this entry, or null until it arrives or if it has none.</summary>
+    /// <remarks>
+    /// Asked for on first read rather than when the row is built. A row is only read once the
+    /// tree realizes it, and most rows of a large archive sit inside collapsed directories and
+    /// never are; rendering icons for all of them up front would be wasted work.
+    /// </remarks>
+    public Bitmap? Icon
+    {
+        get
+        {
+            if (!_iconRequested && _icons is not null)
+            {
+                _iconRequested = true;
+                _icons.Request(Entry, IconSize, icon =>
+                {
+                    _icon = icon;
+                    this.RaisePropertyChanged(nameof(Icon));
+                    this.RaisePropertyChanged(nameof(HasIcon));
+                });
+            }
+            return _icon;
+        }
+    }
+
+    /// <summary>
+    /// Whether the theme's icon is showing. Until it does, the row draws the plain folder or
+    /// file glyph, so a theme with no icon for a type still leaves the row readable.
+    /// </summary>
+    public bool HasIcon => _icon is not null;
 
     /// <summary>The in-archive path, which is what the commands act on.</summary>
     public string Path => Entry.Path;
