@@ -47,6 +47,26 @@ internal static class BackgroundKeys
             && string.Equals(desktop, locked, StringComparison.OrdinalIgnoreCase));
 
     /// <summary>
+    /// What a desk shows now: its own background, or the shared one read through
+    /// <paramref name="shared"/>, which answers a desktop key with its effective value.
+    /// </summary>
+    public static DeskBackground Showing(DeskBackground? own, Func<string, string> shared) =>
+        own ?? new DeskBackground(shared(Image), shared(Mode), shared(Color));
+
+    /// <summary>
+    /// <paramref name="current"/> with the desktop keys in <paramref name="values"/> changed, for
+    /// writing a desk's own background: the panel's controls speak in <c>background.*</c> keys
+    /// whichever background they are editing.
+    /// </summary>
+    public static DeskBackground With(DeskBackground current, IReadOnlyDictionary<string, object> values)
+    {
+        string Value(string key, string fallback) =>
+            values.TryGetValue(key, out var value) ? (string)value : fallback;
+        return new DeskBackground(
+            Value(Image, current.Image), Value(Mode, current.Mode), Value(Color, current.Color));
+    }
+
+    /// <summary>
     /// What putting back <paramref name="open"/> means for the keys in <paramref name="touched"/>.
     /// </summary>
     /// <remarks>

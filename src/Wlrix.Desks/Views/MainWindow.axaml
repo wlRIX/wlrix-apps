@@ -121,6 +121,7 @@
                             <controls:DeskPreview Width="{Binding PreviewWidth}"
                                                   Height="{Binding PreviewHeight}"
                                                   Windows="{Binding PreviewWindows}"
+                                                  Backgrounds="{Binding Backgrounds}"
                                                   WindowBrush="{DynamicResource WlrixFace}"
                                                   WindowBorderBrush="{DynamicResource WlrixOuterLine}"
                                                   FrameBrush="{DynamicResource WlrixIconTint}"

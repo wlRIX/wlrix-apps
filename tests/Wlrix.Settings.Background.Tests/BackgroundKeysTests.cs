@@ -68,4 +68,30 @@ public class BackgroundKeysTests
         Assert.Empty(sets);
         Assert.Empty(resets);
     }
+
+    [Fact]
+    public void ADeskWithoutItsOwnShowsTheSharedBackground()
+    {
+        var shared = new Dictionary<string, string>
+        {
+            [BackgroundKeys.Image] = "/pictures/scatter.png",
+            [BackgroundKeys.Mode] = "tile",
+            [BackgroundKeys.Color] = "#555555",
+        };
+        Assert.Equal(new DeskBackground("/pictures/scatter.png", "tile", "#555555"),
+            BackgroundKeys.Showing(null, key => shared[key]));
+
+        var own = new DeskBackground("", "solid", "#123456");
+        Assert.Same(own, BackgroundKeys.Showing(own, key => shared[key]));
+    }
+
+    [Fact]
+    public void ChangingOneControlOnADeskKeepsTheOtherTwo()
+    {
+        // The first change to a desk that shows the shared background gives it its own, starting
+        // from what it was showing: only the control that was used differs.
+        var showing = new DeskBackground("/pictures/scatter.png", "tile", "#555555");
+        var changed = BackgroundKeys.With(showing, new Dictionary<string, object> { [BackgroundKeys.Color] = "#000000" });
+        Assert.Equal(new DeskBackground("/pictures/scatter.png", "tile", "#000000"), changed);
+    }
 }

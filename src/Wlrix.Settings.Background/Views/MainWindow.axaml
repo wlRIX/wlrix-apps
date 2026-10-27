@@ -16,9 +16,10 @@
         <vm:BackgroundViewModel />
     </Design.DataContext>
 
-    <!-- The layout follows IRIX's Background panel: a menu bar, a title banner, the pictures in
-         a scrolled well, the desktop color beside them, then the buttons along the bottom.
-         IRIX's Desk option menu is absent: wlRIX has one background for every desk so far. -->
+    <!-- The layout follows IRIX's Background panel: a menu bar, a title banner, the Desk option
+         menu, the pictures in a scrolled well, the desktop color beside them, then the buttons
+         along the bottom. The option menu only appears once the compositor has listed desks
+         that can have backgrounds of their own. -->
     <DockPanel LastChildFill="True">
 
         <wlrix:MenuBar DockPanel.Dock="Top">
@@ -43,6 +44,27 @@
             </Border>
             <TextBlock Text="{loc:Tr PanelTitle}" FontWeight="Bold" FontSize="16"
                        VerticalAlignment="Center" />
+        </StackPanel>
+
+        <!-- Which background the controls below edit: every desk's, or one desk's own. -->
+        <StackPanel DockPanel.Dock="Top" Margin="12,0,12,10" Spacing="4" IsVisible="{Binding HasDesks}">
+            <Grid ColumnDefinitions="Auto,8,*,12,Auto">
+                <TextBlock Grid.Column="0" Text="{loc:Tr Desk}" VerticalAlignment="Center" />
+                <ComboBox Grid.Column="2" HorizontalAlignment="Stretch"
+                          ItemsSource="{Binding Desks}"
+                          SelectedItem="{Binding SelectedDesk, Mode=TwoWay}"
+                          IsEnabled="{Binding IsReady}">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate x:DataType="vm:DeskChoice">
+                            <TextBlock Text="{Binding Label}" />
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+                <Button Grid.Column="4" Content="{loc:Tr UseShared}" Click="OnUseShared"
+                        IsEnabled="{Binding CanUseShared}" />
+            </Grid>
+            <TextBlock Text="{Binding DeskNote}" TextWrapping="Wrap" Opacity="0.75"
+                       IsVisible="{Binding DeskNote, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
         </StackPanel>
 
         <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal"
@@ -79,9 +101,10 @@
                             Background="{Binding ColorBrush}" />
                 </Button>
             </Grid>
+            <!-- The lock screen follows the shared background; a desk's own is the desk's. -->
             <CheckBox Content="{loc:Tr AlsoLockScreen}"
                       IsChecked="{Binding AlsoLockScreen, Mode=TwoWay}"
-                      IsEnabled="{Binding IsReady}" />
+                      IsEnabled="{Binding CanFollowLock}" />
         </StackPanel>
 
         <DockPanel Margin="12,0,12,0" LastChildFill="True">

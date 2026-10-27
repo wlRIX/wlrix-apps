@@ -5,7 +5,21 @@
         <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
         <AssemblyName>wlrix-settings-background</AssemblyName>
         <Version>0.0.0</Version>
+        <!-- NWayland's generated bindings and runtime interop are unsafe. -->
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
+
+    <!-- The wlrix-desks bindings, for the desk option menu: a desk's own background is kept by
+         the compositor and set over that protocol. Generated at build time by the wlRIX
+         NWayland fork's source generator from wlrix-protocols, as in Wlrix.Desks. -->
+    <ItemGroup>
+        <AdditionalFiles Include="../../../NWayland/external/wlrix-protocols/wlrix-desks.xml"
+                         NWaylandNamespace="NWayland.Protocols" />
+    </ItemGroup>
+    <PropertyGroup>
+        <WarningsNotAsErrors>$(WarningsNotAsErrors);CS1591;CS1573;CS1572;CS1570;CS1571;CS1574;CS1580;CS1581;CS1584</WarningsNotAsErrors>
+    </PropertyGroup>
+    <Import Project="../../../NWayland/src/NWayland.Generator/NWayland.Generator.Use.targets" />
 
     <ItemGroup>
         <AvaloniaResource Include="Assets\**" />
@@ -35,6 +49,9 @@
         <PackageReference Include="Wlrix.Avalonia.Dialogs" />
         <!-- IRIX's Color Browser, for the desktop color. -->
         <PackageReference Include="Wlrix.Avalonia.Controls.ColorPicker" />
+        <!-- NWayland runtime, pinned in Directory.Packages.props to the version Avalonia.Wayland
+             binds to. -->
+        <PackageReference Include="NWayland" />
     </ItemGroup>
 
     <ItemGroup>

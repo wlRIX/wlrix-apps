@@ -1,7 +1,9 @@
 namespace Wlrix.Desks.Models;
 
 /// <summary>One workspace ("desk"). Id 0 is the always-visible Global desk.</summary>
-public sealed record DeskInfo(int Id, bool Active, string Name);
+/// <param name="Background">The desk's own background, or null when it shows the shared one
+/// from <c>background.toml</c>.</param>
+public sealed record DeskInfo(int Id, bool Active, string Name, Wallpaper? Background = null);
 
 /// <summary>
 /// A top-level window. Geometry is where the window is shown, in compositor-logical

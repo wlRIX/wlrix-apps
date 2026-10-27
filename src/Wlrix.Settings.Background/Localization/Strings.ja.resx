@@ -51,6 +51,18 @@
   <data name="AlsoLockScreen" xml:space="preserve">
     <value>ロック画面にも使用する</value>
   </data>
+  <data name="Desk" xml:space="preserve">
+    <value>デスク:</value>
+  </data>
+  <data name="AllDesks" xml:space="preserve">
+    <value>すべてのデスク</value>
+  </data>
+  <data name="UseShared" xml:space="preserve">
+    <value>共通の背景を使う</value>
+  </data>
+  <data name="DeskUsesShared" xml:space="preserve">
+    <value>{0} はすべてのデスク共通の背景を表示しています。画像・表示方法・色を選ぶと、このデスク専用の背景になります。</value>
+  </data>
   <data name="Ok" xml:space="preserve">
     <value>OK</value>
   </data>
@@ -109,7 +121,9 @@
 
 「表示方法」は画像を画面にどう合わせるかを決めます。「色」は画像の周り、透明な部分、そして「画像なし」のときに画面全体に表示されます。
 
-「ロック画面にも使用する」をオンにすると、ロック画面にも同じ背景が表示されます。
+「デスク」で、どの背景を変更するかを選びます。「すべてのデスク」は、専用の背景を持たないすべてのデスクに表示される背景です。デスクを選ぶと、そのデスクが画面に表示されているときの専用の背景を変更します。「共通の背景を使う」で、デスク専用の背景を取り消せます。
+
+「ロック画面にも使用する」をオンにすると、ロック画面にも「すべてのデスク」と同じ背景が表示されます。
 
 「リセット」はこのウィンドウを開いたときの背景に戻します。「キャンセル」は同じように戻してから閉じます。「OK」は選んだ内容のまま閉じます。</value>
   </data>

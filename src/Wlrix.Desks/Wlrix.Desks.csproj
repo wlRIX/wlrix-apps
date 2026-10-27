@@ -43,6 +43,9 @@
         <PackageReference Include="NWayland" />
         <!-- The options in CommandLine/, which follow the IRIX `ov` man page. -->
         <PackageReference Include="CommandLineParser" />
+        <!-- Reading background.toml, the shared background a desk shows when it has none of
+             its own. -->
+        <PackageReference Include="Tomlyn" />
         <!-- The session-bus half of the single-instance guard. Avalonia.FreeDesktop already
              drags this assembly into the output through Avalonia.Wayland, so referencing it
              adds nothing to what ships — the reference only stops NuGet resolving a second,

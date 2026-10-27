@@ -58,6 +58,10 @@ public sealed class WallpaperTile : ViewModelBase
 /// <summary>A fit mode, with the label the list shows for it.</summary>
 public sealed record ModeChoice(string Value, string Label);
 
+/// <summary>An entry in the Desk option menu: a desk, or every desk at once.</summary>
+/// <param name="Id">The desk, or null for "All Desks", which is <c>background.toml</c>.</param>
+public sealed record DeskChoice(int? Id, string Label);
+
 /// <summary>
 /// Backs the Background window: IRIX's Background panel, which is a list of pictures to put on
 /// the desktop, plus how a picture is fitted and the color around it.
@@ -72,6 +76,14 @@ public sealed record ModeChoice(string Value, string Label);
 /// <para>
 /// The values go through <c>com.wlrix.Settings</c> only. This app knows the six key names and
 /// nothing about <c>background.toml</c> or <c>lock.toml</c>.
+/// </para>
+/// <para>
+/// The Desk option menu chooses what the controls edit. "All Desks" is those keys, the
+/// background every desk shows unless it has its own; a desk is that desk's own background,
+/// which the compositor keeps with it and this window sets over <c>wlrix-desks</c>. A desk
+/// without one shows the shared background, and the first change made to it gives it its own,
+/// starting from what it was showing. The controls go on speaking in <c>background.*</c> keys
+/// either way; <see cref="WriteAsync"/> is where they part.
 /// </para>
 /// </remarks>
 public sealed class BackgroundViewModel : ViewModelBase, IDisposable
@@ -91,6 +103,19 @@ public sealed class BackgroundViewModel : ViewModelBase, IDisposable
     private readonly HashSet<string> _touched = new(StringComparer.Ordinal);
 
     private SettingsClient? _client;
+    private DeskClient? _deskClient;
+
+    /// <summary>The ordinary desks, as the compositor last described them.</summary>
+    private IReadOnlyList<DeskEntry> _deskEntries = [];
+
+    /// <summary>
+    /// Each desk this window has changed, with the background it had when first changed -- null
+    /// for the shared one -- so Cancel can put it back.
+    /// </summary>
+    private readonly Dictionary<int, DeskBackground?> _deskOpen = [];
+
+    private DeskChoice? _selectedDesk;
+    private readonly DeskChoice _allDesks = new(null, Strings.AllDesks);
 
     /// <summary>
     /// Set while the controls are being moved to match the daemon, so that moving them does not
@@ -117,6 +142,42 @@ public sealed class BackgroundViewModel : ViewModelBase, IDisposable
             Pictures.Add(Tile(wallpaper));
         _selected = _none;
     }
+
+    /// <summary>"All Desks", then every ordinary desk; empty until the compositor has listed them.</summary>
+    public ObservableCollection<DeskChoice> Desks { get; } = [];
+
+    /// <summary>Whether there are desks to choose between, which needs wlrix-desks 4.</summary>
+    public bool HasDesks => Desks.Count > 1;
+
+    /// <summary>Which background the controls edit. Choosing one shows it.</summary>
+    public DeskChoice? SelectedDesk
+    {
+        get => _selectedDesk;
+        set
+        {
+            // Rebuilding the list clears the selection on the way; the desk being edited stays.
+            if (value is null || ReferenceEquals(value, _selectedDesk))
+                return;
+
+            this.RaiseAndSetIfChanged(ref _selectedDesk, value);
+            RaiseDeskStates();
+            if (IsReady)
+                Adopt(lockFollows: null);
+        }
+    }
+
+    /// <summary>The desk being edited, or null for the shared background.</summary>
+    private DeskEntry? EditedDesk =>
+        _selectedDesk?.Id is { } id ? _deskEntries.FirstOrDefault(desk => desk.Id == id) : null;
+
+    /// <summary>The lock screen follows the shared background, not any one desk's.</summary>
+    public bool CanFollowLock => IsReady && EditedDesk is null;
+
+    /// <summary>Only a desk with a background of its own has one to give up.</summary>
+    public bool CanUseShared => IsReady && EditedDesk is { Background: not null };
+
+    /// <summary>Said under the option menu while the desk chosen shows the shared background.</summary>
+    public string DeskNote => EditedDesk is { Background: null } desk ? Strings.DeskUsesShared(desk.Name) : string.Empty;
 
     /// <summary>"No Picture" first, then every wallpaper, the user's own before the stock ones.</summary>
     public ObservableCollection<WallpaperTile> Pictures { get; }
@@ -204,6 +265,7 @@ public sealed class BackgroundViewModel : ViewModelBase, IDisposable
             this.RaiseAndSetIfChanged(ref _ready, value);
             this.RaisePropertyChanged(nameof(CanRemove));
             this.RaisePropertyChanged(nameof(CanFit));
+            RaiseDeskStates();
         }
     }
 
@@ -259,6 +321,12 @@ public sealed class BackgroundViewModel : ViewModelBase, IDisposable
 
             Adopt(lockFollows: BackgroundKeys.LockFollows(_values));
             IsReady = true;
+
+            // The desks come afterwards and on their own: without a compositor that keeps
+            // desk backgrounds, the window is the shared background alone, as it always was.
+            _deskClient = new DeskClient();
+            _deskClient.Changed += desks => Dispatcher.UIThread.Post(() => OnDesks(desks));
+            _deskClient.Start();
         }
         catch (Exception e)
         {
@@ -356,6 +424,21 @@ public sealed class BackgroundViewModel : ViewModelBase, IDisposable
     {
         await RevertAsync().ConfigureAwait(true);
         _touched.Clear();
+        _deskOpen.Clear();
+    }
+
+    /// <summary>Take the chosen desk's own background away, so it shows the shared one again.</summary>
+    public void UseSharedBackground()
+    {
+        if (_deskClient is null || EditedDesk is not { Background: not null } desk)
+            return;
+
+        _deskOpen.TryAdd(desk.Id, desk.Background);
+        _deskClient.ClearBackground(desk.Id);
+        // Shown at once rather than when the compositor answers, so the controls do not sit on
+        // the old background for a poll.
+        Replace(desk with { Background = null });
+        Adopt(lockFollows: null);
     }
 
     /// <summary>
@@ -364,6 +447,21 @@ public sealed class BackgroundViewModel : ViewModelBase, IDisposable
     /// </summary>
     public async Task RevertAsync()
     {
+        if (_deskClient is not null)
+        {
+            foreach (var (id, background) in _deskOpen)
+            {
+                if (background is null)
+                    _deskClient.ClearBackground(id);
+                else
+                    _deskClient.SetBackground(id, background);
+            }
+            // The client sends them from its own thread; the window is about to close, and the
+            // compositor should have heard before it does.
+            if (_deskOpen.Count > 0)
+                await Task.Delay(250).ConfigureAwait(true);
+        }
+
         if (_client is null || _touched.Count == 0)
             return;
 
@@ -384,6 +482,8 @@ public sealed class BackgroundViewModel : ViewModelBase, IDisposable
 
     public void Dispose()
     {
+        _deskClient?.Dispose();
+        _deskClient = null;
         if (_client is not null)
         {
             _client.Changed -= OnChangedElsewhere;
@@ -399,7 +499,7 @@ public sealed class BackgroundViewModel : ViewModelBase, IDisposable
 
         // A picture chosen under `solid` would be written and never shown. "No Picture" is how
         // this panel says "color only", so leaving solid takes the mode back to a picture one.
-        if (tile.Path is not null && Value(BackgroundKeys.Mode) == BackgroundKeys.SolidMode)
+        if (tile.Path is not null && Current(BackgroundKeys.Mode) == BackgroundKeys.SolidMode)
             values[BackgroundKeys.Mode] = BackgroundKeys.PictureMode;
 
         return WriteAsync(values);
@@ -410,9 +510,18 @@ public sealed class BackgroundViewModel : ViewModelBase, IDisposable
         WriteLockedAsync(BackgroundKeys.Desktop.ToDictionary(
             BackgroundKeys.ToLock, key => (object)Value(key), StringComparer.Ordinal));
 
-    /// <summary>Write desktop keys, and the lock screen's matching ones while it follows.</summary>
+    /// <summary>
+    /// Write desktop keys, and the lock screen's matching ones while it follows -- or, with a desk
+    /// chosen, that desk's own background with those values in it.
+    /// </summary>
     private Task WriteAsync(Dictionary<string, object> values)
     {
+        if (EditedDesk is { } desk)
+        {
+            WriteDesk(desk, values);
+            return Task.CompletedTask;
+        }
+
         if (_alsoLockScreen)
         {
             foreach (var (key, value) in values.ToList())
@@ -450,6 +559,66 @@ public sealed class BackgroundViewModel : ViewModelBase, IDisposable
         }
     }
 
+    private void WriteDesk(DeskEntry desk, IReadOnlyDictionary<string, object> values)
+    {
+        if (_deskClient is null || !IsReady)
+            return;
+
+        var background = BackgroundKeys.With(BackgroundKeys.Showing(desk.Background, Value), values);
+        _deskOpen.TryAdd(desk.Id, desk.Background);
+        _deskClient.SetBackground(desk.Id, background);
+        Replace(desk with { Background = background });
+        Status = string.Empty;
+    }
+
+    /// <summary>The compositor's list of desks, after any change to it from anywhere.</summary>
+    private void OnDesks(IReadOnlyList<DeskEntry> desks)
+    {
+        var first = _deskEntries.Count == 0;
+        _deskEntries = desks;
+
+        var selectedId = _selectedDesk?.Id;
+        _adopting = true;
+        try
+        {
+            Desks.Clear();
+            Desks.Add(_allDesks);
+            foreach (var desk in desks)
+                Desks.Add(new DeskChoice(desk.Id, desk.Name));
+        }
+        finally
+        {
+            _adopting = false;
+        }
+
+        // On opening, the desk on screen if it has a background of its own -- that is the one the
+        // user is looking at -- and otherwise the shared background, which is what is showing.
+        // Afterwards whatever was chosen, unless that desk has been deleted.
+        DeskChoice? choice = first
+            ? desks.FirstOrDefault(desk => desk is { Active: true, Background: not null }) is { } active
+                ? Desks.First(entry => entry.Id == active.Id)
+                : _allDesks
+            : Desks.FirstOrDefault(entry => entry.Id == selectedId) ?? _allDesks;
+
+        _selectedDesk = null;
+        SelectedDesk = choice;
+        this.RaisePropertyChanged(nameof(HasDesks));
+    }
+
+    /// <summary>Put <paramref name="desk"/> in the list in place of the entry with its id.</summary>
+    private void Replace(DeskEntry desk)
+    {
+        _deskEntries = [.. _deskEntries.Select(entry => entry.Id == desk.Id ? desk : entry)];
+        RaiseDeskStates();
+    }
+
+    private void RaiseDeskStates()
+    {
+        this.RaisePropertyChanged(nameof(CanFollowLock));
+        this.RaisePropertyChanged(nameof(CanUseShared));
+        this.RaisePropertyChanged(nameof(DeskNote));
+    }
+
     /// <summary>Somebody else changed a value: another panel, or a hand-edit of the file.</summary>
     private void OnChangedElsewhere(object? sender, SettingsChangedEventArgs e)
     {
@@ -482,14 +651,14 @@ public sealed class BackgroundViewModel : ViewModelBase, IDisposable
             if (lockFollows is { } follows)
                 AlsoLockScreen = follows;
 
-            if (Color.TryParse(Value(BackgroundKeys.Color), out var color))
+            if (Color.TryParse(Current(BackgroundKeys.Color), out var color))
                 Color = color;
 
-            var mode = Value(BackgroundKeys.Mode);
+            var mode = Current(BackgroundKeys.Mode);
             if (Modes.FirstOrDefault(choice => choice.Value == mode) is { } choice)
                 SelectedMode = choice;
 
-            var image = Value(BackgroundKeys.Image);
+            var image = Current(BackgroundKeys.Image);
             Selected = mode == BackgroundKeys.SolidMode || image.Length == 0 ? _none : TileFor(image);
         }
         finally
@@ -517,6 +686,23 @@ public sealed class BackgroundViewModel : ViewModelBase, IDisposable
     private static WallpaperTile Tile(Wallpaper wallpaper, bool elsewhere = false) => new(wallpaper, elsewhere);
 
     private string Value(string key) => _values.TryGetValue(key, out var value) ? value : string.Empty;
+
+    /// <summary>
+    /// A desktop key's value for whatever the controls are editing: the chosen desk's own
+    /// background, the shared one it shows when it has none, or the shared one itself.
+    /// </summary>
+    private string Current(string key)
+    {
+        if (EditedDesk is not { Background: { } own })
+            return Value(key);
+        return key switch
+        {
+            BackgroundKeys.Image => own.Image,
+            BackgroundKeys.Mode => own.Mode,
+            BackgroundKeys.Color => own.Color,
+            _ => Value(key),
+        };
+    }
 
     /// <summary>Decode thumbnails on the thread pool, filling each tile in as it is ready.</summary>
     private static void LoadThumbnails(IEnumerable<WallpaperTile> tiles)

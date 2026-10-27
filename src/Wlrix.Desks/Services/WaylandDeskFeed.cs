@@ -211,7 +211,7 @@ public sealed class WaylandDeskFeed : IDeskFeed
     private void Emit()
     {
         var desks = _desks.Values
-            .Select(d => new DeskInfo((int)d.Id, d.Active, d.Name))
+            .Select(d => new DeskInfo((int)d.Id, d.Active, d.Name, d.Background))
             .ToList();
 
         // Back to front, so a preview that paints in list order draws each window over the ones
@@ -258,6 +258,7 @@ public sealed class WaylandDeskFeed : IDeskFeed
         public string Name = string.Empty;
         public bool Global;
         public bool Active;
+        public Wallpaper? Background;
     }
 
     private sealed class ToplevelState
@@ -333,6 +334,18 @@ public sealed class WaylandDeskFeed : IDeskFeed
         protected override void Deactivated(WlrixDeskV1 sender)
         {
             if (feed._desks.TryGetValue(sender, out var d)) d.Active = false;
+        }
+
+        // From version 4. A background this build cannot read is shown as the shared one, which
+        // is what wlrix-bg falls back to as well.
+        protected override void Background(WlrixDeskV1 sender, string image, string mode, string color)
+        {
+            if (feed._desks.TryGetValue(sender, out var d)) d.Background = Wallpaper.Parse(image, mode, color);
+        }
+
+        protected override void SharedBackground(WlrixDeskV1 sender)
+        {
+            if (feed._desks.TryGetValue(sender, out var d)) d.Background = null;
         }
 
         protected override void Removed(WlrixDeskV1 sender) => feed._desks.Remove(sender);

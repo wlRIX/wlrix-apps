@@ -21,6 +21,10 @@ public static class Strings
     public static string AddTitle => Catalog.Get("AddTitle");
     public static string FilterImages => Catalog.Get("FilterImages");
     public static string ColorTitle => Catalog.Get("ColorTitle");
+    public static string AllDesks => Catalog.Get("AllDesks");
+
+    /// <summary>The note under the Desk option menu while <paramref name="desk"/> has no background of its own.</summary>
+    public static string DeskUsesShared(string desk) => Catalog.Format("DeskUsesShared", desk);
 
     /// <summary>
     /// A fit mode's label. The daemon's English label when this catalog has none for the value,

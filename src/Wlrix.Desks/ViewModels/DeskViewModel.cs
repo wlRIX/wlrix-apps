@@ -22,6 +22,18 @@ public sealed record PreviewWindow(
     long Id, double X, double Y, double W, double H, string Title, string AppId, bool Minimized);
 
 /// <summary>
+/// One screen's background in a desk's preview, already laid out in the preview's coordinates.
+/// </summary>
+/// <param name="Area">The screen, scaled into the preview.</param>
+/// <param name="Picture">The picture, or null while it decodes, when there is none, or when it
+/// will not decode; the area is its color then.</param>
+/// <param name="PictureSize">The picture's own size at the preview's scale, which a tiled or
+/// centered wallpaper is laid out at.</param>
+public sealed record PreviewWallpaper(
+    Rect Area, WallpaperMode Mode, global::Avalonia.Media.Color Color,
+    global::Avalonia.Media.Imaging.Bitmap? Picture, Size PictureSize);
+
+/// <summary>
 /// One desk tile: its name, whether it is the active desk (drives the LED lamp), and the
 /// opaque geometry of its windows mapped into a preview box that is the screen layout drawn at
 /// the overview's scale (<see cref="PreviewWidth"/> × <see cref="PreviewHeight"/>).
@@ -37,6 +49,7 @@ public sealed class DeskViewModel(int id) : ViewModelBase
     private double _previewWidth;
     private double _previewHeight;
     private IReadOnlyList<PreviewWindow> _previewWindows = [];
+    private IReadOnlyList<PreviewWallpaper> _backgrounds = [];
 
     public int Id { get; } = id;
 
@@ -85,6 +98,13 @@ public sealed class DeskViewModel(int id) : ViewModelBase
         private set => this.RaiseAndSetIfChanged(ref _previewWindows, value);
     }
 
+    /// <summary>The desk's background, one area per screen, drawn behind its windows.</summary>
+    public IReadOnlyList<PreviewWallpaper> Backgrounds
+    {
+        get => _backgrounds;
+        private set => this.RaiseAndSetIfChanged(ref _backgrounds, value);
+    }
+
     /// <summary>Width of the preview box: the screen layout's, at the overview's scale.</summary>
     public double PreviewWidth
     {
@@ -112,11 +132,15 @@ public sealed class DeskViewModel(int id) : ViewModelBase
     /// <summary>Refreshes this tile from a snapshot. <paramref name="windows"/> are the windows
     /// to draw (the desk's own plus the Global desk's); <paramref name="world"/> is the bounding
     /// box of all outputs; <paramref name="scalePercent"/> is how large it is drawn, as a
-    /// percentage of its own size (see <see cref="DeskScale"/>).</summary>
-    public void Update(DeskInfo info, IReadOnlyList<WindowInfo> windows, Rect world, int scalePercent)
+    /// percentage of its own size (see <see cref="DeskScale"/>); <paramref name="backgrounds"/>
+    /// is the desk's background, already laid out in the preview.</summary>
+    public void Update(
+        DeskInfo info, IReadOnlyList<WindowInfo> windows, Rect world, int scalePercent,
+        IReadOnlyList<PreviewWallpaper>? backgrounds = null)
     {
         Name = info.Name;
         IsActive = info.Active;
+        Backgrounds = backgrounds ?? [];
 
         if (world.Width <= 0 || world.Height <= 0)
         {

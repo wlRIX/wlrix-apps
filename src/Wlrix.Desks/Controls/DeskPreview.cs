@@ -33,6 +33,9 @@ namespace Wlrix.Desks.Controls;
 /// the drag, so the events keep coming wherever it goes; drawing the ghost and deciding which
 /// desk is under it are the window's business, because a drag crosses from one tile to another.
 ///
+/// Behind the windows is the desk's background, as the desktop would show it on each screen:
+/// <see cref="Backgrounds"/>, laid out by <see cref="MainWindowViewModel"/>.
+///
 /// The rectangle under the pointer also names itself in a tooltip, which is what
 /// <c>ov</c>'s <c>--noWindowName</c> switched between titles and application IDs. The tip is set
 /// imperatively from the pointer handlers rather than declared per item, because there are no
@@ -42,6 +45,9 @@ public sealed class DeskPreview : Control, ICustomHitTest
 {
     public static readonly StyledProperty<IReadOnlyList<PreviewWindow>?> WindowsProperty =
         AvaloniaProperty.Register<DeskPreview, IReadOnlyList<PreviewWindow>?>(nameof(Windows));
+
+    public static readonly StyledProperty<IReadOnlyList<PreviewWallpaper>?> BackgroundsProperty =
+        AvaloniaProperty.Register<DeskPreview, IReadOnlyList<PreviewWallpaper>?>(nameof(Backgrounds));
 
     public static readonly StyledProperty<IBrush?> WindowBrushProperty =
         AvaloniaProperty.Register<DeskPreview, IBrush?>(nameof(WindowBrush));
@@ -98,7 +104,7 @@ public sealed class DeskPreview : Control, ICustomHitTest
     // has nothing to repaint.
     static DeskPreview() =>
         AffectsRender<DeskPreview>(
-            WindowsProperty, WindowBrushProperty, WindowBorderBrushProperty,
+            WindowsProperty, BackgroundsProperty, WindowBrushProperty, WindowBorderBrushProperty,
             FrameBrushProperty, HoverFrameBrushProperty, SelectionFrameBrushProperty,
             HoveredWindowIdProperty, SelectedWindowIdProperty);
 
@@ -106,6 +112,13 @@ public sealed class DeskPreview : Control, ICustomHitTest
     {
         get => GetValue(WindowsProperty);
         set => SetValue(WindowsProperty, value);
+    }
+
+    /// <summary>The desk's background, one area per screen.</summary>
+    public IReadOnlyList<PreviewWallpaper>? Backgrounds
+    {
+        get => GetValue(BackgroundsProperty);
+        set => SetValue(BackgroundsProperty, value);
     }
 
     /// <summary>Fills a window's body.</summary>
@@ -184,6 +197,12 @@ public sealed class DeskPreview : Control, ICustomHitTest
 
     public override void Render(DrawingContext context)
     {
+        if (Backgrounds is { } backgrounds)
+        {
+            foreach (var background in backgrounds)
+                DrawBackground(context, background);
+        }
+
         if (Windows is not { } windows)
             return;
 
@@ -210,6 +229,53 @@ public sealed class DeskPreview : Control, ICustomHitTest
             Fill(context, WindowBrush, inner.Deflate(new Thickness(FrameWidth, TitleDepth, FrameWidth, FrameWidth)));
         }
     }
+
+    /// <summary>
+    /// One screen's background, fitted as <c>wlrix-bg</c> fits it: the color first, under the
+    /// letterbox bars and anything transparent, then the picture.
+    /// </summary>
+    private static void DrawBackground(DrawingContext context, PreviewWallpaper background)
+    {
+        var area = background.Area;
+        using var clip = context.PushClip(area);
+        context.FillRectangle(new SolidColorBrush(background.Color), area);
+        if (background.Picture is not { } picture || background.Mode == WallpaperMode.Solid)
+            return;
+
+        var size = picture.Size;
+        var native = background.PictureSize;
+        if (size.Width <= 0 || size.Height <= 0)
+            return;
+
+        if (background.Mode == WallpaperMode.Tile)
+        {
+            // From the screen's top-left at the picture's own size, as wlrix-bg repeats it. At a
+            // few percent a 100-pixel IRIX pattern is a few pixels across, and its dither reads as
+            // the same texture it is on the desktop.
+            if (native.Width <= 0 || native.Height <= 0)
+                return;
+            var tiles = new ImageBrush(picture)
+            {
+                TileMode = TileMode.Tile,
+                Stretch = Stretch.Fill,
+                DestinationRect = new RelativeRect(area.X, area.Y, native.Width, native.Height, RelativeUnit.Absolute),
+            };
+            context.FillRectangle(tiles, area);
+            return;
+        }
+
+        var destination = background.Mode switch
+        {
+            WallpaperMode.Center => Centered(area, native),
+            WallpaperMode.Fit => Centered(area, size * Math.Min(area.Width / size.Width, area.Height / size.Height)),
+            WallpaperMode.Fill => Centered(area, size * Math.Max(area.Width / size.Width, area.Height / size.Height)),
+            _ => area,
+        };
+        context.DrawImage(picture, new Rect(size), destination);
+    }
+
+    private static Rect Centered(Rect area, Size size) =>
+        new(area.X + (area.Width - size.Width) / 2, area.Y + (area.Height - size.Height) / 2, size.Width, size.Height);
 
     private static void Fill(DrawingContext context, IBrush? brush, Rect rect)
     {

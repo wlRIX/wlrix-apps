@@ -17,6 +17,9 @@ namespace Wlrix.Desks.Views;
 
 public partial class MainWindow : Window
 {
+    // Watching background.toml, for the shared background the snapshots draw.
+    private readonly List<FileSystemWatcher> _watchers = [];
+
     // The pointer carrying a dragged window, and the desk it would land on.
     private IPointer? _dragPointer;
     private DeskViewModel? _dropTarget;
@@ -57,6 +60,7 @@ public partial class MainWindow : Window
         UpdateWorld();
         if (Screens is { } screens)
             screens.Changed += OnScreensChanged;
+        WatchSharedBackground();
         vm.Start();
     }
 
@@ -65,6 +69,9 @@ public partial class MainWindow : Window
         base.OnClosed(e);
         if (Screens is { } screens)
             screens.Changed -= OnScreensChanged;
+        foreach (var watcher in _watchers)
+            watcher.Dispose();
+        _watchers.Clear();
         if (DataContext is MainWindowViewModel vm)
         {
             vm.FeedUnavailable -= OnFeedUnavailable;
@@ -135,6 +142,43 @@ public partial class MainWindow : Window
         }
 
         vm.World = new Rect(minX, minY, Math.Max(1, maxX - minX), Math.Max(1, maxY - minY));
+        // On Wayland a screen's display name is its wl_output name -- the connector, which is
+        // what background.toml's [[output]] sections are keyed by.
+        vm.Screens = [.. all.Select(screen => new ScreenArea(
+            new Rect(screen.Bounds.X, screen.Bounds.Y, screen.Bounds.Width, screen.Bounds.Height),
+            screen.DisplayName))];
+    }
+
+    // background.toml is written by wlrix-settings-daemon, which renames a new file into place,
+    // so the directory is what is watched rather than the file. Both directories wlrix-bg reads
+    // from are, since a user's file appearing or going away changes which one applies.
+    private void WatchSharedBackground()
+    {
+        foreach (var directory in SharedBackground.SearchPaths().Select(Path.GetDirectoryName).Distinct())
+        {
+            if (directory is null || !Directory.Exists(directory))
+                continue;
+            try
+            {
+                var watcher = new FileSystemWatcher(directory, "background.toml")
+                {
+                    NotifyFilter = NotifyFilters.FileName | NotifyFilters.LastWrite,
+                };
+                FileSystemEventHandler changed = (_, _) => Dispatcher.UIThread.Post(() =>
+                    (DataContext as MainWindowViewModel)?.ReloadSharedBackground());
+                watcher.Changed += changed;
+                watcher.Created += changed;
+                watcher.Deleted += changed;
+                watcher.Renamed += (_, _) => changed(this, null!);
+                watcher.EnableRaisingEvents = true;
+                _watchers.Add(watcher);
+            }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or ArgumentException)
+            {
+                // Without a watcher the snapshots show the background as it was at startup,
+                // which is a stale preview rather than anything worth failing over.
+            }
+        }
     }
 
     private void OnFeedUnavailable() => _ = MessageDialog.ShowAsync(this, DialogType.Error,

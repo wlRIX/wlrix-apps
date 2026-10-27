@@ -25,6 +25,9 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
     private long? _hoveredWindowId;
     private long? _selectedWindowId;
     private Rect _world = new(0, 0, 1920, 1080);
+    private IReadOnlyList<ScreenArea> _screens = [];
+    private SharedBackground _sharedBackground;
+    private readonly WallpaperPictures _pictures = new();
 
     /// <summary>Design-time / previewer constructor: shows the sample layout.</summary>
     public MainWindowViewModel() : this(new SampleDeskFeed())
@@ -36,8 +39,15 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
     /// <param name="initial">What the overview looked like when it was last closed, as
     /// amended by this run's command line. Null takes the defaults, which is what the
     /// previewer wants and what keeps it off the user's own settings file.</param>
-    public MainWindowViewModel(IDeskFeed feed, DesksSettings? initial = null)
+    /// <param name="sharedBackground">What <c>background.toml</c> says, for the desks without a
+    /// background of their own. Null reads the file; a test passes its own.</param>
+    public MainWindowViewModel(IDeskFeed feed, DesksSettings? initial = null, SharedBackground? sharedBackground = null)
     {
+        _sharedBackground = sharedBackground ?? SharedBackground.Load();
+        // A picture that finishes decoding is drawn the next time the snapshots are laid out,
+        // which is now: there may be no snapshot coming for a while.
+        _pictures.Decoded += () => Dispatcher.UIThread.Post(Relayout);
+
         if (initial is { } settings)
         {
             _showGlobalDesk = settings.ShowGlobalDesk;
@@ -293,9 +303,64 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
         set
         {
             _world = value;
-            if (_lastSnapshot is not null)
-                ApplySnapshot(_lastSnapshot);
+            Relayout();
         }
+    }
+
+    /// <summary>
+    /// The screens, with their connector names, which a desk's background is laid out over
+    /// one by one: <c>background.toml</c> can give each monitor its own. Set by the view from
+    /// Avalonia's screens alongside <see cref="World"/>.
+    /// </summary>
+    public IReadOnlyList<ScreenArea> Screens
+    {
+        get => _screens;
+        set
+        {
+            _screens = value;
+            Relayout();
+        }
+    }
+
+    /// <summary>Reads <c>background.toml</c> again, after it changed on disk.</summary>
+    public void ReloadSharedBackground()
+    {
+        _sharedBackground = SharedBackground.Load();
+        // A picture can be replaced under the same name, which is how Background Settings'
+        // own copies are named.
+        _pictures.Clear();
+        Relayout();
+    }
+
+    private void Relayout()
+    {
+        if (_lastSnapshot is not null)
+            ApplySnapshot(_lastSnapshot);
+    }
+
+    /// <summary>
+    /// A desk's background laid out in its preview: one area per screen, each with the desk's
+    /// own background or, for a desk without one, what <c>background.toml</c> gives that screen.
+    /// </summary>
+    private IReadOnlyList<PreviewWallpaper> BackgroundsFor(Wallpaper? own, Rect world, double scale)
+    {
+        // Before the view has said what the screens are, the whole layout is one unnamed screen.
+        var screens = _screens.Count > 0 ? _screens : [new ScreenArea(world, null)];
+        var result = new List<PreviewWallpaper>(screens.Count);
+        foreach (var screen in screens)
+        {
+            var wallpaper = own ?? _sharedBackground.Resolve(screen.Name);
+            var picture = wallpaper.Image is { } path ? _pictures.Get(path) : null;
+            var bounds = screen.Bounds;
+            result.Add(new PreviewWallpaper(
+                new Rect((bounds.X - world.X) * scale, (bounds.Y - world.Y) * scale,
+                    bounds.Width * scale, bounds.Height * scale),
+                wallpaper.Mode,
+                wallpaper.Color,
+                picture?.Bitmap,
+                picture is null ? default : new Size(picture.NativeSize.Width * scale, picture.NativeSize.Height * scale)));
+        }
+        return result;
     }
 
     public string GlobalDeskMenuHeader => Strings.GlobalDeskToggle(ShowGlobalDesk);
@@ -516,7 +581,7 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
         if (snapshot.Desks.FirstOrDefault(d => d.Id == 0) is { } globalInfo)
         {
             var g = GlobalDesk ?? new DeskViewModel(0);
-            g.Update(globalInfo, globalWindows, world, Scale);
+            g.Update(globalInfo, globalWindows, world, Scale, BackgroundsFor(null, world, Scale / 100.0));
             GlobalDesk = g;
         }
 
@@ -531,7 +596,7 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
             // One pass over the snapshot rather than the desk's windows followed by the global
             // desk's, so the two stay interleaved in the stacking order the feed gives them in.
             var windows = snapshot.Windows.Where(w => w.DeskId == info.Id || w.DeskId == 0).ToList();
-            vm.Update(info, windows, world, Scale);
+            vm.Update(info, windows, world, Scale, BackgroundsFor(info.Background, world, Scale / 100.0));
             ordered.Add(vm);
         }
 

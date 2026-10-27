@@ -74,6 +74,8 @@ public partial class MainWindow : Window
 
     private void OnRemove(object? sender, RoutedEventArgs e) => _ = Model?.RemoveSelectedAsync();
 
+    private void OnUseShared(object? sender, RoutedEventArgs e) => Model?.UseSharedBackground();
+
     // --- drops ------------------------------------------------------------
 
     private static IReadOnlyList<string> PathsOf(DragEventArgs e)

@@ -51,6 +51,7 @@ public class LocalizationTests
         [
             "HelpTitle", "HelpText", "NoPicture", "AddTitle", "FilterImages", "ColorTitle",
             "Elsewhere", "AddFailed", "RemoveFailed", "Unsupported", "NoSettingsService", "FileInvalid",
+            "AllDesks", "DeskUsesShared",
             // Every mode the daemon offers except solid, which is the "No Picture" tile.
             "Mode_fill", "Mode_fit", "Mode_stretch", "Mode_center", "Mode_tile",
         ];

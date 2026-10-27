@@ -15,7 +15,7 @@ public sealed class SampleDeskFeed : IDeskFeed
     [
         new(0, false, "Global"),
         new(1, true, "Web"),
-        new(2, false, "Code"),
+        new(2, false, "Code", new Wallpaper(null, WallpaperMode.Solid, global::Avalonia.Media.Color.FromRgb(0x46, 0x6a, 0x8c))),
         new(3, false, "Mail"),
     ];
 

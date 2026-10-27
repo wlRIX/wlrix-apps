@@ -51,6 +51,18 @@
   <data name="AlsoLockScreen" xml:space="preserve">
     <value>Use on the lock screen too</value>
   </data>
+  <data name="Desk" xml:space="preserve">
+    <value>Desk:</value>
+  </data>
+  <data name="AllDesks" xml:space="preserve">
+    <value>All Desks</value>
+  </data>
+  <data name="UseShared" xml:space="preserve">
+    <value>Use Shared Background</value>
+  </data>
+  <data name="DeskUsesShared" xml:space="preserve">
+    <value>{0} shows the background all desks share. Choosing a picture, fit or color gives it its own.</value>
+  </data>
   <data name="Ok" xml:space="preserve">
     <value>OK</value>
   </data>
@@ -109,7 +121,9 @@ Add copies pictures into your own wallpaper folder, so moving or deleting the or
 
 Fit says how a picture meets the screen. Color is what shows around it, through anything transparent in it, and on its own under No Picture.
 
-With "Use on the lock screen too" checked, the lock screen shows the same background.
+Desk chooses which background you are changing. All Desks is the one every desk shows unless it has its own; choosing a desk changes that desk's own background, which it shows while it is the desk on screen. Use Shared Background takes a desk's own background away again.
+
+With "Use on the lock screen too" checked, the lock screen shows the same background as All Desks.
 
 Reset puts back what the desktop had when this window opened. Cancel does the same and then closes; OK keeps what you chose.</value>
   </data>
