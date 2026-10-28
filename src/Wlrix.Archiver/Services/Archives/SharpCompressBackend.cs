@@ -126,12 +126,24 @@ public sealed class SharpCompressBackend : IArchiveBackend
             using var session = OpenSession(path, format, password, progress, cancellationToken);
             var throttle = new ProgressThrottle<ArchiveProgress>(progress);
             var written = 0;
+            var directoryModes = new List<(string Path, int Mode)>();
             foreach (var entry in session.Archive.Entries)
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                if (entry.IsDirectory || IsTarMetadata(entry.Key)
-                    || !wanted.Contains(Normalize(entry.Key)))
+                if (IsTarMetadata(entry.Key) || !wanted.Contains(Normalize(entry.Key)))
+                    continue;
+
+                if (entry.IsDirectory)
                 {
+                    // Created as their files arrive; their own modes wait until the end, so a
+                    // read-only directory cannot stop its contents being written into it.
+                    if (!flatten && Ownership(entry).Mode is { } directoryMode
+                        && Normalize(entry.Key) is { Length: > 0 } directoryKey)
+                    {
+                        var directory = ResolveTarget(destinationDirectory, directoryKey, flatten: false);
+                        Directory.CreateDirectory(directory);
+                        directoryModes.Add((directory, directoryMode));
+                    }
                     continue;
                 }
 
@@ -142,6 +154,13 @@ public sealed class SharpCompressBackend : IArchiveBackend
                 try
                 {
                     entry.WriteToFile(target, options);
+                    // SharpCompress writes every file with the default mode, so an executable
+                    // comes out unable to run: the install script that will not start, the
+                    // program it then cannot find.
+                    // Never for a link: setting a mode follows it, and a link's own 0777 would
+                    // open up whatever it points at.
+                    if (string.IsNullOrEmpty(entry.LinkTarget))
+                        UnixPermissions.Apply(target, Ownership(entry).Mode);
                 }
                 // Per entry, not per archive: an archive may hold both encrypted and plain
                 // members, and the question only arises on reaching one of the former. Which
@@ -157,6 +176,10 @@ public sealed class SharpCompressBackend : IArchiveBackend
 
                 throttle.Report(new ArchiveProgress(ArchivePhase.Extracting, Count: ++written));
             }
+
+            // Deepest first, so a parent closing its permissions does not lock a child out.
+            foreach (var (directory, mode) in directoryModes.OrderByDescending(item => item.Path.Length))
+                UnixPermissions.Apply(directory, mode);
         }, cancellationToken);
 
     public Task AddAsync(string path, ArchiveFormat format, IReadOnlyList<string> sourcePaths,

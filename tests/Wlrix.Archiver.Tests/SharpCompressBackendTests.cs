@@ -183,6 +183,41 @@ public class SharpCompressBackendTests
         Assert.True(File.Exists(Path.Combine(destination.Path, "a", "e.txt")));
     }
 
+    /// <summary>
+    /// An executable comes out executable, a plain file does not, and neither gets more than
+    /// the umask allows.
+    /// </summary>
+    /// <remarks>
+    /// The regression: every file came out with the default mode, so an install script would
+    /// not start, and once given its execute bit back it could not run the program beside it.
+    /// </remarks>
+    [Theory]
+    [InlineData("modes.tar", ArchiveFormat.Tar)]
+    [InlineData("modes.tar.gz", ArchiveFormat.TarGz)]
+    public async Task ExtractedFilesKeepTheirRecordedPermissions(string fixture, ArchiveFormat format)
+    {
+        using var destination = new TemporaryDirectory();
+
+        await Backend().ExtractAsync(Fixture.Path(fixture), format, [], destination.Path);
+
+        var umask = (UnixFileMode)ProbeUmask(destination.Path);
+        var program = File.GetUnixFileMode(Path.Combine(destination.Path, "bin", "blender"));
+        Assert.Equal((UnixFileMode)0x1ed & ~umask, program); // 0o755
+        var text = File.GetUnixFileMode(Path.Combine(destination.Path, "copyright.txt"));
+        Assert.Equal((UnixFileMode)0x1a4 & ~umask, text); // 0o644
+    }
+
+    /// <summary>The umask this process creates files under, measured rather than assumed.</summary>
+    private static int ProbeUmask(string directory)
+    {
+        var probe = Path.Combine(directory, ".umask-probe");
+        File.Create(probe, 1, FileOptions.None).Dispose();
+        // A new file asks for 0o666; what it got is that less the umask.
+        var mode = (int)File.GetUnixFileMode(probe);
+        File.Delete(probe);
+        return 0x1b6 & ~mode;
+    }
+
     [Fact]
     public async Task ExtractingADirectoryBringsEverythingUnderItAndNothingElse()
     {
