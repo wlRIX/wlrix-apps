@@ -41,4 +41,13 @@ public class RunningIdentitiesTests
         Assert.True(RunningIdentities.AnyOpen(identities, new HashSet<string> { "firefox", "mpv" }));
         Assert.False(RunningIdentities.AnyOpen(identities, new HashSet<string> { "firefox" }));
     }
+
+    [Fact]
+    public void AReverseDnsAppIdMatchesItsLastComponent()
+    {
+        // Dolphin Emulator: the window says org.DolphinEmu.dolphin-emu, the launcher only dolphin-emu.
+        var identities = RunningIdentities.For(Entry("dolphin-emu.desktop", "Exec=dolphin-emu -u /games"));
+        Assert.True(RunningIdentities.AnyOpen(identities, new HashSet<string> { "org.dolphinemu.dolphin-emu" }));
+        Assert.False(RunningIdentities.AnyOpen(identities, new HashSet<string> { "org.dolphinemu.emu" }));
+    }
 }

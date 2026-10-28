@@ -4,7 +4,7 @@
         <ApplicationManifest>app.manifest</ApplicationManifest>
         <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
         <AssemblyName>wlrix-icon-catalog</AssemblyName>
-        <Version>0.1.0</Version>
+        <Version>0.1.1</Version>
         <!-- NWayland's generated bindings and runtime interop are unsafe. -->
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>

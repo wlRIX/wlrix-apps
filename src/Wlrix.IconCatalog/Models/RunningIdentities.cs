@@ -40,7 +40,22 @@ public static class RunningIdentities
         }
     }
 
-    /// <summary>Whether any open window's <c>app_id</c> (lowercased) is one of <paramref name="identities"/>.</summary>
+    /// <summary>
+    /// Whether any open window's <c>app_id</c> (lowercased) is one of <paramref name="identities"/>,
+    /// or is a reverse-DNS id whose last component is.
+    /// </summary>
+    /// <remarks>
+    /// The last-component rule is for applications that name their window in reverse-DNS form
+    /// while their launcher does not: Dolphin Emulator's window is
+    /// <c>org.DolphinEmu.dolphin-emu</c>, its <c>dolphin-emu.desktop</c> says nothing more.
+    /// </remarks>
     public static bool AnyOpen(IReadOnlyList<string> identities, IReadOnlySet<string> openAppIds) =>
-        identities.Any(openAppIds.Contains);
+        identities.Any(openAppIds.Contains)
+        || openAppIds.Any(appId => LastComponent(appId) is { } last && identities.Contains(last));
+
+    private static string? LastComponent(string appId)
+    {
+        var dot = appId.LastIndexOf('.');
+        return dot < 0 ? null : appId[(dot + 1)..];
+    }
 }
