@@ -358,10 +358,15 @@ public partial class MainWindow : Window
         if (DragImageRenderer.Render(rows, await icon, DragPalette(), RenderScaling) is { } image)
             transfer.Add(DataTransferItem.Create(WaylandDragImage.Format, image));
 
+        // Move as well as copy. The files are scratch copies the archive does not miss, and a
+        // file manager dropping within one filesystem asks for a move -- the scratch directory
+        // and ~/Documents are usually on the same one. Offered copy alone, that drop has no
+        // action both sides accept, and the compositor refuses it with the no-entry cursor.
+        // Not link: a link to a scratch file breaks when this window closes and clears it.
         _dragging = true;
         try
         {
-            await DragDrop.DoDragDropAsync(trigger, transfer, DragDropEffects.Copy);
+            await DragDrop.DoDragDropAsync(trigger, transfer, DragDropEffects.Copy | DragDropEffects.Move);
         }
         finally
         {
