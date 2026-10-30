@@ -3,6 +3,7 @@
 using System.Diagnostics;
 using System.Globalization;
 using System.Text.RegularExpressions;
+using Wlrix.Common;
 
 namespace Wlrix.Settings.Audio.Services;
 
@@ -61,12 +62,10 @@ internal static partial class PipeWireRates
 
     private static async Task<string?> RunAsync(params string[] arguments)
     {
-        var info = new ProcessStartInfo("pw-metadata")
-        {
-            RedirectStandardOutput = true,
-            RedirectStandardError = true,
-            UseShellExecute = false,
-        };
+        var info = Executables.StartInfoFor("pw-metadata");
+        info.RedirectStandardOutput = true;
+        info.RedirectStandardError = true;
+        info.UseShellExecute = false;
         foreach (var argument in arguments)
             info.ArgumentList.Add(argument);
 

@@ -191,8 +191,9 @@ public class EncryptedArchiveTests
     /// <remarks>
     /// Measured, not assumed: `7z a` against an encrypted archive with no `-p` succeeds and adds
     /// an *unencrypted* member beside the encrypted ones, saying nothing. The empty password is
-    /// equally not an option -- `7z a -p""` prompts on a terminal this process does not have and
-    /// waits for ever -- so the switch appears exactly when there is something to put after it.
+    /// equally not an option -- a bare `-p` asks for one -- so the switch appears exactly when
+    /// there is something to encrypt with. The password itself goes on standard input and never
+    /// in the arguments, which every user on the machine can read from `/proc`.
     /// </remarks>
     [Theory]
     [InlineData(null, false)]
@@ -208,18 +209,73 @@ public class EncryptedArchiveTests
 
         var passed = runner.Arguments.Any(a => a.StartsWith("-p", StringComparison.Ordinal));
         Assert.Equal(expected, passed);
-        if (expected)
-            Assert.Contains("-p" + Password, runner.Arguments);
+        Assert.DoesNotContain(runner.Arguments, a => password is { Length: > 0 } && a.Contains(password));
+        Assert.Equal(expected ? $"{Password}\n{Password}\n" : null, runner.StandardInput);
+    }
+
+    /// <summary>
+    /// The password over standard input, against the real tool: every operation, names encrypted,
+    /// and a password that is not ASCII under the C locale the runner sets. Passes vacuously on a
+    /// machine without 7z, as the fixtures would otherwise have to ship it.
+    /// </summary>
+    [Fact]
+    public async Task SevenZipTakesItsPasswordOverStandardInput()
+    {
+        var backend = new SevenZipCliBackend(new ProcessRunner());
+        if (!backend.IsAvailable)
+            return;
+
+        const string secret = "pässwörd語";
+        var directory = Directory.CreateTempSubdirectory("wlrix-7z-password-").FullName;
+        try
+        {
+            var archive = Path.Combine(directory, "locked.7z");
+            var first = Path.Combine(directory, "first.txt");
+            var second = Path.Combine(directory, "second.txt");
+            await File.WriteAllTextAsync(first, "one");
+            await File.WriteAllTextAsync(second, "two");
+
+            await backend.AddAsync(archive, ArchiveFormat.SevenZip, [first], password: secret, encryptNames: true);
+            await backend.AddAsync(archive, ArchiveFormat.SevenZip, [second], password: secret);
+
+            var open = await backend.OpenAsync(archive, ArchiveFormat.SevenZip, secret);
+            Assert.Equal(2, open.Entries.Count);
+
+            // Names are still hidden after the second add: no password is a question, a wrong one
+            // is a refusal, and neither of those is a hang.
+            var absent = await Assert.ThrowsAsync<ArchivePasswordException>(() =>
+                backend.OpenAsync(archive, ArchiveFormat.SevenZip));
+            Assert.False(absent.PasswordSupplied);
+            var wrong = await Assert.ThrowsAsync<ArchivePasswordException>(() =>
+                backend.OpenAsync(archive, ArchiveFormat.SevenZip, "wrong"));
+            Assert.True(wrong.PasswordSupplied);
+
+            var output = Path.Combine(directory, "out");
+            await backend.ExtractAsync(archive, ArchiveFormat.SevenZip, [], output, password: secret);
+            Assert.Equal("one", await File.ReadAllTextAsync(Path.Combine(output, "first.txt")));
+            Assert.Equal("two", await File.ReadAllTextAsync(Path.Combine(output, "second.txt")));
+
+            await backend.RemoveAsync(archive, ArchiveFormat.SevenZip, ["first.txt"], secret);
+            open = await backend.OpenAsync(archive, ArchiveFormat.SevenZip, secret);
+            Assert.Equal("second.txt", Assert.Single(open.Entries).Path);
+        }
+        finally
+        {
+            Directory.Delete(directory, recursive: true);
+        }
     }
 
     private sealed class RecordingRunner : IProcessRunner
     {
         public IReadOnlyList<string> Arguments { get; private set; } = [];
 
+        public string? StandardInput { get; private set; }
+
         public Task<ProcessResult> RunAsync(string program, IReadOnlyList<string> arguments,
-            CancellationToken cancellationToken = default)
+            string? standardInput = null, CancellationToken cancellationToken = default)
         {
             Arguments = arguments;
+            StandardInput = standardInput;
             return Task.FromResult(new ProcessResult(0, "", ""));
         }
     }
@@ -508,6 +564,7 @@ public class EncryptedArchiveTests
     private sealed class StubRunner(ProcessResult result) : IProcessRunner
     {
         public Task<ProcessResult> RunAsync(string program, IReadOnlyList<string> arguments,
-            CancellationToken cancellationToken = default) => Task.FromResult(result);
+            string? standardInput = null, CancellationToken cancellationToken = default) =>
+            Task.FromResult(result);
     }
 }

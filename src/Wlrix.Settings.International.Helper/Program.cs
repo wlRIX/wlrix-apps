@@ -2,6 +2,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.Versioning;
 using Wlrix.Settings.International.Core;
+using Wlrix.Common;
 
 namespace Wlrix.Settings.International.Helper;
 
@@ -28,7 +29,11 @@ internal static class Program
     /// <summary>How long <c>locale-gen</c> gets. It compiles every enabled locale, a few seconds each.</summary>
     private static readonly TimeSpan GenerateTimeout = TimeSpan.FromMinutes(5);
 
-    /// <summary>Pinned rather than inherited, as in the other helpers: this resolves a program name as root.</summary>
+    /// <summary>
+    /// Pinned rather than inherited, as in the other helpers: this resolves a program name as root.
+    /// Passed to <see cref="Executables.StartInfoFor"/> as well as set on the child, because
+    /// Process.Start would search the current directory and ignore a PATH set only on the child.
+    /// </summary>
     private const string SafePath = "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin";
 
     private static int Main(string[] args)
@@ -135,12 +140,10 @@ internal static class Program
 
     private static int RunLocaleGen()
     {
-        var info = new ProcessStartInfo("locale-gen")
-        {
-            UseShellExecute = false,
-            RedirectStandardOutput = true,
-            RedirectStandardError = true,
-        };
+        var info = Executables.StartInfoFor("locale-gen", SafePath);
+        info.UseShellExecute = false;
+        info.RedirectStandardOutput = true;
+        info.RedirectStandardError = true;
         info.Environment["PATH"] = SafePath;
         info.Environment["LC_ALL"] = "C";
 

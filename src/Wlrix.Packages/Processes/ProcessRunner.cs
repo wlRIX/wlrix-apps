@@ -2,6 +2,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Threading.Channels;
+using Wlrix.Common;
 
 namespace Wlrix.Packages.Processes;
 
@@ -132,16 +133,13 @@ public sealed class ProcessRunner : IProcessRunner
 
     private static System.Diagnostics.Process Start(string program, IReadOnlyList<string> arguments)
     {
-        var info = new ProcessStartInfo
-        {
-            FileName = program,
-            UseShellExecute = false,
-            RedirectStandardOutput = true,
-            RedirectStandardError = true,
-            // Nothing here is interactive; a child that decided to prompt would otherwise
-            // inherit our stdin and wait for an answer that is never coming.
-            RedirectStandardInput = true,
-        };
+        var info = Executables.StartInfoFor(program);
+        info.UseShellExecute = false;
+        info.RedirectStandardOutput = true;
+        info.RedirectStandardError = true;
+        // Nothing here is interactive; a child that decided to prompt would otherwise
+        // inherit our stdin and wait for an answer that is never coming.
+        info.RedirectStandardInput = true;
 
         foreach (var argument in arguments)
             info.ArgumentList.Add(argument);

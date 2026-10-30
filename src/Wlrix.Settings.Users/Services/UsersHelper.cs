@@ -48,13 +48,11 @@ internal static class UsersHelper
         if (!IsAvailable)
             return new HelperResult(HelperOutcome.Unavailable, $"{HelperPath} or pkexec is not installed.");
 
-        var info = new ProcessStartInfo("pkexec")
-        {
-            UseShellExecute = false,
-            RedirectStandardError = true,
-            RedirectStandardOutput = true,
-            RedirectStandardInput = true,
-        };
+        var info = Executables.StartInfoFor("pkexec");
+        info.UseShellExecute = false;
+        info.RedirectStandardError = true;
+        info.RedirectStandardOutput = true;
+        info.RedirectStandardInput = true;
         // Without an agent, pkexec would prompt on a terminal hidden under the compositor and wait
         // for ever; see GreeterHelperRunner.
         info.ArgumentList.Add("--disable-internal-agent");

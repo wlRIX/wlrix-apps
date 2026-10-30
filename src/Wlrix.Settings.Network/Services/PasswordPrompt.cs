@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Text.Json;
+using Wlrix.Common;
 
 namespace Wlrix.Settings.Network.Services;
 
@@ -65,12 +66,10 @@ internal static class PasswordPrompt
     /// <summary>Ask for a new password. Null for Cancel, or a dialog that would not start.</summary>
     public static async Task<string?> AskAsync(string ssid, NetworkSecurity security)
     {
-        var info = new ProcessStartInfo(Environment.GetEnvironmentVariable("WLRIX_NETWORK_PROMPT") ?? Program)
-        {
-            UseShellExecute = false,
-            RedirectStandardInput = true,
-            RedirectStandardOutput = true,
-        };
+        var info = Executables.StartInfoFor(Environment.GetEnvironmentVariable("WLRIX_NETWORK_PROMPT") ?? Program);
+        info.UseShellExecute = false;
+        info.RedirectStandardInput = true;
+        info.RedirectStandardOutput = true;
         using var process = Process.Start(info) ?? throw new InvalidOperationException($"{Program} did not start");
         await process.StandardInput.WriteLineAsync(Request(ssid, security)).ConfigureAwait(false);
         process.StandardInput.Close();

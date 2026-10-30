@@ -700,4 +700,31 @@ If you do not trust this program, click Cancel. Continuing also marks the file e
   <data name="RestoreFailed" xml:space="preserve">
     <value>{0} items could not be put back.</value>
   </data>
+  <data name="ServerUnknownTitle" xml:space="preserve">
+    <value>Unknown Server</value>
+  </data>
+  <data name="ServerChangedTitle" xml:space="preserve">
+    <value>Server Identity Changed</value>
+  </data>
+  <data name="ServerTrustButton" xml:space="preserve">
+    <value>Connect</value>
+  </data>
+  <data name="ServerUnknownMessage" xml:space="preserve">
+    <value>This computer has not connected to {0} before, and cannot tell whether it is the server you mean.
+
+Its fingerprint is:
+{1}
+
+Connect only if you recognize it. It will be remembered, and you will be warned if it changes.</value>
+  </data>
+  <data name="ServerChangedMessage" xml:space="preserve">
+    <value>The identity of {0} has changed since you last connected.
+
+This happens when a server is reinstalled, but it is also what somebody intercepting the connection would look like. Your password will be sent if you connect.
+
+Its fingerprint is now:
+{1}
+
+Connect only if you know why it changed.</value>
+  </data>
 </root>

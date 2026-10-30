@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using System.Diagnostics;
 using Wlrix.Packages.Privileged;
+using Wlrix.Common;
 
 namespace Wlrix.Packages.Helper;
 
@@ -29,6 +30,9 @@ internal static class Program
     /// waiting for an answer nobody is going to give does not sit as root for ever.
     /// </summary>
     private static readonly TimeSpan Timeout = TimeSpan.FromHours(2);
+
+    /// <summary>Where a package manager is looked for. This runs as root.</summary>
+    private const string SafePath = "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin";
 
     private static int Main(string[] args)
     {
@@ -64,14 +68,16 @@ internal static class Program
 
     private static int Run(HelperCommand command)
     {
-        var info = new ProcessStartInfo
-        {
-            FileName = command.Program,
-            UseShellExecute = false,
-            RedirectStandardOutput = true,
-            RedirectStandardError = true,
-            RedirectStandardInput = true,
-        };
+        // Found on a pinned PATH, and given to the package manager too. pkexec hands this process
+        // a minimal known environment, so in the ordinary case the pin agrees with it, but this
+        // runs as root and has no business depending on somebody else's idea of where the
+        // system's binaries are. The search is ours rather than Process.Start's, which looks in
+        // the current directory first and pays no attention to a PATH set on the child.
+        var info = Executables.StartInfoFor(command.Program, SafePath);
+        info.UseShellExecute = false;
+        info.RedirectStandardOutput = true;
+        info.RedirectStandardError = true;
+        info.RedirectStandardInput = true;
 
         foreach (var argument in command.Arguments)
             info.ArgumentList.Add(argument);
@@ -85,14 +91,9 @@ internal static class Program
         info.Environment["LC_ALL"] = "C";
         info.Environment["LANG"] = "C";
 
-        // A pinned PATH rather than an inherited one. pkexec does hand this process a minimal
-        // known environment, so in the ordinary case the two agree -- but this program also runs
-        // as root, resolves a program name through it, and has no business depending on somebody
-        // else's idea of where the system's binaries are. Naming it is one line; discovering
-        // later that it mattered is not.
-        info.Environment["PATH"] = "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin";
+        info.Environment["PATH"] = SafePath;
 
-        using var process = Start(info);
+        using var process = Start(info, command.Program);
         if (process is null)
             return 1;
 
@@ -119,19 +120,19 @@ internal static class Program
         return process.ExitCode;
     }
 
-    private static Process? Start(ProcessStartInfo info)
+    private static Process? Start(ProcessStartInfo info, string program)
     {
         try
         {
             if (Process.Start(info) is { } process)
                 return process;
 
-            Fail($"could not start {info.FileName}");
+            Fail($"could not start {program}");
             return null;
         }
         catch (Exception ex) when (ex is Win32Exception or InvalidOperationException or IOException)
         {
-            Fail($"could not start {info.FileName}: {ex.Message}");
+            Fail($"could not start {program}: {ex.Message}");
             return null;
         }
     }

@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Net.Sockets;
 using System.Text;
+using Wlrix.Common;
 
 namespace Wlrix.PolkitAgent.Services;
 
@@ -87,13 +88,11 @@ internal sealed class HelperSession : IAsyncDisposable
             }
         }
 
-        var info = new ProcessStartInfo(HelperPath)
-        {
-            UseShellExecute = false,
-            RedirectStandardInput = true,
-            RedirectStandardOutput = true,
-            StandardOutputEncoding = Encoding.UTF8,
-        };
+        var info = Executables.StartInfoFor(HelperPath);
+        info.UseShellExecute = false;
+        info.RedirectStandardInput = true;
+        info.RedirectStandardOutput = true;
+        info.StandardOutputEncoding = Encoding.UTF8;
         info.ArgumentList.Add(user);
         var process = Process.Start(info) ?? throw new IOException($"could not start {HelperPath}");
         var spawned = new HelperSession(process.StandardOutput, process.StandardInput.BaseStream, new Spawned(process));

@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using Wlrix.Common;
 
 namespace Wlrix.Files.Core.Thumbnails;
 
@@ -163,7 +164,7 @@ public sealed class ExternalThumbnailer(
             return false;
 
         using var process = new Process();
-        process.StartInfo.FileName = arguments[0];
+        process.StartInfo = Executables.StartInfoFor(arguments[0]);
         foreach (var argument in arguments.Skip(1))
             process.StartInfo.ArgumentList.Add(argument);
         process.StartInfo.UseShellExecute = false;

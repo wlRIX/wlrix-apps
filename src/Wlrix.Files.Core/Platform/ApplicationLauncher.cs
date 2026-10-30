@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using Wlrix.Common.Desktop;
+using Wlrix.Common;
 
 namespace Wlrix.Files.Core.Platform;
 
@@ -72,16 +73,13 @@ public sealed class ApplicationLauncher
 
         try
         {
-            var info = new ProcessStartInfo
-            {
-                FileName = file,
-                // False, so the child is executed directly rather than handed back to the
-                // desktop's own opener -- which is this application, and would be a loop.
-                UseShellExecute = false,
-                WorkingDirectory = entry.Path is { Length: > 0 } working && Directory.Exists(working)
-                    ? working
-                    : Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)
-            };
+            var info = Executables.StartInfoFor(file);
+            // False, so the child is executed directly rather than handed back to the
+            // desktop's own opener -- which is this application, and would be a loop.
+            info.UseShellExecute = false;
+            info.WorkingDirectory = entry.Path is { Length: > 0 } working && Directory.Exists(working)
+                ? working
+                : Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
             foreach (var argument in arguments)
                 info.ArgumentList.Add(argument);
 
@@ -113,16 +111,13 @@ public sealed class ApplicationLauncher
         ArgumentException.ThrowIfNullOrEmpty(path);
         try
         {
-            var info = new ProcessStartInfo
-            {
-                FileName = path,
-                // As above: false, so the program is executed rather than handed back to the
-                // desktop's opener, which is this application.
-                UseShellExecute = false,
-                WorkingDirectory = Path.GetDirectoryName(path) is { Length: > 0 } directory
-                    ? directory
-                    : Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)
-            };
+            var info = Executables.StartInfoFor(path);
+            // As above: false, so the program is executed rather than handed back to the
+            // desktop's opener, which is this application.
+            info.UseShellExecute = false;
+            info.WorkingDirectory = Path.GetDirectoryName(path) is { Length: > 0 } directory
+                ? directory
+                : Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
             using var process = Process.Start(info);
             return process is not null;
         }

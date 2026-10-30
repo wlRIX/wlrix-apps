@@ -64,14 +64,11 @@ public sealed class Launcher(RunningApps running, ILogger<Launcher> logger)
     {
         try
         {
-            var info = new ProcessStartInfo
-            {
-                FileName = file,
-                UseShellExecute = false,
-                WorkingDirectory = icon.Entry?.Path is { Length: > 0 } directory && Directory.Exists(directory)
-                    ? directory
-                    : Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
-            };
+            var info = Executables.StartInfoFor(file);
+            info.UseShellExecute = false;
+            info.WorkingDirectory = icon.Entry?.Path is { Length: > 0 } directory && Directory.Exists(directory)
+                ? directory
+                : Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
             foreach (var arg in args)
                 info.ArgumentList.Add(arg);
 

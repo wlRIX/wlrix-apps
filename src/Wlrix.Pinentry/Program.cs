@@ -2,6 +2,7 @@ using System.Diagnostics;
 using Avalonia;
 using Avalonia.Controls;
 using ReactiveUI.Avalonia;
+using Wlrix.Common;
 
 namespace Wlrix.Pinentry;
 
@@ -45,7 +46,8 @@ sealed class Program
     {
         foreach (var program in candidates.Where(IsSomeoneElse))
         {
-            var info = new ProcessStartInfo(program) { UseShellExecute = false };
+            var info = Executables.StartInfoFor(program);
+            info.UseShellExecute = false;
             foreach (var arg in args)
                 info.ArgumentList.Add(arg);
             using var process = Process.Start(info);

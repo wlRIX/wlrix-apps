@@ -18,7 +18,8 @@ namespace Wlrix.Files.Core.Remote;
 /// connection to one operation at a time, and why a concurrent transfer gets its own.
 /// </para>
 /// </remarks>
-public sealed class FtpSession(string host, int port, ShareCredentials credentials) : IRemoteSession
+public sealed class FtpSession(string host, int port, ShareCredentials credentials, KnownHosts? knownHosts = null)
+    : IRemoteSession
 {
     /// <summary>The port FTP uses when a location does not name one.</summary>
     public const int DefaultPort = 21;
@@ -52,7 +53,29 @@ public sealed class FtpSession(string host, int port, ShareCredentials credentia
         var user = credentials.Anonymous ? AnonymousUser : credentials.Username;
         var password = credentials.Anonymous ? AnonymousUser : credentials.Password;
 
-        var client = new AsyncFtpClient(host, user, password, port < 0 ? DefaultPort : port);
+        var effectivePort = port < 0 ? DefaultPort : port;
+        var client = new AsyncFtpClient(host, user, password, effectivePort);
+        // TLS whenever the server offers it, so the password goes in the clear only to a server
+        // that cannot do anything else. A certificate no authority vouches for, which is what a
+        // NAS has, is treated like an SSH host key: known, or the user is asked.
+        client.Config.EncryptionMode = FtpEncryptionMode.Auto;
+        client.Config.ValidateAnyCertificate = false;
+        UntrustedServerKeyException? untrusted = null;
+        client.ValidateCertificate += (_, e) =>
+        {
+            if (e.PolicyErrors == System.Net.Security.SslPolicyErrors.None)
+            {
+                e.Accept = true;
+                return;
+            }
+
+            var known = knownHosts ?? KnownHosts.ForUser();
+            var key = ServerKey.ForCertificate(host, effectivePort, e.Certificate);
+            var standing = known.Standing(key);
+            e.Accept = standing == ServerKeyStanding.Known;
+            if (!e.Accept)
+                untrusted = new UntrustedServerKeyException(key, standing);
+        };
         try
         {
             await client.Connect(cancellationToken).ConfigureAwait(false);
@@ -61,6 +84,8 @@ public sealed class FtpSession(string host, int port, ShareCredentials credentia
         catch (Exception ex) when (ex is not OperationCanceledException)
         {
             await client.DisposeAsync().ConfigureAwait(false);
+            if (untrusted is not null)
+                throw new FileOperationException(FileErrorKind.AuthenticationFailed, Root, untrusted.Message, untrusted);
             throw Classify(ex, Root);
         }
     }

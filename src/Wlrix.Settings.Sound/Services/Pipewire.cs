@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 using System.Diagnostics;
 using System.Text.Json;
+using Wlrix.Common;
 
 namespace Wlrix.Settings.Sound.Services;
 
@@ -87,12 +88,10 @@ public static class Pipewire
     /// <summary>A command's output, or null if it would not run or failed.</summary>
     private static async Task<string?> RunAsync(string program, params string[] args)
     {
-        var info = new ProcessStartInfo(program)
-        {
-            RedirectStandardOutput = true,
-            RedirectStandardError = true,
-            UseShellExecute = false,
-        };
+        var info = Executables.StartInfoFor(program);
+        info.RedirectStandardOutput = true;
+        info.RedirectStandardError = true;
+        info.UseShellExecute = false;
         foreach (var arg in args)
             info.ArgumentList.Add(arg);
         // A sink's description is the user's language; the command's own words are matched on.

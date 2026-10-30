@@ -4,7 +4,7 @@
         <ApplicationManifest>app.manifest</ApplicationManifest>
         <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
         <AssemblyName>wlrix-settings-sound</AssemblyName>
-        <Version>0.0.0</Version>
+        <Version>0.0.1</Version>
         <!-- The generated wlrix-sound proxy reads and writes spans over the raw message buffer,
              as Wlrix.Settings.Client's does. No hand-written unsafe code here. -->
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>

@@ -28,6 +28,18 @@ public static class Strings
     public static string AboutTitle => Catalog.Get("AboutTitle");
     public static string ConnectTitle => Catalog.Get("ConnectTitle");
     public static string ConnectAuthTitle => Catalog.Get("ConnectAuthTitle");
+    public static string ServerUnknownTitle => Catalog.Get("ServerUnknownTitle");
+    public static string ServerChangedTitle => Catalog.Get("ServerChangedTitle");
+    public static string ServerTrustButton => Catalog.Get("ServerTrustButton");
+
+    public static string ServerUnknownMessage(string server, string fingerprint) =>
+        string.Format(System.Globalization.CultureInfo.CurrentCulture,
+            Catalog.Get("ServerUnknownMessage"), server, fingerprint);
+
+    public static string ServerChangedMessage(string server, string fingerprint) =>
+        string.Format(System.Globalization.CultureInfo.CurrentCulture,
+            Catalog.Get("ServerChangedMessage"), server, fingerprint);
+
     public static string AboutText => Catalog.Get("AboutText");
     public static string StatusLoading => Catalog.Get("StatusLoading");
     public static string StatusEmpty => Catalog.Get("StatusEmpty");

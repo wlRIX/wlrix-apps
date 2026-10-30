@@ -5,7 +5,7 @@
         <ApplicationManifest>app.manifest</ApplicationManifest>
         <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
         <AssemblyName>wlrix-polkit-agent</AssemblyName>
-        <Version>0.1.0</Version>
+        <Version>0.1.1</Version>
         <!-- Tmds.DBus.Protocol's readers and writers are spans over the raw message buffer. No
              hand-written unsafe code here; same arrangement as Wlrix.Shutdown. -->
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>

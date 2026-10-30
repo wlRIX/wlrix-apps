@@ -78,7 +78,7 @@ public sealed class SevenZipCliBackend : IArchiveBackend
         // moving files afterwards keeps the two backends' `flatten` meaning identical.
         var arguments = new List<string> { flatten ? "e" : "x" };
         arguments.AddRange(CommonSwitches);
-        arguments.Add(PasswordSwitch(password));
+        AddReadPassword(arguments, password);
         arguments.Add("-o" + destinationDirectory);
         arguments.Add("--");
         arguments.Add(path);
@@ -87,7 +87,7 @@ public sealed class SevenZipCliBackend : IArchiveBackend
         arguments.AddRange(await ExpandAsync(path, entryPaths, password, cancellationToken)
             .ConfigureAwait(false));
 
-        await RunAsync(arguments, path, cancellationToken).ConfigureAwait(false);
+        await RunAsync(arguments, path, password, ReadInput(password), cancellationToken).ConfigureAwait(false);
     }
 
     public async Task AddAsync(string path, ArchiveFormat format,
@@ -121,7 +121,7 @@ public sealed class SevenZipCliBackend : IArchiveBackend
         arguments.Add(path);
         arguments.AddRange(sourcePaths);
 
-        await RunAsync(arguments, path, cancellationToken).ConfigureAwait(false);
+        await RunAsync(arguments, path, password, WriteInput(password), cancellationToken).ConfigureAwait(false);
     }
 
     public async Task RemoveAsync(string path, ArchiveFormat format,
@@ -139,7 +139,7 @@ public sealed class SevenZipCliBackend : IArchiveBackend
         arguments.AddRange(await ExpandAsync(path, entryPaths, password, cancellationToken)
             .ConfigureAwait(false));
 
-        await RunAsync(arguments, path, cancellationToken).ConfigureAwait(false);
+        await RunAsync(arguments, path, password, WriteInput(password), cancellationToken).ConfigureAwait(false);
     }
 
     public Task CreateAsync(string path, ArchiveFormat format,
@@ -170,11 +170,11 @@ public sealed class SevenZipCliBackend : IArchiveBackend
     {
         var arguments = new List<string> { "l", "-slt" };
         arguments.AddRange(CommonSwitches);
-        arguments.Add(PasswordSwitch(password));
+        AddReadPassword(arguments, password);
         arguments.Add("--");
         arguments.Add(path);
 
-        var result = await RunAsync(arguments, path, cancellationToken).ConfigureAwait(false);
+        var result = await RunAsync(arguments, path, password, ReadInput(password), cancellationToken).ConfigureAwait(false);
         return ParseListing(result.StandardOutput);
     }
 
@@ -291,12 +291,12 @@ public sealed class SevenZipCliBackend : IArchiveBackend
     }
 
     private async Task<ProcessResult> RunAsync(IReadOnlyList<string> arguments, string path,
-        CancellationToken cancellationToken)
+        string? password, string? standardInput, CancellationToken cancellationToken)
     {
         if (_sevenZip is null)
             throw new ArchiveException("7z is not installed.");
 
-        var result = await _runner.RunAsync(_sevenZip, arguments, cancellationToken)
+        var result = await _runner.RunAsync(_sevenZip, arguments, standardInput, cancellationToken)
             .ConfigureAwait(false);
         if (!result.Succeeded)
         {
@@ -313,7 +313,7 @@ public sealed class SevenZipCliBackend : IArchiveBackend
             if (result.StandardOutput.Contains("Wrong password", StringComparison.OrdinalIgnoreCase)
                 || result.StandardError.Contains("Wrong password", StringComparison.OrdinalIgnoreCase))
             {
-                throw new ArchivePasswordException(message, passwordSupplied: WasGivenAPassword(arguments));
+                throw new ArchivePasswordException(message, passwordSupplied: !string.IsNullOrEmpty(password));
             }
 
             throw new ArchiveException($"{System.IO.Path.GetFileName(path)}: {message}");
@@ -334,34 +334,49 @@ public sealed class SevenZipCliBackend : IArchiveBackend
     /// </para>
     ///
     /// <para>
-    /// And it must not be passed when there is not: <c>7z a -p""</c> prints "Enter password:" and
-    /// waits on a terminal this process does not have, which is a hang rather than an error. A
-    /// read takes the empty one happily, which is why that path always passes it.
+    /// And it must not be passed when there is not: a bare <c>-p</c> on a write is a request to
+    /// encrypt, and it asks for the password to do it with.
+    /// </para>
+    ///
+    /// <para>
+    /// <b>The switch never carries the password.</b> The arguments of a running process are
+    /// readable by every user on the machine. A bare <c>-p</c> asks for the password, and
+    /// <see cref="WriteInput"/> answers on standard input. Measured against 7-Zip 26.05, non-ASCII
+    /// passwords included, which come out the same either way under the C locale.
     /// </para>
     /// </remarks>
     private static void AddWritePassword(List<string> arguments, string? password)
     {
         if (!string.IsNullOrEmpty(password))
-            arguments.Add("-p" + password);
+            arguments.Add("-p");
     }
 
-    /// <summary>Whether the invocation carried a password rather than the empty one.</summary>
-    private static bool WasGivenAPassword(IReadOnlyList<string> arguments) =>
-        arguments.Any(argument => argument.Length > 2 && argument.StartsWith("-p", StringComparison.Ordinal));
-
-    /// <summary>The <c>-p</c> switch, always passed on a read.</summary>
+    /// <summary>The <c>-p</c> switch on a read, which is there only when there is no password.</summary>
     /// <remarks>
-    /// Even with no password, and that is the point: given no <c>-p</c> at all, 7z asks for one
-    /// on a terminal this process does not have. An empty one fails immediately instead, which
-    /// is an answer rather than a hang.
+    /// With no password it is passed empty, and that is the point: given no <c>-p</c> at all, 7z
+    /// asks for one, and an empty answer to that is "Break signaled" rather than the "Wrong
+    /// password?" that <see cref="RunAsync"/> recognizes. With one, it is left off, so that 7z asks
+    /// when it reaches something encrypted and <see cref="ReadInput"/> answers.
     ///
     /// <para>
-    /// Reads only. <c>a</c> and <c>d</c> never get it, because <c>-p</c> on a write is an
-    /// instruction to encrypt, and quietly encrypting somebody's archive with the empty string
+    /// Reads only. <c>a</c> and <c>d</c> never get the empty one, because <c>-p</c> on a write is
+    /// an instruction to encrypt, and quietly encrypting somebody's archive with the empty string
     /// would be a far worse bug than the one this fixes.
     /// </para>
     /// </remarks>
-    private static string PasswordSwitch(string? password) => "-p" + password;
+    private static void AddReadPassword(List<string> arguments, string? password)
+    {
+        if (string.IsNullOrEmpty(password))
+            arguments.Add("-p");
+    }
+
+    /// <summary>What 7z reads on standard input for a read: the password, once.</summary>
+    private static string? ReadInput(string? password) =>
+        string.IsNullOrEmpty(password) ? null : password + "\n";
+
+    /// <summary>What 7z reads on standard input for a write: the password, and again to verify it.</summary>
+    private static string? WriteInput(string? password) =>
+        string.IsNullOrEmpty(password) ? null : password + "\n" + password + "\n";
 
     private static string? LastLine(string text) => text
         .Split('\n')

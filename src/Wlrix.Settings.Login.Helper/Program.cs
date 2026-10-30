@@ -2,6 +2,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.Versioning;
 using Wlrix.Settings.Login.Core;
+using Wlrix.Common;
 
 namespace Wlrix.Settings.Login.Helper;
 
@@ -28,7 +29,11 @@ internal static class Program
     /// <summary>How long the compositor gets to say whether it would accept the file.</summary>
     private static readonly TimeSpan CheckTimeout = TimeSpan.FromSeconds(10);
 
-    /// <summary>Pinned rather than inherited, as in wlrix-pkg-helper: this resolves a program name as root.</summary>
+    /// <summary>
+    /// Pinned rather than inherited, as in the other helpers: this resolves a program name as root.
+    /// Passed to <see cref="Executables.StartInfoFor"/> as well as set on the child, because
+    /// Process.Start would search the current directory and ignore a PATH set only on the child.
+    /// </summary>
     private const string SafePath = "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin";
 
     private static int Main(string[] args)
@@ -151,12 +156,10 @@ internal static class Program
     /// </summary>
     private static string? CheckWithCompositor(string path)
     {
-        var info = new ProcessStartInfo("wlrix-compositor")
-        {
-            UseShellExecute = false,
-            RedirectStandardOutput = true,
-            RedirectStandardError = true,
-        };
+        var info = Executables.StartInfoFor("wlrix-compositor", SafePath);
+        info.UseShellExecute = false;
+        info.RedirectStandardOutput = true;
+        info.RedirectStandardError = true;
         info.ArgumentList.Add("--check-config");
         info.ArgumentList.Add(path);
         info.Environment["PATH"] = SafePath;

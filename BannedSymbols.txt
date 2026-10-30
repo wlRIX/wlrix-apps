@@ -1,1 +1,7 @@
 T:Microsoft.Extensions.Logging.LoggerExtensions;Use ZLogger methods instead.
+M:System.Diagnostics.ProcessStartInfo.#ctor(System.String);Use Executables.StartInfoFor: Process.Start searches the current directory for a bare name.
+M:System.Diagnostics.ProcessStartInfo.#ctor(System.String,System.String);Use Executables.StartInfoFor: Process.Start searches the current directory for a bare name.
+P:System.Diagnostics.ProcessStartInfo.FileName;Use Executables.StartInfoFor: Process.Start searches the current directory for a bare name.
+M:System.Diagnostics.Process.Start(System.String);Use Executables.StartInfoFor: Process.Start searches the current directory for a bare name.
+M:System.Diagnostics.Process.Start(System.String,System.String);Use Executables.StartInfoFor: Process.Start searches the current directory for a bare name.
+M:System.Diagnostics.Process.Start(System.String,System.Collections.Generic.IEnumerable{System.String});Use Executables.StartInfoFor: Process.Start searches the current directory for a bare name.

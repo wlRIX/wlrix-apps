@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Globalization;
 using Wlrix.Settings.International.Core;
+using Wlrix.Common;
 
 namespace Wlrix.Settings.International.Services;
 
@@ -80,7 +81,10 @@ internal static class Locales
     {
         try
         {
-            var info = new ProcessStartInfo("locale", "-a") { RedirectStandardOutput = true, UseShellExecute = false };
+            var info = Executables.StartInfoFor("locale");
+            info.ArgumentList.Add("-a");
+            info.RedirectStandardOutput = true;
+            info.UseShellExecute = false;
             using var process = Process.Start(info);
             if (process is null)
                 return [];

@@ -59,13 +59,11 @@ public sealed class GreeterHelperRunner
         if (!File.Exists(helper))
             return new HelperResult(HelperOutcome.Unavailable, $"{helper} is not installed.");
 
-        var info = new ProcessStartInfo("pkexec")
-        {
-            UseShellExecute = false,
-            RedirectStandardError = true,
-            RedirectStandardOutput = true,
-            RedirectStandardInput = true,
-        };
+        var info = Executables.StartInfoFor("pkexec");
+        info.UseShellExecute = false;
+        info.RedirectStandardError = true;
+        info.RedirectStandardOutput = true;
+        info.RedirectStandardInput = true;
         // Without a polkit agent in the session, pkexec falls back to a text prompt on its
         // controlling terminal. A session greetd started has the VT as that terminal, so the prompt
         // lands on a console hidden under the compositor and this waits for ever. Refuse instead.

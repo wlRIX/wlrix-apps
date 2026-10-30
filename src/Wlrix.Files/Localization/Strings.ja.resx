@@ -700,4 +700,31 @@
   <data name="RestoreFailed" xml:space="preserve">
     <value>{0} 個の項目を元に戻せませんでした。</value>
   </data>
+  <data name="ServerUnknownTitle" xml:space="preserve">
+    <value>不明なサーバー</value>
+  </data>
+  <data name="ServerChangedTitle" xml:space="preserve">
+    <value>サーバーの識別情報が変更されました</value>
+  </data>
+  <data name="ServerTrustButton" xml:space="preserve">
+    <value>接続</value>
+  </data>
+  <data name="ServerUnknownMessage" xml:space="preserve">
+    <value>このコンピューターは {0} に接続したことがないため、目的のサーバーかどうかを確認できません。
+
+フィンガープリント:
+{1}
+
+心当たりがある場合にのみ接続してください。この情報は記憶され、変更された場合は警告が表示されます。</value>
+  </data>
+  <data name="ServerChangedMessage" xml:space="preserve">
+    <value>{0} の識別情報が前回の接続時から変更されています。
+
+サーバーを再インストールした場合に起こりますが、接続が傍受されている場合にも同じように見えます。接続するとパスワードが送信されます。
+
+現在のフィンガープリント:
+{1}
+
+変更の理由が分かっている場合にのみ接続してください。</value>
+  </data>
 </root>

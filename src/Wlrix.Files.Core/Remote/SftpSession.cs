@@ -16,8 +16,16 @@ namespace Wlrix.Files.Core.Remote;
 /// and a server that accepted anonymous logins would be handing out a shell. The connect
 /// dialog says so rather than offering a checkbox that can only fail.
 /// </para>
+///
+/// <para>
+/// <b>The server has to prove who it is before it hears a password.</b> SSH.NET trusts any host
+/// key unless told otherwise, so anybody between here and the server could have collected the
+/// password. The key is checked during the key exchange, before authentication begins; one that
+/// is not known ends the connection there, and <see cref="RemoteFileSystemFactory"/> asks.
+/// </para>
 /// </remarks>
-public sealed class SftpSession(string host, int port, ShareCredentials credentials) : IRemoteSession
+public sealed class SftpSession(string host, int port, ShareCredentials credentials, KnownHosts? knownHosts = null)
+    : IRemoteSession
 {
     /// <summary>The port SSH uses when a location does not name one.</summary>
     public const int DefaultPort = 22;
@@ -45,8 +53,18 @@ public sealed class SftpSession(string host, int port, ShareCredentials credenti
         }
 
         await DisposeClientAsync().ConfigureAwait(false);
-        var client = new SftpClient(host, port < 0 ? DefaultPort : port,
-            credentials.Username, credentials.Password);
+        var effectivePort = port < 0 ? DefaultPort : port;
+        var client = new SftpClient(host, effectivePort, credentials.Username, credentials.Password);
+        var known = knownHosts ?? KnownHosts.ForUser();
+        UntrustedServerKeyException? untrusted = null;
+        client.HostKeyReceived += (_, e) =>
+        {
+            var key = ServerKey.ForSsh(host, effectivePort, e.HostKey);
+            var standing = known.Standing(key);
+            e.CanTrust = standing == ServerKeyStanding.Known;
+            if (!e.CanTrust)
+                untrusted = new UntrustedServerKeyException(key, standing);
+        };
         try
         {
             await client.ConnectAsync(cancellationToken).ConfigureAwait(false);
@@ -55,6 +73,8 @@ public sealed class SftpSession(string host, int port, ShareCredentials credenti
         catch (Exception ex) when (ex is not OperationCanceledException)
         {
             client.Dispose();
+            if (untrusted is not null)
+                throw new FileOperationException(FileErrorKind.AuthenticationFailed, Root, untrusted.Message, untrusted);
             throw Classify(ex, Root);
         }
     }

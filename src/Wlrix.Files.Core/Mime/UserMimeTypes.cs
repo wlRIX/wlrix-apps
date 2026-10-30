@@ -113,12 +113,10 @@ public sealed class UserMimeTypes(string dataHome)
     public async Task<string?> UpdateDatabaseAsync(CancellationToken cancellationToken = default)
     {
         ApplicationPaths.EnsureDirectory(PackagesDirectory);
-        var info = new ProcessStartInfo("update-mime-database")
-        {
-            RedirectStandardOutput = true,
-            RedirectStandardError = true,
-            UseShellExecute = false,
-        };
+        var info = Executables.StartInfoFor("update-mime-database");
+        info.RedirectStandardOutput = true;
+        info.RedirectStandardError = true;
+        info.UseShellExecute = false;
         info.ArgumentList.Add(MimeDirectory);
 
         try

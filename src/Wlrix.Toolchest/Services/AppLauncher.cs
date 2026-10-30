@@ -53,7 +53,8 @@ public sealed class AppLauncher(ILogger<AppLauncher> logger) : IAppLauncher
     {
         try
         {
-            var info = new ProcessStartInfo { FileName = file, UseShellExecute = false };
+            var info = Executables.StartInfoFor(file);
+            info.UseShellExecute = false;
             foreach (var arg in args)
                 info.ArgumentList.Add(arg);
 

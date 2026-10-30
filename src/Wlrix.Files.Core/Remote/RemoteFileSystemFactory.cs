@@ -13,8 +13,12 @@ public sealed class RemoteFileSystemFactory(
     string scheme,
     ICredentialStore credentials,
     ICredentialPrompt? prompt = null,
-    RemoteOptions options = default) : IFileSystemFactory
+    RemoteOptions options = default,
+    IServerTrustPrompt? trustPrompt = null,
+    KnownHosts? knownHosts = null) : IFileSystemFactory
 {
+    private readonly KnownHosts _knownHosts = knownHosts ?? KnownHosts.ForUser();
+
     /// <summary>The three schemes this can serve.</summary>
     public static IReadOnlyList<string> Schemes { get; } = ["smb", "sftp", "ftp"];
 
@@ -47,6 +51,19 @@ public sealed class RemoteFileSystemFactory(
                 await mounted.ExistsAsync(Location.Parse($"{location.MountKey}/{share.Share}"), cancellationToken)
                     .ConfigureAwait(false);
                 return mounted;
+            }
+            catch (FileOperationException ex) when (ex.InnerException is UntrustedServerKeyException untrusted)
+            {
+                await mounted.DisposeAsync().ConfigureAwait(false);
+                // Nothing secret has gone anywhere yet: the key is refused before the login. A
+                // revoked key is not a question, and with nobody to ask the answer is no.
+                if (untrusted.Standing == ServerKeyStanding.Revoked || trustPrompt is null
+                    || !await trustPrompt.AskAsync(untrusted.Key, untrusted.Standing, cancellationToken).ConfigureAwait(false))
+                {
+                    throw;
+                }
+
+                _knownHosts.Trust(untrusted.Key);
             }
             catch (FileOperationException ex) when (ex.Kind == FileErrorKind.AccessDenied)
             {
@@ -91,8 +108,8 @@ public sealed class RemoteFileSystemFactory(
     private IRemoteSession Session(Location location, ShareCredentials with) => Scheme switch
     {
         "smb" => new SmbSession(location.Host ?? string.Empty, location.Port, with),
-        "sftp" => new SftpSession(location.Host ?? string.Empty, location.Port, with),
-        "ftp" => new FtpSession(location.Host ?? string.Empty, location.Port, with),
+        "sftp" => new SftpSession(location.Host ?? string.Empty, location.Port, with, _knownHosts),
+        "ftp" => new FtpSession(location.Host ?? string.Empty, location.Port, with, _knownHosts),
         _ => throw new FileOperationException(FileErrorKind.Unsupported, location, $"no backend for '{Scheme}'")
     };
 

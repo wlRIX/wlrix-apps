@@ -4,6 +4,7 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Wlrix.Settings.Keyboard.ViewModels;
+using Wlrix.Common;
 
 namespace Wlrix.Settings.Keyboard.Views;
 
@@ -30,11 +31,11 @@ public partial class MainWindow : Window
     {
         try
         {
-            using var process = Process.Start(new ProcessStartInfo("wlrix-settings-international")
-            {
-                UseShellExecute = false,
-                ArgumentList = { "--page", "keyboard" },
-            });
+            var info = Executables.StartInfoFor("wlrix-settings-international");
+            info.UseShellExecute = false;
+            info.ArgumentList.Add("--page");
+            info.ArgumentList.Add("keyboard");
+            using var process = Process.Start(info);
         }
         catch (Exception ex) when (ex is Win32Exception or InvalidOperationException)
         {

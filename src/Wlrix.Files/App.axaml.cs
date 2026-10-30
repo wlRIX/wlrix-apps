@@ -151,11 +151,13 @@ public class App : Application
                     sp.GetRequiredService<ILogger<SecretServiceCredentialStore>>())
                 ?? new TransientCredentialStore());
             services.AddSingleton<ICredentialPrompt>(_ => new DialogCredentialPrompt(ActiveWindow));
+            services.AddSingleton<IServerTrustPrompt>(_ => new DialogServerTrustPrompt(ActiveWindow));
             services.AddSingleton(sp => new FileSystemProvider(
                 RemoteFileSystemFactory.Schemes.Select(IFileSystemFactory (scheme) => new RemoteFileSystemFactory(
                         scheme,
                         sp.GetRequiredService<ICredentialStore>(),
-                        sp.GetRequiredService<ICredentialPrompt>()))
+                        sp.GetRequiredService<ICredentialPrompt>(),
+                        trustPrompt: sp.GetRequiredService<IServerTrustPrompt>()))
                     // Phones, found by udev and opened by libmtp when first clicked.
                     .Append(new MtpFileSystemFactory(sp.GetRequiredService<MtpDevices>()))));
             services.AddSingleton(_ => XdgUserDirs.Read());

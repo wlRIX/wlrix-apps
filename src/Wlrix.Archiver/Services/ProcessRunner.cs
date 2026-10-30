@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using System.Diagnostics;
+using Wlrix.Common;
 
 namespace Wlrix.Archiver.Services;
 
@@ -12,8 +13,16 @@ public sealed record ProcessResult(int ExitCode, string StandardOutput, string S
 /// <summary>Starting external archive tools and reading what they say.</summary>
 public interface IProcessRunner
 {
+    /// <param name="program">What to run.</param>
+    /// <param name="arguments">Its arguments, one element each.</param>
+    /// <param name="standardInput">
+    /// What to write to its standard input before closing it, or null to close it at once. This
+    /// is where a secret goes: anything in the arguments can be read from <c>/proc</c> by every
+    /// other user on the machine for as long as the process runs.
+    /// </param>
+    /// <param name="cancellationToken">Stops the program.</param>
     Task<ProcessResult> RunAsync(string program, IReadOnlyList<string> arguments,
-        CancellationToken cancellationToken = default);
+        string? standardInput = null, CancellationToken cancellationToken = default);
 }
 
 /// <summary>
@@ -36,9 +45,9 @@ public interface IProcessRunner
 public sealed class ProcessRunner : IProcessRunner
 {
     public async Task<ProcessResult> RunAsync(string program, IReadOnlyList<string> arguments,
-        CancellationToken cancellationToken = default)
+        string? standardInput = null, CancellationToken cancellationToken = default)
     {
-        using var process = Start(program, arguments);
+        using var process = Start(program, arguments, standardInput);
 
         var standardOutput = process.StandardOutput.ReadToEndAsync(cancellationToken);
         var standardError = process.StandardError.ReadToEndAsync(cancellationToken);
@@ -59,19 +68,18 @@ public sealed class ProcessRunner : IProcessRunner
             await standardError.ConfigureAwait(false));
     }
 
-    private static Process Start(string program, IReadOnlyList<string> arguments)
+    private static Process Start(string program, IReadOnlyList<string> arguments, string? standardInput)
     {
-        var info = new ProcessStartInfo
-        {
-            FileName = program,
-            UseShellExecute = false,
-            RedirectStandardOutput = true,
-            RedirectStandardError = true,
-            // 7z prompts on a name collision and waits forever for an answer that is never
-            // coming. The commands below pass an overwrite switch so it should not ask, but
-            // closing stdin turns "hangs" into "fails" if one ever does.
-            RedirectStandardInput = true,
-        };
+        var info = Executables.StartInfoFor(program);
+        info.UseShellExecute = false;
+        info.RedirectStandardOutput = true;
+        info.RedirectStandardError = true;
+        // 7z prompts on a name collision and waits forever for an answer that is never
+        // coming. The commands below pass an overwrite switch so it should not ask, but
+        // closing stdin turns "hangs" into "fails" if one ever does.
+        info.RedirectStandardInput = true;
+        // UTF-8 whatever the locale, and no byte order mark, which would become part of a password.
+        info.StandardInputEncoding = new System.Text.UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
 
         foreach (var argument in arguments)
             info.ArgumentList.Add(argument);
@@ -84,6 +92,8 @@ public sealed class ProcessRunner : IProcessRunner
         {
             var process = Process.Start(info)
                 ?? throw new Archives.ArchiveException($"Could not start {program}.");
+            if (standardInput is not null)
+                process.StandardInput.Write(standardInput);
             process.StandardInput.Close();
             return process;
         }

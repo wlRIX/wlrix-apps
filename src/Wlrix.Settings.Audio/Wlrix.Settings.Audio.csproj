@@ -4,7 +4,7 @@
         <ApplicationManifest>app.manifest</ApplicationManifest>
         <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
         <AssemblyName>wlrix-settings-audio</AssemblyName>
-        <Version>0.0.0</Version>
+        <Version>0.0.1</Version>
         <!-- The libpulse interop in Pulse/ hands raw pointers and unmanaged function pointers
              back and forth; see Pulse/Native.cs. -->
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>

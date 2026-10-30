@@ -5,7 +5,7 @@
         <ApplicationManifest>app.manifest</ApplicationManifest>
         <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
         <AssemblyName>wlrix-settings-users</AssemblyName>
-        <Version>0.1.0</Version>
+        <Version>0.1.1</Version>
         <!-- `[LibraryImport]` for libxcrypt's `crypt` and libc's `getuid`. -->
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
