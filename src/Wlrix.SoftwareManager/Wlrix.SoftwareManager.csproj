@@ -6,7 +6,18 @@
         <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
         <AssemblyName>wlrix-software-manager</AssemblyName>
         <Version>0.1.1</Version>
+        <!-- The generated logind proxy uses Tmds.DBus.Protocol's span readers and writers
+             directly. No hand-written unsafe code here. Same arrangement as Wlrix.Shutdown. -->
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
+
+    <ItemGroup>
+        <!-- Wlrix.Shutdown's trimmed logind description, for the completion dialog's Restart. -->
+        <AdditionalFiles Include="..\Wlrix.Shutdown\DBusXml\org.freedesktop.login1.xml"
+                         Link="DBusXml\org.freedesktop.login1.xml"
+                         Namespace="Wlrix.SoftwareManager.DBus"
+                         DBusGeneratorMode="Proxy" />
+    </ItemGroup>
 
     <ItemGroup>
         <AvaloniaResource Include="Assets\**" />
@@ -27,6 +38,8 @@
         </PackageReference>
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
         <PackageReference Include="ReactiveUI.Avalonia" />
+        <PackageReference Include="Tmds.DBus.Protocol" />
+        <PackageReference Include="Tmds.DBus.Generator" PrivateAssets="all" />
         <PackageReference Include="Wlrix.Avalonia" />
         <PackageReference Include="Wlrix.Avalonia.Dialogs" />
         <PackageReference Include="ZLogger" />

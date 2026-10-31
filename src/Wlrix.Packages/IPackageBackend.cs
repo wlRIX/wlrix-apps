@@ -1,3 +1,4 @@
+using Wlrix.Packages.Backends.Parsing;
 using Wlrix.Packages.Models;
 
 namespace Wlrix.Packages;
@@ -36,4 +37,19 @@ public interface IPackageBackend
 
     /// <summary>The configured software sources.</summary>
     Task<IReadOnlyList<RepositoryInfo>> ListRepositoriesAsync(CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Whether the system needs restarting, given what a transaction just did. Also answers with
+    /// nothing upgraded, for a restart some earlier change left owing.
+    /// </summary>
+    /// <param name="operations">What the transaction did, as far as its output said.</param>
+    /// <param name="cancellationToken">Abandons the check.</param>
+    Task<bool> NeedsRestartAsync(IReadOnlyList<PackageOperation> operations,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Whether <see cref="ListUpdatesAsync"/> can only answer from package lists that may be out
+    /// of date, because the tool for checking properly is missing.
+    /// </summary>
+    bool UpdatesMayBeStale => false;
 }

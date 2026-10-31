@@ -28,4 +28,22 @@ public enum BackendCapabilities
     /// editing its configuration file by hand is not something to do on a user's behalf.
     /// </summary>
     ModifyRepositories = 1 << 4,
+
+    /// <summary>
+    /// Upgrade some of the pending updates and leave the rest. Absent on pacman, where a partial
+    /// upgrade is unsupported and can break the system: its Updates list is all or nothing.
+    /// </summary>
+    SelectiveUpgrade = 1 << 5,
+
+    /// <summary>
+    /// Find out what is new without root. On pacman the check uses a temporary database, because
+    /// refreshing the real one without upgrading is what makes the next install a partial upgrade.
+    /// </summary>
+    UnprivilegedRefresh = 1 << 6,
+
+    /// <summary>
+    /// A running transaction can be interrupted safely until it starts changing files. Only
+    /// pacman claims this, because only pacman's interrupt path has been tested.
+    /// </summary>
+    SafeInterrupt = 1 << 7,
 }

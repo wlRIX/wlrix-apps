@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Logging.Abstractions;
 using Wlrix.Packages;
 using Wlrix.Packages.Backends;
+using Wlrix.Packages.Backends.Parsing;
 using Wlrix.Packages.Models;
 using Wlrix.Packages.Privileged;
 using Wlrix.SoftwareManager.Services;
@@ -20,6 +21,7 @@ public class MainWindowViewModelTests
         new FakeTransactionService(),
         new FakePaneLayoutStore(),
         new FakeDiskSpaceProbe(),
+        new FakeRestartPendingStore(),
         NullLogger<MainWindowViewModel>.Instance);
 
     [Fact]
@@ -100,6 +102,132 @@ public class MainWindowViewModelTests
         Assert.False(viewModel.CanStart);
     }
 
+    [Fact]
+    public void Marks_SurviveTheListChanging()
+    {
+        // Search for one thing, mark it, search for another: Start has to do both.
+        var inventory = new InventoryViewModel();
+        inventory.Replace([Row("first")]);
+        inventory.Rows[0].MarkedForInstall = true;
+
+        inventory.Replace([Row("second")]);
+        inventory.Rows[0].MarkedForInstall = true;
+
+        Assert.Equal(["first", "second"], inventory.MarkedForInstall);
+
+        inventory.Replace([Row("first")]);
+        Assert.True(inventory.Rows[0].MarkedForInstall, "the mark should come back with its row");
+    }
+
+    [Fact]
+    public void Marks_GoAwayWhenUnticked()
+    {
+        var inventory = new InventoryViewModel();
+        inventory.Replace([Row("first")]);
+        inventory.Rows[0].MarkedForInstall = true;
+        inventory.Rows[0].MarkedForInstall = false;
+
+        Assert.False(inventory.HasMarks);
+    }
+
+    [Fact]
+    public void Marks_KeepPackageFilesApartFromPackageNames()
+    {
+        var inventory = new InventoryViewModel();
+        inventory.Replace([Row("/tmp/first.pkg.tar.zst", isFile: true), Row("second")]);
+        inventory.Rows[0].MarkedForInstall = true;
+        inventory.Rows[1].MarkedForRemoval = true;
+
+        Assert.Equal(["/tmp/first.pkg.tar.zst"], inventory.MarkedFiles);
+        Assert.Equal(["second"], inventory.MarkedForRemoval);
+        Assert.Empty(inventory.MarkedForInstall);
+    }
+
+    [Fact]
+    public void Marks_DoNotIncludeLockedRows()
+    {
+        // pacman's updates show ticked but are not marks, so marks made elsewhere stay separate
+        // from a whole-system upgrade.
+        var inventory = new InventoryViewModel();
+        inventory.Replace([Row("first", isLocked: true)]);
+
+        Assert.True(inventory.Rows[0].MarkedForInstall);
+        Assert.False(inventory.HasMarks);
+    }
+
+    [Fact]
+    public void Stop_IsDisabledWithNothingRunning()
+    {
+        using var viewModel = Create();
+
+        Assert.False(viewModel.CanStop);
+    }
+
+    [Fact]
+    public void Lights_MoveForwardOnly()
+    {
+        var status = new StatusViewModel();
+        status.ListReady();
+        Assert.Equal(PhaseLight.Complete, status.Initialize);
+
+        status.Begin();
+        Assert.Equal(
+            (PhaseLight.InProgress, PhaseLight.Off, PhaseLight.Off),
+            (status.Initialize, status.Install, status.PostInstall));
+
+        status.EnterPhase(TransactionPhase.Install);
+        // pacman checks its keyring after downloading.
+        status.EnterPhase(TransactionPhase.Initialize);
+        Assert.Equal(
+            (PhaseLight.Complete, PhaseLight.InProgress, PhaseLight.Off),
+            (status.Initialize, status.Install, status.PostInstall));
+
+        status.EnterPhase(TransactionPhase.PostInstall);
+        status.EnterPhase(TransactionPhase.Install);
+        Assert.Equal(
+            (PhaseLight.Complete, PhaseLight.Complete, PhaseLight.InProgress),
+            (status.Initialize, status.Install, status.PostInstall));
+    }
+
+    [Fact]
+    public void Lights_AllGreenOnSuccess()
+    {
+        var status = new StatusViewModel();
+        status.Begin();
+        status.Succeed();
+
+        Assert.Equal(
+            (PhaseLight.Complete, PhaseLight.Complete, PhaseLight.Complete),
+            (status.Initialize, status.Install, status.PostInstall));
+    }
+
+    [Fact]
+    public void Lights_GoOutOnThePhaseThatDidNotFinish()
+    {
+        var status = new StatusViewModel();
+        status.Begin();
+        status.EnterPhase(TransactionPhase.Install);
+        status.Abandon();
+
+        Assert.Equal(
+            (PhaseLight.Complete, PhaseLight.Off, PhaseLight.Off),
+            (status.Initialize, status.Install, status.PostInstall));
+    }
+
+    [Fact]
+    public void Lights_ListReadyLeavesAFinishedRunAlone()
+    {
+        var status = new StatusViewModel();
+        status.Begin();
+        status.Succeed();
+        status.ListReady();
+
+        Assert.Equal(PhaseLight.Complete, status.PostInstall);
+    }
+
+    private static PackageRowViewModel Row(string name, bool isFile = false, bool isLocked = false) =>
+        new(name, "1.0", "New", 10, "repo", canInstall: true, canRemove: true, isFile, isLocked);
+
     private sealed class FakeBackendFactory : IPackageBackendFactory
     {
         public PackageSystem Resolve() =>
@@ -136,6 +264,9 @@ public class MainWindowViewModelTests
         public Task<IReadOnlyList<RepositoryInfo>> ListRepositoriesAsync(
             CancellationToken cancellationToken = default) => Never<RepositoryInfo>(cancellationToken);
 
+        public Task<bool> NeedsRestartAsync(IReadOnlyList<PackageOperation> operations,
+            CancellationToken cancellationToken = default) => Task.FromResult(false);
+
         private static async Task<IReadOnlyList<T>> Never<T>(CancellationToken cancellationToken)
         {
             await Task.Delay(Timeout.Infinite, cancellationToken).ConfigureAwait(false);
@@ -150,6 +281,15 @@ public class MainWindowViewModelTests
         public Task<TransactionResult> RunAsync(HelperRequest request, ITransactionObserver observer,
             CancellationToken cancellationToken = default) =>
             Task.FromResult(new TransactionResult(TransactionOutcome.Unavailable, null));
+    }
+
+    private sealed class FakeRestartPendingStore : IRestartPendingStore
+    {
+        public bool IsPending() => false;
+
+        public void MarkPending()
+        {
+        }
     }
 
     private sealed class FakePaneLayoutStore : IPaneLayoutStore

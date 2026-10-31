@@ -53,6 +53,8 @@ public partial class App : Application
             services.AddSingleton<ITransactionService, TransactionService>();
             services.AddSingleton<IPaneLayoutStore, PaneLayoutStore>();
             services.AddSingleton<IDiskSpaceProbe, DiskSpaceProbe>();
+            services.AddSingleton<IRestartPendingStore, RestartPendingStore>();
+            services.AddSingleton<ISystemRestart, LogindSystemRestart>();
             services.AddTransient<MainWindowViewModel>();
             services.AddTransient<RepositoriesViewModel>();
             services.AddSingleton<IUserSoftwareSource, AppImageSource>();

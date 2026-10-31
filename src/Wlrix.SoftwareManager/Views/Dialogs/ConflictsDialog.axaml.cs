@@ -7,8 +7,8 @@ using Wlrix.Packages.Backends.Parsing;
 namespace Wlrix.SoftwareManager.Views.Dialogs;
 
 /// <summary>
-/// What the package manager objected to, in its own words. Opened from the Conflicts button,
-/// which turns red once a transaction has reported one.
+/// What the package manager objected to, in its own words. Opens when a transaction fails over a
+/// conflict, and again from the Conflicts button, which stays red until the next run.
 /// </summary>
 public partial class ConflictsDialog : Window
 {
@@ -25,7 +25,7 @@ public partial class ConflictsDialog : Window
     public static Task ShowAsync(Window owner, IReadOnlyList<TransactionConflict> conflicts)
     {
         var dialog = new ConflictsDialog();
-        dialog.Conflicts.ItemsSource = conflicts;
+        dialog.FindControl<ItemsControl>("Conflicts")!.ItemsSource = conflicts;
         return dialog.ShowDialog(owner);
     }
 

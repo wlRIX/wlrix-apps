@@ -20,7 +20,7 @@ public enum HelperVerb
     /// <summary>Remove named packages.</summary>
     Remove,
 
-    /// <summary>Re-download the package lists.</summary>
+    /// <summary>Re-download the package lists. Not on pacman, where it causes partial upgrades.</summary>
     Refresh,
 
     /// <summary>Upgrade everything installed.</summary>

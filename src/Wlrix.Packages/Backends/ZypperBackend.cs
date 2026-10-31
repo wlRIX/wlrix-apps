@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Logging;
 using Wlrix.Packages.Backends.Parsing;
 using Wlrix.Packages.Models;
+using Wlrix.Packages.Privileged;
 using Wlrix.Packages.Processes;
 using ZLogger;
 
@@ -25,7 +26,17 @@ public sealed class ZypperBackend(IProcessRunner runner, ILogger<ZypperBackend> 
         | BackendCapabilities.InstallFromFile
         | BackendCapabilities.Upgrade
         | BackendCapabilities.ListRepositories
-        | BackendCapabilities.ModifyRepositories;
+        | BackendCapabilities.ModifyRepositories
+        | BackendCapabilities.SelectiveUpgrade;
+
+    public async Task<bool> NeedsRestartAsync(IReadOnlyList<PackageOperation> operations,
+        CancellationToken cancellationToken = default)
+    {
+        var result = await runner.RunAsync("zypper", ["--non-interactive", "needs-rebooting"], cancellationToken)
+            .ConfigureAwait(false);
+
+        return result.ExitCode == HelperCommands.ZypperRebootNeeded;
+    }
 
     public async Task<IReadOnlyList<PackageInfo>> SearchAsync(string query,
         CancellationToken cancellationToken = default)

@@ -13,7 +13,7 @@
 
     <Grid ColumnDefinitions="2*,3*" ColumnSpacing="12">
 
-        <!-- Status: what happened, over the three phases a transaction moves through. -->
+        <!-- Status: what happened, over the overall bar and the three phases' lights. -->
         <DockPanel Grid.Column="0">
             <TextBlock DockPanel.Dock="Top" Text="{loc:Tr StatusLabel}" Margin="0,0,0,4" />
 
@@ -24,29 +24,70 @@
                                OuterLineBrush="{DynamicResource WlrixOuterLine}"
                                Padding="8">
                 <DockPanel>
-                    <!-- The phase strip is docked to the bottom so a long status message grows
-                         upwards into the free space instead of pushing the bars off the pane. -->
+                    <!-- The lights are docked to the bottom so a long status message grows
+                         upwards into the free space instead of pushing them off the pane. -->
                     <Grid DockPanel.Dock="Bottom" ColumnDefinitions="*,*,*" ColumnSpacing="6"
                           Margin="0,8,0,0">
+                        <Grid.Styles>
+                            <Style Selector="wlrix|BevelBorder.light">
+                                <Setter Property="Bevel" Value="Sunken" />
+                                <Setter Property="BevelThickness" Value="1" />
+                                <Setter Property="Height" Value="8" />
+                                <Setter Property="Background" Value="{DynamicResource WlrixPanel}" />
+                                <Setter Property="LightBrush" Value="{DynamicResource WlrixTopShadow}" />
+                                <Setter Property="DarkBrush" Value="{DynamicResource WlrixBottomShadow}" />
+                            </Style>
+                            <Style Selector="wlrix|BevelBorder.light.inProgress">
+                                <Setter Property="Background" Value="{DynamicResource WlrixIndicatorLight}" />
+                            </Style>
+                            <Style Selector="wlrix|BevelBorder.light.complete">
+                                <Setter Property="Background" Value="#00FF00" />
+                            </Style>
+                        </Grid.Styles>
                         <StackPanel Grid.Column="0" Spacing="2">
-                            <ProgressBar Minimum="0" Maximum="100" Value="{Binding Status.Initialize}" />
+                            <wlrix:BevelBorder Classes="light"
+                                               Classes.inProgress="{Binding Status.Initialize, Converter={x:Static vm:StatusViewModel.IsInProgress}}"
+                                               Classes.complete="{Binding Status.Initialize, Converter={x:Static vm:StatusViewModel.IsComplete}}" />
                             <TextBlock Text="{loc:Tr PhaseInitialize}" FontSize="11"
                                        HorizontalAlignment="Center" />
                         </StackPanel>
                         <StackPanel Grid.Column="1" Spacing="2">
-                            <ProgressBar Minimum="0" Maximum="100" Value="{Binding Status.Install}" />
+                            <wlrix:BevelBorder Classes="light"
+                                               Classes.inProgress="{Binding Status.Install, Converter={x:Static vm:StatusViewModel.IsInProgress}}"
+                                               Classes.complete="{Binding Status.Install, Converter={x:Static vm:StatusViewModel.IsComplete}}" />
                             <TextBlock Text="{loc:Tr PhaseInstall}" FontSize="11"
                                        HorizontalAlignment="Center" />
                         </StackPanel>
                         <StackPanel Grid.Column="2" Spacing="2">
-                            <ProgressBar Minimum="0" Maximum="100" Value="{Binding Status.PostInstall}" />
+                            <wlrix:BevelBorder Classes="light"
+                                               Classes.inProgress="{Binding Status.PostInstall, Converter={x:Static vm:StatusViewModel.IsInProgress}}"
+                                               Classes.complete="{Binding Status.PostInstall, Converter={x:Static vm:StatusViewModel.IsComplete}}" />
                             <TextBlock Text="{loc:Tr PhasePostInstall}" FontSize="11"
                                        HorizontalAlignment="Center" />
                         </StackPanel>
                     </Grid>
 
-                    <TextBlock Text="{Binding Status.Message}" TextWrapping="Wrap"
-                               VerticalAlignment="Top" />
+                    <!-- The overall bar, with its scale, only while something is running. The room
+                         stays reserved so the pane does not jump when it appears. -->
+                    <Panel DockPanel.Dock="Bottom" MinHeight="40" Margin="0,8,0,0">
+                        <StackPanel Spacing="2" IsVisible="{Binding IsRunning}">
+                            <Grid ColumnDefinitions="Auto,*,Auto,*,Auto,*,Auto,*,Auto">
+                                <TextBlock Grid.Column="0" Text="0" />
+                                <TextBlock Grid.Column="2" Text="25" />
+                                <TextBlock Grid.Column="4" Text="50" />
+                                <TextBlock Grid.Column="6" Text="75" />
+                                <TextBlock Grid.Column="8" Text="100" />
+                            </Grid>
+                            <ProgressBar Minimum="0" Maximum="100" Value="{Binding Status.Overall}"
+                                         Foreground="#E8E8E8" />
+                        </StackPanel>
+                    </Panel>
+
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="{Binding Status.Message}" TextWrapping="Wrap" />
+                        <TextBlock Text="{Binding Status.RestartNotice}" TextWrapping="Wrap" FontWeight="Bold"
+                                   IsVisible="{Binding Status.RestartNotice, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                    </StackPanel>
                 </DockPanel>
             </wlrix:BevelBorder>
         </DockPanel>

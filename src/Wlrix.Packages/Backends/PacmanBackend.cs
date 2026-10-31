@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Logging;
+using Wlrix.Common;
 using Wlrix.Packages.Backends.Parsing;
 using Wlrix.Packages.Models;
 using Wlrix.Packages.Processes;
@@ -32,7 +33,14 @@ public sealed class PacmanBackend(IProcessRunner runner, ILogger<PacmanBackend> 
         BackendCapabilities.InstallFromRepository
         | BackendCapabilities.InstallFromFile
         | BackendCapabilities.Upgrade
-        | BackendCapabilities.ListRepositories;
+        | BackendCapabilities.ListRepositories
+        | BackendCapabilities.UnprivilegedRefresh
+        | BackendCapabilities.SafeInterrupt;
+
+    public bool UpdatesMayBeStale => !CanCheckUpdates;
+
+    /// <summary><c>checkupdates</c> comes from pacman-contrib, and it needs fakeroot to run.</summary>
+    private static bool CanCheckUpdates => Executables.Exists("checkupdates") && Executables.Exists("fakeroot");
 
     public async Task<IReadOnlyList<PackageInfo>> SearchAsync(string query,
         CancellationToken cancellationToken = default)
@@ -77,14 +85,55 @@ public sealed class PacmanBackend(IProcessRunner runner, ILogger<PacmanBackend> 
     public async Task<IReadOnlyList<PackageInfo>> ListUpdatesAsync(
         CancellationToken cancellationToken = default)
     {
+        var packages = CanCheckUpdates
+            ? await CheckUpdatesAsync(cancellationToken).ConfigureAwait(false)
+            : await QueryUpdatesAsync(cancellationToken).ConfigureAwait(false);
+
+        return await WithSizesAsync(packages, cancellationToken).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Asks the repositories through a temporary copy of the database. Syncing the real one here
+    /// would make the next plain install a partial upgrade.
+    /// </summary>
+    private async Task<IReadOnlyList<PackageInfo>> CheckUpdatesAsync(CancellationToken cancellationToken)
+    {
+        var result = await runner.RunAsync("checkupdates", ["--nocolor"], cancellationToken).ConfigureAwait(false);
+
+        return PacmanOutput.ParseCheckUpdates(result.ExitCode, result.StandardOutput)
+               ?? throw new PackageProcessException($"checkupdates failed: {result.StandardError.Trim()}");
+    }
+
+    /// <summary>Compares with the package lists already on disk, which may be out of date.</summary>
+    private async Task<IReadOnlyList<PackageInfo>> QueryUpdatesAsync(CancellationToken cancellationToken)
+    {
         var result = await runner.RunAsync("pacman", ["-Qu"], cancellationToken).ConfigureAwait(false);
 
         // Exit 1 with no output is "everything is up to date", not a failure.
         if (!result.Succeeded && result.StandardOutput.Trim().Length == 0)
             return [];
 
-        var packages = PacmanOutput.ParseUpdates(result.StandardOutput);
-        return await WithSizesAsync(packages, cancellationToken).ConfigureAwait(false);
+        return PacmanOutput.ParseUpdates(result.StandardOutput);
+    }
+
+    public Task<bool> NeedsRestartAsync(IReadOnlyList<PackageOperation> operations,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var release = File.ReadAllText("/proc/sys/kernel/osrelease").Trim();
+            var system = new RunningSystem(
+                RestartPolicy.ReadKernelPackage(File.ReadAllText("/proc/version")),
+                Directory.Exists($"/usr/lib/modules/{release}"),
+                RestartPolicy.ReadMountedFilesystems(File.ReadAllText("/proc/mounts")));
+
+            return Task.FromResult(RestartPolicy.NeedsRestart(operations, system));
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            logger.ZLogWarning(ex, $"Could not read the state of the running system.");
+            return Task.FromResult(false);
+        }
     }
 
     public async Task<PackageDetails?> DescribeAsync(string name,

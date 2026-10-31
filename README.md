@@ -235,6 +235,9 @@ The helper is exercisable without root:
 dotnet run --project src/Wlrix.Packages.Helper -- --check install pacman cowsay
 ```
 
+On Arch-based systems it also needs `pacman-contrib` and `fakeroot`: `checkupdates` is how it lists updates without
+moving the system's sync database. Without them it falls back to `pacman -Qu` and says the list may be out of date.
+
 **A settings app does not touch config files.** wlRIX settings are IRIX-style separate panels, one window per concern,
 and every one of them reads and writes through `Wlrix.Settings.Client`
 — which asks `wlrix-settings-daemon` over `com.wlrix.Settings`. The daemon owns the TOML editing, the "tell the

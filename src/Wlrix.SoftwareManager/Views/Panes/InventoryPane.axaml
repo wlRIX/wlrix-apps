@@ -67,6 +67,7 @@
                                       IsVisible="{Binding CanRemove}" />
                             <CheckBox Grid.Column="1"
                                       IsChecked="{Binding MarkedForInstall}"
+                                      IsEnabled="{Binding CanChangeMark}"
                                       IsVisible="{Binding CanInstall}" />
                             <TextBlock Grid.Column="2" Text="{Binding DisplayName}"
                                        VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />

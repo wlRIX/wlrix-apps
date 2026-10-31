@@ -120,6 +120,17 @@ internal static partial class PacmanOutput
     }
 
     /// <summary>
+    /// What <c>checkupdates</c> answered, or <c>null</c> if it failed. It exits 2 for "no updates",
+    /// which is an answer, and 1 when it could not find out, which must not read as up to date.
+    /// </summary>
+    internal static IReadOnlyList<PackageInfo>? ParseCheckUpdates(int exitCode, string output) => exitCode switch
+    {
+        0 => ParseUpdates(output),
+        2 => [],
+        _ => null,
+    };
+
+    /// <summary>
     /// <c>pacman -Qi</c> or <c>-Si</c> blocks, keyed by package name. Both spellings of the
     /// repository field are read: <c>-Si</c> calls it <c>Repository</c>, and <c>-Qi</c> either
     /// omits it or calls it <c>Installed From</c>.

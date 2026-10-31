@@ -14,8 +14,11 @@ public sealed class PackageRowViewModel : ViewModelBase
     private bool _markedForRemoval;
 
     public PackageRowViewModel(string name, string version, string statusText, long sizeKilobytes,
-        string typeText, bool canInstall, bool canRemove)
+        string typeText, bool canInstall, bool canRemove, bool isFile = false, bool isLocked = false)
     {
+        IsFile = isFile;
+        IsLocked = isLocked;
+        _markedForInstall = isLocked;
         Name = name;
         Version = version;
         StatusText = statusText;
@@ -45,6 +48,18 @@ public sealed class PackageRowViewModel : ViewModelBase
 
     /// <summary>Whether the Remove column's box is available on this row.</summary>
     public bool CanRemove { get; }
+
+    /// <summary>Whether <see cref="Name"/> is the path of a package file rather than a package.</summary>
+    public bool IsFile { get; }
+
+    /// <summary>
+    /// Whether this row goes with all the others and cannot be unticked: pacman's updates, which
+    /// are all or nothing. A locked row shows as marked but is not one of the inventory's marks.
+    /// </summary>
+    public bool IsLocked { get; }
+
+    /// <summary>Whether the user may change this row's boxes.</summary>
+    public bool CanChangeMark => !IsLocked;
 
     /// <summary>What the Product column shows: the name, and the version after it.</summary>
     public string DisplayName => Version.Length > 0 ? $"{Name}, {Version}" : Name;

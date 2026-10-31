@@ -1,3 +1,4 @@
+using Wlrix.Packages.Backends.Parsing;
 using Wlrix.Packages.Models;
 
 namespace Wlrix.Packages.Backends;
@@ -30,6 +31,9 @@ public sealed class NullBackend : IPackageBackend
 
     public Task<IReadOnlyList<RepositoryInfo>> ListRepositoriesAsync(
         CancellationToken cancellationToken = default) => Empty<RepositoryInfo>();
+
+    public Task<bool> NeedsRestartAsync(IReadOnlyList<PackageOperation> operations,
+        CancellationToken cancellationToken = default) => Task.FromResult(false);
 
     private static Task<IReadOnlyList<T>> Empty<T>() => Task.FromResult<IReadOnlyList<T>>([]);
 }

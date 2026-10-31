@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using Wlrix.Packages.Privileged;
 using Wlrix.Common;
 
@@ -101,6 +102,9 @@ internal static class Program
         // EOF and gives up, instead of waiting for ever on a terminal nobody is watching.
         process.StandardInput.Close();
 
+        var watcher = new Thread(() => WatchForStop(process, command)) { IsBackground = true };
+        watcher.Start();
+
         process.OutputDataReceived += (_, e) => Write(FrameKind.Log, e.Data);
         process.ErrorDataReceived += (_, e) => Write(FrameKind.Error, e.Data);
         process.BeginOutputReadLine();
@@ -137,6 +141,30 @@ internal static class Program
         }
     }
 
+    /// <summary>
+    /// Interrupts the package manager when the application asks. SIGINT rather than a kill, so
+    /// pacman takes its own interrupt path and releases its lock. Only a "stop" line does this:
+    /// stdin ending just means the window closed, and the transaction should still finish.
+    /// </summary>
+    private static void WatchForStop(Process process, HelperCommand command)
+    {
+        while (Console.In.ReadLine() is { } line)
+        {
+            if (line != HelperProtocol.StopCommand || process.HasExited)
+                continue;
+
+            if (command.Interruptible)
+                _ = Interrupt(process.Id, SignalInterrupt);
+            else
+                Write(FrameKind.Error, $"{command.Program} cannot be stopped safely; letting it finish.");
+        }
+    }
+
+    private const int SignalInterrupt = 2;
+
+    [DllImport("libc", EntryPoint = "kill", SetLastError = true)]
+    private static extern int Interrupt(int pid, int signal);
+
     private static void Kill(Process process)
     {
         try
@@ -152,8 +180,18 @@ internal static class Program
 
     private static void Write(FrameKind kind, string? line)
     {
-        if (line is not null)
+        if (line is null)
+            return;
+
+        try
+        {
             Console.WriteLine(new HelperFrame(kind, line));
+        }
+        catch (IOException)
+        {
+            // The window closed and nobody is reading. Keep draining, so the package manager
+            // finishes rather than dying on a broken pipe halfway through changing the system.
+        }
     }
 
     private static int Fail(string message)

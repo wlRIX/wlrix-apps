@@ -68,12 +68,16 @@
   <data name="SoftwareUserSoftware" xml:space="preserve">
     <value>User Software…</value>
   </data>
-  <data name="HelpAbout" xml:space="preserve">
-    <value>About Software Manager</value>
+  <data name="HelpProductInfo" xml:space="preserve">
+    <value>_Product Information</value>
   </data>
-  <data name="AboutMessage" xml:space="preserve">
-    <value>wlRIX Software Manager
-Version {0}</value>
+  <data name="AboutTitle" xml:space="preserve">
+    <value>Product Information</value>
+  </data>
+  <data name="About" xml:space="preserve">
+    <value>wlRIX Software Manager {0}
+
+Installs, updates and removes the software on this system. Look up what you want, mark it for installation or removal, and press Start.</value>
   </data>
 
   <!-- Panes -->
@@ -221,7 +225,57 @@ Version {0}</value>
     <value>Not authorized. Nothing was changed.</value>
   </data>
   <data name="TransactionStopped" xml:space="preserve">
-    <value>Stopped watching. The package manager may still be finishing.</value>
+    <value>Stopped. Nothing was changed.</value>
+  </data>
+  <data name="TransactionStopping" xml:space="preserve">
+    <value>Stopping...</value>
+  </data>
+  <data name="RestartPending" xml:space="preserve">
+    <value>You must restart your system to complete the installation.</value>
+  </data>
+  <data name="UpdatesMayBeStale" xml:space="preserve">
+    <value>The package lists may be out of date: install pacman-contrib and fakeroot to check properly.</value>
+  </data>
+  <data name="UpgradesEverything" xml:space="preserve">
+    <value>Start installs every update: this package manager cannot upgrade only some of them.</value>
+  </data>
+  <data name="MarkedCount" xml:space="preserve">
+    <value>Marked: {0}</value>
+  </data>
+  <data name="RestartFailed" xml:space="preserve">
+    <value>The system could not be restarted: {0}</value>
+  </data>
+  <data name="FailureTitle" xml:space="preserve">
+    <value>Installation Failed</value>
+  </data>
+  <data name="FailureStaleLists" xml:space="preserve">
+    <value>A package could not be downloaded, which usually means the package lists are out of date. Install the updates first, then try again.</value>
+  </data>
+
+  <!-- Completion dialog -->
+  <data name="CompleteQuestion" xml:space="preserve">
+    <value>Question</value>
+  </data>
+  <data name="CompleteSuccess" xml:space="preserve">
+    <value>Installations and removals were successful.</value>
+  </data>
+  <data name="CompleteContinueOrQuit" xml:space="preserve">
+    <value>You may continue with installations or quit now.</value>
+  </data>
+  <data name="CompleteMoreSoftware" xml:space="preserve">
+    <value>To install more software, enter a search term or package file and press "Lookup".</value>
+  </data>
+  <data name="CompleteContinue" xml:space="preserve">
+    <value>Continue with installations</value>
+  </data>
+  <data name="CompleteExit" xml:space="preserve">
+    <value>Exit, installations completed</value>
+  </data>
+  <data name="CompleteRestart" xml:space="preserve">
+    <value>Restart the system now</value>
+  </data>
+  <data name="Ok" xml:space="preserve">
+    <value>OK</value>
   </data>
   <data name="UnexpectedError" xml:space="preserve">
     <value>Something went wrong: {0}</value>

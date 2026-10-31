@@ -46,7 +46,7 @@ problem:
 
 |        | search / list                                             | details          | repositories                           |
 |--------|-----------------------------------------------------------|------------------|----------------------------------------|
-| pacman | `-Ss`, `-Qi`, `-Qu`                                       | `-Si` then `-Qi` | parse `/etc/pacman.conf`               |
+| pacman | `-Ss`, `-Qi`, `checkupdates`                              | `-Si` then `-Qi` | parse `/etc/pacman.conf`               |
 | apt    | `apt-cache search`, `dpkg-query -W`, `apt-get -s upgrade` | `apt-cache show` | parse `sources.list`, `sources.list.d` |
 | zypper | `--xmlout search --details`, `list-updates`               | `zypper info`    | `--xmlout repos`                       |
 
@@ -64,6 +64,40 @@ documentation rather than recorded. Everything they run is read-only, so the wor
 an empty list — but do not read
 "there are tests" as "this has been used". Recording real fixtures on each is the obvious next step for anyone with the
 machines.
+
+## pacman and partial upgrades
+
+Arch does not support partial upgrades, so nothing here may move pacman's sync database without
+also upgrading. There is no `-Sy`: the helper refuses `refresh` on pacman, and the Updates list comes from
+`checkupdates`, which syncs a temporary copy without root. That needs `pacman-contrib` and `fakeroot`. Without them
+the list falls back to `-Qu` over the lists already on disk, and the status line says it may be out of date.
+
+For the same reason a pacman Updates list is all or nothing. Start runs `-Syu`, and `SelectiveUpgrade` is what tells the
+window the rows cannot be unticked. Installing stays a plain `-S`, so it can fail on a package the mirrors have since
+replaced. The way out is to run the updates first, and the failure dialog says so.
+
+## Restarts
+
+`IPackageBackend.NeedsRestartAsync` answers whether the system needs a restart, after a transaction and when the
+window opens.
+
+|        | how it knows                                                                          |
+|--------|---------------------------------------------------------------------------------------|
+| pacman | the running kernel's modules are gone, or `RestartPolicy` matches an upgraded package |
+| apt    | `/run/reboot-required` exists                                                         |
+| zypper | `zypper needs-rebooting`, and the transaction's own exit code 102                     |
+
+`RestartPolicy` follows CachyOS's `cachyos-reboot-required` hook, except that only the running kernel counts. It does
+not call the hook, which exists only on CachyOS and finds who to notify from `users`. As with the rest of those
+backends, the apt and zypper rows have not been run on a real system.
+
+## Stopping
+
+pkexec and everything under it run as root, so the application cannot signal them. Stop sends a `stop` line down the
+helper's stdin, the helper sends pacman `SIGINT`, and the transaction is watched until it really ends. The window offers
+this only until the first package operation, because interrupting after that would leave some packages replaced and
+others not. apt and zypper have no tested safe interrupt, so `SafeInterrupt` is off and Stop stays gray. Stdin simply
+ending means the window closed, and the transaction carries on.
 
 ## User software
 

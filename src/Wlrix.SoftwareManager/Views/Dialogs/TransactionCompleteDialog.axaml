@@ -1,0 +1,43 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:loc="using:Wlrix.Common.Localization"
+        x:Class="Wlrix.SoftwareManager.Views.Dialogs.TransactionCompleteDialog"
+        Width="560" SizeToContent="Height" CanResize="False" ShowInTaskbar="False"
+        WindowStartupLocation="CenterOwner"
+        Title="{loc:Tr SoftwareManager}">
+
+    <!-- The dialog swmgr showed after installing or removing software, as in
+         _docs/swmgr/SoftwareManager-Done-RebootNeed.png. The closing line and the radios are the
+         original's, except that the mention of changing CDs now talks about Lookup. -->
+    <DockPanel Margin="20,16">
+
+        <Button DockPanel.Dock="Bottom" Name="OkButton" Content="{loc:Tr Ok}"
+                MinWidth="64" HorizontalAlignment="Right" Margin="0,16,0,0"
+                IsDefault="True" Click="OnOk" />
+
+        <Grid DockPanel.Dock="Top" ColumnDefinitions="Auto,*" ColumnSpacing="48" Margin="56,0,0,18">
+            <Image Grid.Column="0" Width="32" Height="32"
+                   Source="avares://Wlrix.Avalonia.Dialogs/Assets/Icons/Question.png" />
+            <Border Grid.Column="1" BorderBrush="{DynamicResource WlrixForeground}" BorderThickness="1"
+                    Padding="6,3" VerticalAlignment="Center">
+                <TextBlock Text="{loc:Tr CompleteQuestion}" />
+            </Border>
+        </Grid>
+
+        <StackPanel Spacing="16" Margin="20,0,0,0">
+            <TextBlock Text="{loc:Tr CompleteSuccess}" FontWeight="Bold" TextWrapping="Wrap" />
+            <TextBlock Name="RestartLine" Text="{loc:Tr RestartPending}" FontWeight="Bold" TextWrapping="Wrap" />
+            <TextBlock Text="{loc:Tr CompleteContinueOrQuit}" FontWeight="Bold" TextWrapping="Wrap" />
+            <TextBlock Text="{loc:Tr CompleteMoreSoftware}" FontWeight="Bold" TextWrapping="Wrap" />
+
+            <StackPanel Spacing="8" Margin="-20,8,0,0">
+                <RadioButton GroupName="Complete" Name="ContinueChoice" IsChecked="True"
+                             Content="{loc:Tr CompleteContinue}" />
+                <RadioButton GroupName="Complete" Name="ExitChoice" Content="{loc:Tr CompleteExit}" />
+                <RadioButton GroupName="Complete" Name="RestartChoice" Content="{loc:Tr CompleteRestart}" />
+            </StackPanel>
+        </StackPanel>
+
+    </DockPanel>
+
+</Window>

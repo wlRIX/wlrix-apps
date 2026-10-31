@@ -3,7 +3,7 @@ using System.Text.RegularExpressions;
 namespace Wlrix.Packages.Backends.Parsing;
 
 /// <summary>
-/// The three phases the Status pane's progress strip shows. They are the IRIX original's, and
+/// The three phases the Status pane's lights show. They are the IRIX original's, and
 /// they survive the translation because the shape of the work has not changed: work out what to
 /// do, move the files, then let the system react to them.
 /// </summary>
@@ -29,8 +29,8 @@ public sealed record ProgressUpdate(TransactionPhase Phase, double? Percent);
 ///
 /// This is inference, not a protocol: none of the three reports progress in a machine-readable
 /// way, so this watches for the phrases they print. That makes it the least reliable thing in
-/// the library, which is why it drives only the progress strip. Nothing depends on it being
-/// right — a missed line leaves a bar where it was, and the Log pane still has the truth.
+/// the library, which is why it drives only the lights and the progress bar. Nothing depends on it
+/// being right — a missed line leaves them where they were, and the Log pane still has the truth.
 /// </summary>
 public static partial class TransactionProgress
 {
@@ -121,6 +121,8 @@ public static partial class TransactionProgress
     }
 
     /// <summary>The <c>(n/m)</c> in a line as a percentage, or <c>null</c> if there is not one.</summary>
+    internal static double? CountedPercent(string line) => Percent(line);
+
     private static double? Percent(string line)
     {
         if (Counter.Match(line) is not { Success: true } match)

@@ -58,4 +58,12 @@ public class ConflictDetectorTests
     [Fact]
     public void Read_SaysNothingForABackendItDoesNotKnow() =>
         Assert.Null(ConflictDetector.Read("dnf", "Problem: something conflicts with something"));
+
+    [Theory]
+    [InlineData("pacman", "error: failed retrieving file 'mesa-1-1.pkg.tar.zst' from mirror : The requested URL returned error: 404", true)]
+    [InlineData("pacman", "error: failed to commit transaction (failed to retrieve some files)", true)]
+    [InlineData("pacman", "error: failed to commit transaction (conflicting files)", false)]
+    [InlineData("apt", "failed retrieving file", false)]
+    public void StalePackageLists(string backend, string line, bool expected) =>
+        Assert.Equal(expected, ConflictDetector.SuggestsStalePackageLists(backend, line));
 }

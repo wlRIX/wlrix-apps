@@ -9,6 +9,9 @@ public sealed record HelperCommand(
     IReadOnlyList<string> Arguments,
     IReadOnlyDictionary<string, string> Environment)
 {
+    /// <summary>Whether the helper may interrupt this program when asked to stop.</summary>
+    public bool Interruptible { get; init; }
+
     /// <summary>
     /// How the command reads in the Command pane. For display only — nothing is ever built back
     /// out of this string, which is why no quoting is attempted.
@@ -26,6 +29,20 @@ public sealed record HelperCommand(
 /// </summary>
 public static class HelperCommands
 {
+    /// <summary>zypper's "succeeded, and the system needs a restart".</summary>
+    public const int ZypperRebootNeeded = 102;
+
+    /// <summary>zypper's "succeeded, and zypper itself was updated and should be run again".</summary>
+    private const int ZypperRestartNeeded = 103;
+
+    /// <summary>Whether <paramref name="exitCode"/> means the transaction worked.</summary>
+    public static bool IsSuccess(string backend, int exitCode) =>
+        exitCode == 0 || (backend == "zypper" && exitCode is ZypperRebootNeeded or ZypperRestartNeeded);
+
+    /// <summary>Whether <paramref name="exitCode"/> itself says a restart is needed.</summary>
+    public static bool RequestsRestart(string backend, int exitCode) =>
+        backend == "zypper" && exitCode == ZypperRebootNeeded;
+
     /// <summary>
     /// The command for <paramref name="request"/>, or <c>null</c> if that package manager has
     /// no way to carry it out — pacman and repository changes being the case that matters.
@@ -50,14 +67,19 @@ public static class HelperCommands
             // uninstall leaves the dependency tree behind and "remove" does not mean what the
             // user thinks it means.
             HelperVerb.Remove => Concat(["-Rs", "--noconfirm", "--"], request.Targets),
-            HelperVerb.Refresh => ["-Sy", "--noconfirm"],
             HelperVerb.Upgrade => ["-Syu", "--noconfirm"],
-            // pacman has no repository commands. See the README: the only way is to edit
+            // No Refresh: -Sy moves the sync database without upgrading, and the next plain -S
+            // is then a partial upgrade, which Arch does not support. The backend finds new
+            // updates with checkupdates, which needs no root.
+            //
+            // pacman has no repository commands either. See the README: the only way is to edit
             // pacman.conf, and that is not something to do on a user's behalf.
             _ => null,
         };
 
-        return arguments is null ? null : new HelperCommand("pacman", arguments, NoExtraEnvironment);
+        return arguments is null
+            ? null
+            : new HelperCommand("pacman", arguments, NoExtraEnvironment) { Interruptible = true };
     }
 
     private static HelperCommand? Apt(HelperRequest request)

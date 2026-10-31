@@ -267,4 +267,16 @@ public class PacmanOutputTests
 
         Assert.Equal("https://example.invalid/$repo/os/$arch", Assert.Single(repositories).Url);
     }
+
+    [Fact]
+    public void CheckUpdates_ExitTwoMeansNothingToDo() =>
+        Assert.Empty(PacmanOutput.ParseCheckUpdates(2, string.Empty)!);
+
+    [Fact]
+    public void CheckUpdates_ExitOneIsAFailureAndNotUpToDate() =>
+        Assert.Null(PacmanOutput.ParseCheckUpdates(1, string.Empty));
+
+    [Fact]
+    public void CheckUpdates_ExitZeroListsTheUpdates() =>
+        Assert.Equal("mesa", PacmanOutput.ParseCheckUpdates(0, "mesa 1:26.2.4-1 -> 1:26.2.5-1\n")!.Single().Name);
 }

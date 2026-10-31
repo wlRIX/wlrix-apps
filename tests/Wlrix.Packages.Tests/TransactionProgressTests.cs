@@ -72,4 +72,68 @@ public class TransactionProgressTests
         // Not a line any of them prints, but this is inference over free text and it must not
         // be the thing that takes down a transaction the user is watching.
         Assert.Null(TransactionProgress.Read("pacman", "(0/0) installing nothing")!.Percent);
+
+    [Fact]
+    public void Meter_FollowsARecordedPacmanDownloadAndInstall()
+    {
+        // pacman 7 under LC_ALL=C with no terminal, as the helper runs it, fetching one package
+        // from a local server after refreshing its database.
+        var meter = new TransactionMeter("pacman");
+        var seen = new List<double>();
+        foreach (var line in Fixture.Read("pacman-download.txt").Split('\n'))
+        {
+            meter.Read(line);
+            seen.Add(meter.Percent);
+        }
+
+        // A database download is not a package: the bar has not moved past the plan because of it.
+        Assert.Equal(0, seen[1]);
+        Assert.Equal(40, seen[Array.IndexOf(Fixture.Read("pacman-download.txt").Split('\n'), " wlrix-fixture-1-1-any downloading...")]);
+        Assert.Equal(90, seen[^1]);
+        Assert.Equal(seen.Order(), seen);
+    }
+
+    [Fact]
+    public void Meter_CountsPacmanOperationsAgainstThePlan()
+    {
+        var meter = new TransactionMeter("pacman");
+        meter.Read("Packages (2) first-1-1 second-1-1");
+        meter.Read("upgrading first...");
+
+        Assert.Equal(65, meter.Percent);
+    }
+
+    [Fact]
+    public void Meter_CountsPacmanHooksOnceTheyStart()
+    {
+        var meter = new TransactionMeter("pacman");
+        meter.Read("(1/2) Arming ConditionNeedsUpdate...");
+        Assert.Equal(0, meter.Percent);
+
+        meter.Read(":: Running post-transaction hooks...");
+        Assert.Equal(90, meter.Percent);
+
+        meter.Read("(1/2) Arming ConditionNeedsUpdate...");
+        Assert.Equal(95, meter.Percent);
+    }
+
+    [Fact]
+    public void Meter_NeverGoesBackward()
+    {
+        var meter = new TransactionMeter("pacman");
+        meter.Read(":: Retrieving packages...");
+        var before = meter.Percent;
+        meter.Read("checking keyring...");
+
+        Assert.Equal(before, meter.Percent);
+    }
+
+    [Fact]
+    public void Meter_UsesZyppersOwnCount()
+    {
+        var meter = new TransactionMeter("zypper");
+        meter.Read("Installing: foo-1.0 (5/10)");
+
+        Assert.Equal(50, meter.Percent);
+    }
 }

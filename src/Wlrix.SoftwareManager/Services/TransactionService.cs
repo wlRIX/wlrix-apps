@@ -9,7 +9,13 @@ namespace Wlrix.SoftwareManager.Services;
 /// <summary>What a finished transaction did.</summary>
 /// <param name="Outcome">How it ended.</param>
 /// <param name="Message">Why, when the outcome alone does not say.</param>
-public sealed record TransactionResult(TransactionOutcome Outcome, string? Message);
+/// <param name="Operations">The packages it changed, as far as its output said.</param>
+/// <param name="RestartRequested">Whether the package manager itself said a restart is needed.</param>
+public sealed record TransactionResult(
+    TransactionOutcome Outcome,
+    string? Message,
+    IReadOnlyList<PackageOperation>? Operations = null,
+    bool RestartRequested = false);
 
 /// <summary>What the window wants to know while a transaction runs.</summary>
 public interface ITransactionObserver
@@ -57,6 +63,7 @@ public sealed class TransactionService(
         ITransactionObserver observer, CancellationToken cancellationToken = default)
     {
         var backend = request.Backend;
+        var operations = new List<PackageOperation>();
         var result = new TransactionResult(TransactionOutcome.Failed,
             "The transaction ended without saying how.");
 
@@ -77,10 +84,14 @@ public sealed class TransactionService(
                     // least guaranteed to agree with what the user can see in it.
                     if (TransactionProgress.Read(backend, log.Text) is { } progress)
                         observer.OnProgress(progress.Phase, progress.Percent);
+
+                    if (PackageOperations.Read(backend, log.Text) is { } operation)
+                        operations.Add(operation);
                     break;
 
                 case TransactionEvent.Completed completed:
-                    result = new TransactionResult(completed.Outcome, completed.Message);
+                    result = new TransactionResult(completed.Outcome, completed.Message, operations,
+                        completed.RestartRequested);
                     break;
             }
         }

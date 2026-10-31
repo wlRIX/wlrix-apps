@@ -67,7 +67,7 @@
                           IsChecked="{Binding Panes.Log}" />
             </MenuItem>
             <MenuItem Header="{loc:Tr MenuHelp}" DockPanel.Dock="Right">
-                <MenuItem Header="{loc:Tr HelpAbout}" Command="{Binding ShowAbout}" />
+                <MenuItem Header="{loc:Tr HelpProductInfo}" Command="{Binding ProductInformation}" />
             </MenuItem>
         </wlrix:MenuBar>
 
@@ -132,6 +132,7 @@
             <Button Content="{loc:Tr Stop}" MinWidth="90" Command="{Binding Stop}" />
             <Button Content="{loc:Tr Conflicts}" MinWidth="90" Command="{Binding ShowConflicts}"
                     Classes.conflict="{Binding HasConflicts}" />
+            <TextBlock Text="{Binding MarkSummary}" VerticalAlignment="Center" Margin="8,0,0,0" />
         </StackPanel>
 
         <!-- The Panel keeps the window's own DataContext, so the pane inside it can rebind to

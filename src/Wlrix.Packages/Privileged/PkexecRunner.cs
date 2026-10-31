@@ -26,7 +26,7 @@ public enum TransactionOutcome
     /// </summary>
     NotAuthorized,
 
-    /// <summary>The user pressed Stop.</summary>
+    /// <summary>The user pressed Stop, and the package manager stopped.</summary>
     Canceled,
 
     /// <summary>pkexec or the helper could not be started at all — usually a broken install.</summary>
@@ -43,7 +43,18 @@ public abstract record TransactionEvent
     public sealed record Log(string Text, bool IsError) : TransactionEvent;
 
     /// <summary>The transaction ended. Always the last event.</summary>
-    public sealed record Completed(TransactionOutcome Outcome, string? Message) : TransactionEvent;
+    /// <param name="Outcome">How it ended.</param>
+    /// <param name="Message">Why, when the outcome alone does not say.</param>
+    /// <param name="RestartRequested">Whether the package manager itself said a restart is needed.</param>
+    public sealed record Completed(TransactionOutcome Outcome, string? Message, bool RestartRequested = false)
+        : TransactionEvent;
+}
+
+/// <summary>What the application can say to the helper once it is running.</summary>
+public static class HelperProtocol
+{
+    /// <summary>The line on the helper's stdin that asks it to interrupt the package manager.</summary>
+    public const string StopCommand = "stop";
 }
 
 /// <summary>Runs a transaction with root privileges.</summary>
@@ -55,6 +66,7 @@ public interface IPrivilegedRunner
     /// <summary>
     /// Carries out <paramref name="request"/>, yielding what happens as it happens. The sequence
     /// always ends with a <see cref="TransactionEvent.Completed"/>, including when it fails.
+    /// Canceling asks the transaction to stop, and the sequence goes on until it actually has.
     /// </summary>
     IAsyncEnumerable<TransactionEvent> RunAsync(HelperRequest request,
         CancellationToken cancellationToken = default);
@@ -113,7 +125,7 @@ public sealed class PkexecRunner(ILogger<PkexecRunner> logger) : IPrivilegedRunn
 
         // Deliberately not passing the cancellation token to the reader. The contract is that
         // the sequence always ends with a Completed, and a canceled read would throw instead of
-        // delivering the Canceled one -- leaving the UI showing a transaction still in flight.
+        // delivering it -- leaving the UI showing a transaction still in flight.
         await foreach (var @event in channel.Reader.ReadAllAsync(CancellationToken.None).ConfigureAwait(false))
             yield return @event;
     }
@@ -123,8 +135,19 @@ public sealed class PkexecRunner(ILogger<PkexecRunner> logger) : IPrivilegedRunn
     {
         var sawCommand = false;
         var noAgent = false;
+        var stopRequested = false;
         string? failure = null;
         int? exitCode = null;
+
+        // Stopping is a request sent down the helper's stdin, not a kill. pkexec and everything
+        // under it run as root, so this process has no permission to signal them, and the output
+        // keeps being read until the helper says how it really ended.
+        var input = Channel.CreateUnbounded<string>();
+        await using var stop = cancellationToken.Register(() =>
+        {
+            stopRequested = true;
+            input.Writer.TryWrite(HelperProtocol.StopCommand);
+        }).ConfigureAwait(false);
 
         try
         {
@@ -151,7 +174,7 @@ public sealed class PkexecRunner(ILogger<PkexecRunner> logger) : IPrivilegedRunn
             logger.ZLogInformation($"pkexec {helper} {string.Join(' ', request.ToArguments())}");
 
             var runner = new ProcessRunner();
-            await foreach (var line in runner.StreamAsync(pkexec, arguments, cancellationToken)
+            await foreach (var line in runner.StreamAsync(pkexec, arguments, input.Reader, CancellationToken.None)
                                .ConfigureAwait(false))
             {
                 // The helper's exit status arrives as a synthetic line from the runner; the
@@ -199,11 +222,7 @@ public sealed class PkexecRunner(ILogger<PkexecRunner> logger) : IPrivilegedRunn
                 }
             }
 
-            writer.TryWrite(Finish(sawCommand, noAgent, failure, exitCode));
-        }
-        catch (OperationCanceledException)
-        {
-            writer.TryWrite(new TransactionEvent.Completed(TransactionOutcome.Canceled, null));
+            writer.TryWrite(Finish(request.Backend, sawCommand, noAgent, stopRequested, failure, exitCode));
         }
         catch (PackageProcessException ex)
         {
@@ -216,6 +235,7 @@ public sealed class PkexecRunner(ILogger<PkexecRunner> logger) : IPrivilegedRunn
         }
         finally
         {
+            input.Writer.TryComplete();
             writer.TryComplete();
         }
     }
@@ -227,8 +247,12 @@ public sealed class PkexecRunner(ILogger<PkexecRunner> logger) : IPrivilegedRunn
     /// manager that happened to exit 126. The helper announces its command before running
     /// anything, so if no command was ever announced, the helper never started — and at that
     /// point pkexec's own exit codes are the ones being read.
+    ///
+    /// A transaction asked to stop that succeeded anyway reports success, because that is what
+    /// happened to the system.
     /// </summary>
-    private TransactionEvent.Completed Finish(bool sawCommand, bool noAgent, string? failure, int? exitCode)
+    private TransactionEvent.Completed Finish(string backend, bool sawCommand, bool noAgent, bool stopRequested,
+        string? failure, int? exitCode)
     {
         if (failure is not null)
             return new TransactionEvent.Completed(TransactionOutcome.Failed, failure);
@@ -245,9 +269,14 @@ public sealed class PkexecRunner(ILogger<PkexecRunner> logger) : IPrivilegedRunn
             };
         }
 
-        return exitCode is 0
-            ? new TransactionEvent.Completed(TransactionOutcome.Succeeded, null)
-            : new TransactionEvent.Completed(TransactionOutcome.Failed, null);
+        if (exitCode is { } code && HelperCommands.IsSuccess(backend, code))
+        {
+            return new TransactionEvent.Completed(TransactionOutcome.Succeeded, null,
+                HelperCommands.RequestsRestart(backend, code));
+        }
+
+        return new TransactionEvent.Completed(
+            stopRequested ? TransactionOutcome.Canceled : TransactionOutcome.Failed, null);
     }
 
     private TransactionEvent.Completed Unavailable(string message)

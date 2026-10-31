@@ -34,7 +34,13 @@ public sealed class AptBackend(IProcessRunner runner, ILogger<AptBackend> logger
         | BackendCapabilities.InstallFromFile
         | BackendCapabilities.Upgrade
         | BackendCapabilities.ListRepositories
-        | BackendCapabilities.ModifyRepositories;
+        | BackendCapabilities.ModifyRepositories
+        | BackendCapabilities.SelectiveUpgrade;
+
+    /// <summary>Debian's packages leave this file behind when they need a restart.</summary>
+    public Task<bool> NeedsRestartAsync(IReadOnlyList<PackageOperation> operations,
+        CancellationToken cancellationToken = default) =>
+        Task.FromResult(File.Exists("/run/reboot-required"));
 
     public async Task<IReadOnlyList<PackageInfo>> SearchAsync(string query,
         CancellationToken cancellationToken = default)

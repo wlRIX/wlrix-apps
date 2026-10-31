@@ -78,11 +78,23 @@ public sealed class ProcessRunner : IProcessRunner
             await standardError.ConfigureAwait(false));
     }
 
+    public IAsyncEnumerable<OutputLine> StreamAsync(string program,
+        IReadOnlyList<string> arguments, CancellationToken cancellationToken = default) =>
+        StreamAsync(program, arguments, input: null, cancellationToken);
+
+    /// <summary>
+    /// <inheritdoc cref="StreamAsync(string, IReadOnlyList{string}, CancellationToken)"/>
+    /// Lines written to <paramref name="input"/> go to the process's stdin, which otherwise closes
+    /// straight away.
+    /// </summary>
     public async IAsyncEnumerable<OutputLine> StreamAsync(string program,
-        IReadOnlyList<string> arguments,
+        IReadOnlyList<string> arguments, ChannelReader<string>? input,
         [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
-        using var process = Start(program, arguments);
+        using var process = Start(program, arguments, keepStandardInput: input is not null);
+
+        if (input is not null)
+            _ = FeedAsync(process.StandardInput, input);
 
         // Both streams feed one channel, so the caller sees output in something close to the
         // order the process produced it. Reading them into separate buffers and concatenating
@@ -131,7 +143,24 @@ public sealed class ProcessRunner : IProcessRunner
             writer.TryWrite(new OutputLine(line, isError));
     }
 
-    private static System.Diagnostics.Process Start(string program, IReadOnlyList<string> arguments)
+    private static async Task FeedAsync(StreamWriter writer, ChannelReader<string> input)
+    {
+        try
+        {
+            await foreach (var line in input.ReadAllAsync().ConfigureAwait(false))
+            {
+                await writer.WriteLineAsync(line).ConfigureAwait(false);
+                await writer.FlushAsync().ConfigureAwait(false);
+            }
+        }
+        catch (Exception ex) when (ex is IOException or ObjectDisposedException)
+        {
+            // The process has gone, so there is nobody left to tell.
+        }
+    }
+
+    private static System.Diagnostics.Process Start(string program, IReadOnlyList<string> arguments,
+        bool keepStandardInput = false)
     {
         var info = Executables.StartInfoFor(program);
         info.UseShellExecute = false;
@@ -153,7 +182,8 @@ public sealed class ProcessRunner : IProcessRunner
         {
             var process = System.Diagnostics.Process.Start(info)
                 ?? throw new PackageProcessException($"Could not start {program}.");
-            process.StandardInput.Close();
+            if (!keepStandardInput)
+                process.StandardInput.Close();
             return process;
         }
         catch (Exception ex) when (ex is Win32Exception or InvalidOperationException or IOException)

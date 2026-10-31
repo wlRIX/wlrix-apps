@@ -17,7 +17,8 @@ public static class Strings
         new("Wlrix.SoftwareManager.Localization.Strings", typeof(Strings).Assembly);
 
     public static string SoftwareManager => Catalog.Get("SoftwareManager");
-    public static string HelpAbout => Catalog.Get("HelpAbout");
+    public static string AboutTitle => Catalog.Get("AboutTitle");
+    public static string Ok => Catalog.Get("Ok");
     public static string SourceHint => Catalog.Get("SourceHint");
     public static string InventoryEmpty => Catalog.Get("InventoryEmpty");
     public static string StatusNoBackend => Catalog.Get("StatusNoBackend");
@@ -29,6 +30,12 @@ public static class Strings
     public static string TransactionFailed => Catalog.Get("TransactionFailed");
     public static string TransactionNotAuthorized => Catalog.Get("TransactionNotAuthorized");
     public static string TransactionStopped => Catalog.Get("TransactionStopped");
+    public static string TransactionStopping => Catalog.Get("TransactionStopping");
+    public static string RestartPending => Catalog.Get("RestartPending");
+    public static string UpdatesMayBeStale => Catalog.Get("UpdatesMayBeStale");
+    public static string UpgradesEverything => Catalog.Get("UpgradesEverything");
+    public static string FailureTitle => Catalog.Get("FailureTitle");
+    public static string FailureStaleLists => Catalog.Get("FailureStaleLists");
     public static string ConflictsTitle => Catalog.Get("ConflictsTitle");
     public static string TypeLocalFile => Catalog.Get("TypeLocalFile");
     public static string RepositoryEnabled => Catalog.Get("RepositoryEnabled");
@@ -62,8 +69,14 @@ public static class Strings
     /// <summary>The validation gate turned a transaction down before it was ever run.</summary>
     public static string TransactionRefused(string reason) => Catalog.Format("TransactionRefused", reason);
 
-    /// <summary>The About dialog body, with the version substituted in.</summary>
-    public static string AboutMessage(string version) => Catalog.Format("AboutMessage", version);
+    /// <summary>logind would not restart the machine.</summary>
+    public static string RestartFailed(string reason) => Catalog.Format("RestartFailed", reason);
+
+    /// <summary>How many packages Start will act on, listed or not.</summary>
+    public static string MarkedCount(int count) => Catalog.Format("MarkedCount", count);
+
+    /// <summary>The product information text, with the version.</summary>
+    public static string About(string version) => Catalog.Format("About", version);
 
     /// <summary>A size in kilobytes, in the user's number format.</summary>
     public static string Kilobytes(long kilobytes) => Catalog.Format("Kilobytes", kilobytes);

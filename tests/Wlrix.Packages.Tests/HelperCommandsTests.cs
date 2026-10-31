@@ -41,6 +41,38 @@ public class HelperCommandsTests
         Assert.Equal(expected, Command("upgrade", backend)!.ToString());
 
     [Fact]
+    public void PacmanCannotRefreshOnItsOwn() =>
+        // -Sy without -u is what makes the next plain -S a partial upgrade.
+        Assert.Null(Command("refresh", "pacman"));
+
+    [Theory]
+    [InlineData("pacman", 0, true)]
+    [InlineData("pacman", 1, false)]
+    [InlineData("pacman", 102, false)]
+    [InlineData("zypper", 0, true)]
+    [InlineData("zypper", 102, true)]
+    [InlineData("zypper", 103, true)]
+    [InlineData("zypper", 104, false)]
+    public void ExitCodes(string backend, int exitCode, bool expected) =>
+        Assert.Equal(expected, HelperCommands.IsSuccess(backend, exitCode));
+
+    [Fact]
+    public void OnlyZypperSaysARestartIsNeededWithItsExitCode()
+    {
+        Assert.True(HelperCommands.RequestsRestart("zypper", 102));
+        Assert.False(HelperCommands.RequestsRestart("zypper", 103));
+        Assert.False(HelperCommands.RequestsRestart("pacman", 102));
+    }
+
+    [Fact]
+    public void OnlyPacmanCanBeInterrupted()
+    {
+        Assert.True(Command("upgrade", "pacman")!.Interruptible);
+        Assert.False(Command("upgrade", "apt")!.Interruptible);
+        Assert.False(Command("upgrade", "zypper")!.Interruptible);
+    }
+
+    [Fact]
     public void EveryTargetStaysASeparateArgument()
     {
         // The one property that matters most here: nothing is ever joined into a command line,

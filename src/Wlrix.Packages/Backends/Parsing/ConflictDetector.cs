@@ -58,6 +58,16 @@ public static partial class ConflictDetector
         _ => null,
     };
 
+    /// <summary>
+    /// Whether <paramref name="line"/> says a package could not be downloaded, which on pacman
+    /// usually means the package lists are older than the mirror. Installing never syncs them,
+    /// because that would be a partial upgrade, so the way out is to run the updates first.
+    /// </summary>
+    public static bool SuggestsStalePackageLists(string backend, string line) =>
+        backend == "pacman"
+        && (line.Contains("failed retrieving file", StringComparison.Ordinal)
+            || line.Contains("failed to retrieve some files", StringComparison.Ordinal));
+
     private static TransactionConflict? Pacman(string line)
     {
         if (PacmanConflict.Match(line) is { Success: true } conflict)

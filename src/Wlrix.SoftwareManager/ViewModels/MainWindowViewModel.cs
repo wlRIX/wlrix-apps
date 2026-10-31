@@ -10,11 +10,23 @@ using Wlrix.Packages.Backends;
 using Wlrix.Packages.Backends.Parsing;
 using Wlrix.Packages.Models;
 using Wlrix.Packages.Privileged;
+using Wlrix.Packages.Processes;
 using Wlrix.SoftwareManager.Localization;
 using Wlrix.SoftwareManager.Services;
 using ZLogger;
 
 namespace Wlrix.SoftwareManager.ViewModels;
+
+/// <summary>Why a transaction failed, for the dialog that says so.</summary>
+/// <param name="Message">What went wrong, in a sentence.</param>
+/// <param name="Errors">The last things the package manager said on stderr.</param>
+/// <param name="Conflicts">What it refused to do, for the Conflicts window.</param>
+/// <param name="StaleLists">Whether a failed download suggests the package lists are out of date.</param>
+public sealed record TransactionFailure(
+    string Message,
+    IReadOnlyList<string> Errors,
+    IReadOnlyList<TransactionConflict> Conflicts,
+    bool StaleLists);
 
 /// <summary>
 /// The window: the mode buttons, the Available Software field, and each pane's own view model.
@@ -23,7 +35,10 @@ public sealed class MainWindowViewModel : ViewModelBase, ITransactionObserver, I
 {
     private readonly PackageSystem _system;
     private readonly ITransactionService _transactions;
+    private readonly IRestartPendingStore _restartPending;
     private readonly ILogger<MainWindowViewModel> _logger;
+
+    private const int MaxRecentErrors = 6;
 
     // One listing at a time. Switching mode or pressing Lookup while a query is in flight
     // abandons it: a slow `pacman -Qi` over two thousand packages must not land in the list
@@ -37,25 +52,34 @@ public sealed class MainWindowViewModel : ViewModelBase, ITransactionObserver, I
     // What the package manager objected to during the transaction, for the Conflicts window.
     private readonly List<TransactionConflict> _conflicts = [];
 
+    // The last things the package manager complained about, for the failure dialog.
+    private readonly Queue<string> _recentErrors = new();
+
     // The commands' error subscriptions, held for the life of the view model.
     private readonly CompositeDisposable _subscriptions = [];
 
-    // Set when the Available Software field held a path, so Start builds an installfile
-    // transaction rather than looking the row's name up in a repository.
-    private string? _packageFile;
+    // Whether the transaction's output said a download failed, which suggests stale package lists.
+    private bool _sawStaleListsHint;
 
     private ManagerMode _mode = ManagerMode.Install;
     private string _sourceText = string.Empty;
     private string _commandLine = string.Empty;
+    private string _markSummary = string.Empty;
     private bool _hasConflicts;
+    private TransactionMeter? _meter;
+    private int _requestIndex;
+    private int _requestCount = 1;
     private bool _isRunning;
+    private bool _canStop;
 
     public MainWindowViewModel(IPackageBackendFactory backendFactory,
         ITransactionService transactions, IPaneLayoutStore paneLayoutStore,
-        IDiskSpaceProbe diskSpaceProbe, ILogger<MainWindowViewModel> logger)
+        IDiskSpaceProbe diskSpaceProbe, IRestartPendingStore restartPending,
+        ILogger<MainWindowViewModel> logger)
     {
         _system = backendFactory.Resolve();
         _transactions = transactions;
+        _restartPending = restartPending;
         _logger = logger;
         Panes = new PanesViewModel(paneLayoutStore);
         DiskSpace = new DiskSpaceViewModel(diskSpaceProbe);
@@ -69,13 +93,15 @@ public sealed class MainWindowViewModel : ViewModelBase, ITransactionObserver, I
 
         // Refresh re-downloads the package lists, which is a privileged transaction -- not a
         // second Lookup. It used to be wired to Reload, which meant the menu item said
-        // "Refresh Package Lists" and re-ran the current search instead.
-        Refresh = ReactiveCommand.Create(RunRefresh,
-            this.WhenAnyValue(x => x.IsRunning, running => !running && _transactions.IsAvailable));
+        // "Refresh Package Lists" and re-ran the current search instead. pacman is the exception:
+        // it checks for updates without root, so all it needs is the Updates list.
+        var refreshesUnprivileged = _system.Backend.Capabilities.HasFlag(BackendCapabilities.UnprivilegedRefresh);
+        Refresh = ReactiveCommand.Create(RunRefresh, this.WhenAnyValue(x => x.IsRunning,
+            running => !running && (refreshesUnprivileged || _transactions.IsAvailable)));
         Start = ReactiveCommand.Create(RunStart, this.WhenAnyValue(x => x.CanStart));
-        Stop = ReactiveCommand.Create(RunStop, this.WhenAnyValue(x => x.IsRunning));
+        Stop = ReactiveCommand.Create(RunStop, this.WhenAnyValue(x => x.CanStop));
         ShowConflicts = ReactiveCommand.Create(RaiseConflicts, this.WhenAnyValue(x => x.HasConflicts));
-        ShowAbout = ReactiveCommand.Create(RaiseAbout);
+        ProductInformation = ReactiveCommand.Create(() => AboutRequested?.Invoke());
         ShowRepositories = ReactiveCommand.Create(() => RepositoriesRequested?.Invoke(),
             Observable.Return(_system.Backend.Capabilities.HasFlag(BackendCapabilities.ListRepositories)));
 
@@ -93,7 +119,7 @@ public sealed class MainWindowViewModel : ViewModelBase, ITransactionObserver, I
         // became a crash rather than a line in the log. Every command reports here instead.
         foreach (var command in new IHandleObservableErrors[]
                  {
-                     Lookup, Refresh, Start, Stop, ShowConflicts, ShowAbout, ShowRepositories,
+                     Lookup, Refresh, Start, Stop, ShowConflicts, ProductInformation, ShowRepositories,
                      ShowUserSoftware, SelectAll, DeselectAll, MarkForInstall, MarkForRemoval,
                  })
             _subscriptions.Add(command.ThrownExceptions.Subscribe(OnCommandFailed));
@@ -101,17 +127,20 @@ public sealed class MainWindowViewModel : ViewModelBase, ITransactionObserver, I
         Status.Message = _system.IsSupported
             ? Strings.StatusIdle(_system.Distribution.Name, _system.Backend.Id)
             : Strings.StatusNoBackend;
+
+        if (_restartPending.IsPending())
+            Status.RestartNotice = Strings.RestartPending;
     }
 
     /// <summary>Design-time constructor: the previewer gets a window without touching the disk.</summary>
     public MainWindowViewModel() : this(new DesignBackendFactory(), new DesignTransactionService(),
-        new DesignPaneLayoutStore(), new DesignDiskSpaceProbe(),
+        new DesignPaneLayoutStore(), new DesignDiskSpaceProbe(), new DesignRestartPendingStore(),
         NullLogger<MainWindowViewModel>.Instance)
     {
     }
 
-    /// <summary>Raised (UI thread) to show the About dialog with the given message.</summary>
-    public event Action<string>? AboutRequested;
+    /// <summary>Raised (UI thread) to show Help &#8594; Product Information.</summary>
+    public event Action? AboutRequested;
 
     /// <summary>Raised (UI thread) to open the Conflicts window with what was reported.</summary>
     public event Action<IReadOnlyList<TransactionConflict>>? ConflictsRequested;
@@ -121,6 +150,15 @@ public sealed class MainWindowViewModel : ViewModelBase, ITransactionObserver, I
 
     /// <summary>Raised (UI thread) to open the User Software window.</summary>
     public event Action? UserSoftwareRequested;
+
+    /// <summary>
+    /// Raised (UI thread) after installations and removals succeed, saying whether the system
+    /// needs a restart. Refreshing the package lists does not raise it.
+    /// </summary>
+    public event Action<bool>? TransactionCompleted;
+
+    /// <summary>Raised (UI thread) when a transaction fails, with what is known about why.</summary>
+    public event Action<TransactionFailure>? TransactionFailed;
 
     /// <summary>Raised (UI thread) to close the window, from File &#8594; Close.</summary>
     public event Action? CloseRequested;
@@ -136,7 +174,7 @@ public sealed class MainWindowViewModel : ViewModelBase, ITransactionObserver, I
     public ReactiveCommand<Unit, Unit> Start { get; }
     public ReactiveCommand<Unit, Unit> Stop { get; }
     public ReactiveCommand<Unit, Unit> ShowConflicts { get; }
-    public ReactiveCommand<Unit, Unit> ShowAbout { get; }
+    public ReactiveCommand<Unit, Unit> ProductInformation { get; }
     public ReactiveCommand<Unit, Unit> ShowRepositories { get; }
     public ReactiveCommand<Unit, Unit> ShowUserSoftware { get; }
     public ReactiveCommand<Unit, Unit> SelectAll { get; }
@@ -160,6 +198,13 @@ public sealed class MainWindowViewModel : ViewModelBase, ITransactionObserver, I
         set => this.RaiseAndSetIfChanged(ref _commandLine, value);
     }
 
+    /// <summary>What Start will act on, shown beside it because not all of it may be in the list.</summary>
+    public string MarkSummary
+    {
+        get => _markSummary;
+        private set => this.RaiseAndSetIfChanged(ref _markSummary, value);
+    }
+
     /// <summary>Whether the plan came back with anything for the user to resolve.</summary>
     public bool HasConflicts
     {
@@ -167,7 +212,17 @@ public sealed class MainWindowViewModel : ViewModelBase, ITransactionObserver, I
         set => this.RaiseAndSetIfChanged(ref _hasConflicts, value);
     }
 
-    /// <summary>Whether a transaction is in flight, which is what Stop is for and Start is not.</summary>
+    /// <summary>
+    /// Whether Stop can do anything right now: the package manager can be interrupted safely, it
+    /// has started, and it has not begun changing files.
+    /// </summary>
+    public bool CanStop
+    {
+        get => _canStop;
+        private set => this.RaiseAndSetIfChanged(ref _canStop, value);
+    }
+
+    /// <summary>Whether a transaction is in flight, which is what Start is not for.</summary>
     public bool IsRunning
     {
         get => _isRunning;
@@ -181,9 +236,18 @@ public sealed class MainWindowViewModel : ViewModelBase, ITransactionObserver, I
     /// <summary>
     /// Whether Start has anything to do: something is marked, nothing is already running, and
     /// there is a way to run it as root at all. A Start button that authenticates and then finds
-    /// it has nothing to do would be worse than one that is visibly not ready.
+    /// it has nothing to do would be worse than one that is visibly not ready. In an all-or-nothing
+    /// Updates list the work is the list itself.
     /// </summary>
-    public bool CanStart => !_isRunning && _transactions.IsAvailable && Inventory.HasMarks;
+    public bool CanStart => !_isRunning && _transactions.IsAvailable && !Inventory.IsBusy
+                            && (UpgradesEverything ? Inventory.Rows.Count > 0 : Inventory.HasMarks);
+
+    /// <summary>
+    /// Whether this is an Updates list that can only be taken whole. pacman does not support
+    /// partial upgrades, so Start upgrades everything and the rows cannot be unticked.
+    /// </summary>
+    private bool UpgradesEverything => _mode == ManagerMode.Updates
+                                       && !_system.Backend.Capabilities.HasFlag(BackendCapabilities.SelectiveUpgrade);
 
     public ManagerMode Mode
     {
@@ -197,6 +261,7 @@ public sealed class MainWindowViewModel : ViewModelBase, ITransactionObserver, I
             this.RaisePropertyChanged(nameof(IsInstallMode));
             this.RaisePropertyChanged(nameof(IsManageMode));
             this.RaisePropertyChanged(nameof(IsUpdatesMode));
+            this.RaisePropertyChanged(nameof(CanStart));
             Reload();
         }
     }
@@ -268,6 +333,7 @@ public sealed class MainWindowViewModel : ViewModelBase, ITransactionObserver, I
         };
 
         Inventory.IsBusy = true;
+        this.RaisePropertyChanged(nameof(CanStart));
         var cancellation = _query = new CancellationTokenSource();
         _ = LoadAsync(mode, query, cancellation.Token);
     }
@@ -349,13 +415,12 @@ public sealed class MainWindowViewModel : ViewModelBase, ITransactionObserver, I
             return;
         }
 
-        _packageFile = path;
         Inventory.Replace([
             new PackageRowViewModel(path, version: string.Empty,
                 statusText: Strings.PackageStatus(PackageStatus.New),
                 sizeKilobytes: new FileInfo(path).Length / 1024,
                 typeText: Strings.TypeLocalFile,
-                canInstall: true, canRemove: false),
+                canInstall: true, canRemove: false, isFile: true),
         ]);
 
         Status.Message = Strings.FileReady(Path.GetFileName(path));
@@ -364,7 +429,7 @@ public sealed class MainWindowViewModel : ViewModelBase, ITransactionObserver, I
     private void Show(ManagerMode mode, string query, IReadOnlyList<PackageInfo> packages)
     {
         Inventory.IsBusy = false;
-        _packageFile = null;
+        var locked = UpgradesEverything;
         Inventory.Replace(packages.Select(package => new PackageRowViewModel(
             package.Name,
             package.Version,
@@ -375,8 +440,10 @@ public sealed class MainWindowViewModel : ViewModelBase, ITransactionObserver, I
             // exists: that is what Updates mode is for, and a window showing both columns in
             // every mode is how a user marks the wrong one.
             package.CanInstall && mode != ManagerMode.Manage,
-            package.CanRemove && mode != ManagerMode.Updates)));
+            package.CanRemove && mode != ManagerMode.Updates,
+            isLocked: locked)));
 
+        Status.ListReady();
         Status.Message = (packages.Count, mode) switch
         {
             (0, ManagerMode.Install) => Strings.StatusNothingFound(query),
@@ -384,6 +451,9 @@ public sealed class MainWindowViewModel : ViewModelBase, ITransactionObserver, I
             (0, _) => Strings.StatusFound(0),
             _ => Strings.StatusFound(packages.Count),
         };
+
+        if (mode == ManagerMode.Updates && _system.Backend.UpdatesMayBeStale)
+            Status.Message = $"{Status.Message} {Strings.UpdatesMayBeStale}";
     }
 
     private void SetMode(ManagerMode mode, bool selected)
@@ -408,23 +478,24 @@ public sealed class MainWindowViewModel : ViewModelBase, ITransactionObserver, I
     /// package manager here takes both in a single command, and in that order because a removal
     /// making room for an installation is the case that works, where the reverse can fail on
     /// disk space it was about to free. polkit's grace window means the user still authenticates
-    /// once.
+    /// once. An all-or-nothing Updates list is one upgrade instead, and leaves marks made in the
+    /// other modes for later.
     /// </summary>
     private void RunStart()
     {
         var requests = new List<HelperRequest>();
         var backend = _system.Backend.Id;
 
-        // A row that came from a path installs the file; everything else installs by name.
-        var installVerb = _packageFile is null ? HelperVerb.Install : HelperVerb.InstallFile;
-
-        foreach (var (verb, targets) in new[]
-                 {
-                     (HelperVerb.Remove, Inventory.MarkedForRemoval),
-                     (installVerb, Inventory.MarkedForInstall),
-                 })
+        foreach (var (verb, targets) in UpgradesEverything
+                     ? [(HelperVerb.Upgrade, (IReadOnlyList<string>)[])]
+                     : new[]
+                     {
+                         (HelperVerb.Remove, Inventory.MarkedForRemoval),
+                         (HelperVerb.Install, Inventory.MarkedForInstall),
+                         (HelperVerb.InstallFile, Inventory.MarkedFiles),
+                     })
         {
-            if (targets.Count == 0)
+            if (targets.Count == 0 && verb != HelperVerb.Upgrade)
                 continue;
 
             if (HelperRequest.TryParse([verb.ToString().ToLowerInvariant(), backend, .. targets],
@@ -451,13 +522,24 @@ public sealed class MainWindowViewModel : ViewModelBase, ITransactionObserver, I
     /// <summary>
     /// Software &#8594; Refresh Package Lists: re-download what the repositories are offering.
     ///
-    /// A privileged transaction of its own, because that is what refreshing the lists is on
-    /// every one of the three — <c>pacman -Sy</c>, <c>apt-get update</c>, <c>zypper refresh</c>
-    /// all write to a system cache. Reloading the window afterwards is what
-    /// <see cref="RunTransactionsAsync"/> already does on success.
+    /// A privileged transaction of its own on apt and zypper, because <c>apt-get update</c> and
+    /// <c>zypper refresh</c> write to a system cache. Reloading the window afterwards is what
+    /// <see cref="RunTransactionsAsync"/> already does on success. pacman never refreshes its real
+    /// lists on their own, since that makes the next install a partial upgrade, so there this
+    /// only goes and checks for updates.
     /// </summary>
     private void RunRefresh()
     {
+        if (_system.Backend.Capabilities.HasFlag(BackendCapabilities.UnprivilegedRefresh))
+        {
+            if (_mode == ManagerMode.Updates)
+                Reload();
+            else
+                Mode = ManagerMode.Updates;
+
+            return;
+        }
+
         if (!HelperRequest.TryParse(["refresh", _system.Backend.Id], fileMustExist: false,
                 out var request, out var error))
         {
@@ -473,9 +555,11 @@ public sealed class MainWindowViewModel : ViewModelBase, ITransactionObserver, I
     private void Begin(IReadOnlyList<HelperRequest> requests)
     {
         Log.Clear();
-        Status.ResetProgress();
+        Status.Begin();
         CommandLine = string.Empty;
         _conflicts.Clear();
+        _recentErrors.Clear();
+        _sawStaleListsHint = false;
         HasConflicts = false;
         IsRunning = true;
 
@@ -487,19 +571,29 @@ public sealed class MainWindowViewModel : ViewModelBase, ITransactionObserver, I
         CancellationToken cancellationToken)
     {
         var result = new TransactionResult(TransactionOutcome.Succeeded, null);
+        var operations = new List<PackageOperation>();
+        var restartRequested = false;
 
-        foreach (var request in requests)
+        for (_requestIndex = 0; _requestIndex < requests.Count; _requestIndex++)
         {
+            var request = requests[_requestIndex];
+            _requestCount = requests.Count;
+            _meter = new TransactionMeter(_system.Backend.Id);
+
             result = await _transactions.RunAsync(request, this, cancellationToken)
                 .ConfigureAwait(true);
 
+            operations.AddRange(result.Operations ?? []);
+            restartRequested |= result.RestartRequested;
+
             // Stop at the first thing that did not work. Carrying on to install after a removal
             // failed would act on a system in a state the user did not ask for.
-            if (result.Outcome != TransactionOutcome.Succeeded)
+            if (result.Outcome != TransactionOutcome.Succeeded || cancellationToken.IsCancellationRequested)
                 break;
         }
 
         IsRunning = false;
+        CanStop = false;
         _transaction?.Dispose();
         _transaction = null;
 
@@ -512,33 +606,112 @@ public sealed class MainWindowViewModel : ViewModelBase, ITransactionObserver, I
             _ => result.Message ?? Strings.TransactionFailed,
         };
 
+        var isRefresh = requests is [{ Verb: HelperVerb.Refresh }];
+
+        // Asked whatever the outcome: a transaction that failed partway may have already replaced
+        // the kernel.
+        var needsRestart = !isRefresh && await NeedsRestartAsync(operations, restartRequested).ConfigureAwait(true);
+
         if (result.Outcome == TransactionOutcome.Succeeded)
         {
-            Status.Initialize = 100;
-            Status.Install = 100;
-            Status.PostInstall = 100;
-            Inventory.ClearMarks();
+            Status.Succeed();
+
+            // Marks made in another mode are still waiting after an upgrade, which did not act on
+            // them, and a refresh did not either.
+            if (!isRefresh && requests is not [{ Verb: HelperVerb.Upgrade }])
+                Inventory.ClearMarks();
 
             // What is installed has changed, so the list on screen is now describing the system
             // as it was before the transaction.
             Reload();
             DiskSpace.Refresh();
+
+            if (!isRefresh)
+                TransactionCompleted?.Invoke(needsRestart);
+        }
+        else
+        {
+            Status.Abandon();
+
+            if (result.Outcome is TransactionOutcome.Failed or TransactionOutcome.Unavailable)
+            {
+                TransactionFailed?.Invoke(new TransactionFailure(Status.Message, _recentErrors.ToList(),
+                    _conflicts.ToList(), _sawStaleListsHint));
+            }
         }
     }
 
+    /// <summary>
+    /// Whether a restart is owed, by this transaction or an earlier one, and keeps the pending
+    /// flag and the status line up to date. A check that fails is not worth a dialog of its own:
+    /// it is logged and the answer is what is already known.
+    /// </summary>
+    private async Task<bool> NeedsRestartAsync(IReadOnlyList<PackageOperation> operations, bool requested)
+    {
+        var needed = requested;
+        try
+        {
+            needed |= await _system.Backend.NeedsRestartAsync(operations).ConfigureAwait(true);
+        }
+        catch (Exception ex) when (ex is PackageProcessException or IOException)
+        {
+            _logger.ZLogWarning(ex, $"Could not check whether a restart is needed.");
+        }
+
+        if (needed)
+            _restartPending.MarkPending();
+        else
+            needed = _restartPending.IsPending();
+
+        Status.RestartNotice = needed ? Strings.RestartPending : string.Empty;
+        return needed;
+    }
+
+    /// <summary>
+    /// Checks for a restart when the window opens, which catches what was done outside this app,
+    /// such as a kernel upgraded from a terminal.
+    /// </summary>
+    public Task CheckRestartOnOpenAsync() =>
+        _system.IsSupported ? NeedsRestartAsync([], requested: false) : Task.CompletedTask;
+
     private void RunStop()
     {
-        // Canceling kills the helper, not the package manager under it: a package manager
-        // stopped halfway through writing files is how a system ends up needing a rescue disk.
-        // What this actually stops is watching -- which is why the button is Stop and not Undo.
+        // A request, not a kill: the helper interrupts the package manager, and the transaction
+        // goes on being watched until it really ends. Its result sets the final status.
+        CanStop = false;
+        Status.Message = Strings.TransactionStopping;
         _transaction?.Cancel();
     }
 
-    void ITransactionObserver.OnCommand(string command) => CommandLine = command;
+    void ITransactionObserver.OnCommand(string command)
+    {
+        CommandLine = command;
+        CanStop = _system.Backend.Capabilities.HasFlag(BackendCapabilities.SafeInterrupt)
+                  && _transaction is { IsCancellationRequested: false };
+    }
 
     void ITransactionObserver.OnLog(string line, bool isError)
     {
         Log.Append(line);
+
+        // The bar covers the whole run, and each transaction in it gets an equal share.
+        _meter?.Read(line);
+        if (_meter is not null)
+            Status.Overall = (_requestIndex + _meter.Percent / 100) / _requestCount * 100;
+
+        // The first package operation is the point of no return: from here, interrupting would
+        // leave some packages replaced and others not.
+        if (PackageOperations.Read(_system.Backend.Id, line) is not null)
+            CanStop = false;
+
+        if (isError)
+        {
+            _recentErrors.Enqueue(line);
+            if (_recentErrors.Count > MaxRecentErrors)
+                _recentErrors.Dequeue();
+        }
+
+        _sawStaleListsHint |= ConflictDetector.SuggestsStalePackageLists(_system.Backend.Id, line);
 
         // Conflicts are read off the running transaction rather than a dry run, because
         // `pacman -S --print` does not resolve them at all. See ConflictDetector.
@@ -551,26 +724,11 @@ public sealed class MainWindowViewModel : ViewModelBase, ITransactionObserver, I
 
     void ITransactionObserver.OnProgress(TransactionPhase phase, double? percent)
     {
-        // A phase starting means the ones before it finished, whether or not their own last
-        // line was ever seen. Without that a missed line leaves a bar stuck at 40% for the rest
-        // of the transaction.
-        switch (phase)
-        {
-            case TransactionPhase.Initialize:
-                Status.Initialize = percent ?? Math.Max(Status.Initialize, 10);
-                break;
-
-            case TransactionPhase.Install:
-                Status.Initialize = 100;
-                Status.Install = percent ?? Math.Max(Status.Install, 10);
-                break;
-
-            case TransactionPhase.PostInstall:
-                Status.Initialize = 100;
-                Status.Install = 100;
-                Status.PostInstall = percent ?? Math.Max(Status.PostInstall, 10);
-                break;
-        }
+        // A removal and an installation in one run still go through the lights once: Post Install
+        // belongs to the last transaction, while more packages are still to come before that.
+        Status.EnterPhase(phase == TransactionPhase.PostInstall && _requestIndex < _requestCount - 1
+            ? TransactionPhase.Install
+            : phase);
     }
 
     private void MarkAll(bool install)
@@ -608,8 +766,12 @@ public sealed class MainWindowViewModel : ViewModelBase, ITransactionObserver, I
     {
         this.RaisePropertyChanged(nameof(CanStart));
 
-        var added = Inventory.Rows.Where(row => row.MarkedForInstall).Sum(row => row.SizeKilobytes);
-        var removed = Inventory.Rows.Where(row => row.MarkedForRemoval).Sum(row => row.SizeKilobytes);
+        var added = Inventory.MarkedInstallKilobytes;
+        var removed = Inventory.MarkedRemovalKilobytes;
+
+        MarkSummary = UpgradesEverything
+            ? Inventory.Rows.Count > 0 ? Strings.UpgradesEverything : string.Empty
+            : Inventory.HasMarks ? Strings.MarkedCount(Inventory.MarkCount) : string.Empty;
 
         DiskSpace.NetChangeKilobytes = added - removed;
         DiskSpace.OverheadKilobytes = added;
@@ -629,12 +791,6 @@ public sealed class MainWindowViewModel : ViewModelBase, ITransactionObserver, I
 
     private void RaiseConflicts() => ConflictsRequested?.Invoke(_conflicts.ToList());
 
-    private void RaiseAbout()
-    {
-        var version = GetType().Assembly.GetName().Version?.ToString(3) ?? "0.1.0";
-        AboutRequested?.Invoke(Strings.AboutMessage(version));
-    }
-
     /// <summary>File &#8594; Close.</summary>
     public void Close() => CloseRequested?.Invoke();
 
@@ -643,10 +799,18 @@ public sealed class MainWindowViewModel : ViewModelBase, ITransactionObserver, I
         _query?.Cancel();
         _query?.Dispose();
         _query = null;
-        _transaction?.Cancel();
-        _transaction?.Dispose();
-        _transaction = null;
+
+        // A running transaction is left to finish: closing the window is not asking it to stop.
         _subscriptions.Dispose();
+    }
+
+    private sealed class DesignRestartPendingStore : IRestartPendingStore
+    {
+        public bool IsPending() => false;
+
+        public void MarkPending()
+        {
+        }
     }
 
     private sealed class DesignPaneLayoutStore : IPaneLayoutStore
