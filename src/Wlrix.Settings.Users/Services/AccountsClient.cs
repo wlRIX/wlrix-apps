@@ -41,6 +41,8 @@ internal sealed partial class AccountsClient : IDisposable
 {
     private const string BusName = "org.freedesktop.Accounts";
     private const string RootPath = "/org/freedesktop/Accounts";
+    private const string RootInterface = "org.freedesktop.Accounts";
+    private const string UserInterface = "org.freedesktop.Accounts.User";
 
     private readonly DBusConnection _connection;
     private readonly Accounts _accounts;
@@ -140,39 +142,87 @@ internal sealed partial class AccountsClient : IDisposable
         }
     }
 
-    private User Proxy(string path) => new(_connection, BusName, new ObjectPath(path));
+    /// <summary>
+    /// Starts a call that may need an administrator's password. The daemon refuses without asking
+    /// unless the message allows it to, and generated proxies cannot set that flag, which is why
+    /// the methods that change anything are not in the XML.
+    /// </summary>
+    private MessageWriter Begin(string path, string @interface, string member, string signature)
+    {
+        var writer = _connection.GetMessageWriter();
+        writer.WriteMethodCallHeader(BusName, path, @interface, member, signature, MessageFlags.AllowInteractiveAuthorization);
+        return writer;
+    }
 
-    public Task SetRealNameAsync(string path, string name) => Proxy(path).SetRealNameAsync(name);
+    private Task SetAsync(string path, string member, string value)
+    {
+        using var writer = Begin(path, UserInterface, member, "s");
+        writer.WriteString(value);
+        return _connection.CallMethodAsync(writer.CreateMessage());
+    }
 
-    public Task SetUserNameAsync(string path, string name) => Proxy(path).SetUserNameAsync(name);
+    private Task SetAsync(string path, string member, int value)
+    {
+        using var writer = Begin(path, UserInterface, member, "i");
+        writer.WriteInt32(value);
+        return _connection.CallMethodAsync(writer.CreateMessage());
+    }
 
-    public Task SetEmailAsync(string path, string email) => Proxy(path).SetEmailAsync(email);
+    public Task SetRealNameAsync(string path, string name) => SetAsync(path, "SetRealName", name);
 
-    public Task SetAdminAsync(string path, bool admin) => Proxy(path).SetAccountTypeAsync(admin ? 1 : 0);
+    public Task SetUserNameAsync(string path, string name) => SetAsync(path, "SetUserName", name);
+
+    public Task SetEmailAsync(string path, string email) => SetAsync(path, "SetEmail", email);
+
+    public Task SetAdminAsync(string path, bool admin) => SetAsync(path, "SetAccountType", admin ? 1 : 0);
 
     /// <summary>Set the picture to a file AccountsService copies; an empty name removes it.</summary>
-    public Task SetIconFileAsync(string path, string file) => Proxy(path).SetIconFileAsync(file);
+    public Task SetIconFileAsync(string path, string file) => SetAsync(path, "SetIconFile", file);
 
     /// <summary>Set a new password, hashed here; see <see cref="Crypt"/>.</summary>
     public async Task SetPasswordAsync(string path, string password)
     {
-        var user = Proxy(path);
         // Mode 0, "a password is set": a new account starts in another, and an account whose
         // password was cleared would otherwise keep logging in without one.
-        await user.SetPasswordModeAsync(0).ConfigureAwait(false);
-        await user.SetPasswordAsync(Crypt.Hash(password), string.Empty).ConfigureAwait(false);
+        await SetAsync(path, "SetPasswordMode", 0).ConfigureAwait(false);
+        await WritePasswordAsync(path, Crypt.Hash(password)).ConfigureAwait(false);
+    }
+
+    private Task WritePasswordAsync(string path, string hash)
+    {
+        using var writer = Begin(path, UserInterface, "SetPassword", "ss");
+        writer.WriteString(hash);
+        writer.WriteString(string.Empty);
+        return _connection.CallMethodAsync(writer.CreateMessage());
+    }
+
+    private Task<string> CreateUserAsync(string userName, string realName, bool admin)
+    {
+        using var writer = Begin(RootPath, RootInterface, "CreateUser", "ssi");
+        writer.WriteString(userName);
+        writer.WriteString(realName);
+        writer.WriteInt32(admin ? 1 : 0);
+        return _connection.CallMethodAsync(
+            writer.CreateMessage(),
+            static (message, _) => message.GetBodyReader().ReadObjectPathAsString());
     }
 
     /// <summary>Create an account and give it its password. Returns its path.</summary>
     public async Task<string> CreateAsync(string userName, string realName, bool admin, string password)
     {
-        var path = await _accounts.CreateUserAsync(userName, realName, admin ? 1 : 0).ConfigureAwait(false);
-        await SetPasswordAsync(path.ToString(), password).ConfigureAwait(false);
-        return path.ToString();
+        var path = await CreateUserAsync(userName, realName, admin).ConfigureAwait(false);
+        await SetPasswordAsync(path, password).ConfigureAwait(false);
+        return path;
     }
 
     /// <summary>Delete an account; <paramref name="removeFiles"/> takes its home folder with it.</summary>
-    public Task DeleteAsync(ulong uid, bool removeFiles) => _accounts.DeleteUserAsync((long)uid, removeFiles);
+    public Task DeleteAsync(ulong uid, bool removeFiles)
+    {
+        using var writer = Begin(RootPath, RootInterface, "DeleteUser", "xb");
+        writer.WriteInt64((long)uid);
+        writer.WriteBool(removeFiles);
+        return _connection.CallMethodAsync(writer.CreateMessage());
+    }
 
     /// <summary>Whether a login name is in use already, by any account, system ones included.</summary>
     public async Task<bool> UserNameTakenAsync(string name)
