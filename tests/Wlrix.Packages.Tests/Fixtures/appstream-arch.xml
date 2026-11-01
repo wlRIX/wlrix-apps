@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<components version="1.0" origin="archlinux-arch-extra" time="2026-10-17T10:07:46Z">
+  <component type="desktop-application">
+    <id>calibrate_lens_gui.desktop</id>
+    <name>Hugin calibrate lens</name>
+    <summary>Automatic lens calibration</summary>
+    <pkgname>hugin</pkgname>
+    <icon type="cached" width="48" height="48">hugin_hugin.jxl</icon>
+    <icon type="cached" width="64" height="64">hugin_hugin.jxl</icon>
+    <icon type="cached" width="128" height="128">hugin_hugin.jxl</icon>
+    <icon type="stock">hugin</icon>
+    <categories>
+      <category>Graphics</category>
+    </categories>
+  </component>
+  <component type="addon">
+    <id>codeblocks-contrib</id>
+    <name>Code::Blocks Plugins</name>
+    <summary>Additional plugins for the Code::Blocks IDE</summary>
+    <pkgname>codeblocks</pkgname>
+  </component>
+  <component type="desktop-application">
+    <id>codeblocks.desktop</id>
+    <name>Code::Blocks IDE</name>
+    <summary>Configurable and extensible IDE</summary>
+    <developer>
+      <name>The Code::Blocks team</name>
+    </developer>
+    <developer_name>The Code::Blocks team</developer_name>
+    <pkgname>codeblocks</pkgname>
+    <icon type="cached" width="48" height="48">codeblocks_codeblocks.jxl</icon>
+    <icon type="cached" width="64" height="64">codeblocks_codeblocks.jxl</icon>
+    <icon type="stock">codeblocks</icon>
+    <categories>
+      <category>Development</category>
+      <category>IDE</category>
+    </categories>
+  </component>
+  <component type="font">
+    <id>de.urwpp.D050000L</id>
+    <name>D050000L</name>
+    <summary>An alternative font for ITC Zapf Dingbats typeface</summary>
+    <developer>
+      <name>URW++ Design and Development GmbH</name>
+    </developer>
+    <developer_name>URW++ Design and Development GmbH</developer_name>
+    <pkgname>gsfonts</pkgname>
+    <icon type="cached" width="48" height="48">gsfonts_d050000l-regular.jxl</icon>
+    <icon type="cached" width="48" height="48" scale="2">gsfonts_d050000l-regular.jxl</icon>
+    <icon type="cached" width="64" height="64">gsfonts_d050000l-regular.jxl</icon>
+    <icon type="cached" width="64" height="64" scale="2">gsfonts_d050000l-regular.jxl</icon>
+    <icon type="cached" width="128" height="128">gsfonts_d050000l-regular.jxl</icon>
+    <icon type="remote" width="128" height="128">de/urwpp/D050000L/b0f1f935334abe3b6f46b74feff276f6/icons/128x128/gsfonts_d050000l-regular.jxl</icon>
+    <icon type="cached" width="128" height="128" scale="2">gsfonts_d050000l-regular.jxl</icon>
+    <icon type="remote" width="128" height="128" scale="2">de/urwpp/D050000L/b0f1f935334abe3b6f46b74feff276f6/icons/128x128@2/gsfonts_d050000l-regular.jxl</icon>
+  </component>
+  <component type="font">
+    <id>de.urwpp.StandardSymbolsPS</id>
+    <name>Standard Symbols PS</name>
+    <summary>An alternative font for Symbol typeface</summary>
+    <developer>
+      <name>URW++ Design and Development GmbH</name>
+    </developer>
+    <developer_name>URW++ Design and Development GmbH</developer_name>
+    <pkgname>gsfonts</pkgname>
+    <icon type="cached" width="48" height="48">gsfonts_standardsymbolsps-regular.jxl</icon>
+    <icon type="cached" width="48" height="48" scale="2">gsfonts_standardsymbolsps-regular.jxl</icon>
+    <icon type="cached" width="64" height="64">gsfonts_standardsymbolsps-regular.jxl</icon>
+    <icon type="cached" width="64" height="64" scale="2">gsfonts_standardsymbolsps-regular.jxl</icon>
+    <icon type="cached" width="128" height="128">gsfonts_standardsymbolsps-regular.jxl</icon>
+    <icon type="remote" width="128" height="128">de/urwpp/StandardSymbolsPS/eadd6b6a083fd768decfb30048d50dfc/icons/128x128/gsfonts_standardsymbolsps-regular.jxl</icon>
+    <icon type="cached" width="128" height="128" scale="2">gsfonts_standardsymbolsps-regular.jxl</icon>
+    <icon type="remote" width="128" height="128" scale="2">de/urwpp/StandardSymbolsPS/eadd6b6a083fd768decfb30048d50dfc/icons/128x128@2/gsfonts_standardsymbolsps-regular.jxl</icon>
+  </component>
+  <component type="font">
+    <id>de.urwpp.URWCoreFontSetLevel2</id>
+    <name>(URW)++ Core Font Set [Level 2]</name>
+    <summary>Core Font Set containing 35 freely distributable fonts from (URW)++</summary>
+    <developer>
+      <name>URW++ Design and Development GmbH</name>
+    </developer>
+    <developer_name>URW++ Design and Development GmbH</developer_name>
+    <pkgname>gsfonts</pkgname>
+    <icon type="cached" width="48" height="48">gsfonts_d050000l-regular.jxl</icon>
+    <icon type="cached" width="48" height="48" scale="2">gsfonts_d050000l-regular.jxl</icon>
+    <icon type="cached" width="64" height="64">gsfonts_d050000l-regular.jxl</icon>
+    <icon type="cached" width="64" height="64" scale="2">gsfonts_d050000l-regular.jxl</icon>
+    <icon type="cached" width="128" height="128">gsfonts_d050000l-regular.jxl</icon>
+    <icon type="remote" width="128" height="128">de/urwpp/URWCoreFontSetLevel2/df56bcdf6910177e693db2dbcf8ad6f4/icons/128x128/gsfonts_d050000l-regular.jxl</icon>
+    <icon type="cached" width="128" height="128" scale="2">gsfonts_d050000l-regular.jxl</icon>
+    <icon type="remote" width="128" height="128" scale="2">de/urwpp/URWCoreFontSetLevel2/df56bcdf6910177e693db2dbcf8ad6f4/icons/128x128@2/gsfonts_d050000l-regular.jxl</icon>
+  </component>
+  <component type="desktop-application">
+    <id>hugin.desktop</id>
+    <name>hugin</name>
+    <summary>A panoramic photo stitcher and more</summary>
+    <pkgname>hugin</pkgname>
+    <icon type="cached" width="48" height="48">hugin_hugin.jxl</icon>
+    <icon type="cached" width="64" height="64">hugin_hugin.jxl</icon>
+    <icon type="cached" width="128" height="128">hugin_hugin.jxl</icon>
+    <icon type="stock">hugin</icon>
+    <categories>
+      <category>Graphics</category>
+    </categories>
+  </component>
+  <component type="desktop-application">
+    <id>hugin_toolbox_gui.desktop</id>
+    <name>hugin_toolbox</name>
+    <summary>A toolbox GUI for tools of Hugin package</summary>
+    <pkgname>hugin</pkgname>
+    <icon type="cached" width="48" height="48">hugin_hugin.jxl</icon>
+    <icon type="cached" width="64" height="64">hugin_hugin.jxl</icon>
+    <icon type="cached" width="128" height="128">hugin_hugin.jxl</icon>
+    <icon type="stock">hugin</icon>
+    <categories>
+      <category>Graphics</category>
+    </categories>
+  </component>
+  <component type="desktop-application">
+    <id>org.gimp.GIMP</id>
+    <name>GNU Image Manipulation Program</name>
+    <name xml:lang="de">GNU Image Manipulation Program</name>
+    <name xml:lang="ja">GIMP (GNU Image Manipulation Program)</name>
+    <name xml:lang="pt-BR">Programa de manipulação de imagem do GNU</name>
+    <name xml:lang="zh-Hans-CN">GNU 图像处理程序</name>
+    <name xml:lang="zh-Hant-TW">GNU 影像處理程式</name>
+    <summary>High-end image creation and manipulation</summary>
+    <summary xml:lang="ja">画像の作成や写真の編集をします</summary>
+    <summary xml:lang="zh-Hans-CN">高端图像创作和处理</summary>
+    <summary xml:lang="zh-Hant-TW">高階影像製作與處理</summary>
+    <developer>
+      <name>The GIMP team</name>
+      <name xml:lang="ja">GIMP チーム</name>
+    </developer>
+    <developer_name>The GIMP team</developer_name>
+    <pkgname>gimp</pkgname>
+    <icon type="cached" width="48" height="48">gimp_gimp.jxl</icon>
+    <icon type="cached" width="64" height="64">gimp_gimp.jxl</icon>
+    <icon type="cached" width="128" height="128">gimp_gimp.jxl</icon>
+    <icon type="stock">gimp</icon>
+    <categories>
+      <category>Graphics</category>
+      <category>2DGraphics</category>
+      <category>RasterGraphics</category>
+    </categories>
+  </component>
+  <component type="desktop-application">
+    <id>PTBatcherGUI.desktop</id>
+    <name>Hugin batch processor</name>
+    <summary>A GUI queue manager for stitching multiple hugin projects</summary>
+    <pkgname>hugin</pkgname>
+    <icon type="cached" width="48" height="48">hugin_ptbatcher.jxl</icon>
+    <icon type="cached" width="64" height="64">hugin_ptbatcher.jxl</icon>
+    <icon type="cached" width="128" height="128">hugin_ptbatcher.jxl</icon>
+    <icon type="stock">ptbatcher</icon>
+    <categories>
+      <category>Graphics</category>
+    </categories>
+  </component>
+</components>

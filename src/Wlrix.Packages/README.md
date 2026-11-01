@@ -91,6 +91,41 @@ window opens.
 not call the hook, which exists only on CachyOS and finds who to notify from `users`. As with the rest of those
 backends, the apt and zypper rows have not been run on a real system.
 
+## AppStream
+
+`AppStream/` gives a package a product name, an icon and a category, read from the catalog files without root.
+`appstreamcli` is not involved, since it has no way to ask by package. A package no catalog names is an ordinary
+package, and its row looks the way it always has. So does every row on a system with no catalogs. The name only changes
+what a row shows: marks and transactions still go by the package name.
+
+|        | catalog                                  | icons                                         | comes from               |
+|--------|------------------------------------------|-----------------------------------------------|--------------------------|
+| pacman | `/usr/share/swcatalog/xml/*.xml.gz`      | `/usr/share/swcatalog/icons/<origin>/<size>/` | `archlinux-appstream-data` |
+| apt    | `/var/lib/swcatalog/yaml/*.yml.gz`       | `/var/lib/swcatalog/icons/<origin>/<size>/`   | `appstream`              |
+| zypper | `/var/cache/swcatalog/xml/*.xml.gz`      | `/var/cache/swcatalog/icons/<origin>/<size>/` | `libzypp-plugin-appdata` |
+
+Nothing chooses between those rows: every catalog in all three roots is read. The Arch fixture is cut down from the real
+package, and loading that package takes about 270 ms and 5 MB. Debian's layout comes from AppStream's source and
+openSUSE's from the specification and a changelog. As with those backends, neither has been run on a real system, and
+the DEP-11 fixture is hand-written.
+
+Which component speaks for a package:
+
+- One desktop application names it, whatever add-ons come along (`codeblocks`).
+- Several leave the package's name alone: `libreoffice-fresh` is not "LibreOffice Writer". The one named after the
+  package, or else the first by id, lends its icon and categories.
+- With no application, a single component of any other type names it, and several say nothing (`gsfonts`).
+
+`/usr/share/metainfo` is not read. Those files do not say which package they belong to, and finding out means asking the
+package manager about each file.
+
+Arch's icons are all JPEG-XL, which SkiaSharp cannot decode. The icon theme goes first, as the specification asks, and
+that covers what is installed. For the rest `JxlIconConverter` runs `djxl` once per icon, only for rows on screen, and
+keeps a PNG under `$XDG_CACHE_HOME/wlrix/software-manager/icons`. Without `djxl` those rows have no icon.
+
+Catalog text decides what is joined onto a path, so an origin or icon name must be a single path segment. The check also
+applies to stock names, because the icon theme takes an absolute path as it stands.
+
 ## Stopping
 
 pkexec and everything under it run as root, so the application cannot signal them. Stop sends a `stop` line down the

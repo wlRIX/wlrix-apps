@@ -97,6 +97,12 @@ public static class Strings
     /// <summary>The package manager failed, and the log has the detail.</summary>
     public static string StatusQueryFailed(string backend) => Catalog.Format("StatusQueryFailed", backend);
 
+    /// <summary>
+    /// The localized name of an XDG main category, or nothing for a package without one.
+    /// </summary>
+    public static string ProductCategory(string? category) =>
+        category is null ? string.Empty : Catalog.Get($"Category{category}");
+
     /// <summary>The localized name of a <see cref="Packages.Models.PackageStatus"/>.</summary>
     public static string PackageStatus(Packages.Models.PackageStatus status) =>
         Catalog.Get($"Status{status}");

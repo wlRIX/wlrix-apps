@@ -41,7 +41,7 @@ public sealed class InventoryViewModel : ViewModelBase
     }
 
     /// <summary>What the field above the list shows. Empty when nothing is selected.</summary>
-    public string SelectedName => _selected?.DisplayName ?? string.Empty;
+    public string SelectedName => _selected?.FullName ?? string.Empty;
 
     /// <summary>Whether a query is in flight, so the view can say so rather than look empty.</summary>
     public bool IsBusy

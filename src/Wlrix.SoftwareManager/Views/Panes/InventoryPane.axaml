@@ -32,19 +32,23 @@
         <!-- Column headings. Outside the scroller, so they stay put while the list moves.
              COLUMNS (1 of 2): keep in step with the item template below. -->
         <Grid DockPanel.Dock="Top"
-              ColumnDefinitions="64,64,*,110,90,150" ColumnSpacing="8"
-              Margin="11,0,28,4">
+              ColumnDefinitions="64,64,*,100,110,90,150" ColumnSpacing="8"
+              Margin="11,0,30,4">
             <TextBlock Grid.Column="0" Text="{loc:Tr ColumnRemove}" />
             <TextBlock Grid.Column="1" Text="{loc:Tr ColumnInstall}" />
             <TextBlock Grid.Column="2" Text="{loc:Tr ColumnProduct}" />
-            <TextBlock Grid.Column="3" Text="{loc:Tr ColumnStatus}" />
-            <TextBlock Grid.Column="4" Text="{loc:Tr ColumnSize}" TextAlignment="Right" />
-            <TextBlock Grid.Column="5" Text="{loc:Tr ColumnType}" />
+            <TextBlock Grid.Column="3" Text="{loc:Tr ColumnCategory}" />
+            <TextBlock Grid.Column="4" Text="{loc:Tr ColumnStatus}" />
+            <TextBlock Grid.Column="5" Text="{loc:Tr ColumnSize}" TextAlignment="Right" />
+            <TextBlock Grid.Column="6" Text="{loc:Tr ColumnType}" />
         </Grid>
 
         <Panel>
+            <!-- The scrollbar always shows: the heading row sits outside the scroller and leaves
+                 room for it, so a list too short to scroll must not give that room to the rows. -->
             <ListBox ItemsSource="{Binding Rows}"
-                     SelectedItem="{Binding Selected}">
+                     SelectedItem="{Binding Selected}"
+                     ScrollViewer.VerticalScrollBarVisibility="Visible">
                 <ListBox.Styles>
                     <!-- The theme aligns item content left and says consumers may override it.
                          A row here is a column layout, not a label, so it has to fill the
@@ -58,7 +62,7 @@
                 <ListBox.ItemTemplate>
                     <DataTemplate x:DataType="vm:PackageRowViewModel">
                         <!-- COLUMNS (2 of 2): keep in step with the heading row above. -->
-                        <Grid ColumnDefinitions="64,64,*,110,90,150" ColumnSpacing="8">
+                        <Grid ColumnDefinitions="64,64,*,100,110,90,150" ColumnSpacing="8">
                             <!-- A box that cannot apply to this row is hidden rather than
                                  disabled: a column of grayed boxes reads as "broken", where an
                                  empty cell reads as "not applicable", which is what it is. -->
@@ -69,13 +73,22 @@
                                       IsChecked="{Binding MarkedForInstall}"
                                       IsEnabled="{Binding CanChangeMark}"
                                       IsVisible="{Binding CanInstall}" />
-                            <TextBlock Grid.Column="2" Text="{Binding DisplayName}"
-                                       VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
-                            <TextBlock Grid.Column="3" Text="{Binding StatusText}"
+                            <!-- The icon sits where the original draws its small product icon,
+                                 and keeps its place without one so the names line up. -->
+                            <Grid Grid.Column="2" ColumnDefinitions="16,*" ColumnSpacing="4"
+                                  ToolTip.Tip="{Binding ToolTipText}">
+                                <Image Grid.Column="0" Source="{Binding Icon}" Width="16" Height="16"
                                        VerticalAlignment="Center" />
-                            <TextBlock Grid.Column="4" Text="{Binding SizeKilobytes}"
+                                <TextBlock Grid.Column="1" Text="{Binding DisplayName}"
+                                           VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                            </Grid>
+                            <TextBlock Grid.Column="3" Text="{Binding CategoryText}"
+                                       VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                            <TextBlock Grid.Column="4" Text="{Binding StatusText}"
+                                       VerticalAlignment="Center" />
+                            <TextBlock Grid.Column="5" Text="{Binding SizeKilobytes}"
                                        VerticalAlignment="Center" TextAlignment="Right" />
-                            <TextBlock Grid.Column="5" Text="{Binding TypeText}"
+                            <TextBlock Grid.Column="6" Text="{Binding TypeText}"
                                        VerticalAlignment="Center" />
                         </Grid>
                     </DataTemplate>

@@ -5,7 +5,7 @@
         <ApplicationManifest>app.manifest</ApplicationManifest>
         <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
         <AssemblyName>wlrix-software-manager</AssemblyName>
-        <Version>0.1.1</Version>
+        <Version>0.2.0</Version>
         <!-- The generated logind proxy uses Tmds.DBus.Protocol's span readers and writers
              directly. No hand-written unsafe code here. Same arrangement as Wlrix.Shutdown. -->
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -25,6 +25,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Wlrix.Common\Wlrix.Common.csproj" />
+        <ProjectReference Include="..\Wlrix.Icons\Wlrix.Icons.csproj" />
         <ProjectReference Include="..\Wlrix.Packages\Wlrix.Packages.csproj" />
     </ItemGroup>
 

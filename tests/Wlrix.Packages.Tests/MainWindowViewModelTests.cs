@@ -1,5 +1,7 @@
+using Avalonia.Media.Imaging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Wlrix.Packages;
+using Wlrix.Packages.AppStream;
 using Wlrix.Packages.Backends;
 using Wlrix.Packages.Backends.Parsing;
 using Wlrix.Packages.Models;
@@ -22,6 +24,8 @@ public class MainWindowViewModelTests
         new FakePaneLayoutStore(),
         new FakeDiskSpaceProbe(),
         new FakeRestartPendingStore(),
+        new FakeCatalog(),
+        new FakeProductIcons(),
         NullLogger<MainWindowViewModel>.Instance);
 
     [Fact]
@@ -281,6 +285,16 @@ public class MainWindowViewModelTests
         public Task<TransactionResult> RunAsync(HelperRequest request, ITransactionObserver observer,
             CancellationToken cancellationToken = default) =>
             Task.FromResult(new TransactionResult(TransactionOutcome.Unavailable, null));
+    }
+
+    private sealed class FakeCatalog : IAppStreamCatalog
+    {
+        public AppStreamIndex Load() => AppStreamIndex.Empty;
+    }
+
+    private sealed class FakeProductIcons : IProductIcons
+    {
+        public Task<Bitmap?> Get(AppStreamProduct product) => Task.FromResult<Bitmap?>(null);
     }
 
     private sealed class FakeRestartPendingStore : IRestartPendingStore

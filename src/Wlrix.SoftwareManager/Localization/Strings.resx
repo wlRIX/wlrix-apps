@@ -129,6 +129,9 @@ Installs, updates and removes the software on this system. Look up what you want
   <data name="ColumnProduct" xml:space="preserve">
     <value>Product</value>
   </data>
+  <data name="ColumnCategory" xml:space="preserve">
+    <value>Category</value>
+  </data>
   <data name="ColumnStatus" xml:space="preserve">
     <value>Status</value>
   </data>
@@ -385,6 +388,41 @@ Installs, updates and removes the software on this system. Look up what you want
   </data>
   <data name="Kilobytes" xml:space="preserve">
     <value>{0:N0} K</value>
+  </data>
+
+  <!-- XDG main categories, from AppStream -->
+  <data name="CategoryAudioVideo" xml:space="preserve">
+    <value>Audio &amp; Video</value>
+  </data>
+  <data name="CategoryDevelopment" xml:space="preserve">
+    <value>Development</value>
+  </data>
+  <data name="CategoryEducation" xml:space="preserve">
+    <value>Education</value>
+  </data>
+  <data name="CategoryGame" xml:space="preserve">
+    <value>Games</value>
+  </data>
+  <data name="CategoryGraphics" xml:space="preserve">
+    <value>Graphics</value>
+  </data>
+  <data name="CategoryNetwork" xml:space="preserve">
+    <value>Internet</value>
+  </data>
+  <data name="CategoryOffice" xml:space="preserve">
+    <value>Office</value>
+  </data>
+  <data name="CategoryScience" xml:space="preserve">
+    <value>Science</value>
+  </data>
+  <data name="CategorySettings" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="CategorySystem" xml:space="preserve">
+    <value>System</value>
+  </data>
+  <data name="CategoryUtility" xml:space="preserve">
+    <value>Utilities</value>
   </data>
 
   <!-- Log pane -->

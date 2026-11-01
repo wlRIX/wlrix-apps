@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <!-- Only the category names so far, shown beside product names in the same language. The window
+       itself is not translated yet, so the column heading stays with the other headings. -->
+  <data name="CategoryAudioVideo" xml:space="preserve">
+    <value>オーディオ・ビデオ</value>
+  </data>
+  <data name="CategoryDevelopment" xml:space="preserve">
+    <value>開発</value>
+  </data>
+  <data name="CategoryEducation" xml:space="preserve">
+    <value>教育</value>
+  </data>
+  <data name="CategoryGame" xml:space="preserve">
+    <value>ゲーム</value>
+  </data>
+  <data name="CategoryGraphics" xml:space="preserve">
+    <value>グラフィックス</value>
+  </data>
+  <data name="CategoryNetwork" xml:space="preserve">
+    <value>インターネット</value>
+  </data>
+  <data name="CategoryOffice" xml:space="preserve">
+    <value>オフィス</value>
+  </data>
+  <data name="CategoryScience" xml:space="preserve">
+    <value>科学</value>
+  </data>
+  <data name="CategorySettings" xml:space="preserve">
+    <value>設定</value>
+  </data>
+  <data name="CategorySystem" xml:space="preserve">
+    <value>システム</value>
+  </data>
+  <data name="CategoryUtility" xml:space="preserve">
+    <value>ユーティリティ</value>
+  </data>
+</root>

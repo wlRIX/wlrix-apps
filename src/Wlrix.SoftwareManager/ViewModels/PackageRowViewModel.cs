@@ -1,4 +1,8 @@
+using Avalonia.Media.Imaging;
+using Avalonia.Threading;
 using ReactiveUI;
+using Wlrix.Packages.AppStream;
+using Wlrix.SoftwareManager.Services;
 
 namespace Wlrix.SoftwareManager.ViewModels;
 
@@ -7,15 +11,28 @@ namespace Wlrix.SoftwareManager.ViewModels;
 /// The two check columns are mutually exclusive by construction rather than by validation:
 /// marking a row for installation clears its removal mark and the other way round, so there is
 /// no state in which a row is asking for both.
+///
+/// <para>
+/// A product from AppStream only changes what the row looks like. <see cref="Name"/> stays the
+/// package name, because that is what the marks and the transaction go by.
+/// </para>
 /// </remarks>
 public sealed class PackageRowViewModel : ViewModelBase
 {
     private bool _markedForInstall;
     private bool _markedForRemoval;
+    private readonly AppStreamProduct? _product;
+    private readonly IProductIcons? _icons;
+    private Bitmap? _icon;
+    private bool _iconRequested;
 
     public PackageRowViewModel(string name, string version, string statusText, long sizeKilobytes,
-        string typeText, bool canInstall, bool canRemove, bool isFile = false, bool isLocked = false)
+        string typeText, bool canInstall, bool canRemove, bool isFile = false, bool isLocked = false,
+        AppStreamProduct? product = null, string categoryText = "", IProductIcons? icons = null)
     {
+        _product = product;
+        _icons = icons;
+        CategoryText = categoryText;
         IsFile = isFile;
         IsLocked = isLocked;
         _markedForInstall = isLocked;
@@ -62,7 +79,41 @@ public sealed class PackageRowViewModel : ViewModelBase
     public bool CanChangeMark => !IsLocked;
 
     /// <summary>What the Product column shows: the name, and the version after it.</summary>
-    public string DisplayName => Version.Length > 0 ? $"{Name}, {Version}" : Name;
+    public string DisplayName => WithVersion(_product?.Name ?? Name);
+
+    /// <summary>
+    /// What the field above the list shows: <see cref="DisplayName"/>, with the package name when
+    /// the product goes by another.
+    /// </summary>
+    public string FullName => _product?.Name is { } product && product != Name
+        ? WithVersion($"{product} ({Name})")
+        : DisplayName;
+
+    /// <summary>The product's summary and the package name, or null to show no tooltip.</summary>
+    public string? ToolTipText => _product?.Name is null ? null : $"{_product.Summary}\n{Name}".TrimStart();
+
+    /// <summary>What the Category column shows, already localized. Empty when there is none.</summary>
+    public string CategoryText { get; }
+
+    /// <summary>
+    /// The product's icon, or null until it arrives, and for good if it has none. Asked for on
+    /// first read, which is when the row first scrolls into view, so a listing of two thousand
+    /// packages only pays for the ones on screen.
+    /// </summary>
+    public Bitmap? Icon
+    {
+        get
+        {
+            if (!_iconRequested && _product is not null && _icons is not null)
+            {
+                _iconRequested = true;
+                _ = LoadIconAsync(_icons, _product);
+            }
+
+            return _icon;
+        }
+        private set => this.RaiseAndSetIfChanged(ref _icon, value);
+    }
 
     public bool MarkedForInstall
     {
@@ -88,4 +139,13 @@ public sealed class PackageRowViewModel : ViewModelBase
 
     /// <summary>Whether this row is part of the next transaction at all.</summary>
     public bool IsMarked => _markedForInstall || _markedForRemoval;
+
+    private string WithVersion(string name) => Version.Length > 0 ? $"{name}, {Version}" : name;
+
+    private async Task LoadIconAsync(IProductIcons icons, AppStreamProduct product)
+    {
+        var bitmap = await icons.Get(product).ConfigureAwait(false);
+        if (bitmap is not null)
+            Dispatcher.UIThread.Post(() => Icon = bitmap);
+    }
 }

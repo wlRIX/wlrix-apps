@@ -1,11 +1,13 @@
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using Avalonia.Media.Imaging;
 using Avalonia.Threading;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using ReactiveUI;
 using Wlrix.Packages;
+using Wlrix.Packages.AppStream;
 using Wlrix.Packages.Backends;
 using Wlrix.Packages.Backends.Parsing;
 using Wlrix.Packages.Models;
@@ -36,6 +38,8 @@ public sealed class MainWindowViewModel : ViewModelBase, ITransactionObserver, I
     private readonly PackageSystem _system;
     private readonly ITransactionService _transactions;
     private readonly IRestartPendingStore _restartPending;
+    private readonly IAppStreamCatalog _catalog;
+    private readonly IProductIcons _productIcons;
     private readonly ILogger<MainWindowViewModel> _logger;
 
     private const int MaxRecentErrors = 6;
@@ -44,6 +48,10 @@ public sealed class MainWindowViewModel : ViewModelBase, ITransactionObserver, I
     // abandons it: a slow `pacman -Qi` over two thousand packages must not land in the list
     // after the user has moved on and overwrite what they asked for next.
     private CancellationTokenSource? _query;
+
+    // Read once, on first need, and again after a transaction, which may have brought in the
+    // catalog package itself or, on apt and zypper, new lists.
+    private Task<AppStreamIndex>? _products;
 
     // Separate from the query token: stopping a transaction and abandoning a listing are
     // different things, and Stop must not cancel a refresh that happens to be in flight.
@@ -75,11 +83,14 @@ public sealed class MainWindowViewModel : ViewModelBase, ITransactionObserver, I
     public MainWindowViewModel(IPackageBackendFactory backendFactory,
         ITransactionService transactions, IPaneLayoutStore paneLayoutStore,
         IDiskSpaceProbe diskSpaceProbe, IRestartPendingStore restartPending,
+        IAppStreamCatalog catalog, IProductIcons productIcons,
         ILogger<MainWindowViewModel> logger)
     {
         _system = backendFactory.Resolve();
         _transactions = transactions;
         _restartPending = restartPending;
+        _catalog = catalog;
+        _productIcons = productIcons;
         _logger = logger;
         Panes = new PanesViewModel(paneLayoutStore);
         DiskSpace = new DiskSpaceViewModel(diskSpaceProbe);
@@ -135,6 +146,7 @@ public sealed class MainWindowViewModel : ViewModelBase, ITransactionObserver, I
     /// <summary>Design-time constructor: the previewer gets a window without touching the disk.</summary>
     public MainWindowViewModel() : this(new DesignBackendFactory(), new DesignTransactionService(),
         new DesignPaneLayoutStore(), new DesignDiskSpaceProbe(), new DesignRestartPendingStore(),
+        new DesignCatalog(), new DesignProductIcons(),
         NullLogger<MainWindowViewModel>.Instance)
     {
     }
@@ -335,10 +347,12 @@ public sealed class MainWindowViewModel : ViewModelBase, ITransactionObserver, I
         Inventory.IsBusy = true;
         this.RaisePropertyChanged(nameof(CanStart));
         var cancellation = _query = new CancellationTokenSource();
-        _ = LoadAsync(mode, query, cancellation.Token);
+        _products ??= Task.Run(_catalog.Load);
+        _ = LoadAsync(mode, query, _products, cancellation.Token);
     }
 
-    private async Task LoadAsync(ManagerMode mode, string query, CancellationToken cancellationToken)
+    private async Task LoadAsync(ManagerMode mode, string query, Task<AppStreamIndex> products,
+        CancellationToken cancellationToken)
     {
         try
         {
@@ -351,10 +365,12 @@ public sealed class MainWindowViewModel : ViewModelBase, ITransactionObserver, I
                 _ => await _system.Backend.ListUpdatesAsync(cancellationToken).ConfigureAwait(false),
             };
 
+            var index = await products.ConfigureAwait(false);
+
             if (cancellationToken.IsCancellationRequested)
                 return;
 
-            await Dispatcher.UIThread.InvokeAsync(() => Show(mode, query, packages));
+            await Dispatcher.UIThread.InvokeAsync(() => Show(mode, query, packages, index));
         }
         catch (OperationCanceledException)
         {
@@ -426,22 +442,29 @@ public sealed class MainWindowViewModel : ViewModelBase, ITransactionObserver, I
         Status.Message = Strings.FileReady(Path.GetFileName(path));
     }
 
-    private void Show(ManagerMode mode, string query, IReadOnlyList<PackageInfo> packages)
+    private void Show(ManagerMode mode, string query, IReadOnlyList<PackageInfo> packages, AppStreamIndex index)
     {
         Inventory.IsBusy = false;
         var locked = UpgradesEverything;
-        Inventory.Replace(packages.Select(package => new PackageRowViewModel(
-            package.Name,
-            package.Version,
-            Strings.PackageStatus(package.Status),
-            package.InstalledSizeKilobytes,
-            package.Repository,
-            // In Manage mode nothing is offered for installation, even where a newer version
-            // exists: that is what Updates mode is for, and a window showing both columns in
-            // every mode is how a user marks the wrong one.
-            package.CanInstall && mode != ManagerMode.Manage,
-            package.CanRemove && mode != ManagerMode.Updates,
-            isLocked: locked)));
+        Inventory.Replace(packages.Select(package =>
+        {
+            var product = index.Find(package.Name);
+            return new PackageRowViewModel(
+                package.Name,
+                package.Version,
+                Strings.PackageStatus(package.Status),
+                package.InstalledSizeKilobytes,
+                package.Repository,
+                // In Manage mode nothing is offered for installation, even where a newer version
+                // exists: that is what Updates mode is for, and a window showing both columns in
+                // every mode is how a user marks the wrong one.
+                package.CanInstall && mode != ManagerMode.Manage,
+                package.CanRemove && mode != ManagerMode.Updates,
+                isLocked: locked,
+                product: product,
+                categoryText: Strings.ProductCategory(product?.MainCategory),
+                icons: _productIcons);
+        }));
 
         Status.ListReady();
         Status.Message = (packages.Count, mode) switch
@@ -623,6 +646,7 @@ public sealed class MainWindowViewModel : ViewModelBase, ITransactionObserver, I
 
             // What is installed has changed, so the list on screen is now describing the system
             // as it was before the transaction.
+            _products = null;
             Reload();
             DiskSpace.Refresh();
 
@@ -802,6 +826,16 @@ public sealed class MainWindowViewModel : ViewModelBase, ITransactionObserver, I
 
         // A running transaction is left to finish: closing the window is not asking it to stop.
         _subscriptions.Dispose();
+    }
+
+    private sealed class DesignCatalog : IAppStreamCatalog
+    {
+        public AppStreamIndex Load() => AppStreamIndex.Empty;
+    }
+
+    private sealed class DesignProductIcons : IProductIcons
+    {
+        public Task<Bitmap?> Get(AppStreamProduct product) => Task.FromResult<Bitmap?>(null);
     }
 
     private sealed class DesignRestartPendingStore : IRestartPendingStore

@@ -96,7 +96,7 @@ public sealed class IconLoader(XdgIconTheme theme)
     }
 
     /// <summary>Renders one file to PNG at the requested size.</summary>
-    internal static byte[]? RenderFile(string path, int size)
+    public static byte[]? RenderFile(string path, int size)
     {
         try
         {

@@ -1,0 +1,70 @@
+# Hand-written from the AppStream YAML specification, not recorded from a Debian system.
+---
+File: DEP-11
+Version: '0.16'
+Origin: debian-trixie-main
+Priority: 5
+MediaBaseUrl: https://appstream.debian.org/media/pool/
+---
+Type: desktop-application
+ID: org.gimp.GIMP
+Package: gimp
+Name:
+  C: GNU Image Manipulation Program
+  ja: "GIMP: \u753B\u50CF"
+  pt_BR: 'Programa de Manipulação: o ''GIMP'''
+  sr@latin: GIMP latinicom
+Summary:
+  C: >-
+    High-end image creation
+    and manipulation
+  ja: 画像の作成
+Description:
+  C: >-
+    <p>Package: not-this-package</p>
+    <p>Name: not this name</p>
+Categories:
+- Graphics
+- 2DGraphics
+Icon:
+  stock: gimp
+  cached:
+  - height: 48
+    name: gimp_gimp.png
+    width: 48
+  - height: 64
+    name: gimp_gimp.png
+    scale: 2
+    width: 64
+  - height: 64
+    name: ../../../etc/shadow
+    width: 64
+  remote:
+  - height: 128
+    url: g/gi/gimp.png
+    width: 128
+Keywords:
+  C:
+  - image
+---
+Type: addon
+ID: org.example.Plugin
+Package: example-plugin
+Name:
+  C: "Example \"Plugin\""
+Summary:
+  C: Does things
+Icon:
+  stock: /etc/passwd
+  cached: example_plugin.png
+---
+ID: org.example.AmendedElsewhere
+Merge: append
+Package: amended
+Name:
+  C: Should be skipped
+---
+Type: desktop-application
+ID: org.example.NoPackage
+Name:
+  C: Should be skipped too

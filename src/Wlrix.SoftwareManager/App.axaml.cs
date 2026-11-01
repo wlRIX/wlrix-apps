@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Wlrix.Common;
 using Wlrix.Common.Localization;
 using Wlrix.Packages;
+using Wlrix.Packages.AppStream;
 using Wlrix.Packages.Privileged;
 using Wlrix.Packages.Processes;
 using Wlrix.Packages.UserSoftware;
@@ -49,6 +50,8 @@ public partial class App : Application
             services.AddZLogger("software-manager");
             services.AddSingleton<IProcessRunner, ProcessRunner>();
             services.AddSingleton<IPackageBackendFactory, PackageBackendFactory>();
+            services.AddSingleton<IAppStreamCatalog, AppStreamCatalog>();
+            services.AddSingleton<IProductIcons, ProductIconCache>();
             services.AddSingleton<IPrivilegedRunner, PkexecRunner>();
             services.AddSingleton<ITransactionService, TransactionService>();
             services.AddSingleton<IPaneLayoutStore, PaneLayoutStore>();
