@@ -14,4 +14,10 @@
     <data name="WindowTitle" xml:space="preserve">
         <value>wlRIX コンソール</value>
     </data>
+    <data name="Copy" xml:space="preserve">
+        <value>コピー (_C)</value>
+    </data>
+    <data name="SelectAll" xml:space="preserve">
+        <value>すべて選択 (_A)</value>
+    </data>
 </root>

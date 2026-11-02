@@ -1,6 +1,7 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:Wlrix.Console.ViewModels"
+        xmlns:views="using:Wlrix.Console.Views"
         xmlns:loc="using:Wlrix.Common.Localization"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -17,9 +18,7 @@
     </Design.DataContext>
 
     <!-- One tab per tailed log, along the bottom in the IRIX style. Each tab's body is a
-         read-only, selectable view of that log: the themed TextBox supplies the sunken SGI
-         frame and a vertical scroll bar; IsReadOnly keeps it view-only while still allowing
-         selection and Ctrl+C / context-menu copy. -->
+         read-only, selectable view of the end of that log; see LogView. -->
     <TabControl Margin="8"
                 TabStripPlacement="Bottom"
                 ItemsSource="{Binding Logs}"
@@ -31,13 +30,7 @@
         </TabControl.ItemTemplate>
         <TabControl.ContentTemplate>
             <DataTemplate x:DataType="vm:LogViewModel">
-                <TextBox Text="{Binding LogText}"
-                         IsReadOnly="True"
-                         AcceptsReturn="True"
-                         TextWrapping="Wrap"
-                         VerticalContentAlignment="Top"
-                         FontFamily="Cascadia Mono,DejaVu Sans Mono,Liberation Mono,Consolas,monospace"
-                         PlaceholderText="{loc:Tr NoOutputYet}" />
+                <views:LogView />
             </DataTemplate>
         </TabControl.ContentTemplate>
     </TabControl>

@@ -24,4 +24,10 @@
   <data name="TabSession" xml:space="preserve">
     <value>Session</value>
   </data>
+  <data name="Copy" xml:space="preserve">
+    <value>_Copy</value>
+  </data>
+  <data name="SelectAll" xml:space="preserve">
+    <value>Select _All</value>
+  </data>
 </root>

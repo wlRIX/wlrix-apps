@@ -58,6 +58,7 @@
         <Project Path="tests/Wlrix.Desks.Tests/Wlrix.Desks.Tests.csproj" />
         <Project Path="tests/Wlrix.FilePicker.Tests/Wlrix.FilePicker.Tests.csproj" />
         <Project Path="tests/Wlrix.Clock.Tests/Wlrix.Clock.Tests.csproj" />
+        <Project Path="tests/Wlrix.Console.Tests/Wlrix.Console.Tests.csproj" />
         <Project Path="tests/Wlrix.ClipboardHistory.Tests/Wlrix.ClipboardHistory.Tests.csproj" />
         <Project Path="tests/Wlrix.ImageView.Tests/Wlrix.ImageView.Tests.csproj" />
         <Project Path="tests/Wlrix.Writer.Tests/Wlrix.Writer.Tests.csproj" />

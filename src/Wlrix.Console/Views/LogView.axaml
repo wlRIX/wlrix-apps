@@ -1,0 +1,45 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Wlrix.Console.ViewModels"
+             xmlns:loc="using:Wlrix.Common.Localization"
+             x:Class="Wlrix.Console.Views.LogView"
+             x:DataType="vm:LogViewModel">
+
+    <!-- One log, a line per row. A list rather than one read-only TextBox: a TextBox lays out
+         its whole text, which for a week of session log was a 150 MB string, tens of gigabytes
+         of layout and seconds per scroll step. The list's virtualizing panel only builds the
+         rows on screen. The themed ListBox supplies the sunken SGI frame and the vertical
+         scroll bar, and leaves horizontal scrolling off, so long lines wrap. Lines are
+         selected a row at a time (click, Shift and Ctrl+click, Ctrl+A) and copied with Ctrl+C
+         or the context menu. -->
+    <Panel>
+        <ListBox Name="List"
+                 ItemsSource="{Binding Lines}"
+                 SelectionMode="Multiple"
+                 FontFamily="Cascadia Mono,DejaVu Sans Mono,Liberation Mono,Consolas,monospace">
+            <ListBox.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="{loc:Tr Copy}" InputGesture="Ctrl+C" Click="OnCopyClick" />
+                    <MenuItem Header="{loc:Tr SelectAll}" InputGesture="Ctrl+A" Click="OnSelectAllClick" />
+                </ContextMenu>
+            </ListBox.ContextMenu>
+            <ListBox.ItemContainerTheme>
+                <ControlTheme TargetType="ListBoxItem" BasedOn="{StaticResource {x:Type ListBoxItem}}">
+                    <Setter Property="Padding" Value="4,0" />
+                </ControlTheme>
+            </ListBox.ItemContainerTheme>
+            <ListBox.ItemTemplate>
+                <DataTemplate x:DataType="x:String">
+                    <TextBlock Text="{Binding}" TextWrapping="Wrap" />
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+
+        <TextBlock Text="{loc:Tr NoOutputYet}"
+                   IsVisible="{Binding !HasLines}"
+                   IsHitTestVisible="False"
+                   Margin="9,5"
+                   Foreground="{DynamicResource WlrixDisabledForeground}" />
+    </Panel>
+
+</UserControl>

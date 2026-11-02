@@ -1,26 +1,59 @@
+using System.Text;
+
 namespace Wlrix.Console.Services;
 
 /// <summary>
-/// Tails a log file: reads its existing contents and then watches for appended data, raising
-/// <see cref="Appended"/> with each new chunk in file order. The file need not exist when
-/// <see cref="Start"/> is called — the directory is watched, so a log that appears later (or is
-/// truncated and rewritten each time its process restarts) is picked up. Events may be raised on
-/// background threads, so subscribers are responsible for marshaling to their own thread.
+/// Tails a log file: reads the end of its existing contents and then watches for appended data,
+/// raising <see cref="LinesAppended"/> with each batch of new complete lines in file order. The
+/// file need not exist when <see cref="Start"/> is called — the directory is watched, so a log
+/// that appears later (or is truncated and rewritten each time its process restarts) is picked
+/// up. Events may be raised on background threads, so subscribers are responsible for marshaling
+/// to their own thread.
 /// </summary>
+/// <remarks>
+/// A session that has run for a week leaves a log of hundreds of megabytes, nearly all of it
+/// older than anyone opening the console wants to see. So no read takes in more than the last
+/// <c>backlogBytes</c> of the file: the first read starts that far from the end, and so does a
+/// later one that finds more than that written since the last (the earlier part is skipped, the
+/// same as if it had scrolled out of view). Reading only whole lines means a read that lands in
+/// the middle of one drops that partial line, and a line still being written is left for the
+/// next read instead of being shown in two halves.
+/// </remarks>
 public sealed class LogTailer : IDisposable
 {
+    /// <summary>
+    /// How much of the end of the file the console reads at most: enough for the tens of
+    /// thousands of lines the view keeps, a fraction of a week's log.
+    /// </summary>
+    public const int DefaultBacklogBytes = 8 * 1024 * 1024;
+
     private readonly string _path;
+    private readonly int _backlogBytes;
     private readonly Lock _gate = new();
     private FileSystemWatcher? _watcher;
     private long _position;
+    // _position is inside a line whose start was skipped; the next read drops up to its end.
+    private bool _midLine;
     private bool _disposed;
 
-    public LogTailer(string path) => _path = path;
+    public LogTailer(string path, int backlogBytes = DefaultBacklogBytes)
+    {
+        ArgumentOutOfRangeException.ThrowIfLessThan(backlogBytes, 1);
+        _path = path;
+        _backlogBytes = backlogBytes;
+    }
 
     /// <summary>
-    /// Raised with newly read text, in file order. May fire on a background thread.
+    /// Raised with newly read complete lines (without their line endings), in file order. May
+    /// fire on a background thread.
     /// </summary>
-    public event Action<string>? Appended;
+    public event Action<IReadOnlyList<string>>? LinesAppended;
+
+    /// <summary>
+    /// Raised when the file shrank — it was truncated or replaced, as when its process
+    /// restarts — before the lines read from its new contents. May fire on a background thread.
+    /// </summary>
+    public event Action? Restarted;
 
     /// <summary>
     /// Begins tailing. Watches the file's directory (so a not-yet-written log is caught when it
@@ -53,7 +86,11 @@ public sealed class LogTailer : IDisposable
 
     private void OnChanged(object sender, FileSystemEventArgs e) => ReadNew();
 
-    private void ReadNew()
+    /// <summary>
+    /// Reads whatever has been appended since the last read. Called by the watcher; internal so
+    /// tests can drive it without waiting on file system notifications.
+    /// </summary>
+    internal void ReadNew()
     {
         lock (_gate)
         {
@@ -65,25 +102,91 @@ public sealed class LogTailer : IDisposable
                 using var stream = new FileStream(_path, FileMode.Open, FileAccess.Read,
                     FileShare.ReadWrite | FileShare.Delete);
 
-                // The file shrank since we last read it (truncated or rotated) — start over.
-                if (stream.Length < _position)
-                    _position = 0;
+                var length = stream.Length;
 
-                if (stream.Length == _position)
+                // The file shrank since we last read it (truncated or rotated) — start over.
+                if (length < _position)
+                {
+                    _position = 0;
+                    _midLine = false;
+                    Restarted?.Invoke();
+                }
+
+                if (length == _position)
                     return;
 
-                stream.Seek(_position, SeekOrigin.Begin);
-                using var reader = new StreamReader(stream);
-                var text = reader.ReadToEnd();
-                _position = stream.Length;
+                // Too much to show since the last read: start a backlog's worth from the end, one
+                // byte early so a line that starts exactly there is not mistaken for a partial one.
+                var start = _position;
+                var dropFirst = _midLine;
+                var backlogStart = length - _backlogBytes - 1;
+                if (backlogStart > start)
+                {
+                    start = backlogStart;
+                    dropFirst = true;
+                }
 
-                if (text.Length > 0)
-                    Appended?.Invoke(text);
+                var buffer = new byte[length - start];
+                stream.Seek(start, SeekOrigin.Begin);
+                stream.ReadExactly(buffer);
+                var span = buffer.AsSpan();
+
+                // Whole lines only: from the first line start (past the partial line the read
+                // began in, when it began in one) through the last newline.
+                var first = 0;
+                if (dropFirst)
+                {
+                    var newline = span.IndexOf((byte)'\n');
+                    if (newline < 0)
+                    {
+                        // Still inside a line longer than the whole backlog. It will never be
+                        // shown, so move past it rather than rereading it forever.
+                        _position = length;
+                        _midLine = true;
+                        return;
+                    }
+                    first = newline + 1;
+                }
+
+                // A line still being written is left for the next read.
+                var last = span.LastIndexOf((byte)'\n');
+                if (last < 0)
+                    return;
+
+                _position = start + last + 1;
+                _midLine = false;
+                if (last < first)
+                    return;
+
+                var lines = SplitLines(span[first..last]);
+                if (lines.Count > 0)
+                    LinesAppended?.Invoke(lines);
             }
             catch (IOException)
             {
                 // The writer holds the file briefly; a later change event picks the data back up.
             }
+        }
+    }
+
+    /// <summary>
+    /// Decodes newline-separated UTF-8 into lines, dropping a trailing CR from each. The input
+    /// excludes the final newline, so it holds exactly one line more than it has newlines.
+    /// </summary>
+    internal static List<string> SplitLines(ReadOnlySpan<byte> text)
+    {
+        var lines = new List<string>(text.Count((byte)'\n') + 1);
+        while (true)
+        {
+            var end = text.IndexOf((byte)'\n');
+            var line = end < 0 ? text : text[..end];
+            if (line.Length > 0 && line[^1] == (byte)'\r')
+                line = line[..^1];
+            lines.Add(Encoding.UTF8.GetString(line));
+
+            if (end < 0)
+                return lines;
+            text = text[(end + 1)..];
         }
     }
 
