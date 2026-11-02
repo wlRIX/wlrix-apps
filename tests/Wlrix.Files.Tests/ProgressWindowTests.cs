@@ -1,4 +1,6 @@
+using Avalonia.Controls;
 using Avalonia.Headless;
+using Avalonia.Media;
 using Avalonia.Threading;
 using Wlrix.Files.Core;
 using Wlrix.Files.Core.Operations;
@@ -151,6 +153,106 @@ public sealed class ProgressWindowTests
     [InlineData(3 * 1024 * 1024, 4.0 * 1024 * 1024)]
     public void TheGraphScaleIsARoundNumber(double fastest, double expected) =>
         Assert.Equal(expected, Controls.SpeedGraph.Scale(fastest));
+
+    /// <summary>
+    /// The scale stays readable wherever the curve runs: a label is in the fill's text color
+    /// below the curve and the plain one above it.
+    /// </summary>
+    /// <remarks>
+    /// The regression: labels were drawn under the curve, so a steady transfer painted out every
+    /// number below its own speed. The top label is never on the fill, because the scale always
+    /// leaves headroom over the fastest sample.
+    /// </remarks>
+    [Theory]
+    [InlineData(0.88, 3)]
+    [InlineData(0.50, 2)]
+    [InlineData(0.02, 0)]
+    public Task TheScaleLabelsAreDrawnInTheColorOfWhatTheyLieOn(double level, int bandsOnTheFill) =>
+        HeadlessFiles.Session.Dispatch(() =>
+        {
+            var (onFill, onBackground) = LabelPixels(level);
+
+            for (var band = 0; band < 4; band++)
+            {
+                var below = band < bandsOnTheFill;
+                Assert.True(below ? onFill[band] > 0 && onBackground[band] == 0 : onBackground[band] > 0 && onFill[band] == 0,
+                    $"band {band} at level {level}: {onFill[band]} on the fill, {onBackground[band]} on the background");
+            }
+        }, CancellationToken.None);
+
+    [Fact]
+    public Task ACurveAcrossALabelLeavesItInBothColors() =>
+        HeadlessFiles.Session.Dispatch(() =>
+        {
+            // Through the middle of the label that hangs under the half-way line.
+            var (onFill, onBackground) = LabelPixels(0.45);
+
+            Assert.True(onFill[1] > 0 && onBackground[1] > 0,
+                $"{onFill[1]} on the fill, {onBackground[1]} on the background");
+        }, CancellationToken.None);
+
+    /// <summary>
+    /// Renders a flat curve at <paramref name="level"/> of the scale, and counts each label's
+    /// pixels by what they lie on, lowest band first.
+    /// </summary>
+    /// <remarks>
+    /// Told apart by channel, because small text is antialiased and never reaches its full color:
+    /// the fill is green and its text red, the background blue and its text white. So red in a
+    /// pixel means text, and blue as well means it is on the background.
+    /// </remarks>
+    private static (int[] OnFill, int[] OnBackground) LabelPixels(double level)
+    {
+        const int Width = 400;
+        const int Height = 120;
+        // One sample at nine tenths of the scale, oldest and so off to the left, which fixes the
+        // scale at a power of two and makes the level a plain fraction of the graph's height.
+        const double Top = 1024.0 * 1024;
+        var graph = new Controls.SpeedGraph
+        {
+            Samples = [Top * 0.9, .. Enumerable.Repeat(Top * level, OperationViewModel.HistoryLength - 1)],
+            Fill = Brushes.Green,
+            Foreground = Brushes.White,
+            FillForeground = Brushes.Red,
+            // No grid lines to mistake for text.
+            GridBrush = Brushes.Transparent,
+        };
+        var window = new Window { Width = Width, Height = Height, Background = Brushes.Blue, Content = graph };
+        window.Show();
+        Dispatcher.UIThread.RunJobs();
+        var frame = window.CaptureRenderedFrame()!;
+        window.Close();
+
+        using var buffer = frame.Lock();
+        var pixels = new byte[buffer.RowBytes * Height];
+        System.Runtime.InteropServices.Marshal.Copy(buffer.Address, pixels, 0, pixels.Length);
+
+        // Whichever order this renderer keeps its channels in.
+        var (redAt, blueAt) = buffer.Format == global::Avalonia.Platform.PixelFormat.Rgba8888 ? (0, 2) : (2, 0);
+
+        var onFill = new int[4];
+        var onBackground = new int[4];
+        for (var band = 0; band < 4; band++)
+        {
+            // Each label hangs just under its line, at the left, a little under 14 high.
+            var line = Height - (band + 1) * (Height - 1) / 4;
+            for (var y = Math.Max(0, line); y < Math.Min(Height, line + 14); y++)
+            {
+                // From past the slope down from the oldest sample.
+                for (var x = 10; x < 60; x++)
+                {
+                    var at = y * buffer.RowBytes + x * 4;
+                    if (pixels[at + redAt] <= 80)
+                        continue;
+                    if (pixels[at + blueAt] > 128)
+                        onBackground[band]++;
+                    else
+                        onFill[band]++;
+                }
+            }
+        }
+
+        return (onFill, onBackground);
+    }
 
     private static UiCulture English() => new(System.Globalization.CultureInfo.GetCultureInfo("en-US"));
 }

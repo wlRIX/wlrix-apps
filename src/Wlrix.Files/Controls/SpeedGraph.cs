@@ -39,8 +39,12 @@ public sealed class SpeedGraph : Control
     public static readonly StyledProperty<IBrush?> ForegroundProperty =
         AvaloniaProperty.Register<SpeedGraph, IBrush?>(nameof(Foreground));
 
+    public static readonly StyledProperty<IBrush?> FillForegroundProperty =
+        AvaloniaProperty.Register<SpeedGraph, IBrush?>(nameof(FillForeground));
+
     static SpeedGraph() =>
-        AffectsRender<SpeedGraph>(SamplesProperty, FillProperty, StrokeProperty, GridBrushProperty, ForegroundProperty);
+        AffectsRender<SpeedGraph>(SamplesProperty, FillProperty, StrokeProperty, GridBrushProperty, ForegroundProperty,
+            FillForegroundProperty);
 
     public IReadOnlyList<double>? Samples
     {
@@ -72,6 +76,13 @@ public sealed class SpeedGraph : Control
         set => SetValue(ForegroundProperty, value);
     }
 
+    /// <summary>The color of a scale label where it lies on the curve's fill.</summary>
+    public IBrush? FillForeground
+    {
+        get => GetValue(FillForegroundProperty);
+        set => SetValue(FillForegroundProperty, value);
+    }
+
     public override void Render(DrawingContext context)
     {
         var width = Bounds.Width;
@@ -82,42 +93,97 @@ public sealed class SpeedGraph : Control
         var samples = Samples ?? [];
         var top = Scale(samples.Count == 0 ? 0 : samples.Max());
 
-        // The grid first, so the curve is drawn over it: a line every quarter of the scale,
-        // each labeled just below its left end, in the band it opens. The floor has no label:
-        // five labels do not fit four bands, and the floor being nothing goes without saying.
+        // The grid first, so the curve is drawn over it: a line every quarter of the scale.
         var grid = new Pen(GridBrush ?? Brushes.Gray, 1);
-        // The theme's family, inherited like any text's. FontFamily.Default is not guaranteed
-        // to resolve to an installed face, and a label that cannot be shaped throws out of the
-        // render pass.
-        var typeface = new Typeface(TextElement.GetFontFamily(this));
         for (var quarter = 0; quarter <= 4; quarter++)
         {
-            var y = Math.Round(height - quarter * (height - 1) / 4.0) - 0.5;
+            var y = LineY(quarter, height);
             context.DrawLine(grid, new Point(0, y), new Point(width, y));
-            if (quarter == 0)
-                continue;
-
-            var label = new FormattedText(
-                Strings.ProgressRate(FileSizes.Binary((long)(top * quarter / 4))),
-                CultureInfo.CurrentCulture, FlowDirection.LeftToRight, typeface, 10, Foreground ?? Brushes.Black);
-            context.DrawText(label, new Point(3, Math.Max(0, y + 1)));
         }
 
+        var curve = Curve(samples, top, width, height);
+        if (curve is not null)
+            context.DrawGeometry(Fill, Stroke is { } stroke ? new Pen(stroke, 1) : null, curve);
+
+        DrawLabels(context, top, height, curve, width);
+    }
+
+    /// <summary>Where the line for a quarter of the scale runs: on a pixel, the floor at the bottom.</summary>
+    private static double LineY(int quarter, double height) =>
+        Math.Round(height - quarter * (height - 1) / 4.0) - 0.5;
+
+    /// <summary>The filled shape of the samples; null until there are two to join.</summary>
+    private static StreamGeometry? Curve(IReadOnlyList<double> samples, double top, double width, double height)
+    {
         if (samples.Count < 2)
-            return;
+            return null;
 
         var step = width / (OperationViewModel.HistoryLength - 1);
         var first = width - (samples.Count - 1) * step;
         var curve = new StreamGeometry();
-        using (var draw = curve.Open())
+        using var draw = curve.Open();
+        draw.BeginFigure(new Point(first, height), isFilled: true);
+        for (var i = 0; i < samples.Count; i++)
+            draw.LineTo(new Point(first + i * step, height - samples[i] / top * (height - 1)));
+        draw.LineTo(new Point(width, height));
+        draw.EndFigure(isClosed: true);
+        return curve;
+    }
+
+    /// <summary>
+    /// The scale's labels, each just below the left end of its line, in the band it opens. The
+    /// floor has no label: five labels do not fit four bands, and the floor being nothing goes
+    /// without saying.
+    /// </summary>
+    /// <remarks>
+    /// Over the curve rather than under it, or a fast transfer paints out the very numbers that
+    /// say how fast it is. And in two colors, cut along the curve: the graph's foreground is meant
+    /// for its background and <see cref="FillForeground"/> for its fill, and under Gotham white on
+    /// the fill's gray is barely there. A label the curve runs through changes color where it
+    /// crosses, so it is readable on both sides of the edge.
+    /// </remarks>
+    private void DrawLabels(DrawingContext context, double top, double height, Geometry? curve, double width)
+    {
+        // The theme's family, inherited like any text's. FontFamily.Default is not guaranteed
+        // to resolve to an installed face, and a label that cannot be shaped throws out of the
+        // render pass.
+        var typeface = new Typeface(TextElement.GetFontFamily(this));
+        var foreground = Foreground ?? Brushes.Black;
+
+        var labels = new List<(FormattedText Text, Point Origin)>(4);
+        for (var quarter = 1; quarter <= 4; quarter++)
         {
-            draw.BeginFigure(new Point(first, height), isFilled: true);
-            for (var i = 0; i < samples.Count; i++)
-                draw.LineTo(new Point(first + i * step, height - samples[i] / top * (height - 1)));
-            draw.LineTo(new Point(width, height));
-            draw.EndFigure(isClosed: true);
+            var text = new FormattedText(
+                Strings.ProgressRate(FileSizes.Binary((long)(top * quarter / 4))),
+                CultureInfo.CurrentCulture, FlowDirection.LeftToRight, typeface, 10, foreground);
+            labels.Add((text, new Point(3, Math.Max(0, LineY(quarter, height) + 1))));
         }
-        context.DrawGeometry(Fill, Stroke is { } stroke ? new Pen(stroke, 1) : null, curve);
+
+        if (curve is null)
+        {
+            foreach (var (text, origin) in labels)
+                context.DrawText(text, origin);
+            return;
+        }
+
+        // Clipped on both sides rather than the fill's color drawn over the plain one: the
+        // edges of one letter under the same letter in another color would leave a fringe.
+        var background = new CombinedGeometry(GeometryCombineMode.Exclude,
+            new RectangleGeometry(new Rect(0, 0, width, height)), curve);
+        using (context.PushGeometryClip(background))
+        {
+            foreach (var (text, origin) in labels)
+                context.DrawText(text, origin);
+        }
+
+        using (context.PushGeometryClip(curve))
+        {
+            foreach (var (text, origin) in labels)
+            {
+                text.SetForegroundBrush(FillForeground ?? foreground);
+                context.DrawText(text, origin);
+            }
+        }
     }
 
     /// <summary>The top of the scale: the fastest sample with a little headroom, up to a power of two.</summary>

@@ -46,6 +46,7 @@
                                                  Stroke="{DynamicResource WlrixOuterLine}"
                                                  GridBrush="{DynamicResource WlrixBottomShadow}"
                                                  Foreground="{DynamicResource WlrixViewForeground}"
+                                                 FillForeground="{DynamicResource WlrixSelectionForeground}"
                                                  Margin="2" />
                         </wlrix:BevelBorder>
                         <DockPanel IsVisible="{Binding ShowsSpeed}">
