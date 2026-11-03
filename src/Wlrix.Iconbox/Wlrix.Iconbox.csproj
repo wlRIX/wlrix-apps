@@ -1,0 +1,52 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+        <ApplicationManifest>app.manifest</ApplicationManifest>
+        <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+        <AssemblyName>wlrix-iconbox</AssemblyName>
+        <Version>0.1.0</Version>
+        <!-- NWayland's generated bindings and runtime interop are unsafe. -->
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    </PropertyGroup>
+
+    <!-- The wlrix-desks bindings, generated at build time from the same XML the compositor
+         builds from; see Wlrix.Desks.csproj, which this copies. The generated code carries
+         incomplete XML doc comments, so those doc warnings are kept warnings here. -->
+    <ItemGroup>
+        <AdditionalFiles Include="../../../NWayland/external/wlrix-protocols/wlrix-desks.xml"
+                         NWaylandNamespace="NWayland.Protocols" />
+    </ItemGroup>
+    <PropertyGroup>
+        <WarningsNotAsErrors>$(WarningsNotAsErrors);CS1591;CS1573;CS1572;CS1570;CS1571;CS1574;CS1580;CS1581;CS1584</WarningsNotAsErrors>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Avalonia" />
+        <PackageReference Include="Avalonia.Desktop" />
+        <PackageReference Include="Avalonia.Wayland" />
+        <PackageReference Include="AvaloniaUI.DiagnosticsSupport">
+            <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
+            <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
+        </PackageReference>
+        <PackageReference Include="ReactiveUI.Avalonia" />
+        <PackageReference Include="Wlrix.Avalonia" />
+        <!-- NWayland runtime, pinned to the version Avalonia.Wayland binds to. -->
+        <PackageReference Include="NWayland" />
+        <!-- For the single-instance guard in Wlrix.Common; see Wlrix.Desks.csproj. -->
+        <PackageReference Include="Tmds.DBus.Protocol" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <InternalsVisibleTo Include="Wlrix.Iconbox.Tests" />
+    </ItemGroup>
+
+    <Import Project="../../../NWayland/src/NWayland.Generator/NWayland.Generator.Use.targets" />
+
+    <ItemGroup>
+        <!-- The localized strings, {loc:Tr} and the single-instance guard. -->
+        <ProjectReference Include="../Wlrix.Common/Wlrix.Common.csproj" />
+        <!-- Follows the session's color scheme. One call in App.axaml.cs. -->
+        <ProjectReference Include="../Wlrix.Theme/Wlrix.Theme.csproj" />
+    </ItemGroup>
+
+</Project>

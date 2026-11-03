@@ -1,0 +1,18 @@
+[Desktop Entry]
+Type=Application
+Name=wlRIX Iconbox
+Name[ja]=wlRIX アイコンボックス
+Comment=Every window as a tile, instead of minimizing to the desktop
+Comment[ja]=ウィンドウをデスクトップに最小化せず、タイルとして一覧表示
+Exec=wlrix-iconbox
+TryExec=wlrix-iconbox
+Terminal=false
+
+# Not something to launch: the compositor starts it while Window Settings' Display Windows
+# Overview is on.
+NoDisplay=true
+
+# Matches the Wayland app id set in Program.BuildAvaloniaApp. wlrix-compositor frames, places
+# and starts the window by the same id.
+StartupWMClass=com.wlrix.iconbox
+StartupNotify=false

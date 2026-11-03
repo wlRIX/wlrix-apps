@@ -1,0 +1,57 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Wlrix.Iconbox.ViewModels"
+        xmlns:controls="using:Wlrix.Iconbox.Controls"
+        xmlns:loc="using:Wlrix.Common.Localization"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="540" d:DesignHeight="140"
+        Width="540" Height="140" MinWidth="140" MinHeight="140"
+        x:Class="Wlrix.Iconbox.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Title="{loc:Tr WindowTitle}">
+
+    <Design.DataContext>
+        <vm:MainWindowViewModel />
+    </Design.DataContext>
+
+    <Panel>
+        <!-- Tiles fill a column top to bottom, then the next column to the right, and the box
+             scrolls sideways: a one-row iconbox, the shape IRIX opened it in, lists windows
+             left to right. The vertical bar is disabled, not hidden, so the panel is given a
+             height to wrap at. -->
+        <ScrollViewer HorizontalScrollBarVisibility="Visible"
+                      VerticalScrollBarVisibility="Disabled"
+                      AllowAutoHide="False">
+            <ItemsControl ItemsSource="{Binding Tiles}" Margin="4">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel Orientation="Vertical" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="vm:TileViewModel">
+                        <!-- The tile's colors are the scheme's, by DynamicResource, so a change
+                             of scheme repaints them along with everything else. -->
+                        <controls:IconTile Margin="4"
+                                           Title="{Binding Title}"
+                                           ImagePath="{Binding ImagePath}"
+                                           Minimized="{Binding Minimized}"
+                                           Activated="{Binding Activated}"
+                                           FaceColor="{DynamicResource WlrixIconTileFaceColor}"
+                                           WellColor="{DynamicResource WlrixIconWellColor}"
+                                           LightColor="{DynamicResource WlrixTitleInactiveTopShadowColor}"
+                                           DarkColor="{DynamicResource WlrixTitleInactiveBottomShadowColor}"
+                                           ForegroundColor="{DynamicResource WlrixForegroundColor}"
+                                           PointerPressed="OnTilePressed"
+                                           PointerReleased="OnTileReleased" />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+
+        <TextBlock Text="{loc:Tr Unavailable}"
+                   IsVisible="{Binding Unavailable}"
+                   HorizontalAlignment="Center" VerticalAlignment="Center" />
+    </Panel>
+</Window>

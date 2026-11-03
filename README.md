@@ -24,6 +24,7 @@ library. Apps recreate the IRIX Interactive Desktop surface.
 | `Wlrix.Settings.Users.Helper` | exe | `wlrix-users-helper` — adds or removes pam_fprintd in `sudo` and `polkit-1`. |
 | `Wlrix.Toolchest`         | app  | IRIX-style menu launcher anchored top-left of the desktop.          |
 | `Wlrix.Desks`             | app  | Virtual-desktop (Rooms) overview and switcher.                      |
+| `Wlrix.Iconbox`           | app  | IRIX iconbox: every window as a tile (Display Windows Overview).    |
 | `Wlrix.Console`           | app  | Tails the wlRIX component logs, one tab each.                       |
 | `Wlrix.Settings.Keyboard` | app  | Keyboard settings panel: key repeat.                                |
 | `Wlrix.Settings.International` | app | International panel, after IRIX's ipanel: country, language, keyboard layout, time zone, clock. |

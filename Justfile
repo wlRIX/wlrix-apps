@@ -36,6 +36,7 @@ apps := "Wlrix.Archiver:wlrix-archiver:com.wlrix.archiver.desktop \
          Wlrix.Files:wlrix-files:com.wlrix.files.desktop \
          Wlrix.Clock:wlrix-clock:com.wlrix.clock.desktop \
          Wlrix.Desks:wlrix-desks:com.wlrix.desks.desktop \
+         Wlrix.Iconbox:wlrix-iconbox:com.wlrix.iconbox.desktop \
          Wlrix.Settings.Displays:wlrix-settings-displays:com.wlrix.settings.displays.desktop \
          Wlrix.Settings.Audio:wlrix-settings-audio:com.wlrix.settings.audio.desktop \
          Wlrix.Settings.Login:wlrix-settings-login:com.wlrix.settings.login.desktop \

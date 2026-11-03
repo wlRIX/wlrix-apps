@@ -35,6 +35,12 @@
     <data name="Reset" xml:space="preserve">
         <value>リセット...</value>
     </data>
+    <data name="DisplayWindowsOverview" xml:space="preserve">
+        <value>ウィンドウ一覧を表示：</value>
+    </data>
+    <data name="DisplayWindowsOverviewTip" xml:space="preserve">
+        <value>ウィンドウをデスクトップに最小化せず、すべてアイコンボックスに表示します。</value>
+    </data>
     <data name="OpaqueMove" xml:space="preserve">
         <value>ウィンドウを表示のまま移動：</value>
     </data>

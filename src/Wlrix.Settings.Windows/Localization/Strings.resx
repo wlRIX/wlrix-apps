@@ -27,6 +27,12 @@
   <data name="FocusPointer" xml:space="preserve">
     <value>Point to type</value>
   </data>
+  <data name="DisplayWindowsOverview" xml:space="preserve">
+    <value>Display Windows Overview:</value>
+  </data>
+  <data name="DisplayWindowsOverviewTip" xml:space="preserve">
+    <value>Show every window in the iconbox, instead of minimizing windows to the desktop.</value>
+  </data>
   <data name="ClickRaise" xml:space="preserve">
     <value>Click Raise:</value>
   </data>

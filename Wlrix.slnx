@@ -2,6 +2,7 @@
     <Folder Name="/src/">
         <Project Path="src/Wlrix.Common/Wlrix.Common.csproj" />
         <Project Path="src/Wlrix.Desks/Wlrix.Desks.csproj" />
+        <Project Path="src/Wlrix.Iconbox/Wlrix.Iconbox.csproj" />
         <Project Path="src/Wlrix.Toolchest/Wlrix.Toolchest.csproj" />
         <Project Path="src/Wlrix.Console/Wlrix.Console.csproj" />
         <Project Path="src/Wlrix.Settings.Client/Wlrix.Settings.Client.csproj" />
@@ -56,6 +57,7 @@
         <Project Path="tests/Wlrix.Common.Tests/Wlrix.Common.Tests.csproj" />
         <Project Path="tests/Wlrix.Files.Tests/Wlrix.Files.Tests.csproj" />
         <Project Path="tests/Wlrix.Desks.Tests/Wlrix.Desks.Tests.csproj" />
+        <Project Path="tests/Wlrix.Iconbox.Tests/Wlrix.Iconbox.Tests.csproj" />
         <Project Path="tests/Wlrix.FilePicker.Tests/Wlrix.FilePicker.Tests.csproj" />
         <Project Path="tests/Wlrix.Clock.Tests/Wlrix.Clock.Tests.csproj" />
         <Project Path="tests/Wlrix.Console.Tests/Wlrix.Console.Tests.csproj" />
