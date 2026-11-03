@@ -562,11 +562,31 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
 
     private void OnUnavailable() => Dispatcher.UIThread.Post(() => FeedUnavailable?.Invoke());
 
+    /// <summary>The iconbox's app id, which the compositor runs only while it holds the minimized windows.</summary>
+    internal const string IconboxAppId = "com.wlrix.iconbox";
+
+    /// <summary>
+    /// The windows the desk previews draw: all of them, unless the iconbox is open.
+    /// </summary>
+    /// <remarks>
+    /// A minimized window is drawn at its icon on the desktop, which is where the compositor
+    /// reports it. With the iconbox on (Window Settings' Display Windows Overview) there is no
+    /// such icon -- the window is a tile inside the iconbox, which is drawn like any other window
+    /// -- and the compositor reports where the window will reappear instead. Drawn there, it
+    /// would look open. The iconbox window is up exactly while the setting is on, so its
+    /// presence is the signal; the protocol carries no other.
+    /// </remarks>
+    internal static IReadOnlyList<WindowInfo> Drawn(IReadOnlyList<WindowInfo> windows) =>
+        windows.Any(w => w.AppId == IconboxAppId)
+            ? [.. windows.Where(w => !w.Minimized)]
+            : windows;
+
     private void ApplySnapshot(DeskSnapshot snapshot)
     {
         _lastSnapshot = snapshot;
         var world = _world;
-        var globalWindows = snapshot.Windows.Where(w => w.DeskId == 0).ToList();
+        var drawn = Drawn(snapshot.Windows);
+        var globalWindows = drawn.Where(w => w.DeskId == 0).ToList();
         var selectedId = SelectedDesk?.Id;
 
         // A closed window must not leave its id behind: the feed restarts its ids from 1 when
@@ -595,7 +615,7 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
 
             // One pass over the snapshot rather than the desk's windows followed by the global
             // desk's, so the two stay interleaved in the stacking order the feed gives them in.
-            var windows = snapshot.Windows.Where(w => w.DeskId == info.Id || w.DeskId == 0).ToList();
+            var windows = drawn.Where(w => w.DeskId == info.Id || w.DeskId == 0).ToList();
             vm.Update(info, windows, world, Scale, BackgroundsFor(info.Background, world, Scale / 100.0));
             ordered.Add(vm);
         }
