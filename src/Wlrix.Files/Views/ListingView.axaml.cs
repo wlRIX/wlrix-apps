@@ -153,6 +153,7 @@ public partial class ListingView : UserControl
             view.AddHandler(PointerPressedEvent, OnViewPointerPressed, RoutingStrategies.Tunnel);
             view.AddHandler(PointerMovedEvent, OnViewPointerMoved, RoutingStrategies.Tunnel);
             view.AddHandler(PointerReleasedEvent, OnViewPointerReleased, RoutingStrategies.Tunnel);
+            view.AddHandler(ScrollViewer.ScrollChangedEvent, OnViewScrolled);
 
             DragDrop.SetAllowDrop(view, true);
             view.AddHandler(DragDrop.DragOverEvent, OnViewDragOver);
@@ -182,12 +183,14 @@ public partial class ListingView : UserControl
             if (_wiredPane is { } before)
             {
                 before.RevealRequested -= Reveal;
+                before.RestoreRequested -= Restore;
                 before.PropertyChanged -= OnPanePropertyChanged;
             }
             _wiredPane = Pane;
             if (_wiredPane is { } after)
             {
                 after.RevealRequested += Reveal;
+                after.RestoreRequested += Restore;
                 after.PropertyChanged += OnPanePropertyChanged;
             }
         }
@@ -230,23 +233,82 @@ public partial class ListingView : UserControl
         }, DispatcherPriority.Loaded);
     }
 
-    private void RestoreSelection()
+    /// <summary>Puts back the selection and scroll offset the pane remembers, on a tab switch.</summary>
+    private void RestoreState()
     {
-        if (Pane is not { Selection.Count: > 0 } pane)
+        if (Pane is not { } pane)
+        {
+            _scrollHeld = false;
             return;
+        }
+        Restore(pane, pane.Selection, pane.ScrollOffset, focus: false);
+    }
 
-        var wanted = pane.Selection;
+    /// <summary>Puts a directory back as it was left, after a history step or a step up.</summary>
+    private void Restore(IReadOnlyList<FileEntryViewModel> rows, Vector? offset)
+    {
+        if (Pane is { } pane)
+            Restore(pane, rows, offset, focus: pane.IsActive);
+    }
+
+    /// <summary>
+    /// Selects <paramref name="rows"/> and scrolls to <paramref name="offset"/>, or to the first
+    /// row when there is no offset.
+    /// </summary>
+    /// <remarks>
+    /// Posted, as <see cref="Reveal"/> is: the rows have only just been bound, and an offset set
+    /// before layout has measured them is clamped to an extent that does not include them yet.
+    /// The offset the view reports is ignored until then, or the empty, unscrolled listing laid
+    /// out in the meantime would overwrite the one being restored.
+    /// </remarks>
+    private void Restore(PaneViewModel pane, IReadOnlyList<FileEntryViewModel> rows, Vector? offset, bool focus)
+    {
+        _scrollHeld = true;
         Dispatcher.UIThread.Post(() =>
         {
             if (!ReferenceEquals(Pane, pane))
                 return;
-            var view = pane.IsIconView ? IconView : Listing;
-            if (view.SelectedItems is not { } selected)
-                return;
-            selected.Clear();
-            foreach (var row in wanted)
-                selected.Add(row);
+            _scrollHeld = false;
+            var view = ShowingView(pane);
+            if (rows.Count > 0 && view.SelectedItems is { } selected)
+            {
+                selected.Clear();
+                foreach (var row in rows)
+                    selected.Add(row);
+            }
+
+            if (offset is { } wanted)
+            {
+                if (ScrollerOf(view) is { } scroller)
+                    scroller.Offset = wanted;
+            }
+            else if (rows.Count > 0)
+            {
+                view.ScrollIntoView(rows[0]);
+            }
+
+            if (focus && rows.Count > 0)
+                view.ContainerFromItem(rows[0])?.Focus();
         }, DispatcherPriority.Loaded);
+    }
+
+    /// <summary>Whether the view's scroll reports are being ignored until a restore lands.</summary>
+    private bool _scrollHeld;
+
+    private static ScrollViewer? ScrollerOf(ListBox view) =>
+        view.GetVisualDescendants().OfType<ScrollViewer>().FirstOrDefault();
+
+    /// <summary>Tells the pane how far the showing view is scrolled, for it to remember.</summary>
+    /// <remarks>
+    /// Only the view that is showing, and only its own scroller: the hidden one lays itself out
+    /// too, and its offset says nothing about what is on screen.
+    /// </remarks>
+    private void OnViewScrolled(object? sender, ScrollChangedEventArgs e)
+    {
+        if (_scrollHeld || Pane is not { } pane || !ReferenceEquals(sender, ShowingView(pane))
+            || e.Source is not ScrollViewer scroller || !ReferenceEquals(scroller, ScrollerOf((ListBox)sender)))
+            return;
+        pane.ScrollOffset = scroller.Offset;
     }
 
     /// <summary>The pane this listing shows.</summary>
@@ -307,7 +369,7 @@ public partial class ListingView : UserControl
     {
         base.OnDataContextChanged(e);
         Rewire();
-        RestoreSelection();
+        RestoreState();
         FocusWhenShown();
     }
 

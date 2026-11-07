@@ -124,6 +124,84 @@ public sealed class ListingFocusTests(ITestOutputHelper output) : IDisposable
             Assert.Equal(expected, harness.TipShown());
         }, CancellationToken.None);
 
+    [Fact]
+    public Task TheMouseSideButtonsStepThroughTheHistoryOfTheTabInFront() =>
+        HeadlessFiles.Session.Dispatch(() =>
+        {
+            var (from, to) = TwoFolders();
+            var start = Location.FromLocalPath(from);
+            var there = Location.FromLocalPath(to);
+            using var harness = new Harness(_root, start, output);
+            harness.WaitFor(() => harness.Model.Pane.Entries.Count == 1, "the first listing");
+            System.Windows.Input.ICommand back = harness.Model.GoBack;
+            System.Windows.Input.ICommand forward = harness.Model.GoForward;
+
+            // Nowhere to go yet, so the menu items are greyed out rather than inert.
+            Assert.False(back.CanExecute(null));
+            Assert.False(forward.CanExecute(null));
+
+            _ = harness.Model.Pane.NavigateAsync(there);
+            harness.Pump();
+            Assert.True(back.CanExecute(null));
+
+            // A new tab starts with a history of its own, and the first tab keeps its own.
+            harness.Model.AddTab(start);
+            harness.Pump();
+            Assert.False(back.CanExecute(null));
+            harness.Model.ActiveTab = harness.Model.Tabs[0];
+            harness.Pump();
+            Assert.True(back.CanExecute(null));
+
+            var over = new Point(400, 250);
+            harness.Window.MouseDown(over, MouseButton.XButton1);
+            harness.Window.MouseUp(over, MouseButton.XButton1);
+            harness.Pump();
+            Assert.Equal(start, harness.Model.Pane.Location);
+            Assert.False(back.CanExecute(null));
+            Assert.True(forward.CanExecute(null));
+
+            harness.Window.MouseDown(over, MouseButton.XButton2);
+            harness.Window.MouseUp(over, MouseButton.XButton2);
+            harness.Pump();
+            Assert.Equal(there, harness.Model.Pane.Location);
+
+            // The second tab was never moved by any of that.
+            Assert.Equal(start, harness.Model.Tabs[1].Pane.Location);
+        }, CancellationToken.None);
+
+    [Fact]
+    public Task TheListingScrollsBackToWhereItWasAfterBackAndATabSwitch() =>
+        HeadlessFiles.Session.Dispatch(() =>
+        {
+            var (from, to) = TwoFolders();
+            for (var i = 0; i < 300; i++)
+                File.WriteAllText(Path.Combine(from, $"file{i:D3}.txt"), "x");
+            using var harness = new Harness(_root, Location.FromLocalPath(from), output);
+            harness.WaitFor(() => harness.Model.Pane.Entries.Count == 301 && !harness.Model.Pane.IsLoading,
+                "the long listing");
+
+            var scroller = harness.ShowingScroller();
+            scroller.Offset = scroller.Offset.WithY(600);
+            harness.Pump();
+            Assert.Equal(600, harness.Model.Pane.ScrollOffset.Y);
+
+            _ = harness.Model.Pane.NavigateAsync(Location.FromLocalPath(to));
+            harness.WaitFor(() => harness.Model.Pane.Entries.Count == 0 && !harness.Model.Pane.IsLoading,
+                "the empty folder");
+            ((System.Windows.Input.ICommand)harness.Model.GoBack).Execute(null);
+            harness.WaitFor(() => harness.Model.Pane.Entries.Count == 301 && !harness.Model.Pane.IsLoading,
+                "the long listing again");
+            harness.Pump();
+            Assert.Equal(600, harness.ShowingScroller().Offset.Y);
+
+            // A tab switch rebuilds the listing, which used to start it again from the top.
+            harness.Model.AddTab(Location.FromLocalPath(to));
+            harness.Pump();
+            harness.Model.ActiveTab = harness.Model.Tabs[0];
+            harness.Pump();
+            Assert.Equal(600, harness.ShowingScroller().Offset.Y);
+        }, CancellationToken.None);
+
     private (string From, string To) TwoFolders()
     {
         var from = Directory.CreateDirectory(Path.Combine(_root, "from")).FullName;
@@ -195,6 +273,14 @@ public sealed class ListingFocusTests(ITestOutputHelper output) : IDisposable
                 .Single(box => box.Name is "IconView" or "Listing" && box.IsEffectivelyVisible);
             return view.GetRealizedContainers().First().GetVisualDescendants()
                 .OfType<Control>().Select(ToolTip.GetTip).FirstOrDefault(tip => tip is not null);
+        }
+
+        /// <summary>The scroller of the listing view that is showing.</summary>
+        public ScrollViewer ShowingScroller()
+        {
+            var view = Window.GetVisualDescendants().OfType<ListBox>()
+                .Single(box => box.Name is "IconView" or "Listing" && box.IsEffectivelyVisible);
+            return view.GetVisualDescendants().OfType<ScrollViewer>().First();
         }
 
         public TextBox PathField =>

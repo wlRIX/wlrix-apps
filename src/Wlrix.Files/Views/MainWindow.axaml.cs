@@ -22,7 +22,42 @@ public partial class MainWindow : Window
 {
     private MainWindowViewModel? _model;
 
-    public MainWindow() => InitializeComponent();
+    public MainWindow()
+    {
+        InitializeComponent();
+        // Handled events too: a press over a control that marks it handled is still a press of
+        // the Back button. On the bubble, so the listing's tunnel has already made the pane
+        // under the pointer the active one, and the step goes back in the half of a split that
+        // was clicked in rather than the one that happened to be active.
+        AddHandler(PointerPressedEvent, OnHistoryButtonPressed, RoutingStrategies.Bubble, handledEventsToo: true);
+    }
+
+    /// <summary>The mouse's side buttons: Back and Forward, as a web browser has them.</summary>
+    /// <remarks>
+    /// On the press, as Firefox and the GTK file managers do. The Wayland backend reports
+    /// <c>BTN_SIDE</c> as the first extended button and <c>BTN_EXTRA</c> as the second, which
+    /// is the order every mouse with two thumb buttons puts Back and Forward in.
+    /// </remarks>
+    private void OnHistoryButtonPressed(object? sender, PointerPressedEventArgs e)
+    {
+        if (DataContext is not MainWindowViewModel model)
+            return;
+
+        // As ICommand, the way a binding runs it: a failure then goes to ThrownExceptions,
+        // where an unobserved one from Execute().Subscribe() would take the process down.
+        System.Windows.Input.ICommand? command = e.GetCurrentPoint(this).Properties.PointerUpdateKind switch
+        {
+            PointerUpdateKind.XButton1Pressed => model.GoBack,
+            PointerUpdateKind.XButton2Pressed => model.GoForward,
+            _ => null
+        };
+        if (command is null)
+            return;
+
+        e.Handled = true;
+        if (command.CanExecute(null))
+            command.Execute(null);
+    }
 
     private void OnSortName(object? sender, RoutedEventArgs e) => SetSort(SortKey.Name);
     private void OnSortSize(object? sender, RoutedEventArgs e) => SetSort(SortKey.Size);
@@ -245,6 +280,11 @@ public partial class MainWindow : Window
         }
     }
 
-    private void OnAbout() =>
-        _ = MessageDialog.ShowAsync(this, DialogType.Information, Strings.AboutText, title: Strings.AboutTitle);
+    /// <summary>Help &#8594; Product Information, worded and laid out as the other applications have it.</summary>
+    private void OnAbout()
+    {
+        var version = GetType().Assembly.GetName().Version?.ToString(3) ?? "0.0.0";
+        _ = MessageDialog.ShowAsync(this, DialogType.Information, Strings.About(version),
+            title: Strings.AboutTitle, buttons: DialogButtons.Ok, okText: Strings.DialogOk);
+    }
 }

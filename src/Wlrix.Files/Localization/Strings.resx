@@ -150,8 +150,8 @@
   <data name="ViewShowHidden" xml:space="preserve">
     <value>Show _Hidden Files</value>
   </data>
-  <data name="HelpAbout" xml:space="preserve">
-    <value>_About wlRIX Files</value>
+  <data name="HelpProductInfo" xml:space="preserve">
+    <value>_Product Information</value>
   </data>
   <data name="ColumnName" xml:space="preserve">
     <value>Name</value>
@@ -229,10 +229,12 @@
     <value>Error</value>
   </data>
   <data name="AboutTitle" xml:space="preserve">
-    <value>About wlRIX Files</value>
+    <value>Product Information</value>
   </data>
-  <data name="AboutText" xml:space="preserve">
-    <value>wlRIX Files\n\nA file manager for the wlRIX desktop.</value>
+  <data name="About" xml:space="preserve">
+    <value>wlRIX Files {0}
+
+A file manager for the wlRIX desktop.</value>
   </data>
   <data name="ViewIcons" xml:space="preserve">
     <value>_Icons</value>

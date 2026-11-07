@@ -40,7 +40,7 @@ public static class Strings
         string.Format(System.Globalization.CultureInfo.CurrentCulture,
             Catalog.Get("ServerChangedMessage"), server, fingerprint);
 
-    public static string AboutText => Catalog.Get("AboutText");
+    public static string About(string version) => Catalog.Format("About", version);
     public static string StatusLoading => Catalog.Get("StatusLoading");
     public static string StatusEmpty => Catalog.Get("StatusEmpty");
 

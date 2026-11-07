@@ -1,4 +1,5 @@
 using System.Collections.Specialized;
+using Avalonia;
 using Avalonia.Collections;
 using Avalonia.Threading;
 using Microsoft.Extensions.Logging;
@@ -17,9 +18,9 @@ namespace Wlrix.Files.ViewModels;
 /// One directory view: where it is, what is in it, and how to get somewhere else.
 /// </summary>
 /// <remarks>
-/// The pane owns the navigation history and the listing. A window holds one today and will
-/// hold several once tabs and split panes land, which is why this is separate from the window
-/// rather than folded into it.
+/// The pane owns the navigation history and the listing. Each tab holds one, or two when
+/// split, so every tab and every half of a split goes back and forward through its own
+/// history, as a browser tab does.
 /// </remarks>
 public sealed class PaneViewModel : ReactiveObject
 {
@@ -29,8 +30,25 @@ public sealed class PaneViewModel : ReactiveObject
     // Back and forward as two stacks, which is what makes the browser semantics fall out:
     // navigating pushes onto back and clears forward; going back moves the current location
     // across to forward.
-    private readonly Stack<Location> _back = new();
-    private readonly Stack<Location> _forward = new();
+    private readonly Stack<HistoryEntry> _back = new();
+    private readonly Stack<HistoryEntry> _forward = new();
+
+    /// <summary>A place in the history, and how it looked when it was left.</summary>
+    /// <remarks>
+    /// The selection by location rather than by row, because the rows are rebuilt by the read
+    /// that brings the directory back, and a file that has gone since simply is not found.
+    /// </remarks>
+    private sealed record HistoryEntry(Location Location, IReadOnlyList<Location> Selected, Vector? Scroll);
+
+    /// <summary>What to put back once the read under way has finished.</summary>
+    /// <remarks>
+    /// A null scroll means "bring the first selected row on screen" rather than "go to the
+    /// top": the case of arriving in a parent directory, where there is no offset to return
+    /// to but there is a row to show.
+    /// </remarks>
+    private sealed record PendingRestore(IReadOnlyList<Location> Selected, Vector? Scroll);
+
+    private PendingRestore? _pendingRestore;
 
     private CancellationTokenSource? _loading;
     private IDirectoryWatcher? _watcher;
@@ -104,6 +122,21 @@ public sealed class PaneViewModel : ReactiveObject
 
     /// <summary>Raised when a row should be selected and scrolled to, for the listing to do.</summary>
     public event Action<FileEntryViewModel>? RevealRequested;
+
+    /// <summary>
+    /// Raised when a directory comes back from the history: the rows to select, and the scroll
+    /// offset to return to, or null to bring the first of the rows on screen instead.
+    /// </summary>
+    public event Action<IReadOnlyList<FileEntryViewModel>, Vector?>? RestoreRequested;
+
+    /// <summary>How far the listing is scrolled, as the listing last reported it.</summary>
+    /// <remarks>
+    /// Kept here for the same reason as <see cref="Selection"/>: the controls are rebuilt on
+    /// every tab switch and a history step re-reads the directory, so the pane is the only
+    /// thing that is still there to remember it. The listing writes it as it scrolls and
+    /// reads it back when it is rebuilt.
+    /// </remarks>
+    public Vector ScrollOffset { get; set; }
 
     /// <summary>What <see cref="Reveal"/> is waiting to see arrive, if it has not yet.</summary>
     private Location? _pendingReveal;
@@ -462,10 +495,38 @@ public sealed class PaneViewModel : ReactiveObject
             return ReloadAsync();
         }
 
-        _back.Push(Location);
+        _back.Push(Capture());
         _forward.Clear();
-        return GoAsync(target);
+        return GoAsync(target, new PendingRestore(WayBackDown(target), null));
     }
+
+    /// <summary>
+    /// The directory under <paramref name="target"/> that leads to where this pane is now.
+    /// </summary>
+    /// <remarks>
+    /// What makes going up select where you came from: clicking <c>home</c> in the path bar
+    /// while in <c>/home/vic485/Downloads</c> arrives with <c>vic485</c> picked out, so the way
+    /// back down is a Return away and the eye does not have to hunt for it. Empty unless
+    /// <paramref name="target"/> is above the current directory.
+    /// </remarks>
+    private IReadOnlyList<Location> WayBackDown(Location target)
+    {
+        if (target == Location || !target.Contains(Location))
+            return [];
+        var step = Location;
+        while (step.Parent is { } parent && parent != target)
+            step = parent;
+        return step.Parent == target ? [step] : [];
+    }
+
+    /// <summary>The current directory as the history should remember it.</summary>
+    /// <remarks>
+    /// Results are not a directory, so nothing about them is kept: their rows are under other
+    /// directories and their scroll offset is through a different list.
+    /// </remarks>
+    private HistoryEntry Capture() => IsSearching
+        ? new HistoryEntry(Location, [], null)
+        : new HistoryEntry(Location, [.. Selection.Select(row => row.Location)], ScrollOffset);
 
     public Task GoBackAsync() => _back.Count == 0
         ? Task.CompletedTask
@@ -477,10 +538,16 @@ public sealed class PaneViewModel : ReactiveObject
 
     public Task GoUpAsync() => Location.Parent is { } parent ? NavigateAsync(parent) : Task.CompletedTask;
 
-    private Task Step(Stack<Location> from, Stack<Location> to)
+    private Task Step(Stack<HistoryEntry> from, Stack<HistoryEntry> to)
     {
-        to.Push(Location);
-        return GoAsync(from.Pop());
+        to.Push(Capture());
+        var entry = from.Pop();
+        // Nothing was selected when it was left, but it is above where we are: then it is a
+        // step up like any other, and the way back down is worth showing.
+        var restore = entry.Selected.Count == 0 && WayBackDown(entry.Location) is { Count: > 0 } down
+            ? new PendingRestore(down, entry.Scroll)
+            : new PendingRestore(entry.Selected, entry.Scroll);
+        return GoAsync(entry.Location, restore);
     }
 
     /// <summary>Points a pane at a directory with no history behind it.</summary>
@@ -493,19 +560,23 @@ public sealed class PaneViewModel : ReactiveObject
     {
         _back.Clear();
         _forward.Clear();
+        _pendingRestore = null;
+        ScrollOffset = default;
         Location = target;
         this.RaisePropertyChanged(nameof(PathText));
         this.RaisePropertyChanged(nameof(PathRoot));
         RaiseNavigationState();
     }
 
-    private Task GoAsync(Location target)
+    private Task GoAsync(Location target, PendingRestore? restore)
     {
         // Every navigation funnels through here, so this is the one place search results have
         // to be dropped. Leaving them up while the location changed underneath would be a list
         // that no longer has anything to do with the path bar above it.
         ClearSearch();
         _pendingReveal = null;
+        _pendingRestore = restore;
+        ScrollOffset = default;
         Location = target;
         this.RaisePropertyChanged(nameof(PathText));
         this.RaisePropertyChanged(nameof(PathRoot));
@@ -599,6 +670,7 @@ public sealed class PaneViewModel : ReactiveObject
             Entries.Clear();
             Entries.AddRange(arrived);
             RevealPending(arrived);
+            RestorePending(arrived);
 
             if (_search is { } finished)
             {
@@ -626,6 +698,34 @@ public sealed class PaneViewModel : ReactiveObject
             if (!token.IsCancellationRequested)
                 IsLoading = false;
         }
+    }
+
+    /// <summary>Puts back what a history step or a step up said to, once its rows are in.</summary>
+    /// <remarks>
+    /// After the final, sorted rows rather than as they arrive: the sorted list replaces the
+    /// unsorted one wholesale, which would throw away a selection made any earlier. Only the
+    /// read the navigation started gets it; a refresh later on leaves the listing alone.
+    /// </remarks>
+    private void RestorePending(List<FileEntryViewModel> rows)
+    {
+        if (_pendingRestore is not { } restore)
+            return;
+        _pendingRestore = null;
+
+        IReadOnlyList<FileEntryViewModel> found = [];
+        if (restore.Selected.Count > 0)
+        {
+            var wanted = restore.Selected.ToHashSet();
+            found = [.. rows.Where(row => wanted.Contains(row.Location))];
+        }
+
+        if (found.Count == 0 && restore.Scroll is null)
+            return;
+        if (found.Count > 0)
+            Selection = found;
+        if (restore.Scroll is { } scroll)
+            ScrollOffset = scroll;
+        RestoreRequested?.Invoke(found, restore.Scroll);
     }
 
     /// <summary>Where a result is, relative to what was searched.</summary>

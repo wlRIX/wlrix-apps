@@ -146,12 +146,14 @@ public sealed class MainWindowViewModel : ReactiveObject, IDisposable
         Mounts = mounts;
         Home = userDirs.Home;
 
-        GoBack = Command(() => Stepped(Pane.GoBackAsync()));
-        GoForward = Command(() => Stepped(Pane.GoForwardAsync()));
-        GoUp = Command(() => Stepped(Pane.GoUpAsync()));
+        // Enabled by the active pane's own history, followed through tab switches and a click
+        // into the other half of a split: Pane is re-raised for both, so these re-read it.
+        GoBack = Command(() => Stepped(Pane.GoBackAsync()), this.WhenAnyValue(x => x.Pane.CanGoBack));
+        GoForward = Command(() => Stepped(Pane.GoForwardAsync()), this.WhenAnyValue(x => x.Pane.CanGoForward));
+        GoUp = Command(() => Stepped(Pane.GoUpAsync()), this.WhenAnyValue(x => x.Pane.CanGoUp));
         GoHome = Command(() => NavigateActiveTabAsync(userDirs.Home));
         Refresh = Command(() => Pane.ReloadAsync());
-        About = ReactiveCommand.Create(() => AboutRequested?.Invoke());
+        ProductInformation = ReactiveCommand.Create(() => AboutRequested?.Invoke());
         Close = ReactiveCommand.Create(() => CloseRequested?.Invoke());
 
         CopySelection = Command(() => { clipboard.Copy(SelectedLocations()); return Task.CompletedTask; });
@@ -651,7 +653,7 @@ public sealed class MainWindowViewModel : ReactiveObject, IDisposable
     public ReactiveCommand<Unit, Unit> GoUp { get; }
     public ReactiveCommand<Unit, Unit> GoHome { get; }
     public ReactiveCommand<Unit, Unit> Refresh { get; }
-    public ReactiveCommand<Unit, Unit> About { get; }
+    public ReactiveCommand<Unit, Unit> ProductInformation { get; }
     public ReactiveCommand<Unit, Unit> Close { get; }
     public ReactiveCommand<Unit, Unit> CopySelection { get; }
     public ReactiveCommand<Unit, Unit> CutSelection { get; }
@@ -1140,10 +1142,32 @@ public sealed class MainWindowViewModel : ReactiveObject, IDisposable
     }
 
     /// <summary>Runs a history step, then puts the registry back in step with it.</summary>
-    private async Task Stepped(Task navigation)
+    /// <remarks>
+    /// Done as soon as the pane has moved, not when the new directory has been read. A command
+    /// refuses to run again while it is still running, and the mouse's Back button is clicked
+    /// three times in a row to go back three places: waiting for each read meant that on a
+    /// share every click but the first was thrown away. The pane abandons a read when the
+    /// next one starts, so stepping again mid-read is safe. The read is still watched, so a
+    /// failure in it reaches the user the way a failed command does.
+    /// </remarks>
+    private Task Stepped(Task reading)
     {
-        await navigation.ConfigureAwait(true);
         _routing.Resync(this, Pane.Location);
+        _ = ReportFailureAsync(reading);
+        return Task.CompletedTask;
+    }
+
+    private async Task ReportFailureAsync(Task task)
+    {
+        try
+        {
+            await task.ConfigureAwait(true);
+        }
+        catch (Exception ex)
+        {
+            _logger.ZLogError(ex, $"navigation failed");
+            ErrorRaised?.Invoke(ex.Message);
+        }
     }
 
     public Task StartAsync() => Pane.ReloadAsync();
@@ -1988,9 +2012,9 @@ public sealed class MainWindowViewModel : ReactiveObject, IDisposable
     /// unobserved throw is rethrown on the scheduler and takes the process down, which is
     /// the bug the whole repo guards against this way.
     /// </remarks>
-    private ReactiveCommand<Unit, Unit> Command(Func<Task> action)
+    private ReactiveCommand<Unit, Unit> Command(Func<Task> action, IObservable<bool>? canExecute = null)
     {
-        var command = ReactiveCommand.CreateFromTask(action);
+        var command = ReactiveCommand.CreateFromTask(action, canExecute);
         _subscriptions.Add(command.ThrownExceptions.Subscribe(ex =>
         {
             _logger.ZLogError(ex, $"command failed");

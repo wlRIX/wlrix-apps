@@ -150,8 +150,8 @@
   <data name="ViewShowHidden" xml:space="preserve">
     <value>隠しファイルを表示(_H)</value>
   </data>
-  <data name="HelpAbout" xml:space="preserve">
-    <value>wlRIX ファイルについて(_A)</value>
+  <data name="HelpProductInfo" xml:space="preserve">
+    <value>製品情報 (_P)</value>
   </data>
   <data name="ColumnName" xml:space="preserve">
     <value>名前</value>
@@ -229,10 +229,12 @@
     <value>エラー</value>
   </data>
   <data name="AboutTitle" xml:space="preserve">
-    <value>wlRIX ファイルについて</value>
+    <value>製品情報</value>
   </data>
-  <data name="AboutText" xml:space="preserve">
-    <value>wlRIX ファイル\n\nwlRIX デスクトップのファイルマネージャです。</value>
+  <data name="About" xml:space="preserve">
+    <value>wlRIX ファイル {0}
+
+wlRIX デスクトップのファイルマネージャです。</value>
   </data>
   <data name="ViewIcons" xml:space="preserve">
     <value>アイコン(_I)</value>

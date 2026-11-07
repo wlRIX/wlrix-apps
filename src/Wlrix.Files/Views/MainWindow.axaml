@@ -222,7 +222,7 @@
                           Command="{Binding ToggleDefaultFileManager}" />
             </MenuItem>
             <MenuItem Header="{loc:Tr MenuHelp}" DockPanel.Dock="Right">
-                <MenuItem Header="{loc:Tr HelpAbout}" Command="{Binding About}" />
+                <MenuItem Header="{loc:Tr HelpProductInfo}" Command="{Binding ProductInformation}" />
             </MenuItem>
         </wlrix:MenuBar>
 
