@@ -1,5 +1,4 @@
 using System.Globalization;
-using System.IO.Enumeration;
 using System.Xml;
 using System.Xml.Linq;
 
@@ -290,7 +289,7 @@ public sealed class SharedMimeDatabase
         {
             MimeGlobKind.Literal => string.Equals(glob.Pattern, fileName, comparison),
             MimeGlobKind.Extension => fileName.EndsWith(glob.Suffix, comparison),
-            _ => FileSystemName.MatchesSimpleExpression(glob.Pattern, fileName, ignoreCase: !glob.CaseSensitive)
+            _ => Glob.IsMatch(glob.Pattern, fileName, ignoreCase: !glob.CaseSensitive)
         };
     }
 

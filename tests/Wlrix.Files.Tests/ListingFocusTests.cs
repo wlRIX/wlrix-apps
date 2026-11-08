@@ -184,6 +184,9 @@ public sealed class ListingFocusTests(ITestOutputHelper output) : IDisposable
             scroller.Offset = scroller.Offset.WithY(600);
             harness.Pump();
             Assert.Equal(600, harness.Model.Pane.ScrollOffset.Y);
+            // Selected but scrolled out of sight. Coming back must not focus it, because a
+            // focused row is brought into view and that would scroll away from 600.
+            harness.Model.Pane.Selection = [harness.Model.Pane.Entries[0]];
 
             _ = harness.Model.Pane.NavigateAsync(Location.FromLocalPath(to));
             harness.WaitFor(() => harness.Model.Pane.Entries.Count == 0 && !harness.Model.Pane.IsLoading,
@@ -195,11 +198,16 @@ public sealed class ListingFocusTests(ITestOutputHelper output) : IDisposable
             Assert.Equal(600, harness.ShowingScroller().Offset.Y);
 
             // A tab switch rebuilds the listing, which used to start it again from the top.
+            // Focus elsewhere, so the listing takes it as it comes back. Picking a row that was
+            // only partly on screen for that is what scrolled it 64 pixels under CI.
             harness.Model.AddTab(Location.FromLocalPath(to));
+            harness.Pump();
+            harness.PathField.Focus();
             harness.Pump();
             harness.Model.ActiveTab = harness.Model.Tabs[0];
             harness.Pump();
             Assert.Equal(600, harness.ShowingScroller().Offset.Y);
+            Assert.True(harness.ShowingScroller().IsKeyboardFocusWithin);
         }, CancellationToken.None);
 
     private (string From, string To) TwoFolders()

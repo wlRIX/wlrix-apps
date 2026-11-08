@@ -19,3 +19,4 @@
 20:text/x-readme:README*
 80:text/html:*.html
 60:application/vnd.appimage:*.appimage
+50:application/x-troff-man:*.[1-9]

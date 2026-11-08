@@ -280,15 +280,25 @@ public partial class ListingView : UserControl
             if (offset is { } wanted)
             {
                 if (ScrollerOf(view) is { } scroller)
+                {
                     scroller.Offset = wanted;
+                    // So the rows the offset brings on screen are realized and placed before
+                    // one is picked to take focus.
+                    view.UpdateLayout();
+                }
             }
             else if (rows.Count > 0)
             {
                 view.ScrollIntoView(rows[0]);
             }
 
-            if (focus && rows.Count > 0)
-                view.ContainerFromItem(rows[0])?.Focus();
+            if (!focus || rows.Count == 0)
+                return;
+            // With no offset the row has just been scrolled to, and taking focus is free. With
+            // one, a selected row off screen keeps its selection but not the focus, since
+            // focusing it would scroll away from where the listing was left.
+            var first = view.ContainerFromItem(rows[0]);
+            (offset is null ? first : RowOnScreen(view, first))?.Focus();
         }, DispatcherPriority.Loaded);
     }
 
@@ -414,10 +424,38 @@ public partial class ListingView : UserControl
     {
         if (view.IsKeyboardFocusWithin)
             return;
-        var row = view.SelectedItem is { } selected ? view.ContainerFromItem(selected) : null;
-        row ??= view.GetRealizedContainers().FirstOrDefault();
-        if (row?.Focus() != true)
+        var selected = view.SelectedItem is { } item ? view.ContainerFromItem(item) : null;
+        if (RowOnScreen(view, selected)?.Focus() != true)
             view.Focus();
+    }
+
+    /// <summary>
+    /// <paramref name="preferred"/> if it is wholly on screen, else the top-left row that is.
+    /// </summary>
+    /// <remarks>
+    /// Never a row that is partly or wholly off screen. A focused row is brought into view, so
+    /// focusing one scrolls the listing, which undid a scroll offset just restored by a tab
+    /// switch or a Back. The realized containers are no help on their own: they include a row
+    /// or so either side of the viewport, and the icon panel keeps them in a dictionary, so the
+    /// first of them can be any of those.
+    /// </remarks>
+    private static Control? RowOnScreen(ListBox view, Control? preferred)
+    {
+        if (ScrollerOf(view) is not { } scroller)
+            return null;
+
+        bool OnScreen(Control row) =>
+            row.TranslatePoint(default, scroller) is { } at
+            && at.Y >= 0 && at.Y + row.Bounds.Height <= scroller.Viewport.Height
+            && at.X >= 0 && at.X + row.Bounds.Width <= scroller.Viewport.Width;
+
+        if (preferred is not null && OnScreen(preferred))
+            return preferred;
+        return view.GetRealizedContainers()
+            .Where(OnScreen)
+            .OrderBy(row => row.TranslatePoint(default, scroller)!.Value.Y)
+            .ThenBy(row => row.TranslatePoint(default, scroller)!.Value.X)
+            .FirstOrDefault();
     }
 
     private bool IsShown() => TopLevel.GetTopLevel(this) is not null;

@@ -24,3 +24,5 @@ question, and regenerating them would lose that.
   - `README*` has weight 20 and `*.html` has 80, so ties resolve by weight rather than
     by file order.
   - `sconscript.*` and `*~` are patterns that are neither literal nor a plain extension.
+  - `*.[1-9]` is a bracket expression, which is how the real database spells manual
+    pages and shared libraries.

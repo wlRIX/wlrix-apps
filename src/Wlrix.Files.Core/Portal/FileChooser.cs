@@ -1,4 +1,3 @@
-using System.IO.Enumeration;
 using System.Text.Json.Serialization;
 
 namespace Wlrix.Files.Core.Portal;
@@ -76,7 +75,7 @@ public sealed class FileFilter
         {
             if (!rule.IsMimeType)
             {
-                if (FileSystemName.MatchesSimpleExpression(rule.Pattern, fileName, ignoreCase: true))
+                if (Glob.IsMatch(rule.Pattern, fileName, ignoreCase: true))
                     return true;
                 continue;
             }

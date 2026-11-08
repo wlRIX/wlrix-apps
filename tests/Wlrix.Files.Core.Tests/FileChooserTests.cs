@@ -39,6 +39,19 @@ public class FileFilterTests
         Assert.True(Filter(new FilterRule(false, "*.jpg")).Matches("IMG_0001.JPG", NotAsked));
     }
 
+    /// <summary>
+    /// Chromium, and so Edge, spells every filter case-insensitively itself, while the combo
+    /// box shows the filter's name, <c>*.png</c>. Taking the brackets literally hid every file.
+    /// </summary>
+    [Fact]
+    public void ChromiumsBracketedGlobsMatch()
+    {
+        var png = Filter(new FilterRule(false, "*.[pP][nN][gG]"));
+        Assert.True(png.Matches("Screenshot_2026-11-04_10-51-22.png", NotAsked));
+        Assert.True(png.Matches("SHOUTING.PNG", NotAsked));
+        Assert.False(png.Matches("notes.txt", NotAsked));
+    }
+
     [Fact]
     public void AnyOneRuleIsEnough()
     {

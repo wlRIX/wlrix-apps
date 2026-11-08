@@ -59,6 +59,14 @@ public class SharedMimeDatabaseTests
     }
 
     [Fact]
+    public void BracketExpressionsMatchAsTheyDoInAShell()
+    {
+        var db = Db();
+        Assert.Equal("application/x-troff-man", db.ResolveByName("ls.1"));
+        Assert.Null(db.ResolveByName("ls.0"));
+    }
+
+    [Fact]
     public void AnUnknownNameResolvesToNothingRatherThanGuessing()
     {
         Assert.Null(Db().ResolveByName("mystery.qqq"));

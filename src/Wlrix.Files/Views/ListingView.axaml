@@ -170,8 +170,15 @@
              directory has no items, and the editing keys are bound on this view: without a
              focus target of its own, Ctrl+V could never paste into a folder with nothing in it
              yet. The details view below is focusable for the same reason. -->
+        <!-- AutoScrollToSelectedItem is off on both views. Avalonia scrolls to the selection's
+             anchor whenever the selection changes, the template is applied or the view becomes
+             visible, all posted to run after whatever set it, so it undid every restored scroll
+             offset with a selected row out of sight: a tab switch, a Back, a view toggle. The
+             listing scrolls to a row itself where that is wanted (a reveal, a step up), and
+             the keys scroll by focus. -->
         <ListBox Name="IconView"
                  Focusable="True"
+                 AutoScrollToSelectedItem="False"
                  Classes.inactive="{Binding !$parent[Window].IsActive}"
                  ItemsSource="{Binding Entries}"
                  SelectionMode="Multiple"
@@ -290,6 +297,7 @@
         <TableView
                    Name="Listing"
                    Focusable="True"
+                   AutoScrollToSelectedItem="False"
                    IsVisible="{Binding IsDetailsView}"
                    ItemsSource="{Binding Entries}"
                    SelectionMode="Multiple"
