@@ -34,8 +34,9 @@
     </Window.Styles>
 
     <!-- The layout follows KDE's Display Configuration, in the IRIX panel frame the other
-         wlRIX panels use: a title banner, the arrangement (when there is anything to arrange),
-         a form for the selected display, and the buttons along the bottom. -->
+         wlRIX panels use: a title banner, a notebook, and the buttons along the bottom. The
+         Displays page is the arrangement (when there is anything to arrange) over a form for
+         the selected display; Night Light is the page beside it. -->
     <DockPanel Margin="12" LastChildFill="True">
 
         <!-- Title banner: icon slot plus the panel name, as on the IRIX original. -->
@@ -54,16 +55,17 @@
         </StackPanel>
 
         <!-- Apply / Reset / Close / Help. Apply and Reset only mean something once a change is
-             staged. -->
+             staged, and they are about the page that is showing: Night Light saves as it goes,
+             so Apply has nothing to do there and Reset puts back what the window opened with. -->
         <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal"
                     HorizontalAlignment="Center" Spacing="8" Margin="0,12,0,0">
-            <Button Content="{loc:Tr Apply}" Click="OnApply" IsEnabled="{Binding CanApply}" />
-            <Button Content="{loc:Tr Reset}" Click="OnReset" IsEnabled="{Binding CanReset}" />
+            <Button Content="{loc:Tr Apply}" Click="OnApply" IsEnabled="{Binding CanApplyPage}" />
+            <Button Content="{loc:Tr Reset}" Click="OnReset" IsEnabled="{Binding CanResetPage}" />
             <Button Content="{loc:Tr Close}" Click="OnClose" />
             <Button Content="{loc:Tr Help}">
                 <Button.Flyout>
                     <Flyout>
-                        <TextBlock MaxWidth="300" TextWrapping="Wrap" Text="{loc:Tr HelpText}" />
+                        <TextBlock MaxWidth="300" TextWrapping="Wrap" Text="{Binding HelpText}" />
                     </Flyout>
                 </Button.Flyout>
             </Button>
@@ -72,6 +74,11 @@
         <!-- What became of the last Apply, when it is worth saying. -->
         <TextBlock DockPanel.Dock="Bottom" Text="{Binding Status}" TextWrapping="Wrap" Margin="0,8,0,0"
                    IsVisible="{Binding Status, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+
+        <!-- Tabs along the bottom, as on an IRIX notebook and in the Mouse panel. -->
+        <TabControl TabStripPlacement="Bottom" SelectedIndex="{Binding SelectedTab}">
+        <TabItem Header="{loc:Tr TabDisplays}">
+        <DockPanel LastChildFill="True">
 
         <!-- Until the compositor has described the displays there is nothing to show. -->
         <TextBlock DockPanel.Dock="Top" Text="{loc:Tr Waiting}" Margin="0,0,0,8"
@@ -220,6 +227,86 @@
 
             </StackPanel>
         </Grid>
+
+        </DockPanel>
+        </TabItem>
+
+        <!-- Night light. Everything here is written as it changes; see NightLightViewModel. -->
+        <TabItem Header="{loc:Tr TabNightLight}">
+            <StackPanel DataContext="{Binding NightLight}" x:DataType="vm:NightLightViewModel"
+                        Spacing="10" Grid.IsSharedSizeScope="True">
+
+                <TextBlock Text="{loc:Tr NightLightIntro}" TextWrapping="Wrap" />
+
+                <!-- When. -->
+                <StackPanel Spacing="4" IsEnabled="{Binding IsReady}">
+                    <RadioButton GroupName="NightLightMode" Content="{loc:Tr NightLightOff}"
+                                 IsChecked="{Binding IsOff}" />
+                    <RadioButton GroupName="NightLightMode" Content="{loc:Tr NightLightOn}"
+                                 IsChecked="{Binding IsOn}" />
+                    <RadioButton GroupName="NightLightMode" Content="{loc:Tr NightLightAuto}"
+                                 IsChecked="{Binding IsAuto}" />
+                </StackPanel>
+
+                <!-- How warm. Grayed out while the night light is off, when it means nothing. -->
+                <Grid Classes="form" ColumnSpacing="8" IsEnabled="{Binding CanSetTemperature}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="NightLabel" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="{loc:Tr NightLightTemperatureLabel}" />
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6"
+                                ToolTip.Tip="{loc:Tr NightLightTemperatureTip}">
+                        <Slider Width="220" VerticalAlignment="Center"
+                                Minimum="{Binding MinTemperature}" Maximum="{Binding MaxTemperature}"
+                                TickFrequency="100" IsSnapToTickEnabled="True"
+                                SmallChange="100" LargeChange="500"
+                                Value="{Binding Temperature}" />
+                        <NumericUpDown Width="96" Increment="100" FormatString="0"
+                                       Minimum="{Binding MinTemperature}" Maximum="{Binding MaxTemperature}"
+                                       Value="{Binding TemperatureValue}" />
+                        <TextBlock Text="{loc:Tr Kelvin}" VerticalAlignment="Center" />
+                    </StackPanel>
+                </Grid>
+
+                <!-- Where the sun is looked up for, which only the schedule needs. -->
+                <Grid Classes="form" RowDefinitions="Auto,Auto,Auto" RowSpacing="6" ColumnSpacing="8"
+                      IsEnabled="{Binding CanSetLocation}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="NightLabel" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="{loc:Tr NightLightLocationLabel}" />
+                    <CheckBox Grid.Row="0" Grid.Column="1" Content="{loc:Tr NightLightUseTimeZone}"
+                              IsChecked="{Binding UseTimeZone}"
+                              ToolTip.Tip="{loc:Tr NightLightUseTimeZoneTip}" />
+
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="{loc:Tr LatitudeLabel}"
+                               IsEnabled="{Binding CanSetCoordinates}" />
+                    <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" Spacing="6"
+                                IsEnabled="{Binding CanSetCoordinates}">
+                        <NumericUpDown Width="128" Minimum="-90" Maximum="90" Increment="0.1"
+                                       FormatString="0.####" Value="{Binding Latitude}" />
+                        <TextBlock Text="{loc:Tr LatitudeUnit}" VerticalAlignment="Center" />
+                    </StackPanel>
+
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="{loc:Tr LongitudeLabel}"
+                               IsEnabled="{Binding CanSetCoordinates}" />
+                    <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal" Spacing="6"
+                                IsEnabled="{Binding CanSetCoordinates}">
+                        <NumericUpDown Width="128" Minimum="-180" Maximum="180" Increment="0.1"
+                                       FormatString="0.####" Value="{Binding Longitude}" />
+                        <TextBlock Text="{loc:Tr LongitudeUnit}" VerticalAlignment="Center" />
+                    </StackPanel>
+                </Grid>
+
+                <!-- What became of the last change, or why there is nothing to change. -->
+                <TextBlock Text="{Binding Status}" TextWrapping="Wrap"
+                           IsVisible="{Binding Status, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+            </StackPanel>
+        </TabItem>
+        </TabControl>
 
     </DockPanel>
 

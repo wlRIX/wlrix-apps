@@ -141,4 +141,61 @@
   <data name="Revert" xml:space="preserve">
     <value>Revert</value>
   </data>
+  <data name="TabDisplays" xml:space="preserve">
+    <value>Displays</value>
+  </data>
+  <data name="TabNightLight" xml:space="preserve">
+    <value>Night Light</value>
+  </data>
+  <data name="NightLightIntro" xml:space="preserve">
+    <value>Night light makes the colors on every screen warmer, which is easier on the eyes after dark.</value>
+  </data>
+  <data name="NightLightOff" xml:space="preserve">
+    <value>Always off</value>
+  </data>
+  <data name="NightLightOn" xml:space="preserve">
+    <value>Always on</value>
+  </data>
+  <data name="NightLightAuto" xml:space="preserve">
+    <value>Sunset to Sunrise</value>
+  </data>
+  <data name="NightLightTemperatureLabel" xml:space="preserve">
+    <value>Night color:</value>
+  </data>
+  <data name="NightLightTemperatureTip" xml:space="preserve">
+    <value>The color temperature at night. Lower is warmer; 6500 K is daylight, which is no change. While you move this, the screen shows the new color for a few seconds.</value>
+  </data>
+  <data name="Kelvin" xml:space="preserve">
+    <value>K</value>
+  </data>
+  <data name="NightLightLocationLabel" xml:space="preserve">
+    <value>Location:</value>
+  </data>
+  <data name="NightLightUseTimeZone" xml:space="preserve">
+    <value>Use the time zone's location</value>
+  </data>
+  <data name="NightLightUseTimeZoneTip" xml:space="preserve">
+    <value>Work out sunset and sunrise for the city the system time zone is named after. Turn this off to give your own latitude and longitude.</value>
+  </data>
+  <data name="LatitudeLabel" xml:space="preserve">
+    <value>Latitude:</value>
+  </data>
+  <data name="LongitudeLabel" xml:space="preserve">
+    <value>Longitude:</value>
+  </data>
+  <data name="LatitudeUnit" xml:space="preserve">
+    <value>° north</value>
+  </data>
+  <data name="LongitudeUnit" xml:space="preserve">
+    <value>° east</value>
+  </data>
+  <data name="NightLightHelpText" xml:space="preserve">
+    <value>Night light warms the colors of every screen. Choose Always on, or Sunset to Sunrise to have it fade in as the sun goes down and out again in the morning. The slider sets how warm the screen gets; the screen shows each new color for a few seconds as you move it. Sunset and sunrise are worked out for your time zone's location unless you give a latitude and longitude. Changes on this page take effect at once; Reset puts back what was set when the window opened. Screenshots are not affected.</value>
+  </data>
+  <data name="NightLightUnsupported" xml:space="preserve">
+    <value>The settings service on this system does not have night light settings yet. Update wlrix-settings-daemon and the window system, then log in again.</value>
+  </data>
+  <data name="NoSettingsService" xml:space="preserve">
+    <value>No settings service: {0}</value>
+  </data>
 </root>

@@ -47,7 +47,8 @@ public class LocalizationTests
         [
             "Resolution", "ResolutionAspect", "PreferredResolution", "RefreshRate", "NoCompositor",
             "ApplyFailed", "ApplyCancelled", "Reverted", "RevertFailed", "DisplaysChanged",
-            "HdrUnsupported", "AdaptiveSyncUnsupported", "RevertingIn",
+            "HdrUnsupported", "AdaptiveSyncUnsupported", "RevertingIn", "HelpText",
+            "NightLightHelpText", "NightLightUnsupported", "NoSettingsService",
         ];
         var catalog = Catalog();
         Assert.All(keys, key => Assert.Contains(key, catalog));

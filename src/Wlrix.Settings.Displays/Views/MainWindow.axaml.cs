@@ -46,7 +46,7 @@ public partial class MainWindow : Window
             await model.ApplyAsync();
     }
 
-    private void OnReset(object? sender, RoutedEventArgs e) => Model?.Reset();
+    private void OnReset(object? sender, RoutedEventArgs e) => Model?.ResetPage();
 
     private void OnClose(object? sender, RoutedEventArgs e) => Close();
 

@@ -35,6 +35,16 @@ public static class Strings
     public static string HdrUnsupported => Catalog.Get("HdrUnsupported");
     public static string AdaptiveSyncUnsupported => Catalog.Get("AdaptiveSyncUnsupported");
 
+    /// <summary>The Help button's text for each page of the notebook.</summary>
+    public static string HelpText => Catalog.Get("HelpText");
+    public static string NightLightHelpText => Catalog.Get("NightLightHelpText");
+
+    /// <summary>The settings service is running, but predates the night light.</summary>
+    public static string NightLightUnsupported => Catalog.Get("NightLightUnsupported");
+
+    /// <summary>The settings service could not be reached, with what the bus said about it.</summary>
+    public static string NoSettingsService(string detail) => Catalog.Format("NoSettingsService", detail);
+
     /// <summary>"Reverting in 15 seconds."</summary>
     public static string RevertingIn(int seconds) => Catalog.Format("RevertingIn", seconds);
 }

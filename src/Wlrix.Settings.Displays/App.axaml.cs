@@ -3,6 +3,7 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Wlrix.Common.Localization;
 using Wlrix.Settings.Displays.Localization;
+using Wlrix.Settings.Displays.NightLight;
 using Wlrix.Settings.Outputs;
 using Wlrix.Settings.Displays.ViewModels;
 using Wlrix.Settings.Displays.Views;
@@ -31,10 +32,12 @@ public partial class App : Application
         {
             // --demo shows made-up displays, for working on the panel somewhere that has no
             // wlr-output-management -- or only one monitor.
-            IOutputFeed feed = desktop.Args?.Contains("--demo") == true
-                ? new SampleOutputFeed()
-                : new WaylandOutputFeed();
-            var model = new MainWindowViewModel(feed);
+            var demo = desktop.Args?.Contains("--demo") == true;
+            IOutputFeed feed = demo ? new SampleOutputFeed() : new WaylandOutputFeed();
+            // The night light is the one thing here that goes through the settings daemon; the
+            // demo keeps it in memory, so trying the page out changes nothing on screen.
+            INightLightStore nightLight = demo ? new SampleNightLightStore() : new SettingsNightLightStore();
+            var model = new MainWindowViewModel(feed, nightLight: new NightLightViewModel(nightLight));
             desktop.MainWindow = new MainWindow { DataContext = model };
 
             // Shown first and filled in when the compositor answers.

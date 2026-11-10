@@ -4,7 +4,7 @@
         <ApplicationManifest>app.manifest</ApplicationManifest>
         <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
         <AssemblyName>wlrix-settings-displays</AssemblyName>
-        <Version>0.0.0</Version>
+        <Version>0.1.0</Version>
     </PropertyGroup>
 
     <ItemGroup>
@@ -34,6 +34,12 @@
         <!-- The displays and the wlr-output-management feed. Monitors are configured live through
              the protocol, not through the settings daemon: see Wlrix.Settings.Outputs. -->
         <ProjectReference Include="../Wlrix.Settings.Outputs/Wlrix.Settings.Outputs.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <!-- The Night Light page is the exception: a schedule the compositor keeps rather than
+             a state of one display, so it is a setting in compositor.toml like any other. -->
+        <ProjectReference Include="../Wlrix.Settings.Client/Wlrix.Settings.Client.csproj" />
     </ItemGroup>
 
     <ItemGroup>

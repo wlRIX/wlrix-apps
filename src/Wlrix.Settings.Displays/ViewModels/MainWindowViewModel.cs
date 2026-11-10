@@ -3,6 +3,7 @@ using Avalonia.Threading;
 using ReactiveUI;
 using Wlrix.Settings.Displays.Layout;
 using Wlrix.Settings.Displays.Localization;
+using Wlrix.Settings.Displays.NightLight;
 using Wlrix.Settings.Outputs;
 
 namespace Wlrix.Settings.Displays.ViewModels;
@@ -14,6 +15,10 @@ namespace Wlrix.Settings.Displays.ViewModels;
 /// other wlRIX panels, because a wrong mode can leave nothing visible to undo it with. Apply
 /// sends the whole layout as one configuration and then asks whether to keep it; not answering
 /// puts the old one back.
+///
+/// The Night Light page beside it is the exception to the exception: it has nothing that can
+/// blank a screen, so it saves as it goes like every other panel. See
+/// <see cref="NightLightViewModel"/>.
 /// </summary>
 public sealed class MainWindowViewModel : ViewModelBase, IDisposable
 {
@@ -31,6 +36,11 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
     private bool _isBusy;
     private string? _status;
     private int _layoutVersion;
+    private int _selectedTab;
+
+    /// <summary>The pages of the notebook, in order.</summary>
+    internal const int DisplaysTab = 0;
+    internal const int NightLightTab = 1;
 
     public MainWindowViewModel() : this(new SampleOutputFeed()) { }
 
@@ -38,11 +48,50 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
     /// How a feed event reaches the UI thread. Defaults to the dispatcher; the tests run it in
     /// place.
     /// </param>
-    public MainWindowViewModel(IOutputFeed feed, Action<Action>? post = null)
+    /// <param name="nightLight">
+    /// The Night Light page. Defaults to one that keeps its settings in memory, which is what
+    /// the designer and the tests for the Displays page want.
+    /// </param>
+    public MainWindowViewModel(IOutputFeed feed, Action<Action>? post = null, NightLightViewModel? nightLight = null)
     {
         _feed = feed;
         _post = post ?? (action => Dispatcher.UIThread.Post(action));
+        NightLight = nightLight ?? new NightLightViewModel(new SampleNightLightStore(), _post);
+        NightLight.PropertyChanged += (_, e) =>
+        {
+            if (e.PropertyName == nameof(NightLightViewModel.CanReset))
+                this.RaisePropertyChanged(nameof(CanResetPage));
+        };
     }
+
+    /// <summary>The Night Light page, which keeps its own settings and saves them itself.</summary>
+    public NightLightViewModel NightLight { get; }
+
+    /// <summary>Which page of the notebook is showing.</summary>
+    public int SelectedTab
+    {
+        get => _selectedTab;
+        set
+        {
+            this.RaiseAndSetIfChanged(ref _selectedTab, value);
+            this.RaisePropertyChanged(nameof(CanApplyPage));
+            this.RaisePropertyChanged(nameof(CanResetPage));
+            this.RaisePropertyChanged(nameof(HelpText));
+        }
+    }
+
+    /// <summary>
+    /// Whether Apply has anything to do on the page that is showing. Only the Displays page
+    /// stages anything; with Night Light in front, an enabled Apply would look like it applied
+    /// to that.
+    /// </summary>
+    public bool CanApplyPage => _selectedTab == DisplaysTab && CanApply;
+
+    /// <summary>Whether Reset has anything to put back on the page that is showing.</summary>
+    public bool CanResetPage => _selectedTab == NightLightTab ? NightLight.CanReset : CanReset;
+
+    /// <summary>What the Help button says, which is about the page that is showing.</summary>
+    public string HelpText => _selectedTab == NightLightTab ? Strings.NightLightHelpText : Strings.HelpText;
 
     public ObservableCollection<DisplayViewModel> Displays { get; } = [];
 
@@ -109,6 +158,9 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
         _feed.SnapshotReceived += snapshot => _post(() => OnSnapshot(snapshot));
         _feed.Unavailable += () => _post(() => Status = Strings.NoCompositor);
         _feed.Start();
+        // Not awaited: the page fills in when the settings service answers, and says so in its
+        // own status line if it never does.
+        _ = NightLight.InitializeAsync();
     }
 
     /// <summary>
@@ -169,7 +221,20 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
         AfterEdit();
     }
 
-    public void Dispose() => _feed.Dispose();
+    /// <summary>Reset whichever page is showing.</summary>
+    public void ResetPage()
+    {
+        if (_selectedTab == NightLightTab)
+            NightLight.Reset();
+        else
+            Reset();
+    }
+
+    public void Dispose()
+    {
+        _feed.Dispose();
+        NightLight.Dispose();
+    }
 
     // ── Snapshots ───────────────────────────────────────────────────────────────────────
 
@@ -270,6 +335,8 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
         this.RaisePropertyChanged(nameof(IsDirty));
         this.RaisePropertyChanged(nameof(CanApply));
         this.RaisePropertyChanged(nameof(CanReset));
+        this.RaisePropertyChanged(nameof(CanApplyPage));
+        this.RaisePropertyChanged(nameof(CanResetPage));
     }
 
     private static string Message(ApplyResult result) => result switch
